@@ -24,12 +24,6 @@ export default function GoogleBtn({ children }) {
         setLoading(false);
         return;
       }
-
-      if (result?.ok) {
-        toast.success("Connexion réussie !"); // ✅ Toast succès
-        router.push("/dashboard");
-        router.refresh();
-      }
     } catch (error) {
       toast.error("Une erreur inattendue est survenue");
       setLoading(false);
@@ -39,7 +33,7 @@ export default function GoogleBtn({ children }) {
   return (
     <button
       onClick={handleGoogleSignIn}
-      className="flex items-center text-sm gap-2 rounded-3xl bg-white border hover:cursor-pointer border-gray-300 hover:border-blue-600 hover:bg-gray-300  shadow px-4 py-2 transition-all duration-300"
+      className="flex items-center text-sm gap-2 rounded bg-white border hover:cursor-pointer border-primary-300 hover:border-blue-600 hover:bg-primary-50  shadow px-4 py-2 transition-all duration-300"
     >
       <FcGoogle size={20} />
       <span className="text-black">{children}</span>

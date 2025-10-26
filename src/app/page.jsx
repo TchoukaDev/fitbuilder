@@ -14,6 +14,12 @@ export default function Home() {
         </p>
         <p className="text-lg mb-5">Pour commencer, connectez-vous:</p>
         <LoginForm />
+        {/* ✨ SÉPARATEUR */}
+        <div className="flex items-center w-full max-w-sm my-6">
+          <div className="flex-1 border-t border-primary-300"></div>
+          <span className="px-4 text-sm uppercase">ou</span>
+          <div className="flex-1 border-t border-primary-300"></div>
+        </div>
         <GoogleBtn>Se connecter avec Google</GoogleBtn>
         <Link href="/signup" className="text-sm my-5 link">
           Vous n'avez pas encore de compte? Inscrivez-vous.

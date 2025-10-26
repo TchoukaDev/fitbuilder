@@ -9,7 +9,7 @@ import {
   useState,
 } from "react";
 import ShowPassword from "../ShowPassword/ShowPassword";
-import Button from "../../Button/Button";
+import Button from "../../Buttons/Button";
 import { ClipLoader } from "react-spinners";
 import { signUpSchema } from "@/utils/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
