@@ -1,26 +1,114 @@
+/* app/globals.css */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap");
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Charger vos fonts Graphik */
+@font-face {
+  font-family: "Graphik";
+  src: url("/fonts/Graphik-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+@font-face {
+  font-family: "Graphik";
+  src: url("/fonts/Graphik-Semibold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@font-face {
+  font-family: "Graphik";
+  src: url("/fonts/Graphik-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Inter";
+  src: url("/fonts/Inter-VariableFont.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  /* Fonts */
+  --font-display: "Graphik", sans-serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+
+  /* Votre bleu principal (#260d87) */
+  --color-primary-50: #e8e3ff;
+  --color-primary-100: #d1c7ff;
+  --color-primary-200: #a38fff;
+  --color-primary-300: #7557ff;
+  --color-primary-400: #5c31e0;
+  --color-primary-500: #260d87;
+  --color-primary-600: #1f0a6d;
+  --color-primary-700: #1a0960;
+  --color-primary-800: #140748;
+  --color-primary-900: #0d0430;
+
+  /* Votre orange accent (#ff6600) */
+  --color-accent-50: #fff4e6;
+  --color-accent-100: #ffe9cc;
+  --color-accent-200: #ffd299;
+  --color-accent-300: #ffbb66;
+  --color-accent-400: #ffaa66;
+  --color-accent-500: #ff6600;
+  --color-accent-600: #e65c00;
+  --color-accent-700: #cc5200;
+  --color-accent-800: #994000;
+  --color-accent-900: #662a00;
+
+  /* Dégradés personnalisés */
+  --gradient-light: linear-gradient(
+    135deg,
+    #f9fafb 0%,
+    #e5e7eb 50%,
+    #d1d5db 100%
+  );
+  --gradient-primary: linear-gradient(135deg, #260d87 0%, #5c31e0 100%);
+  --gradient-accent: linear-gradient(135deg, #ff6600 0%, #ffaa66 100%);
+}
+
+/* Classes utilitaires personnalisées */
+@utility bg-gradient-light {
+  background-image: var(--gradient-light);
+}
+
+@utility bg-gradient-primary {
+  background-image: var(--gradient-primary);
+}
+
+@utility bg-gradient-accent {
+  background-image: var(--gradient-accent);
+}
+
+/* Composants personnalisés */
+@layer components {
+  .input {
+    @apply w-[300px] border text-primary-500 border-primary-300 rounded font-semibold px-4 pt-7 pb-2 text-sm placeholder-transparent outline-none focus:border-2 focus:border-accent-500;
+  }
+  .link {
+    @apply hover:text-primary-300 hover:underline  transition duration-200;
+  }
+  h1 {
+    @apply font-display font-bold text-2xl md:text-3xl my-5;
+  }
+  .formError {
+    @apply bg-accent-200 text-accent-700 font-semibold border p-2 border-accent-800 rounded text-sm;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Neutraliser le comportement d'autofill */
+input:-webkit-autofill,
+input:-webkit-autofill:focus {
+  transition: background-color 600000s 0s, color 600000s 0s;
+}
+input[data-autocompleted] {
+  background-color: transparent !important;
 }
