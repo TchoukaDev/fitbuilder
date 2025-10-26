@@ -1,6 +1,7 @@
 import LoginForm from "./components/Forms/LoginForm/LoginForm";
 import Link from "next/link";
 import WelcomeLayout from "./components/layout/WelcomeLayout/WelcomeLayout";
+import GoogleBtn from "./components/Buttons/GoogleBtn";
 
 export default function Home() {
   return (
@@ -13,6 +14,7 @@ export default function Home() {
         </p>
         <p className="text-lg mb-5">Pour commencer, connectez-vous:</p>
         <LoginForm />
+        <GoogleBtn>Se connecter avec Google</GoogleBtn>
         <Link href="/signup" className="text-sm my-5 link">
           Vous n'avez pas encore de compte? Inscrivez-vous.
         </Link>

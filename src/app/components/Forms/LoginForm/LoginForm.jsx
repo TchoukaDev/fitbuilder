@@ -4,19 +4,23 @@ import { useEffect, useRef, useState } from "react";
 import Label from "../Label/Label";
 import { useForm } from "react-hook-form";
 import { ClipLoader } from "react-spinners";
-import Button from "../../Button/Button";
+import Button from "../../Buttons/Button";
 import Link from "next/link";
 import ShowPassword from "../ShowPassword/ShowPassword";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation"; // ✅ Ajouter
+import { toast } from "react-toastify";
 
 export default function LoginForm() {
-  // State pour afficher/cacher mot de passe
+  const router = useRouter(); // ✅ Ajouter
   const [showPassword, setShowPassword] = useState(false);
+  const [loginError, setLoginError] = useState(""); // ✅ Ajouter pour erreurs serveur
 
-  // RHF
   const {
     register,
     watch,
     handleSubmit,
+    reset,
     formState: { errors: clientsErrors, isSubmitting },
   } = useForm({
     mode: "onSubmit",
@@ -24,11 +28,9 @@ export default function LoginForm() {
     defaultValues: { autoLogin: true },
   });
 
-  // Variables
   const email = watch("email");
   const password = watch("password");
 
-  // Décomposition register email pour utilisation de useRef
   const emailRegister = register("email", {
     required: "Veuillez saisir une adresse email valide",
     pattern: {
@@ -37,18 +39,46 @@ export default function LoginForm() {
     },
   });
 
-  // Référence pour input Email pour focus
   const emailRef = useRef(null);
 
-  // Focus au render
   useEffect(() => {
     emailRef?.current?.focus();
   }, []);
 
-  // Gestion envoi du formulaire
-  const onSubmit = () => {
-    console.log("hello");
+  // ✅ CORRECTION ICI
+  const onSubmit = async (data) => {
+    setLoginError(""); // Réinitialiser l'erreur
+
+    try {
+      // 1️⃣ Tenter la connexion avec NextAuth
+      const result = await signIn("credentials", {
+        email: data.email,
+        password: data.password,
+        autoLogin: data.autoLogin.toString(),
+        redirect: false,
+      });
+
+      // ✅ Succès
+      if (result?.ok && !result?.error) {
+        toast.success("Connexion réussie!");
+        router.push("/dashboard");
+        router.refresh();
+        return;
+      }
+
+      // ❌ Échec : Récupérer le statut de l'utilisateur
+      if (result?.error) {
+        setLoginError(result.error);
+        // Compte bloqué
+      }
+    } catch (error) {
+      console.error("Erreur de connexion:", error);
+      setLoginError("Une erreur est survenue. Veuillez réessayer.");
+    } finally {
+      reset();
+    }
   };
+
   return (
     <form
       className="gap-5 flex flex-col items-center"
@@ -69,20 +99,19 @@ export default function LoginForm() {
             emailRef.current = e;
           }}
         />
-        {/* Label animé */}
         <Label htmlFor="email" value={email}>
           Adresse email
         </Label>
       </div>
-      {/* Erreurs */}
       {clientsErrors?.email && (
         <p className="formError">{clientsErrors.email.message}</p>
       )}
+
       {/* Mot de passe */}
       <div className="relative">
         <input
-          autoComplete="password"
-          type={`${showPassword ? "text" : "password"}`}
+          autoComplete="current-password" // ✅ Meilleur autocomplete
+          type={showPassword ? "text" : "password"}
           id="password"
           name="password"
           className="input peer"
@@ -94,22 +123,25 @@ export default function LoginForm() {
               "Le mot de passe ne peut pas contenir uniquement des espaces",
           })}
         />
-        {/* Label animé */}
         <Label htmlFor="password" value={password}>
           Mot de passe
         </Label>
-        {/* Show password */}
         <ShowPassword
           showPassword={showPassword}
           onClick={() => setShowPassword((prev) => !prev)}
         />
-      </div>{" "}
+      </div>
       {clientsErrors?.password && (
         <p className="formError">{clientsErrors.password.message}</p>
       )}
+
+      {/* ✅ Afficher l'erreur serveur */}
+      {loginError && <p className="formError">{loginError}</p>}
+
       <Link href="/forgot-password" className="text-xs -mt-3 link">
         Vous avez oublié votre mot de passe?
       </Link>
+
       <div className="flex flex-col justify-center items-center gap-2">
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? (
@@ -121,6 +153,7 @@ export default function LoginForm() {
             "Se connecter"
           )}
         </Button>
+
         <div className="flex items-center justify-center gap-1">
           <label htmlFor="autoLogin" className="text-xs cursor-pointer">
             Se souvenir de moi
@@ -131,7 +164,7 @@ export default function LoginForm() {
             {...register("autoLogin")}
             id="autoLogin"
           />
-        </div>{" "}
+        </div>
       </div>
     </form>
   );

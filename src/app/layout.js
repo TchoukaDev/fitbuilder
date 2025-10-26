@@ -1,5 +1,6 @@
 import { ToastContainer } from "react-toastify";
 import "./globals.css";
+import AuthProvider from "./components/Providers/AuthProvider";
 
 export const metadata = {
   title: "FitBuilder, votre assistant de musculation personnalisé",
@@ -11,14 +12,16 @@ export default function RootLayout({ children }) {
     <html lang="fr">
       <body className="bg-gradient-light text-primary-900">
         {" "}
-        <ToastContainer
-          position="top-right"
-          theme="colored"
-          closeOnClick={true}
-          draggable={true}
-          newestOnTop={true}
-        />
-        {children}
+        <AuthProvider>
+          <ToastContainer
+            position="top-right"
+            theme="colored"
+            closeOnClick={true}
+            draggable={true}
+            newestOnTop={true}
+          />
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );
