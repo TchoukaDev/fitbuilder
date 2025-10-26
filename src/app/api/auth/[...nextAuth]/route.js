@@ -26,6 +26,8 @@ export const authOptions = {
         autoLogin: { label: "Auto Login", type: "text" },
       },
 
+      // ⚠️ authorize() s'exécute UNIQUEMENT lors de signIn()
+      // Retourne un objet user si succès, null/throw si échec
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
           return null;
@@ -35,21 +37,20 @@ export const authOptions = {
           const db = await connectDB();
           const users = db.collection("users");
 
-          // ÉTAPE 1 : Vérifier si l'utilisateur existe
           const user = await users.findOne({ email: credentials.email });
 
-          // ÉTAPE 2 : Vérifier si compte bloqué
-          if (user && user.blocked) {
+          // Vérifier si compte bloqué
+          if (user?.blocked) {
             throw new Error(
               "Votre compte est bloqué. Veuillez contacter l'administrateur du site",
             );
           }
 
-          // ÉTAPE 3 : Vérifier le mot de passe
+          // Vérifier le mot de passe
           const isValidPassword =
             user && (await bcrypt.compare(credentials.password, user.password));
 
-          // ÉTAPE 4 : Échec de connexion
+          // ❌ Échec de connexion : incrémenter tentatives
           if (!isValidPassword) {
             if (user) {
               const newAttempts = (user.loginAttempts || 0) + 1;
@@ -66,14 +67,12 @@ export const authOptions = {
                 },
               );
 
-              // Si compte bloqué
               if (shouldBlock) {
                 throw new Error(
                   "Votre compte a été bloqué après 5 tentatives échouées. Contactez l'administrateur.",
                 );
               } else {
                 const remainingAttempts = 5 - newAttempts;
-                // On indique le nmbre de tentatvies restantes après  3 essais
                 if (remainingAttempts < 3) {
                   throw new Error(
                     `Identifiants incorrects. Il vous reste ${remainingAttempts} tentative(s).`,
@@ -86,7 +85,7 @@ export const authOptions = {
             throw new Error("Adresse E-mail ou mot de passe incorrect");
           }
 
-          // ÉTAPE 5 : Succès - Réinitialiser les tentatives
+          // ✅ Succès : réinitialiser les tentatives
           await users.updateOne(
             { _id: user._id },
             {
@@ -97,7 +96,7 @@ export const authOptions = {
             },
           );
 
-          // ÉTAPE 6 : Retourner les données utilisateur
+          // ✅ Retourner l'objet user (sera accessible dans jwt callback)
           return {
             id: user._id.toString(),
             email: user.email,
@@ -115,16 +114,16 @@ export const authOptions = {
   ],
 
   // ========================================
-  // 🕐 CONFIGURATION SESSION
+  // 🕐 SESSION : Mode JWT + durées
   // ========================================
   session: {
-    strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60, // 30 jours
-    updateAge: 24 * 60 * 60, // Refresh toutes les 24h
+    strategy: "jwt", // Token stocké dans cookie (pas en DB)
+    maxAge: 30 * 24 * 60 * 60, // 30j par défaut (⚠️ sera écrasé dynamiquement)
+    updateAge: 24 * 60 * 60, // Regénère le token toutes les 24h
   },
 
   // ========================================
-  // 🍪 CONFIGURATION COOKIES
+  // 🍪 COOKIES : Configuration du cookie de session
   // ========================================
   cookies: {
     sessionToken: {
@@ -133,48 +132,37 @@ export const authOptions = {
           ? "__Secure-next-auth.session-token"
           : "next-auth.session-token",
       options: {
-        httpOnly: true,
-        sameSite: "lax",
+        httpOnly: true, // Pas accessible via JS (sécurité XSS)
+        sameSite: "lax", // Protection CSRF
         path: "/",
-        secure: process.env.NODE_ENV === "production",
-        maxAge: 30 * 24 * 60 * 60,
+        secure: process.env.NODE_ENV === "production", // HTTPS uniquement
       },
     },
   },
 
-  // ========================================
-  // 🎨 PAGES PERSONNALISÉES
-  // ========================================
   pages: {
-    signIn: "/",
+    signIn: "/", // Redirection vers page login custom
   },
 
-  // ========================================
-  // 🔐 SECRET
-  // ========================================
   secret: process.env.NEXTAUTH_SECRET,
 
   // ========================================
-  // 🔄 CALLBACKS
+  // 🔄 CALLBACKS : Le cœur de NextAuth
   // ========================================
   callbacks: {
     // ------------------------------------
-    // ✅ CALLBACK SIGNIN
+    // ✅ SIGNIN : Autoriser/bloquer la connexion
+    // S'exécute AVANT jwt callback
     // ------------------------------------
     async signIn({ user, account, profile }) {
-      console.log("🔵 SIGNIN callback - Provider:", account?.provider);
-
-      // Gestion Google OAuth
+      // Google OAuth : créer/lier le compte en DB
       if (account?.provider === "google") {
         try {
           const db = await connectDB();
           const users = db.collection("users");
-
           const existingUser = await users.findOne({ email: profile.email });
 
           if (existingUser) {
-            console.log("👤 User existe, liaison compte Google");
-
             // Lier le compte Google à l'utilisateur existant
             await users.updateOne(
               { _id: existingUser._id },
@@ -187,8 +175,6 @@ export const authOptions = {
               },
             );
           } else {
-            console.log("🆕 Création nouveau user Google");
-
             // Créer un nouvel utilisateur
             await users.insertOne({
               email: profile.email,
@@ -201,31 +187,24 @@ export const authOptions = {
               loginAttempts: 0,
             });
           }
-
-          console.log("✅ Google signin terminé");
         } catch (error) {
           console.error("❌ Erreur signIn Google:", error);
-          return false;
+          return false; // Bloque la connexion
         }
       }
 
-      return true;
+      return true; // ✅ Autoriser la connexion
     },
 
     // ------------------------------------
-    // 🔐 CALLBACK JWT
+    // 🔐 JWT : Construire le token
+    // S'exécute à CHAQUE requête + lors du signIn
     // ------------------------------------
     async jwt({ token, user, account, profile }) {
-      console.log("🟢 JWT callback");
-
-      // Premier login
+      // 1️⃣ Premier login : "user" existe
       if (user) {
-        console.log("🟢 Premier login");
-
+        // Google OAuth
         if (account?.provider === "google") {
-          console.log("🟢 Google provider");
-
-          // Récupérer l'ID MongoDB du user Google
           try {
             const db = await connectDB();
             const users = db.collection("users");
@@ -236,10 +215,11 @@ export const authOptions = {
             token.username = user.username || profile.name;
             token.image = user.image || profile.picture;
             token.provider = "google";
-            token.autoLogin = true; // Google = toujours session longue
-            token.maxAge = 30 * 24 * 60 * 60;
+            token.autoLogin = true; // Google = session longue
+            token.maxAge = 30 * 24 * 60 * 60; // 30 jours
           } catch (error) {
             console.error("Erreur récupération user Google:", error);
+            // Fallback si erreur DB
             token.id = user.id;
             token.email = user.email;
             token.username = user.username;
@@ -248,9 +228,9 @@ export const authOptions = {
             token.autoLogin = true;
             token.maxAge = 30 * 24 * 60 * 60;
           }
-        } else {
-          console.log("🟢 Credentials provider");
-
+        }
+        // Credentials (email/password)
+        else {
           token.id = user.id;
           token.email = user.email;
           token.username = user.username;
@@ -258,15 +238,23 @@ export const authOptions = {
           token.blocked = user.blocked;
           token.provider = "credentials";
           token.autoLogin = user.autoLogin;
-          token.maxAge = user.autoLogin ? 30 * 24 * 60 * 60 : 24 * 60 * 60; //30 jours, sinon 24 heures
+          // 📌 Durée dynamique selon "Rester connecté"
+          token.maxAge = user.autoLogin ? 30 * 24 * 60 * 60 : 24 * 60 * 60;
         }
 
+        // Calculer l'expiration
         token.exp = Math.floor(Date.now() / 1000) + token.maxAge;
       }
 
-      // Vérification du statut blocked (credentials uniquement)
+      // Vérifier seulement toutes les 5 minutes si l'utilisateur est bloqué
       if (token?.id && token.provider === "credentials") {
-        try {
+        // Vérifier si dernière vérif > 5 min
+        const now = Date.now();
+        const cinqMinutes = 5 * 60 * 1000; // 5 min en millisecondes
+
+        // SI pas de lastCheck OU si > 5 min
+        if (!token.lastCheck || now - token.lastCheck > cinqMinutes) {
+          // ALORS on vérifie en DB
           const db = await connectDB();
           const users = db.collection("users");
           const userData = await users.findOne({
@@ -274,23 +262,22 @@ export const authOptions = {
           });
 
           if (userData) {
-            token.blocked = userData.blocked || false;
+            token.blocked = userData.blocked;
+            token.lastCheck = now; // 📌 Mémoriser l'heure
           }
-        } catch (error) {
-          console.error("❌ Erreur vérification blocked:", error);
         }
+        // SINON on ne fait rien, on garde le token tel quel
       }
 
-      return token;
+      return token; // ✅ Token renvoyé au cookie
     },
 
     // ------------------------------------
-    // 🌐 CALLBACK SESSION
+    // 🌐 SESSION : Ce que reçoit le client
+    // S'exécute à chaque appel useSession() / getServerSession()
     // ------------------------------------
     async session({ session, token }) {
-      console.log("🟡 SESSION callback");
-
-      // Copier les données du token dans la session
+      // Transférer les données du token vers la session
       session.user.id = token.id;
       session.user.email = token.email;
       session.user.username = token.username;
@@ -298,18 +285,17 @@ export const authOptions = {
       session.user.provider = token.provider;
       session.user.image = token.image || null;
 
-      // Définir l'expiration
+      // 📌 Définir l'expiration selon autoLogin
       const now = Date.now();
-
       if (token.autoLogin) {
         session.expires = new Date(
           now + 30 * 24 * 60 * 60 * 1000,
-        ).toISOString();
+        ).toISOString(); // 30j
       } else {
-        session.expires = new Date(now + 24 * 60 * 60 * 1000).toISOString();
+        session.expires = new Date(now + 24 * 60 * 60 * 1000).toISOString(); // 24h
       }
 
-      return session;
+      return session; // ✅ Accessible via useSession()
     },
   },
 };
