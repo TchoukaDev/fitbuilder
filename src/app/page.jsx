@@ -2,12 +2,24 @@ import LoginForm from "./components/Forms/LoginForm/LoginForm";
 import Link from "next/link";
 import WelcomeLayout from "./components/layout/WelcomeLayout/WelcomeLayout";
 import GoogleBtn from "./components/Buttons/GoogleBtn";
+import { getServerSession } from "next-auth";
+import { authOptions } from "./api/auth/[...nextauth]/route";
+import { redirect } from "next/navigation";
 
-export default function Home() {
+export default async function Home() {
+  const session = await getServerSession(authOptions);
+  // Si utilisateur connecté, le renvoyer sur dashboard
+  if (session?.user?.email) {
+    redirect("/dashboard");
+  }
+
   return (
     <WelcomeLayout>
       <div className="flex flex-col justify-center items-center pt-0 p-5 md:p-10 flex-2/3">
         <h1>Bienvenue sur FitBuilder</h1>
+        {error === "denied" && (
+          <p className="formError">Accès refusé. Page strictement réservée</p>
+        )}
         <p className="text-lg my-5 max-w-2xl mx-auto">
           FitBuilder est l'appli qui vous permet de créer vos propres programmes
           de musculation et de gérer votre suivi sportif au quotidien.

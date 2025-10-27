@@ -1,8 +1,18 @@
 import Link from "next/link";
 import SignUpForm from "../components/Forms/SignUpForm/SignUpForm";
 import WelcomeLayout from "../components/layout/WelcomeLayout/WelcomeLayout";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../api/auth/[...nextauth]/route";
+import { redirect } from "next/navigation";
 
-export default function signUp() {
+export default async function signUp() {
+  const session = await getServerSession(authOptions);
+
+  // Si utilisateur connecté, le renvoyer sur dashboard
+  if (session?.user?.email) {
+    redirect("/dashboard");
+  }
+
   return (
     <WelcomeLayout>
       <div className="flex flex-col justify-center items-center p-10 flex-2/3">

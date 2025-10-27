@@ -39,7 +39,7 @@ export const authOptions = {
       // Retourne un objet user si succès, null/throw si échec
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          return null;
+          throw new Error("Email ou mot de passe incorrect.");
         }
 
         try {
@@ -48,6 +48,15 @@ export const authOptions = {
 
           const user = await users.findOne({ email: credentials.email });
 
+          if (!user) {
+            throw new Error("Email ou mot de passe incorrect");
+          }
+
+          if (user && !user.password) {
+            throw new Error(
+              "Echec de connexion. Essayer une autre méthode d'authentification.",
+            );
+          }
           // Vérifier si compte bloqué
           if (user?.blocked) {
             throw new Error(
@@ -150,7 +159,7 @@ export const authOptions = {
   },
 
   pages: {
-    signIn: "/", // Redirection vers page login custom
+    signIn: "/", // Redirection vers page de connexion
   },
 
   secret: process.env.NEXTAUTH_SECRET,

@@ -2,8 +2,17 @@ import LogoutButton from "../components/Buttons/LogoutButton";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 
-export default async function Dashboard() {
+export default async function Dashboard({ searchParams }) {
   const session = await getServerSession(authOptions);
-  console.log(session);
-  return <LogoutButton />;
+  const error = searchParams?.error;
+  console.log(error);
+  return (
+    <main>
+      {error === "access-denied" && (
+        <p className="formError">Accès refusé. Page strictement réservée</p>
+      )}
+      <p>Hello {session?.user?.username}</p>
+      <LogoutButton />
+    </main>
+  );
 }
