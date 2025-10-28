@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import connectDB from "@/libs/mongodb";
 import { ObjectId } from "mongodb";
 import { success } from "zod";
+import { revalidatePath } from "next/cache";
 
 // POST - Créer un exercice
 
@@ -45,6 +46,9 @@ export async function POST(req) {
         createdAt: new Date(),
       });
 
+      revalidatePath("/exercises");
+      revalidatePath("/admin");
+
       return NextResponse.json(
         {
           success: true,
@@ -75,6 +79,9 @@ export async function POST(req) {
       },
       { upsert: true }, // Crée le user si n'existe pas
     );
+
+    revalidatePath("/exercises");
+    revalidatePath("/dashboard");
 
     // Succès
     return NextResponse.json(

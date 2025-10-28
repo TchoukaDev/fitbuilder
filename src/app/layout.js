@@ -1,6 +1,6 @@
 import { ToastContainer } from "react-toastify";
 import "./globals.css";
-import AuthProvider from "./components/Providers/AuthProvider";
+import AuthProvider from "../components/Providers/AuthProvider";
 
 export const metadata = {
   title: "FitBuilder, votre assistant de musculation personnalisé",
@@ -10,7 +10,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="fr">
-      <body className="bg-gradient-light text-primary-900">
+      <body className="bg-gradient-light text-primary-900 min-h-screen">
         {" "}
         <AuthProvider>
           <ToastContainer
@@ -21,6 +21,7 @@ export default function RootLayout({ children }) {
             newestOnTop={true}
           />
           {children}
+          <div id="portal-root"></div>
         </AuthProvider>
       </body>
     </html>

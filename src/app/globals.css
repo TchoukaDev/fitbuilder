@@ -112,3 +112,16 @@ input:-webkit-autofill:focus {
 input[data-autocompleted] {
   background-color: transparent !important;
 }
+
+:hover.animatedRotation {
+  animation: animatedRotation 0.3s ease-in-out infinite alternate;
+}
+
+@keyframes animatedRotation {
+  from {
+    transform: rotate(-10deg);
+  }
+  to {
+    transform: rotate(10deg);
+  }
+}

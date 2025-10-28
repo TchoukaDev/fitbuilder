@@ -3,6 +3,7 @@ import { authOptions } from "../../auth/[...nextauth]/route";
 import { NextResponse } from "next/server";
 import connectDB from "@/libs/mongodb";
 import { ObjectId } from "mongodb";
+import { revalidatePath } from "next/cache";
 
 // ========================================
 // PATCH - Modifier un exercice
@@ -50,6 +51,9 @@ export async function PATCH(request, { params }) {
           { $set: { name, muscle, equipment, description } },
         );
 
+      revalidatePath("/exercices");
+      revalidatePath(`/exercises/${id}`);
+
       return NextResponse.json({
         success: true,
         message: "Exercice public modifié",
@@ -78,6 +82,9 @@ export async function PATCH(request, { params }) {
         { status: 404 },
       );
     }
+
+    revalidatePath("/exercices");
+    revalidatePath(`/exercises/${id}`);
 
     return NextResponse.json({
       success: true,
@@ -120,6 +127,10 @@ export async function DELETE(request, { params }) {
 
       await db.collection("exercises").deleteOne({ _id: new ObjectId(id) });
 
+      revalidatePath("/exercices");
+      revalidatePath(`/exercises/${id}`);
+      revalidatePath("/dashboard");
+
       return NextResponse.json({
         success: true,
         message: "Exercice public supprimé",
@@ -141,6 +152,10 @@ export async function DELETE(request, { params }) {
         { status: 404 },
       );
     }
+    revalidatePath("/exercices");
+    revalidatePath(`/exercises/${id}`);
+    revalidatePath("/admin");
+    revalidatePath("/dashboard");
 
     return NextResponse.json({
       success: true,

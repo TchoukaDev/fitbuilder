@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Label from "../Label/Label";
+import Label from "../FormsComponents/Label/Label";
 import Button from "../../Buttons/Button";
 import { toast } from "react-toastify";
 

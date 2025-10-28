@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Label from "../Label/Label";
+import Label from "../FormsComponents/Label/Label";
 import { useForm } from "react-hook-form";
 import { ClipLoader } from "react-spinners";
 import Button from "../../Buttons/Button";
 import Link from "next/link";
-import ShowPassword from "../ShowPassword/ShowPassword";
+import ShowPassword from "../FormsComponents/ShowPassword/ShowPassword";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation"; // ✅ Ajouter
 import { toast } from "react-toastify";

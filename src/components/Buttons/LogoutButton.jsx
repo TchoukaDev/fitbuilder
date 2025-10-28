@@ -3,9 +3,9 @@
 
 import { signOut } from "next-auth/react";
 import { useState } from "react";
-import { FaSignOutAlt } from "react-icons/fa";
+import { HiOutlineLogout } from "react-icons/hi";
 
-export default function LogoutButton({ className = "" }) {
+export default function LogoutButton() {
   const [loading, setLoading] = useState(false);
 
   const handleLogout = async () => {
@@ -21,12 +21,12 @@ export default function LogoutButton({ className = "" }) {
 
   return (
     <button
+      title="Déconnexion"
       onClick={handleLogout}
       disabled={loading}
-      className={`flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all ${className}`}
+      className="shadow border border-primary-500 rounded-full text-primary-500 cursor-pointer p-2 hover:scale-110 animatedRotation transition-all"
     >
-      <FaSignOutAlt />
-      {loading ? "Déconnexion..." : "Se déconnecter"}
+      <HiOutlineLogout className="size-6 md:size-10" />
     </button>
   );
 }

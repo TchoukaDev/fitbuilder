@@ -1,7 +1,7 @@
-import LoginForm from "./components/Forms/LoginForm/LoginForm";
+import LoginForm from "../components/Forms/LoginForm/LoginForm";
 import Link from "next/link";
-import WelcomeLayout from "./components/layout/WelcomeLayout/WelcomeLayout";
-import GoogleBtn from "./components/Buttons/GoogleBtn";
+import WelcomeLayout from "../components/Layout/WelcomeLayout/WelcomeLayout";
+import GoogleBtn from "../components/Buttons/GoogleBtn";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
