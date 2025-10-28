@@ -17,9 +17,6 @@ export default async function Home() {
     <WelcomeLayout>
       <div className="flex flex-col justify-center items-center pt-0 p-5 md:p-10 flex-2/3">
         <h1>Bienvenue sur FitBuilder</h1>
-        {error === "denied" && (
-          <p className="formError">Accès refusé. Page strictement réservée</p>
-        )}
         <p className="text-lg my-5 max-w-2xl mx-auto">
           FitBuilder est l'appli qui vous permet de créer vos propres programmes
           de musculation et de gérer votre suivi sportif au quotidien.
