@@ -134,6 +134,7 @@ export async function DELETE(request, { params }) {
         { $pull: { exercises: { _id: new ObjectId(id) } } },
       );
 
+    //   Si matchedCount (=nombre d'exercice trouvé dans updateOne) = 0
     if (result.matchedCount === 0) {
       return NextResponse.json(
         { error: "Exercice non trouvé" },
