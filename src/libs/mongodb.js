@@ -18,7 +18,6 @@ export default async function connectDB() {
   try {
     const client = await clientPromise;
     const db = client.db();
-    console.log("✅ Connecté à MongoDB");
     return db;
   } catch (error) {
     console.error("❌ Erreur MongoDB:", error.message);

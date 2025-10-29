@@ -1,8 +1,14 @@
 "use client";
 import { createPortal } from "react-dom";
 import NewExerciceForm from "../Forms/newExerciceForm/newExerciceForm";
+import UpdateExerciseForm from "../Forms/UpdateExerciseForm.jsx/UpdateExerciseForm";
 
-export default function Modal({ onClose }) {
+export default function Modal({
+  onClose,
+  onExerciseAdded = null,
+  onExerciseUpdated = null,
+  exerciseToUpdate = null,
+}) {
   return createPortal(
     <div
       onClick={() => onClose()}
@@ -12,7 +18,29 @@ export default function Modal({ onClose }) {
         onClick={(e) => e.stopPropagation()}
         className="bg-blue-50 p-10 min-w-[300px] rounded"
       >
-        <NewExerciceForm onClose={onClose} />
+        {onExerciseAdded && (
+          <>
+            <h2 className="text-center font-semibold mb-5 text-xl">
+              Créer un exercice
+            </h2>
+            <NewExerciceForm
+              onClose={onClose}
+              onExerciseAdded={onExerciseAdded}
+            />
+          </>
+        )}{" "}
+        {onExerciseUpdated && exerciseToUpdate && (
+          <>
+            <h2 className="text-center font-semibold mb-5 text-xl">
+              Modifier l'exercice
+            </h2>
+            <UpdateExerciseForm
+              onClose={onClose}
+              onExerciseUpdated={onExerciseUpdated}
+              exerciseToUpdate={exerciseToUpdate}
+            />
+          </>
+        )}
       </div>
     </div>,
     document.getElementById("portal-root"),

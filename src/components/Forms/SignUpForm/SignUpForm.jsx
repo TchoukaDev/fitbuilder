@@ -61,7 +61,6 @@ export default function SignUpForm() {
       formAction(formData);
     });
   };
-  console.log(serverState);
 
   // Focus au chargement
   useEffect(() => {

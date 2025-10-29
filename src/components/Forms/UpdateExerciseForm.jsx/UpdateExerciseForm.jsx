@@ -6,12 +6,16 @@ import Button from "../../Buttons/Button";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 
-export default function NewExerciceForm({ onClose, onExerciseAdded }) {
+export default function UpdateExerciseForm({
+  onClose,
+  onExerciseUpdated,
+  exerciseToUpdate,
+}) {
   // State
-  const [name, setName] = useState("");
-  const [muscle, setMuscle] = useState("");
-  const [description, setDescription] = useState("");
-  const [equipment, setEquipment] = useState("");
+  const [name, setName] = useState(exerciseToUpdate.name);
+  const [muscle, setMuscle] = useState(exerciseToUpdate.muscle);
+  const [description, setDescription] = useState(exerciseToUpdate.description);
+  const [equipment, setEquipment] = useState(exerciseToUpdate.equipment);
   const [error, setError] = useState("");
   const router = useRouter();
 
@@ -27,8 +31,8 @@ export default function NewExerciceForm({ onClose, onExerciseAdded }) {
 
     // 2. Envoi à l'API
     try {
-      const response = await fetch("/api/exercises", {
-        method: "POST",
+      const response = await fetch(`/api/exercises/${exerciseToUpdate._id}`, {
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, muscle, description, equipment }),
       });
@@ -36,14 +40,14 @@ export default function NewExerciceForm({ onClose, onExerciseAdded }) {
       const data = await response.json();
       if (response.ok) {
         // ✅ Callback vers le parent AVANT le refresh
-        if (onExerciseAdded) {
-          onExerciseAdded({
-            _id: data.id,
+        if (onExerciseUpdated && exerciseToUpdate) {
+          onExerciseUpdated({
+            _id: exerciseToUpdate._id,
             name,
             muscle,
             description,
             equipment,
-            type: "private",
+            type: exerciseToUpdate.type,
           });
         }
 

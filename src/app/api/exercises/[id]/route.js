@@ -14,8 +14,8 @@ export async function PATCH(request, { params }) {
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Accès refusé" }, { status: 401 });
   }
-
-  const { id } = params;
+  const resolvedParams = await params;
+  const { id } = resolvedParams;
   const { name, muscle, equipment, description } = await request.json();
 
   if (!name || !muscle || !equipment) {
@@ -56,7 +56,7 @@ export async function PATCH(request, { params }) {
 
       return NextResponse.json({
         success: true,
-        message: "Exercice public modifié",
+        message: "L'exercice a été modifié",
       });
     }
 
@@ -88,7 +88,7 @@ export async function PATCH(request, { params }) {
 
     return NextResponse.json({
       success: true,
-      message: "Exercice privé modifié",
+      message: "L'exercice a été modifié.",
     });
   } catch (error) {
     console.error("Erreur:", error);

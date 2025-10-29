@@ -10,7 +10,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="fr">
-      <body className="bg-gradient-light text-primary-900 min-h-screen">
+      <body className="bg-gradient-light bg-fixed text-primary-900 min-h-screen">
         {" "}
         <AuthProvider>
           <ToastContainer

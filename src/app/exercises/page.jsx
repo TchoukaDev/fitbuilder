@@ -1,64 +1,34 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
-import connectDB from "@/libs/mongodb";
-import { ObjectId } from "mongodb";
 import PageLayout from "@/components/Layout/Header/Header";
-import ModalWrapper from "@/components/Modal/ModalWrapper/ModalWrapper";
 import ExercisesList from "@/components/ExercisesList/ExercisesList";
+import { getAllExercises, getFavoritesExercises } from "@/utils/getExercises";
 
 // ✅ Cache ISR de 60 secondes
 export const revalidate = 60;
 
-async function getExercises(userId) {
-  const db = await connectDB();
-
-  const publicExercises = await db
-    .collection("exercises")
-    .find({ isPublic: true })
-    .sort({ muscle: 1, name: 1 })
-    .toArray();
-
-  const user = await db
-    .collection("users")
-    .findOne({ _id: new ObjectId(userId) });
-
-  const privateExercises = user?.exercises || [];
-
-  return [
-    ...publicExercises.map((ex) => ({
-      ...ex,
-      type: "public",
-      _id: ex._id.toString(),
-    })),
-    ...privateExercises.map((ex) => ({
-      ...ex,
-      type: "private",
-      _id: ex._id.toString(),
-    })),
-  ];
-}
-
 export default async function ExercisesPage() {
   const session = await getServerSession(authOptions);
-
-  if (!session?.user?.id) {
+  const isAdmin = session?.user?.email === process.env.ADMIN_EMAIL;
+  const userId = session?.user?.id;
+  if (!userId) {
     redirect("/");
   }
-
-  const exercises = await getExercises(session.user.id);
+  const exercises = await getAllExercises(userId);
+  const favorites = await getFavoritesExercises(userId);
 
   return (
     <>
       <PageLayout />
-      <div className="container mx-auto p-6 max-w-6xl">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold">Mes exercices</h1>
-          <ModalWrapper />
-        </div>
-
-        <ExercisesList initialExercises={exercises} />
-      </div>
+      <main className="w-9/10 mx-auto">
+        <h1>Mes exercices</h1>
+        <ExercisesList
+          isAdmin={isAdmin}
+          initialExercises={exercises}
+          initialFavorites={favorites}
+        />
+      </main>
     </>
   );
 }
