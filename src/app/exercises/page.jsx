@@ -3,8 +3,9 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
 import connectDB from "@/libs/mongodb";
 import { ObjectId } from "mongodb";
-// import ExercisesList from "./ExercisesList";
-import Link from "next/link";
+import PageLayout from "@/components/Layout/Header/Header";
+import ModalWrapper from "@/components/Modal/ModalWrapper/ModalWrapper";
+import ExercisesList from "@/components/ExercisesList/ExercisesList";
 
 // ✅ Cache ISR de 60 secondes
 export const revalidate = 60;
@@ -53,15 +54,10 @@ export default async function ExercisesPage() {
       <div className="container mx-auto p-6 max-w-6xl">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold">Mes exercices</h1>
-          <Link
-            href="/admin/exercises"
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-          >
-            + Ajouter un exercice
-          </Link>
+          <ModalWrapper />
         </div>
 
-        {/* <ExercisesList initialExercises={exercises} /> */}
+        <ExercisesList initialExercises={exercises} />
       </div>
     </>
   );

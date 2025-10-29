@@ -9,7 +9,7 @@ export default async function PageLayout() {
   const session = await getServerSession(authOptions);
   const isAdmin = session?.user?.email === process.env.ADMIN_EMAIL;
   return (
-    <div className="flex justify-between items-center relative pr-5 lg:pl-10 md:pr-20 border-b border-primary-800/15 shadow">
+    <div className="flex justify-between items-center relative pr-5 lg:pl-10 md:pr-20 border-b border-primary-50 shadow">
       {/* Logo */}
       <div className="size-[100px] md:size-[200px] relative ">
         <Image

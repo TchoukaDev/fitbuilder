@@ -18,7 +18,7 @@ export default function Navbar({ isAdmin = false }) {
     ],
     [
       "Exercices",
-      "/exercices",
+      "/exercises",
       <Dumbbell className="size-6 md:size-10 animatedRotation" />,
     ],
     [
@@ -41,7 +41,7 @@ export default function Navbar({ isAdmin = false }) {
 
   const pathname = usePathname();
   return (
-    <div className="flex items-center gap-3 md:gap-10 p-3 md:p-8 border shadow rounded-full">
+    <div className="flex items-center gap-3 md:gap-10 p-3 md:p-8 border border-primary-100 shadow rounded-full">
       {links.map((link) => {
         if (link[3] === "reserved" && !isAdmin) {
           return null;

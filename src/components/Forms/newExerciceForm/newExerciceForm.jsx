@@ -5,7 +5,7 @@ import Label from "../FormsComponents/Label/Label";
 import Button from "../../Buttons/Button";
 import { toast } from "react-toastify";
 
-export default function NewExerciceForm() {
+export default function NewExerciceForm({ onClose }) {
   // State
   const [name, setName] = useState("");
   const [muscle, setMuscle] = useState("");
@@ -39,6 +39,7 @@ export default function NewExerciceForm() {
         setMuscle("");
         setDescription("");
         setEquipment("");
+        onClose();
       } else {
         setError(data.error || "Une erreur est survenue");
       }
@@ -119,8 +120,16 @@ export default function NewExerciceForm() {
           Description
         </Label>
       </div>
-
-      <Button type="submit">Valider</Button>
+      <div className="flex gap-4">
+        <Button
+          color="bg-accent-500 hover:bg-accent-600 text-accent-50 disabled:bg-accent-300"
+          onClick={() => onClose()}
+          type="button"
+        >
+          Fermer
+        </Button>
+        <Button type="submit">Valider</Button>
+      </div>
     </form>
   );
 }
