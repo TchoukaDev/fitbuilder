@@ -1,5 +1,5 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import ExercisesList from "@/components/ExercisesList/ExercisesList";
+import ExercisesList from "@/components/Exercises/ExercisesList/ExercisesList";
 import { getServerSession } from "next-auth";
 
 // ✅ Cache ISR de 60 secondes

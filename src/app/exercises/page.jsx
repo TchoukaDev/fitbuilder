@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
 import PageLayout from "@/components/Layout/Header/Header";
-import ExercisesList from "@/components/ExercisesList/ExercisesList";
+import ExercisesList from "@/components/Exercises/ExercisesList/ExercisesList";
 import { getAllExercises, getFavoritesExercises } from "@/utils/getExercises";
 
 // ✅ Cache ISR de 60 secondes
