@@ -25,9 +25,9 @@ export default async function PageLayout() {
       </div>
       <div className="hidden lg:inline-block text-center text-xl font-display text-accent-600 font-semibold">
         <p className="flex justify-center gap-3 items-center  ">
-          Hello {session?.user?.username}
-          <GiBiceps className="size-6 text-primary-800 rounded inline-block" />
-        </p>{" "}
+          Hello {session?.user?.username} 💪
+        </p>
+        <p>Prêt pour une nouvelle séance?</p>
       </div>
       {/* Bouton de déconnexion */}
       <LogoutButton />

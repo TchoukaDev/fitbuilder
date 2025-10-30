@@ -1,6 +1,7 @@
 import Button from "@/components/Buttons/Button";
 import Modal from "@/components/Modal/Modal";
 import { useState } from "react";
+import { FaRegStar, FaStar } from "react-icons/fa";
 
 export default function ExerciseCard({
   exercise,
@@ -17,9 +18,9 @@ export default function ExerciseCard({
       <div className="flex justify-between items-start">
         <div className="flex-1">
           <h3 className="text-lg font-bold">
-            {exercise.name} {exercise.type === "private" && "🔒"}
+            {exercise.name} {exercise.type === "private" && "🗒️"}
           </h3>
-          <p className="text-gray-600 text-sm">📦 {exercise.equipment}</p>
+          <p className="text-gray-600 text-sm ml-3"> {exercise.equipment}</p>
           <p className="text-sm mt-2">{exercise.description}</p>
         </div>
 
@@ -31,18 +32,15 @@ export default function ExerciseCard({
               className="bg-transparent border-none text-2xl cursor-pointer hover:scale-110 transition"
               title={isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}
             >
-              {isFavorite ? "⭐" : "☆"}
+              {isFavorite ? <FaStar color="F5DF14" /> : <FaRegStar />}
             </button>
           )}
 
           {/* RETIRER DES FAVORIS (onglet "Favoris") */}
           {activeTab === "favorites" && (
-            <button
-              onClick={() => onToggleFavorite(exercise._id)}
-              className="py-1 px-2.5 bg-red-600 text-white border-none rounded cursor-pointer hover:bg-red-700"
-            >
-              ❌ Retirer
-            </button>
+            <Button close onClick={() => onToggleFavorite(exercise._id)}>
+              Retirer des favoris
+            </Button>
           )}
 
           {/* MODIFIER/SUPPRIMER (onglet "Mes exercices") */}
@@ -58,12 +56,9 @@ export default function ExerciseCard({
                 />
               )}
 
-              <button
-                onClick={() => onDelete(exercise._id)}
-                className="py-1 px-2.5 bg-red-600 text-white border-none rounded cursor-pointer hover:bg-red-700"
-              >
+              <Button onClick={() => onDelete(exercise._id)} close>
                 Supprimer
-              </button>
+              </Button>
             </>
           )}
         </div>

@@ -140,11 +140,7 @@ export default function UpdateExerciseForm({
         </Label>
       </div>
       <div className="flex gap-4">
-        <Button
-          color="bg-accent-500 hover:bg-accent-600 text-accent-50 disabled:bg-accent-300"
-          onClick={() => onClose()}
-          type="button"
-        >
+        <Button close onClick={() => onClose()} type="button">
           Fermer
         </Button>
         <Button type="submit">Valider</Button>

@@ -159,8 +159,19 @@ export default function ExercisesList({
         activeTab={activeTab}
         onTabChange={setActiveTab}
         counts={counts}
-      />
-
+      />{" "}
+      {/* BOUTON CRÉER (onglet "Mes exercices") */}
+      {activeTab === "mine" && (
+        <div className="mb-5">
+          <Button onClick={() => setIsOpen("create")}>
+            + Créer un nouvel exercice
+          </Button>
+        </div>
+      )}
+      {/* Modal de création d'exercice */}
+      {isOpen === "create" && (
+        <Modal onClose={onClose} onExerciseAdded={handleExerciseAdded} />
+      )}
       {/* FILTRES PAR MUSCLE */}
       {activeTab === "all" && (
         <MuscleFilters
@@ -183,20 +194,15 @@ export default function ExercisesList({
           onMuscleChange={setSelectedMuscle}
         />
       )}
-      {/* BOUTON CRÉER (onglet "Mes exercices") */}
-      {activeTab === "mine" && (
-        <Button onClick={() => setIsOpen("create")}>
-          + Créer un nouvel exercice
-        </Button>
-      )}
-      {/* Modal de création d'exercice */}
-      {isOpen === "create" && (
-        <Modal onClose={onClose} onExerciseAdded={handleExerciseAdded} />
-      )}
-
       {/* LISTE DES EXERCICES GROUPÉS */}
       {Object.keys(grouped).length === 0 ? (
-        <p className="text-center text-gray-500 py-10">Aucun exercice</p>
+        <p className="text-center text-gray-500 py-10">
+          {activeTab === "mine"
+            ? "Aucun exercice créé"
+            : activeTab === "favorites"
+            ? "Aucun exercice favori"
+            : "Aucun exercice"}
+        </p>
       ) : (
         Object.entries(grouped).map(([muscle, exs]) => (
           <ExerciseGroup

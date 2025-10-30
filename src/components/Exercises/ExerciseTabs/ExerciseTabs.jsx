@@ -1,7 +1,7 @@
 export default function ExerciseTabs({ activeTab, onTabChange, counts }) {
   const tabs = [
     { id: "all", label: "🏋️ Tous", count: counts.all },
-    { id: "mine", label: "🔒 Mes exercices", count: counts.mine },
+    { id: "mine", label: "🗒️ Mes exercices", count: counts.mine },
     { id: "favorites", label: "⭐ Favoris", count: counts.favorites },
   ];
 

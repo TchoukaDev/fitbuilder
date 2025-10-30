@@ -13,7 +13,7 @@ export default function MuscleFilters({
         className={`py-2 px-4 border-none rounded-md cursor-pointer ${
           selectedMuscle === "all"
             ? "bg-primary-500 text-white"
-            : "bg-gray-200 text-black"
+            : "bg-primary-50 text-primary-800"
         }`}
       >
         Tous
@@ -26,7 +26,7 @@ export default function MuscleFilters({
           className={`py-2 px-4 border-none rounded-md cursor-pointer ${
             selectedMuscle === muscle
               ? "bg-primary-500 text-white"
-              : "bg-gray-200 text-black"
+              : "bg-primary-50 text-primary-800"
           }`}
         >
           {muscle}
