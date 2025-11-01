@@ -12,7 +12,7 @@ export default async function Admin() {
   return (
     <>
       <PageLayout />
-      <main className="flex flex-col justify-center items-center ">
+      <main>
         <h1>Tableau admin</h1>
       </main>
     </>

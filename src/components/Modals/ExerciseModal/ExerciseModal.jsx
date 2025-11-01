@@ -1,9 +1,9 @@
 "use client";
 import { createPortal } from "react-dom";
-import NewExerciceForm from "../Forms/newExerciceForm/newExerciceForm";
-import UpdateExerciseForm from "../Forms/UpdateExerciseForm.jsx/UpdateExerciseForm";
+import NewExerciceForm from "../../Forms/Exercises/newExerciceForm/newExerciceForm";
+import UpdateExerciseForm from "../../Forms/Exercises/UpdateExerciseForm.jsx/UpdateExerciseForm";
 
-export default function Modal({
+export default function ExerciseModal({
   onClose,
   onExerciseAdded = null,
   onExerciseUpdated = null,
@@ -18,6 +18,7 @@ export default function Modal({
         onClick={(e) => e.stopPropagation()}
         className="bg-blue-50 p-10 min-w-[300px] rounded"
       >
+        {/* Ajout d'un exercice */}
         {onExerciseAdded && (
           <>
             <h2 className="text-center font-semibold mb-5 text-xl">
@@ -29,6 +30,7 @@ export default function Modal({
             />
           </>
         )}{" "}
+        {/* Modification d'un exercice */}
         {onExerciseUpdated && exerciseToUpdate && (
           <>
             <h2 className="text-center font-semibold mb-5 text-xl">

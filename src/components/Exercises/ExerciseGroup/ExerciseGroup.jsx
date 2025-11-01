@@ -6,7 +6,7 @@ export default function ExerciseGroup({
   activeTab,
   favorites,
   onToggleFavorite,
-  onEdit,
+  onUpdate,
   onDelete,
 }) {
   return (
@@ -21,7 +21,7 @@ export default function ExerciseGroup({
             activeTab={activeTab}
             isFavorite={favorites.includes(ex._id)}
             onToggleFavorite={onToggleFavorite}
-            onEdit={onEdit}
+            onUpdate={onUpdate}
             onDelete={onDelete}
           />
         ))}

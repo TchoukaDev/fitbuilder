@@ -1,5 +1,6 @@
 import Button from "@/components/Buttons/Button";
-import Modal from "@/components/Modal/Modal";
+import ExerciseModal from "@/components/Modals/ExerciseModal/ExerciseModal";
+
 import { useState } from "react";
 import { FaRegStar, FaStar } from "react-icons/fa";
 
@@ -9,7 +10,7 @@ export default function ExerciseCard({
   onToggleFavorite,
   isFavorite,
   onDelete,
-  onEdit,
+  onUpdate,
 }) {
   const [isOpen, setIsOpen] = useState(null);
   const onClose = () => setIsOpen(null);
@@ -49,13 +50,13 @@ export default function ExerciseCard({
               <Button onClick={() => setIsOpen("update")}>Modifier</Button>
               {/* Modal de modification d'exercice */}
               {isOpen === "update" && (
-                <Modal
+                <ExerciseModal
                   onClose={onClose}
-                  onExerciseUpdated={onEdit}
+                  onExerciseUpdated={onUpdate}
                   exerciseToUpdate={exercise}
                 />
               )}
-
+              {/* Supprimer exercice */}
               <Button onClick={() => onDelete(exercise._id)} close>
                 Supprimer
               </Button>

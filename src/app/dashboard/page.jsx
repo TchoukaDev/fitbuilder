@@ -1,6 +1,6 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";
-import PageLayout from "../../components/Layout/Header/Header";
+import Header from "../../components/Layout/Header/Header";
 
 export default async function Dashboard({ searchParams }) {
   const session = await getServerSession(authOptions);
@@ -8,12 +8,12 @@ export default async function Dashboard({ searchParams }) {
 
   return (
     <>
-      <PageLayout />
+      <Header />
       <main>
         {error === "access-denied" && (
           <p className="formError">Accès refusé. Page strictement réservée</p>
         )}
-        <p>Hello {session?.user?.username}</p>
+        <h1>Tableau de bord</h1>
       </main>
     </>
   );

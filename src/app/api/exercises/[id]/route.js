@@ -128,8 +128,8 @@ export async function DELETE(request, { params }) {
       await db.collection("exercises").deleteOne({ _id: new ObjectId(id) });
 
       revalidatePath("/exercices");
-      revalidatePath(`/exercises/${id}`);
       revalidatePath("/dashboard");
+      revalidatePath("/workouts/create");
 
       return NextResponse.json({
         success: true,
@@ -153,9 +153,9 @@ export async function DELETE(request, { params }) {
       );
     }
     revalidatePath("/exercices");
-    revalidatePath(`/exercises/${id}`);
     revalidatePath("/admin");
     revalidatePath("/dashboard");
+    revalidatePath("/workouts/create");
 
     return NextResponse.json({
       success: true,

@@ -3,9 +3,8 @@ import LogoutButton from "../../Buttons/LogoutButton";
 import Navbar from "../Navbar/Navbar";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { GiBiceps } from "react-icons/gi";
 
-export default async function PageLayout() {
+export default async function Header() {
   const session = await getServerSession(authOptions);
   const isAdmin = session?.user?.email === process.env.ADMIN_EMAIL;
   return (

@@ -90,6 +90,9 @@
 
 /* Composants personnalisés */
 @layer components {
+  main {
+    @apply w-9/10 mx-auto;
+  }
   .input {
     @apply w-[300px] border text-primary-500 border-primary-300 rounded font-semibold px-4 pt-7 pb-2 text-sm placeholder-transparent outline-none focus:border-2 focus:border-accent-500;
   }
@@ -101,6 +104,10 @@
   }
   .formError {
     @apply bg-accent-200 text-accent-700 font-semibold border p-2 border-accent-800 rounded text-sm;
+  }
+  .LinkButton {
+    @apply flex items-center justify-center min-w-[150px] w-fit gap-2 bg-primary-500 hover:bg-primary-600 disabled:bg-primary-300 text-primary-50
+            p-3 rounded cursor-pointer transition-all duration-200;
   }
 }
 

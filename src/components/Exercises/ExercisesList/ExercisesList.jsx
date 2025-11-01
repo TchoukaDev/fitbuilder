@@ -6,12 +6,12 @@ import ExerciseTabs from "../ExerciseTabs/ExerciseTabs";
 import MuscleFilters from "../MusclesFilters/MuscleFilters";
 import ExerciseGroup from "../ExerciseGroup/ExerciseGroup";
 import Button from "@/components/Buttons/Button";
-import Modal from "@/components/Modal/Modal";
+import ExerciseModal from "@/components/Modals/ExerciseModal/ExerciseModal";
 
 export default function ExercisesList({
   isAdmin = false,
   initialExercises,
-  initialFavorites = [],
+  initialFavorites,
 }) {
   // STATE
 
@@ -39,8 +39,8 @@ export default function ExercisesList({
 
   // Exercices de l'utilisateur (privés) ou public si admin
   const myExercises = isAdmin
-    ? exercises.filter((ex) => ex.type === "public")
-    : exercises.filter((ex) => ex.type === "private");
+    ? exercises?.filter((ex) => ex.type === "public")
+    : exercises?.filter((ex) => ex.type === "private");
 
   // Récupérer les détails des exercices favoris avec leur id (données db)
   const favoriteExercises = exercises.filter((ex) =>
@@ -86,9 +86,9 @@ export default function ExercisesList({
 
   // Compteurs pour les onglets
   const counts = {
-    all: exercises.length,
-    mine: myExercises.length,
-    favorites: favorites.length,
+    all: exercises.length || 0,
+    mine: myExercises?.length || 0,
+    favorites: favorites?.length || 0,
   };
 
   // ========================================
@@ -170,7 +170,10 @@ export default function ExercisesList({
       )}
       {/* Modal de création d'exercice */}
       {isOpen === "create" && (
-        <Modal onClose={onClose} onExerciseAdded={handleExerciseAdded} />
+        <ExerciseModal
+          onClose={onClose}
+          onExerciseAdded={handleExerciseAdded}
+        />
       )}
       {/* FILTRES PAR MUSCLE */}
       {activeTab === "all" && (
@@ -212,7 +215,7 @@ export default function ExercisesList({
             activeTab={activeTab}
             favorites={favorites}
             onToggleFavorite={toggleFavorite}
-            onEdit={handleExerciseUpdated}
+            onUpdate={handleExerciseUpdated}
             onDelete={handleDelete}
           />
         ))

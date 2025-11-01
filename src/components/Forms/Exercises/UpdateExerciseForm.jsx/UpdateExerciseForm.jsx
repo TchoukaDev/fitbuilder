@@ -1,17 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import Label from "../FormsComponents/Label/Label";
-import Button from "../../Buttons/Button";
+import Label from "../../FormsComponents/Label/Label";
+import Button from "../../../Buttons/Button";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 
-export default function NewExerciceForm({ onClose, onExerciseAdded }) {
+export default function UpdateExerciseForm({
+  onClose,
+  onExerciseUpdated,
+  exerciseToUpdate,
+}) {
   // State
-  const [name, setName] = useState("");
-  const [muscle, setMuscle] = useState("");
-  const [description, setDescription] = useState("");
-  const [equipment, setEquipment] = useState("");
+  const [name, setName] = useState(exerciseToUpdate.name);
+  const [muscle, setMuscle] = useState(exerciseToUpdate.muscle);
+  const [description, setDescription] = useState(exerciseToUpdate.description);
+  const [equipment, setEquipment] = useState(exerciseToUpdate.equipment);
   const [error, setError] = useState("");
   const router = useRouter();
 
@@ -27,8 +31,8 @@ export default function NewExerciceForm({ onClose, onExerciseAdded }) {
 
     // 2. Envoi à l'API
     try {
-      const response = await fetch("/api/exercises", {
-        method: "POST",
+      const response = await fetch(`/api/exercises/${exerciseToUpdate._id}`, {
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, muscle, description, equipment }),
       });
@@ -36,14 +40,14 @@ export default function NewExerciceForm({ onClose, onExerciseAdded }) {
       const data = await response.json();
       if (response.ok) {
         // ✅ Callback vers le parent AVANT le refresh
-        if (onExerciseAdded) {
-          onExerciseAdded({
-            _id: data.id,
+        if (onExerciseUpdated && exerciseToUpdate) {
+          onExerciseUpdated({
+            _id: exerciseToUpdate._id,
             name,
             muscle,
             description,
             equipment,
-            type: "private",
+            type: exerciseToUpdate.type,
           });
         }
 
@@ -86,7 +90,7 @@ export default function NewExerciceForm({ onClose, onExerciseAdded }) {
           onChange={(e) => setName(e.target.value)}
         />
         <Label htmlFor="name" value={name}>
-          Intitulé
+          Intitulé*
         </Label>
       </div>
 
@@ -101,19 +105,21 @@ export default function NewExerciceForm({ onClose, onExerciseAdded }) {
           onChange={(e) => setMuscle(e.target.value)}
         />
         <Label htmlFor="muscle" value={muscle}>
-          Muscle
+          Muscle*
         </Label>
       </div>
 
       <label htmlFor="equipment">Matériel :</label>
       <select
-        className="input"
+        className="input peer py-4"
         id="equipment"
         name="equipment"
         value={equipment}
         onChange={(e) => setEquipment(e.target.value)}
       >
-        <option value="">-- Sélectionner --</option>
+        <option value="" className="font-semibold">
+          -- Matériel nécessaire* --
+        </option>
         <option value="Poids du corps">Poids du corps</option>
         <option value="Haltères">Haltères</option>
         <option value="Barre">Barre</option>
@@ -135,11 +141,14 @@ export default function NewExerciceForm({ onClose, onExerciseAdded }) {
           Description
         </Label>
       </div>
-      <div className="flex gap-4">
-        <Button close onClick={() => onClose()} type="button">
-          Fermer
-        </Button>
-        <Button type="submit">Valider</Button>
+      <div className="space-y-2">
+        <div className="flex gap-4">
+          <Button close onClick={() => onClose()} type="button">
+            Fermer
+          </Button>
+          <Button type="submit">Valider</Button>
+        </div>
+        <div className="text-xs text-end">(*) champs obligatoires</div>
       </div>
     </form>
   );
