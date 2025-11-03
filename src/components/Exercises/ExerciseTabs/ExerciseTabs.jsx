@@ -1,9 +1,26 @@
-export default function ExerciseTabs({ activeTab, onTabChange, counts }) {
+export default function ExerciseTabs({
+  activeTab,
+  onTabChange,
+  counts,
+  inModal,
+}) {
   const tabs = [
     { id: "all", label: "🏋️ Tous", count: counts.all },
-    { id: "mine", label: "🗒️ Mes exercices", count: counts.mine },
+    { id: "mine", label: "🗒️ Mes exercices personnalisés", count: counts.mine },
     { id: "favorites", label: "⭐ Favoris", count: counts.favorites },
   ];
+
+  if (inModal)
+    return (
+      <select onChange={(e) => onTabChange(e.target.value)}>
+        {" "}
+        {tabs.map((tab) => (
+          <option value={tab.id} key={tab.id}>
+            {tab.label}({tab.count})
+          </option>
+        ))}
+      </select>
+    );
 
   return (
     <div className="flex gap-2.5 mb-8 border-b-2 border-gray-300">

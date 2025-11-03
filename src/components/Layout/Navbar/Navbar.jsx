@@ -6,10 +6,13 @@ import {
   Settings,
   UserRoundPen,
 } from "lucide-react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-export default function Navbar({ isAdmin = false }) {
+export default function Navbar() {
+  const { data: session } = useSession();
+  const isAdmin = session?.user?.role === "ADMIN";
   const links = [
     [
       "Tableau de bord",

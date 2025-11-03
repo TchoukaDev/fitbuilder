@@ -4,67 +4,58 @@ import { useState } from "react";
 import Label from "../../FormsComponents/Label/Label";
 import Button from "../../../Buttons/Button";
 import { toast } from "react-toastify";
-import { useRouter } from "next/navigation";
+import { useCreateExercise } from "@/hooks/useExercises";
+import { useSession } from "next-auth/react";
+import { ClipLoader } from "react-spinners";
 
-export default function NewExerciceForm({ onClose, onExerciseAdded }) {
-  // State
+export default function NewExerciceForm({ onClose }) {
+  const { data: session } = useSession();
+  const isAdmin = session?.user?.role === "ADMIN";
+  const userId = session?.user?.id;
+
+  // State (seulement pour les champs du formulaire)
   const [name, setName] = useState("");
   const [muscle, setMuscle] = useState("");
   const [description, setDescription] = useState("");
   const [equipment, setEquipment] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const router = useRouter();
+
+  const {
+    mutate: createExercice,
+    isPending,
+    error,
+  } = useCreateExercise(userId, isAdmin);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError(""); // Réinitialiser les erreurs
 
-    // 1. Validation
+    // Validation
     if (!name.trim() || !muscle.trim() || !equipment) {
-      setError("Veuillez compléter tous les champs obligatoires");
+      toast.error("Veuillez compléter tous les champs obligatoires");
       return;
     }
 
-    // 2. Envoi à l'API
-    try {
-      const response = await fetch("/api/exercises", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, muscle, description, equipment }),
-      });
+    // ✅ Utiliser mutate avec callbacks
+    createExercice(
+      { name, muscle, description, equipment },
+      {
+        // ✅ Callback de succès
+        onSuccess: (data) => {
+          toast.success("Exercice créé avec succès !");
 
-      const data = await response.json();
-      if (response.ok) {
-        // ✅ Callback vers le parent AVANT le refresh
-        if (onExerciseAdded) {
-          onExerciseAdded({
-            _id: data.id,
-            name,
-            muscle,
-            description,
-            equipment,
-            type: "private",
-          });
-        }
-
-        toast.success(data.message);
-        // Réinitialiser le formulaire
-        setName("");
-        setMuscle("");
-        setDescription("");
-        setEquipment("");
-        onClose();
-        router.refresh();
-      } else {
-        setError(data.error || "Une erreur est survenue");
-      }
-    } catch (err) {
-      setError("Erreur de connexion");
-    } finally {
-      setLoading(false);
-    }
+          // Réinitialiser le formulaire
+          setName("");
+          setMuscle("");
+          setDescription("");
+          setEquipment("");
+          onClose();
+        },
+        // ✅ Callback d'erreur
+        onError: () =>
+          setError(
+            error.message || "Une erreur est survenue lors de la modification",
+          ),
+      },
+    );
   };
 
   return (
@@ -72,8 +63,8 @@ export default function NewExerciceForm({ onClose, onExerciseAdded }) {
       onSubmit={handleSubmit}
       className="flex flex-col gap-5 items-center justify-center"
     >
-      {/* Message d'erreur */}
-      {error && <div className="formError">{error}</div>}
+      {/* Message d'erreur global */}
+      {error && <div className="formError">{error.message}</div>}
 
       <div className="relative">
         <input
@@ -84,6 +75,7 @@ export default function NewExerciceForm({ onClose, onExerciseAdded }) {
           name="name"
           value={name}
           onChange={(e) => setName(e.target.value)}
+          disabled={isPending} // ✅ Désactive pendant le chargement
         />
         <Label htmlFor="name" value={name}>
           Intitulé*
@@ -99,6 +91,7 @@ export default function NewExerciceForm({ onClose, onExerciseAdded }) {
           name="muscle"
           value={muscle}
           onChange={(e) => setMuscle(e.target.value)}
+          disabled={isPending}
         />
         <Label htmlFor="muscle" value={muscle}>
           Muscle*
@@ -112,6 +105,7 @@ export default function NewExerciceForm({ onClose, onExerciseAdded }) {
         value={equipment}
         onChange={(e) => setEquipment(e.target.value)}
         aria-label="Matériel nécessaire"
+        disabled={isPending}
       >
         <option value="" className="font-semibold">
           -- Matériel nécessaire* --
@@ -132,22 +126,29 @@ export default function NewExerciceForm({ onClose, onExerciseAdded }) {
           rows="3"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
+          disabled={isPending}
         />
         <Label htmlFor="description" value={description}>
           Description
         </Label>
       </div>
+
       <div className="space-y-2">
         <div className="flex gap-4">
-          <Button close onClick={() => onClose()} type="button">
+          <Button
+            close
+            onClick={onClose}
+            type="button"
+            disabled={isPending} // ✅ Empêche de fermer pendant l'envoi
+          >
             Fermer
           </Button>
-          <Button disabled={loading} type="submit">
-            {loading ? (
-              <>
+          <Button disabled={isPending} type="submit">
+            {isPending ? (
+              <span className="flex items-center gap-2">
                 <span>Validation en cours...</span>
                 <ClipLoader size={15} color="#e8e3ff" />
-              </>
+              </span>
             ) : (
               "Valider"
             )}

@@ -1,6 +1,6 @@
 "use client";
 import { useForm } from "react-hook-form";
-import Label from "../../../../components/Forms/Label/Label";
+import Label from "../FormsComponents/Label/Label";
 import {
   startTransition,
   useActionState,
@@ -8,8 +8,8 @@ import {
   useRef,
   useState,
 } from "react";
-import ShowPassword from "../../../../components/Forms/ShowPassword/ShowPassword";
-import Button from "../../../../components/Buttons/Button";
+import ShowPassword from "../FormsComponents/ShowPassword/ShowPassword";
+import Button from "@/components/Buttons/Button";
 import { ClipLoader } from "react-spinners";
 import { signUpSchema } from "@/utils/validation";
 import { zodResolver } from "@hookform/resolvers/zod";

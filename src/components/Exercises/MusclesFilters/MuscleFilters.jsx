@@ -2,7 +2,22 @@ export default function MuscleFilters({
   muscles,
   selectedMuscle,
   onMuscleChange,
+  inModal,
+  muscleCounts,
 }) {
+  if (inModal) {
+    return (
+      <select onChange={(e) => onMuscleChange(e.target.value)}>
+        <option value="all">Tous</option>
+        {muscles.map((muscle, i) => (
+          <option key={i} value={muscle}>
+            {muscle} ({muscleCounts[muscle]})
+          </option>
+        ))}
+      </select>
+    );
+  }
+
   if (muscles.length === 0) {
     return null;
   }

@@ -9,7 +9,6 @@ export const revalidate = 60;
 export default async function WorkoutsPage() {
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
-  const isAdmin = session?.user?.email === process.env.ADMIN_EMAIL;
   const templates = (await getAllTemplates(userId)) || [];
 
   return (
@@ -17,7 +16,7 @@ export default async function WorkoutsPage() {
       <Header />
       <main>
         <h1>Mes plans d'entraînement</h1>
-        <WorkoutTemplateList isAdmin={isAdmin} initialTemplates={templates} />
+        <WorkoutTemplateList initialTemplates={templates} />
       </main>
     </>
   );

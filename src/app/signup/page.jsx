@@ -1,5 +1,5 @@
 import Link from "next/link";
-import SignUpForm from "../components/Forms/SignUpForm/SignUpForm";
+import SignUpForm from "@/components/Forms/SignUpForm/SignUpForm";
 import WelcomeLayout from "../../components/Layout/WelcomeLayout/WelcomeLayout";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";

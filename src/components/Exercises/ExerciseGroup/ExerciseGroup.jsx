@@ -5,14 +5,12 @@ export default function ExerciseGroup({
   exercises,
   activeTab,
   favorites,
-  onToggleFavorite,
-  onUpdate,
-  onDelete,
+  userId,
+  isAdmin,
 }) {
   return (
     <div className="mb-10">
       <h2 className="text-2xl font-bold mb-4">{muscle}</h2>
-
       <div className="grid gap-4">
         {exercises.map((ex) => (
           <ExerciseCard
@@ -20,9 +18,8 @@ export default function ExerciseGroup({
             exercise={ex}
             activeTab={activeTab}
             isFavorite={favorites.includes(ex._id)}
-            onToggleFavorite={onToggleFavorite}
-            onUpdate={onUpdate}
-            onDelete={onDelete}
+            userId={userId}
+            isAdmin={isAdmin}
           />
         ))}
       </div>

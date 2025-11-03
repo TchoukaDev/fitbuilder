@@ -6,7 +6,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export default async function Header() {
   const session = await getServerSession(authOptions);
-  const isAdmin = session?.user?.email === process.env.ADMIN_EMAIL;
+
   return (
     <div className="flex justify-between items-center relative pr-5 lg:pl-10 md:pr-20 border-b border-primary-50 shadow">
       {/* Logo */}
@@ -20,7 +20,7 @@ export default async function Header() {
 
       {/* Navbar */}
       <div className="absolute lg:static left-1/2 -translate-x-1/2 lg:translate-0">
-        <Navbar isAdmin={isAdmin} />
+        <Navbar />
       </div>
       <div className="hidden lg:inline-block text-center text-xl font-display text-accent-600 font-semibold">
         <p className="flex justify-center gap-3 items-center  ">

@@ -57,6 +57,6 @@ export async function getFavoritesExercises(userId) {
   const user = await db
     .collection("users")
     .findOne({ _id: new ObjectId(userId) });
-  const favoritesExercises = user.favoritesExercises || [];
+  const favoritesExercises = user?.favoritesExercises || [];
   return favoritesExercises;
 }

@@ -1,41 +1,62 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import ExerciseTabs from "../ExerciseTabs/ExerciseTabs";
 import MuscleFilters from "../MusclesFilters/MuscleFilters";
 import ExerciseGroup from "../ExerciseGroup/ExerciseGroup";
 import Button from "@/components/Buttons/Button";
 import ExerciseModal from "@/components/Modals/ExerciseModal/ExerciseModal";
+import { useExercises, useFavorites } from "@/hooks/useExercises";
+import ExerciceSelectorStep1 from "@/components/Workouts/ExerciceSelectors/ExerciceSelectorStep1";
+import ExerciceSelectorStep2 from "@/components/Workouts/ExerciceSelectors/ExerciceSelectorStep2";
 
 export default function ExercisesList({
-  isAdmin = false,
   initialExercises,
   initialFavorites,
+  isAdmin,
+  userId,
+  inModal,
+  onCloseExerciceSelector,
+  onSelectExercise,
 }) {
-  // STATE
+  // HOOKS
 
-  const [exercises, setExercises] = useState(initialExercises); //Tous les exercices
-  const [favorites, setFavorites] = useState(initialFavorites); //Les exercices favoris
+  // Récupérer exercices
+  const { data: cachedExercises = [], isLoading } = useExercises(
+    userId,
+    isAdmin,
+    initialExercises,
+  );
+
+  // Récupérer favoris
+  const { data: favorites = [], isLoading: loadingFavorites } = useFavorites(
+    userId,
+    initialFavorites,
+  );
+
+  // STATE
   const [activeTab, setActiveTab] = useState("all"); //all, mine, favorites
   const [selectedMuscle, setSelectedMuscle] = useState("all"); //Muscle sélectionné
   const [isOpen, setIsOpen] = useState(null); //Gestion des modales
+  const [search, setSearch] = useState("");
+  const [step, setStep] = useState(1);
+  const [selectedExerciseId, setSelectedExerciseId] = useState(null); //id de l'exercice en cours de sélection
 
-  // Fermeture des modales
+  // Fermeture des modales ajout et modification d'exercice (ExercisePage)
   const onClose = () => {
     setIsOpen(null);
   };
 
-  const router = useRouter();
+  // Ajouter l'exercice sélectionner au Workout
+  // const exerciseSelected = exercises.filter(
+  //   (ex) => ex._id === selectedExerciseId,
+  // )[0];
+  // onSelectExercise(exerciseSelected);
 
-  // Pour synchroniser les données en direct après modifications des données serveurs
-  useEffect(() => {
-    setExercises(initialExercises);
-  }, [initialExercises]);
-
-  useEffect(() => {
-    setFavorites(initialFavorites);
-  }, [initialFavorites]);
+  // ✅ Filtrer avec la recherche
+  const exercises = cachedExercises.filter((ex) =>
+    ex.name.toLowerCase().includes(search.toLowerCase()),
+  );
 
   // Exercices de l'utilisateur (privés) ou public si admin
   const myExercises = isAdmin
@@ -58,26 +79,47 @@ export default function ExercisesList({
     ...new Set(favoriteExercises.map((ex) => ex.muscle)),
   ].sort();
 
+  // Fonction qui retourne le nombre d'exercice par muscle pour TOUS les exercices (filtrés si search)
+  const countByMuscle = (exercises) => {
+    // Groupe global : tous les exercices par muscle
+    const allGrouped = exercises.reduce((acc, ex) => {
+      if (!acc[ex.muscle]) acc[ex.muscle] = [];
+      acc[ex.muscle].push(ex);
+      return acc;
+    }, {});
+
+    // Compteur pour les options
+    const muscleCounts = Object.fromEntries(
+      Object.entries(allGrouped).map(([muscle, exs]) => [muscle, exs.length]),
+    );
+
+    return muscleCounts;
+  };
+
   // Exercices à afficher selon l'onglet
   let displayedExercises = [];
+  let muscleCounts;
   if (activeTab === "all") {
+    muscleCounts = countByMuscle(exercises);
     displayedExercises =
       selectedMuscle === "all"
         ? exercises //si "all -> Tous les exercices
         : exercises.filter((ex) => ex.muscle === selectedMuscle); //Sinon les exercices du muscle sélectionné
   } else if (activeTab === "mine") {
+    muscleCounts = countByMuscle(myExercises);
     displayedExercises =
       selectedMuscle === "all"
         ? myExercises
         : myExercises.filter((ex) => ex.muscle === selectedMuscle);
   } else if (activeTab === "favorites") {
+    muscleCounts = countByMuscle(favoriteExercises);
     displayedExercises =
       selectedMuscle === "all"
         ? favoriteExercises
         : favoriteExercises.filter((ex) => ex.muscle === selectedMuscle);
   }
 
-  // Grouper par muscle (transformer le tableau des exercices en objet d'exercices par muscle)
+  // Nombre d'exercice par muscle pour CHAQUE TYPE d'exercice (DisplayedExercises)
   const grouped = displayedExercises.reduce((acc, ex) => {
     if (!acc[ex.muscle]) acc[ex.muscle] = [];
     acc[ex.muscle].push(ex);
@@ -91,67 +133,41 @@ export default function ExercisesList({
     favorites: favorites?.length || 0,
   };
 
-  // ========================================
-  // HANDLERS
-  // ========================================
-
-  //  Gestion des favorises
-  const toggleFavorite = async (exerciseId) => {
-    const isFavorite = favorites.includes(exerciseId);
-
-    // Rendu optimiste
-    const newFavorites = isFavorite
-      ? favorites.filter((id) => id !== exerciseId)
-      : [...favorites, exerciseId];
-
-    setFavorites(newFavorites);
-
-    // mise à jour en db
-    await fetch("/api/exercises/favorites", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ favorites: newFavorites }),
-    });
-  };
-
-  // Supprimer exercice
-  const handleDelete = async (id) => {
-    if (!confirm("Supprimer cet exercice ?")) return;
-
-    // Rendu optimiste
-    setExercises(exercises.filter((ex) => ex._id !== id));
-
-    // Suppression en db
-    try {
-      const res = await fetch(`/api/exercises/${id}`, { method: "DELETE" });
-      if (res.ok) {
-        router.refresh();
-      } else {
-        setExercises(initialExercises);
-        alert("Erreur");
-      }
-    } catch (error) {
-      setExercises(initialExercises);
-      alert("Erreur de connexion");
-    }
-  };
-
-  // Rendu optimiste pour ajout d'exercice (transmis à modale)
-  const handleExerciseAdded = (newExercise) => {
-    setExercises([...exercises, newExercise]);
-  };
-
-  // Rendu optimiste pour modification d'exercice (transmis à modale)
-  const handleExerciseUpdated = (updatedExercise) => {
-    setExercises(
-      exercises.map((ex) =>
-        ex._id === updatedExercise._id ? updatedExercise : ex,
-      ),
-    );
-  };
-
   // RENDER
 
+  // MODALE POUR WORKOUT
+  if (inModal) {
+    // ETAPE 1: Sélection de l'exercice
+    if (step === 1) {
+      return (
+        <ExerciceSelectorStep1
+          exercises={exercises}
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          counts={counts}
+          muscleCounts={muscleCounts}
+          allExerciseMuscles={allExerciseMuscles}
+          favoriteExerciseMuscles={favoriteExerciseMuscles}
+          myExerciseMuscles={myExerciseMuscles}
+          selectedMuscle={selectedMuscle}
+          setSelectedMuscle={setSelectedMuscle}
+          setSelectedExerciseId={setSelectedExerciseId}
+          grouped={grouped}
+          onCloseExerciceSelector={onCloseExerciceSelector}
+          setStep={setStep}
+          search={search}
+          onsearchChange={setSearch}
+        />
+      );
+    }
+
+    //ETAPE 2: Configuration de l'exercice
+    if (step === 2) {
+      return <ExerciceSelectorStep2 />;
+    }
+  }
+
+  // LISTE POUR PAGE EXERCICES
   return (
     <div>
       {/* ONGLETS */}
@@ -159,6 +175,7 @@ export default function ExercisesList({
         activeTab={activeTab}
         onTabChange={setActiveTab}
         counts={counts}
+        inModal={inModal}
       />{" "}
       {/* BOUTON CRÉER (onglet "Mes exercices") */}
       {activeTab === "mine" && (
@@ -169,12 +186,7 @@ export default function ExercisesList({
         </div>
       )}
       {/* Modal de création d'exercice */}
-      {isOpen === "create" && (
-        <ExerciseModal
-          onClose={onClose}
-          onExerciseAdded={handleExerciseAdded}
-        />
-      )}
+      {isOpen === "create" && <ExerciseModal onClose={onClose} />}
       {/* FILTRES PAR MUSCLE */}
       {activeTab === "all" && (
         <MuscleFilters
@@ -214,9 +226,8 @@ export default function ExercisesList({
             exercises={exs}
             activeTab={activeTab}
             favorites={favorites}
-            onToggleFavorite={toggleFavorite}
-            onUpdate={handleExerciseUpdated}
-            onDelete={handleDelete}
+            userId={userId}
+            isAdmin={isAdmin}
           />
         ))
       )}

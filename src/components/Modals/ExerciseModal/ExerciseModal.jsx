@@ -3,12 +3,7 @@ import { createPortal } from "react-dom";
 import NewExerciceForm from "../../Forms/Exercises/newExerciceForm/newExerciceForm";
 import UpdateExerciseForm from "../../Forms/Exercises/UpdateExerciseForm.jsx/UpdateExerciseForm";
 
-export default function ExerciseModal({
-  onClose,
-  onExerciseAdded = null,
-  onExerciseUpdated = null,
-  exerciseToUpdate = null,
-}) {
+export default function ExerciseModal({ onClose, exerciseToUpdate = null }) {
   return createPortal(
     <div
       onClick={() => onClose()}
@@ -18,29 +13,24 @@ export default function ExerciseModal({
         onClick={(e) => e.stopPropagation()}
         className="bg-blue-50 p-10 min-w-[300px] rounded"
       >
-        {/* Ajout d'un exercice */}
-        {onExerciseAdded && (
-          <>
-            <h2 className="text-center font-semibold mb-5 text-xl">
-              Créer un exercice
-            </h2>
-            <NewExerciceForm
-              onClose={onClose}
-              onExerciseAdded={onExerciseAdded}
-            />
-          </>
-        )}{" "}
         {/* Modification d'un exercice */}
-        {onExerciseUpdated && exerciseToUpdate && (
+        {exerciseToUpdate ? (
           <>
             <h2 className="text-center font-semibold mb-5 text-xl">
               Modifier l'exercice
             </h2>
             <UpdateExerciseForm
               onClose={onClose}
-              onExerciseUpdated={onExerciseUpdated}
               exerciseToUpdate={exerciseToUpdate}
             />
+          </>
+        ) : (
+          <>
+            {/* Ajout d'un exercice */}
+            <h2 className="text-center font-semibold mb-5 text-xl">
+              Créer un exercice
+            </h2>
+            <NewExerciceForm onClose={onClose} />
           </>
         )}
       </div>

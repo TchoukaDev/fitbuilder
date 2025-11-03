@@ -5,7 +5,7 @@ import PageLayout from "../../components/Layout/Header/Header";
 
 export default async function Admin() {
   const session = await getServerSession(authOptions);
-  if (session?.user?.email !== process.env.ADMIN_EMAIL) {
+  if (session?.user?.role !== "ADMIN") {
     redirect("/dashboard?error=access-denied");
   }
 

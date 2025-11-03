@@ -9,7 +9,7 @@ export const revalidate = 60;
 
 export default async function ExercisesPage() {
   const session = await getServerSession(authOptions);
-  const isAdmin = session?.user?.email === process.env.ADMIN_EMAIL;
+  const isAdmin = session?.user?.role === "ADMIN";
   const userId = session?.user?.id;
 
   const exercises = (await getAllExercises(userId)) || [];
@@ -21,9 +21,10 @@ export default async function ExercisesPage() {
       <main>
         <h1>Mes exercices</h1>
         <ExercisesList
-          isAdmin={isAdmin}
           initialExercises={exercises}
           initialFavorites={favorites}
+          isAdmin={isAdmin}
+          userId={userId}
         />
       </main>
     </>

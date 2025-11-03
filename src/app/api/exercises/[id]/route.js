@@ -37,7 +37,7 @@ export async function PATCH(request, { params }) {
 
     if (publicExercise) {
       // C'est un exercice public → Admin seulement
-      if (session.user.email !== process.env.ADMIN_EMAIL) {
+      if (session.user.role !== "ADMIN") {
         return NextResponse.json(
           { error: "Seul l'admin peut modifier les exercices publics" },
           { status: 403 },
@@ -75,7 +75,7 @@ export async function PATCH(request, { params }) {
         },
       },
     );
-
+    console.log(id);
     if (result.matchedCount === 0) {
       return NextResponse.json(
         { error: "Exercice non trouvé ou non autorisé" },
@@ -106,7 +106,9 @@ export async function DELETE(request, { params }) {
     return NextResponse.json({ error: "Accès refusé" }, { status: 401 });
   }
 
-  const { id } = params;
+  const resolvedParams = await params;
+  const { id } = resolvedParams;
+  console.log(id);
 
   try {
     const db = await connectDB();
@@ -118,7 +120,7 @@ export async function DELETE(request, { params }) {
 
     if (publicExercise) {
       // C'est un exercice public → Admin seulement
-      if (session.user.email !== process.env.ADMIN_EMAIL) {
+      if (session.user.role !== "ADMIN") {
         return NextResponse.json(
           { error: "Seul l'admin peut supprimer les exercices publics" },
           { status: 403 },

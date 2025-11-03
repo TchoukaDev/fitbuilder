@@ -3,7 +3,6 @@ import { authOptions } from "../auth/[...nextauth]/route";
 import { NextResponse } from "next/server";
 import connectDB from "@/libs/mongodb";
 import { ObjectId } from "mongodb";
-import { success } from "zod";
 import { revalidatePath } from "next/cache";
 
 // POST - Créer un exercice
@@ -17,7 +16,7 @@ export async function POST(req) {
   }
 
   // Admin ou pas?
-  const isAdmin = session?.user?.email === process.env.ADMIN_EMAIL;
+  const isAdmin = session?.user?.role === "ADMIN";
 
   // On récupère les variables du formulaire
   const { name, muscle, equipment, description } = await req.json();
@@ -153,7 +152,7 @@ export async function GET(req) {
 
     // ============ TOUS (par défaut) ============
 
-    // publicw
+    // public
     const publicExercises = await db
       .collection("exercises")
       .find({ isPublic: true })

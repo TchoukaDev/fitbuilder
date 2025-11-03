@@ -2,36 +2,32 @@
 import Button from "@/components/Buttons/Button";
 import Label from "@/components/Forms/FormsComponents/Label/Label";
 import SelectExercicesModal from "@/components/Modals/SelectExercicesModal/SelectExercicesModal";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-export default function WorkoutTemplateForm({ allExercices, favorites }) {
+export default function WorkoutTemplateForm({
+  allExercises,
+  favorites,
+  isAdmin,
+  userId,
+}) {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
-    exercises: [
-      {
-        exerciseId: "123",
-        exerciseName: "Développé couché",
-        sets: 4,
-        reps: "8-12",
-        targetWeight: 80,
-      },
-    ],
+    exercises: [{ name: "développé couché" }],
   });
   const [error, setError] = useState("");
   const [loading, isLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-
   const handleClose = () => {
     setIsOpen(false);
   };
 
-  const handleSelectExercice = (selectedExercise) => {
-    setFormData({ ...formData, exercises: selectedExercise });
-  };
-
-  const handleSubmit = () => {
-    console.log("hello");
+  // Ajouter un exercice depuis le sélecteur
+  const handleSelectExercise = (selectedExercise) => {
+    setFormData((prev) => ({
+      ...prev,
+      exercises: [...prev.exercises, selectedExercise],
+    }));
   };
 
   // Suppression d'un exercice
@@ -41,6 +37,10 @@ export default function WorkoutTemplateForm({ allExercices, favorites }) {
       exercises: formData.exercises.filter((exercice, i) => i !== index),
     });
   };
+  const handleSubmit = () => {
+    console.log("hello");
+  };
+
   return (
     <form
       onSubmit={handleSubmit}
@@ -94,9 +94,11 @@ export default function WorkoutTemplateForm({ allExercices, favorites }) {
         {/* Modale de sélection d'exercices */}
         {isOpen && (
           <SelectExercicesModal
-            onSelectExercise={handleSelectExercice}
-            onClose={handleClose}
-            initialExercises={allExercices}
+            userId={userId}
+            isAdmin={isAdmin}
+            onSelectExercise={handleSelectExercise}
+            onCloseExerciceSelector={handleClose}
+            allExercises={allExercises}
             favorites={favorites}
           />
         )}
@@ -116,7 +118,7 @@ export default function WorkoutTemplateForm({ allExercices, favorites }) {
                 >
                   <div>
                     <p className="font-semibold">
-                      {index + 1}. {exercise.exerciseName}
+                      {index + 1}. {exercise.name}
                     </p>
                     <p className="text-sm text-gray-600">
                       {exercise.sets} séries × {exercise.reps} reps

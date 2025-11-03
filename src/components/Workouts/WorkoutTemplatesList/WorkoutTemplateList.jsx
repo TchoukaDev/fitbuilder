@@ -1,16 +1,16 @@
 "use client";
 import { useEffect, useState } from "react";
 import WorkoutTabs from "../WorkoutTabs/WorkoutTabs";
-import WorkoutTemplateCard from "../WorkerTemplateCard/WorkoutTemplateCard";
+import WorkoutTemplateCard from "../WorkoutTemplateCard/WorkoutTemplateCard";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 
-export default function WorkoutTemplateList({
-  isAdmin = false,
-  initialTemplates,
-}) {
+export default function WorkoutTemplateList({ initialTemplates }) {
   const [templates, setTemplates] = useState(initialTemplates);
   const [activeTab, setActiveTab] = useState("all");
-  console.log(activeTab);
+
+  const { data: session } = useSession();
+  const isAdmin = session?.user?.role === "ADMIN";
 
   // Mes templates en fonction du type d'utilisateur
   const myTemplates = isAdmin

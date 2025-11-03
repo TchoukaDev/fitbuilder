@@ -240,6 +240,8 @@ export const authOptions = {
             // Fallback si erreur DB
             token.id = user.id;
             token.email = user.email;
+            token.role =
+              user.email === process.env.ADMIN_EMAIL ? "ADMIN" : "USER";
             token.username = user.username;
             token.image = user.image;
             token.provider = "google";
@@ -251,7 +253,9 @@ export const authOptions = {
         else {
           token.id = user.id;
           token.email = user.email;
-          token.username = user.username;
+          (token.role =
+            user.email === process.env.ADMIN_EMAIL ? "ADMIN" : "USER"),
+            (token.username = user.username);
           token.image = user.image || null;
           token.blocked = user.blocked;
           token.provider = "credentials";
@@ -299,6 +303,7 @@ export const authOptions = {
       session.user.id = token.id;
       session.user.email = token.email;
       session.user.username = token.username;
+      session.user.role = token.role;
       session.user.blocked = token.blocked || false;
       session.user.provider = token.provider;
       session.user.image = token.image || null;

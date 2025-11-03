@@ -1,21 +1,33 @@
 "use client";
 
-import ExerciceSelector from "@/components/Workouts/ExerciceSelector/ExerciceSelector";
+import ExercisesList from "@/components/Exercises/ExercisesList/ExercisesList";
 import { createPortal } from "react-dom";
 
-export default function SelectExercicesModal({ onClose, onSelectExercise }) {
+export default function SelectExercicesModal({
+  onCloseExerciceSelector,
+  onSelectExercise,
+  favorites,
+  allExercises,
+  isAdmin,
+  userId,
+}) {
   return createPortal(
     <div
-      onClick={() => onClose()}
-      className="fixed bg-black/25 inset-0 flex justify-center items-center"
+      onClick={onCloseExerciceSelector}
+      className="fixed bg-black/25 inset-0 flex justify-center items-center overflow-scroll"
     >
       <div
         onClick={(e) => e.stopPropagation()}
         className="bg-blue-50 p-10 min-w-[300px] rounded"
       >
-        <ExerciceSelector
+        <ExercisesList
+          userId={userId}
+          isAdmin={isAdmin}
+          initialExercises={allExercises}
+          initialFavorites={favorites}
+          inModal={true}
           onSelectExercise={onSelectExercise}
-          onClose={onClose}
+          onCloseExerciceSelector={onCloseExerciceSelector}
         />
       </div>
     </div>,

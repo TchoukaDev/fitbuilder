@@ -4,20 +4,27 @@ import { useState } from "react";
 import Label from "../../FormsComponents/Label/Label";
 import Button from "../../../Buttons/Button";
 import { toast } from "react-toastify";
-import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { useUpdateExercise } from "@/hooks/useExercises";
+import { ClipLoader } from "react-spinners";
 
-export default function UpdateExerciseForm({
-  onClose,
-  onExerciseUpdated,
-  exerciseToUpdate,
-}) {
+export default function UpdateExerciseForm({ onClose, exerciseToUpdate }) {
+  // Session
+  const { data: session } = useSession();
+  const isAdmin = session?.user?.role === "ADMIN";
+  const userId = session?.user?.id;
   // State
   const [name, setName] = useState(exerciseToUpdate.name);
   const [muscle, setMuscle] = useState(exerciseToUpdate.muscle);
   const [description, setDescription] = useState(exerciseToUpdate.description);
   const [equipment, setEquipment] = useState(exerciseToUpdate.equipment);
   const [error, setError] = useState("");
-  const router = useRouter();
+
+  // Hook
+  const { mutate: updateExercise, isPending: isUpdating } = useUpdateExercise(
+    userId,
+    isAdmin,
+  );
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,43 +35,36 @@ export default function UpdateExerciseForm({
       setError("Veuillez compléter tous les champs obligatoires");
       return;
     }
-
-    // 2. Envoi à l'API
-    try {
-      const response = await fetch(`/api/exercises/${exerciseToUpdate._id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, muscle, description, equipment }),
-      });
-
-      const data = await response.json();
-      if (response.ok) {
-        // ✅ Callback vers le parent AVANT le refresh
-        if (onExerciseUpdated && exerciseToUpdate) {
-          onExerciseUpdated({
-            _id: exerciseToUpdate._id,
-            name,
-            muscle,
-            description,
-            equipment,
-            type: exerciseToUpdate.type,
-          });
-        }
-
-        toast.success(data.message);
-        // Réinitialiser le formulaire
-        setName("");
-        setMuscle("");
-        setDescription("");
-        setEquipment("");
-        onClose();
-        router.refresh();
-      } else {
-        setError(data.error || "Une erreur est survenue");
-      }
-    } catch (err) {
-      setError("Erreur de connexion");
-    }
+    //  Mutation
+    updateExercise(
+      {
+        id: exerciseToUpdate._id,
+        updatedExercise: {
+          name,
+          muscle,
+          description,
+          equipment,
+          type: exerciseToUpdate.type,
+        },
+      },
+      {
+        onSuccess: (data) => {
+          toast.success(data.message || "Exercié modifié avec succès");
+          // Réinitialiser le formulaire
+          setName("");
+          setMuscle("");
+          setDescription("");
+          setEquipment("");
+          onClose();
+        },
+      },
+      {
+        onError: (err) =>
+          setError(
+            err.message || "Une erreur est survenue lors de la modification",
+          ),
+      },
+    );
   };
 
   return (
@@ -146,7 +146,16 @@ export default function UpdateExerciseForm({
           <Button close onClick={() => onClose()} type="button">
             Fermer
           </Button>
-          <Button type="submit">Valider</Button>
+          <Button disabled={isUpdating} type="submit">
+            {isUpdating ? (
+              <span className="flex items-center gap-2">
+                <span>Mise à jour...</span>
+                <ClipLoader size={15} color="#e8e3ff" />
+              </span>
+            ) : (
+              "Valider"
+            )}
+          </Button>
         </div>
         <div className="text-xs text-end">(*) champs obligatoires</div>
       </div>
