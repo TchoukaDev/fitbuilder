@@ -16,9 +16,7 @@ export default function ExerciseModal({ onClose, exerciseToUpdate = null }) {
         {/* Modification d'un exercice */}
         {exerciseToUpdate ? (
           <>
-            <h2 className="text-center font-semibold mb-5 text-xl">
-              Modifier l'exercice
-            </h2>
+            <h2>Modifier l'exercice</h2>
             <UpdateExerciseForm
               onClose={onClose}
               exerciseToUpdate={exerciseToUpdate}
@@ -27,9 +25,7 @@ export default function ExerciseModal({ onClose, exerciseToUpdate = null }) {
         ) : (
           <>
             {/* Ajout d'un exercice */}
-            <h2 className="text-center font-semibold mb-5 text-xl">
-              Créer un exercice
-            </h2>
+            <h2>Créer un exercice</h2>
             <NewExerciceForm onClose={onClose} />
           </>
         )}

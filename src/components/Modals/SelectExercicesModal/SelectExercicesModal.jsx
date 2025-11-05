@@ -4,7 +4,7 @@ import ExercisesList from "@/components/Exercises/ExercisesList/ExercisesList";
 import { createPortal } from "react-dom";
 
 export default function SelectExercicesModal({
-  onCloseExerciceSelector,
+  onCloseExerciseSelector,
   onSelectExercise,
   favorites,
   allExercises,
@@ -13,12 +13,12 @@ export default function SelectExercicesModal({
 }) {
   return createPortal(
     <div
-      onClick={onCloseExerciceSelector}
+      onClick={onCloseExerciseSelector}
       className="fixed bg-black/25 inset-0 flex justify-center items-center overflow-scroll"
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="bg-blue-50 p-10 min-w-[300px] rounded"
+        className="bg-blue-50 p-10 min-w-[400px] rounded"
       >
         <ExercisesList
           userId={userId}
@@ -27,7 +27,7 @@ export default function SelectExercicesModal({
           initialFavorites={favorites}
           inModal={true}
           onSelectExercise={onSelectExercise}
-          onCloseExerciceSelector={onCloseExerciceSelector}
+          onCloseExerciseSelector={onCloseExerciseSelector}
         />
       </div>
     </div>,

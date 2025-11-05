@@ -15,7 +15,7 @@ export default function SearchExercise({ onSearchChange, search }) {
         }}
       />
       <Label htmlFor="search" value={search}>
-        Rechercher
+        Rechercher un exercice...
       </Label>
     </div>
   );

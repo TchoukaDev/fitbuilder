@@ -15,6 +15,7 @@ export default async function Header() {
           src="/logos/logo-transparent-svg.svg"
           fill
           alt="logo Fitbuilder"
+          priority
         />
       </div>
 

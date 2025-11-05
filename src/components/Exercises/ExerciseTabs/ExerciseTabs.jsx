@@ -5,21 +5,39 @@ export default function ExerciseTabs({
   inModal,
 }) {
   const tabs = [
-    { id: "all", label: "🏋️ Tous", count: counts.all },
-    { id: "mine", label: "🗒️ Mes exercices personnalisés", count: counts.mine },
-    { id: "favorites", label: "⭐ Favoris", count: counts.favorites },
+    { id: "all", label: `${!inModal ? "🏋️ Tous" : "Tous"}`, count: counts.all },
+    {
+      id: "mine",
+      label: `${
+        !inModal
+          ? "🗒️ Mes exercices personnalisés"
+          : "Mes exercices personnalisés"
+      }`,
+      count: counts.mine,
+    },
+    {
+      id: "favorites",
+      label: `${!inModal ? "⭐ Favoris" : "Favoris"}`,
+      count: counts.favorites,
+    },
   ];
 
   if (inModal)
     return (
-      <select onChange={(e) => onTabChange(e.target.value)}>
-        {" "}
-        {tabs.map((tab) => (
-          <option value={tab.id} key={tab.id}>
-            {tab.label}({tab.count})
-          </option>
-        ))}
-      </select>
+      <div>
+        <p className="text-center my-3">Filtrer par type d'exercice</p>
+        <select
+          className="input pt-2"
+          onChange={(e) => onTabChange(e.target.value)}
+        >
+          {" "}
+          {tabs.map((tab) => (
+            <option value={tab.id} key={tab.id}>
+              {tab.label} ({tab.count})
+            </option>
+          ))}
+        </select>
+      </div>
     );
 
   return (
