@@ -90,6 +90,7 @@ export default function ExerciceSelector({
           Valider
         </Button>
       </div>
+      <p className="text-xs text-center">(*) Champs obligatoires</p>
     </div>
   );
 }

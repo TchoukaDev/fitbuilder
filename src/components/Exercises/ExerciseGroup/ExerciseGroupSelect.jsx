@@ -5,7 +5,7 @@ export default function ExerciseGroupSelect({
 }) {
   return (
     <div>
-      <p className="text-center my-3">Choisir un exercice</p>
+      <p className="text-center my-3">Choisir un exercice*</p>
 
       <select
         className="input pt-2"
@@ -16,6 +16,9 @@ export default function ExerciseGroupSelect({
         <option value="" className="font-semibold">
           --- Sélectionner un exercice ---
         </option>
+        {Object.entries(grouped).length === 0 && (
+          <option value="">Aucun exercice trouvé</option>
+        )}
         {/* Options */}
         {Object.entries(grouped).map(([_, exs]) =>
           exs.map((ex) => (
