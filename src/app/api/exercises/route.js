@@ -47,7 +47,6 @@ export async function POST(req) {
 
       revalidatePath("/exercises");
       revalidatePath("/admin");
-      revalidatePath("/workouts/create");
 
       return NextResponse.json(
         {

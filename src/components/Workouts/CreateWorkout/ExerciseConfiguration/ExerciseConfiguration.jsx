@@ -70,13 +70,13 @@ export default function ExerciseConfiguration({
       <div className="relative">
         <input
           className="input peer"
-          type="text"
+          type="number"
           placeholder=""
           onChange={(e) => setTargetWeight(e.target.value)}
           required
         />
         <Label htmlFor="weight" value={targetWeight}>
-          Charge cible*
+          Charge cible (kg)*
         </Label>
       </div>{" "}
       {/* Repos */}
@@ -84,12 +84,12 @@ export default function ExerciseConfiguration({
         <input
           className="input peer"
           placeholder=""
-          type="text"
+          type="number"
           onChange={(e) => setRestTime(e.target.value)}
           required
         />
         <Label htmlFor="rest" value={restTime}>
-          Temps de repos*
+          Temps de repos (s)*
         </Label>
       </div>{" "}
       {/* Notes (optionnel) */}
@@ -101,7 +101,7 @@ export default function ExerciseConfiguration({
           type="text"
           onChange={(e) => setNotes(e.target.value)}
         />
-        <Label htmlFor="rest" value={notes}>
+        <Label htmlFor="notes" value={notes}>
           Notes (Optionnel)
         </Label>
       </div>{" "}

@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { useExercises, useFavorites } from "@/hooks/useExercises";
-import ExerciceSelector from "@/components/Workouts/ExerciceSelector/ExerciceSelector";
-import ExerciseConfiguration from "@/components/Workouts/ExerciseConfiguration/ExerciseConfiguration";
+import ExerciceSelector from "@/components/Workouts/CreateWorkout/ExerciceSelector/ExerciceSelector";
+import ExerciseConfiguration from "@/components/Workouts/CreateWorkout/ExerciseConfiguration/ExerciseConfiguration";
 import ExercisePageList from "../ExercisePageList/ExercisePageList";
 
 export default function ExercisesList({
@@ -12,6 +12,7 @@ export default function ExercisesList({
   isAdmin,
   userId,
   inModal,
+  exercisesAdded,
   onCloseExerciseSelector,
   onSelectExercise,
 }) {
@@ -147,6 +148,7 @@ export default function ExercisesList({
           setSelectedMuscle={setSelectedMuscle}
           setSelectedExerciseId={setSelectedExerciseId}
           grouped={grouped}
+          exercisesAdded={exercisesAdded}
           setStep={setStep}
           onCloseExerciseSelector={onCloseExerciseSelector}
           selectedExerciseId={selectedExerciseId}

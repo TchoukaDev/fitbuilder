@@ -8,6 +8,7 @@ export default function SelectExercicesModal({
   onSelectExercise,
   favorites,
   allExercises,
+  exercisesAdded,
   isAdmin,
   userId,
 }) {
@@ -25,6 +26,7 @@ export default function SelectExercicesModal({
           isAdmin={isAdmin}
           initialExercises={allExercises}
           initialFavorites={favorites}
+          exercisesAdded={exercisesAdded}
           inModal={true}
           onSelectExercise={onSelectExercise}
           onCloseExerciseSelector={onCloseExerciseSelector}

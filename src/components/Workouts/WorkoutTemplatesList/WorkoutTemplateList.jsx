@@ -1,65 +1,27 @@
 "use client";
-import { useEffect, useState } from "react";
-import WorkoutTabs from "../WorkoutTabs/WorkoutTabs";
-import WorkoutTemplateCard from "../WorkoutTemplateCard/WorkoutTemplateCard";
+
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+import WorkoutTemplateCard from "../WorkoutTemplateCard/WorkoutTemplateCard";
+import { useWorkouts } from "@/hooks/useWorkouts";
 
-export default function WorkoutTemplateList({ initialTemplates }) {
-  const [templates, setTemplates] = useState(initialTemplates);
-  const [activeTab, setActiveTab] = useState("all");
+export default function WorkoutTemplateList({ initialTemplates, userId }) {
+  const { data: templates = [] } = useWorkouts(initialTemplates, userId);
 
-  const { data: session } = useSession();
-  const isAdmin = session?.user?.role === "ADMIN";
+  const count = templates?.length || 0;
 
-  // Mes templates en fonction du type d'utilisateur
-  const myTemplates = isAdmin
-    ? templates?.filter((t) => t.type === "public")
-    : templates?.filter((t) => t.type === "private");
-
-  const counts = {
-    all: templates?.length || 0,
-    mine: myTemplates?.length || 0,
-  };
-
-  // Synchronisation avec données serveur
-  useEffect(() => {
-    setTemplates(initialTemplates);
-  }, [initialTemplates]);
-
-  const handleDelete = () => {
-    alert("workout Supprimé");
-  };
-
-  const handleUpdate = () => {
-    alert("workout modifié");
-  };
   return (
     <div>
-      <div>
-        {/* ONGLETS */}
-        <WorkoutTabs
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-          counts={counts}
-        />
-      </div>
+      <Link href="/workouts/create" className="LinkButton mb-10">
+        + Créer un nouvel entraînement
+      </Link>
       {/* Cards */}
       {templates?.map((template) => (
         <WorkoutTemplateCard
-          key={template?.id}
+          key={template?._id}
           workout={template}
-          onDelete={handleDelete}
-          onUpdate={handleUpdate}
+          userId={userId}
         />
       ))}
-
-      {/* Bouton créer */}
-      {activeTab === "mine" && (
-        <Link href="/workouts/create" className="LinkButton">
-          + Créer un nouvel entraînement
-        </Link>
-      )}
     </div>
   );
 }

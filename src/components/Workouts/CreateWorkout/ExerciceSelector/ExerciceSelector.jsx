@@ -2,7 +2,7 @@ import ExerciseGroupSelect from "@/components/Exercises/ExerciseGroup/ExerciseGr
 import ExerciseTabs from "@/components/Exercises/ExerciseTabs/ExerciseTabs";
 import MuscleFilters from "@/components/Exercises/MusclesFilters/MuscleFilters";
 import SearchExercise from "../SearchExercise/SearchExercise";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Button from "@/components/Buttons/Button";
 
 export default function ExerciceSelector({
@@ -16,6 +16,7 @@ export default function ExerciceSelector({
   setSelectedMuscle,
   favoriteExerciseMuscles,
   setSelectedExerciseId,
+  exercisesAdded,
   selectedExerciseId,
   grouped,
   setStep,
@@ -23,14 +24,20 @@ export default function ExerciceSelector({
   onSearchChange,
   onCloseExerciseSelector,
 }) {
-  const [errorNoExercise, setErrorNoExercise] = useState(null); //Erreur si pas d'exercice sélectionné
+  const [error, setError] = useState(null); //Erreur si pas d'exercice sélectionné
   // Vérifier si un exercice est sélectionner avant de passer à l'étape 2
   const handleSubmit = () => {
     if (!selectedExerciseId) {
-      setErrorNoExercise(true);
+      setError("Veuillez sélectionner un exercice");
       return;
     }
-    setErrorNoExercise(null);
+    // Vérifier si l'exercie a déjà été ajouté
+    if (exercisesAdded.some((ex) => ex._id === selectedExerciseId)) {
+      setError("Cet exercice a déjà été ajouté");
+      return;
+    }
+
+    setError(null);
     setStep(2);
   };
 
@@ -78,9 +85,10 @@ export default function ExerciceSelector({
       {/*  sélecteur d'exercices par muscle */}
       <ExerciseGroupSelect
         onSelectExerciseId={setSelectedExerciseId}
-        errorNoExercise={errorNoExercise}
+        error={error}
         grouped={grouped}
         onCloseExerciseSelector={onCloseExerciseSelector}
+        exercisesAdded={exercisesAdded}
       />
       <div className="flex items-center gap-3 my-5">
         <Button type="button" close onClick={onCloseExerciseSelector}>

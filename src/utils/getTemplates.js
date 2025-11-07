@@ -1,44 +1,28 @@
 import connectDB from "@/libs/mongodb";
 import { ObjectId } from "mongodb";
 
-export async function getPublicTemplates() {
-  const db = await connectDB();
-  const publicTemplates =
-    (await db
-      .collection("workoutTemplates")
-      .find({ isPublic: true })
-      .toArray()) || [];
-
-  return publicTemplates?.map((e) => ({
-    ...e,
-    type: "public",
-    _id: e._id.toString(),
-  }));
-}
-
-export async function getPrivateTemplates(userId) {
+export async function getWorkouts(userId) {
   const db = await connectDB();
 
   const user = await db
     .collection("users")
     .findOne({ _id: new ObjectId(userId) });
 
-  const privateTemplates = user?.workoutTemplates || [];
+  const workouts = user?.workouts || [];
 
-  return privateTemplates.map((e) => ({
+  return workouts.map((e) => ({
     ...e,
-    type: "private",
     _id: e._id.toString(),
   }));
 }
 
-export async function getAllTemplates(userId) {
-  const [publicTemplates, privateTemplates] = await Promise.all([
-    getPublicTemplates(),
-    getPrivateTemplates(userId),
-  ]);
+export async function getWorkoutById(userId, workoutId) {
+  const db = await connectDB();
 
-  const allTemplates = [...publicTemplates, ...privateTemplates];
+  const user = await db
+    .collection("users")
+    .findOne({ _id: new ObjectId(userId) });
+  const workout = user?.workouts.find((w) => w._id.toString() === workoutId);
 
-  return allTemplates;
+  return workout;
 }

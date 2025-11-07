@@ -1,5 +1,11 @@
 // hooks/useExercices.ts
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  keepPreviousData,
+} from "@tanstack/react-query";
+import { toast } from "react-toastify";
 
 // 1️⃣ Hook pour LIRE les exercices
 export function useExercises(userId, isAdmin, initialData) {
@@ -8,12 +14,13 @@ export function useExercises(userId, isAdmin, initialData) {
   return useQuery({
     queryKey: key,
     queryFn: async () => {
-      console.log("🌐 FETCH API /api/exercises"); // ✅ Ajoute ce log
       const res = await fetch("/api/exercises");
       if (!res.ok) throw new Error("Erreur fetch");
-      return res.json();
+      const data = await res.json();
+      return data;
     },
     initialData: initialData,
+    placeholderData: keepPreviousData,
     staleTime: 1000 * 60 * 5, // ✅ 5 minutes - Pas de refetch immédiat
     gcTime: 1000 * 60 * 60,
     enabled: !!userId,
@@ -107,7 +114,9 @@ export function useUpdateExercise(userId, isAdmin) {
     onError: (err, variables, context) => {
       queryClient.setQueryData(key, context?.previousExercices);
     },
-
+    onSuccess: () => {
+      toast.success("Votre exercice a été modifié.");
+    },
     // ✅ Sync avec serveur après succès/erreur
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: key });
@@ -125,7 +134,7 @@ export function useDeleteExercise(userId, isAdmin) {
         method: "DELETE",
       });
       if (!response.ok) {
-        throw new Error("Erreur lors de la suppression de l'xercice");
+        throw new Error("Erreur lors de la suppression de l'exercice");
       }
       return response.json();
     },
@@ -138,6 +147,9 @@ export function useDeleteExercise(userId, isAdmin) {
 
       return { previousExercices };
     },
+    onSuccess: () => {
+      toast.success("Votre exercice a été supprimé.");
+    },
     onError: (err, id, context) =>
       queryClient.setQueryData(key, context?.previousExercices),
     onSettled: () => queryClient.invalidateQueries({ queryKey: key }),
@@ -149,7 +161,6 @@ export function useFavorites(userId, initialData) {
   return useQuery({
     queryKey: ["favorites", userId],
     queryFn: async () => {
-      console.log("🌐 FETCH API /api/exercises/favorites"); // ✅
       const response = await fetch("/api/exercises/favorites");
       if (!response.ok) throw new Error("Erreur fetch favoris");
       const data = await response.json();
@@ -211,8 +222,6 @@ export function useToggleFavorite(userId) {
       );
       console.error("Erreur toggle favori:", err);
     },
-
-    // ✅ onSettled doit être une fonction
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["favorites", userId] });
     },

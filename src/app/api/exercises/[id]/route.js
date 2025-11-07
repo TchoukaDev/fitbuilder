@@ -159,10 +159,13 @@ export async function DELETE(request, { params }) {
     revalidatePath("/dashboard");
     revalidatePath("/workouts/create");
 
-    return NextResponse.json({
-      success: true,
-      message: "Exercice privé supprimé",
-    });
+    return NextResponse.json(
+      {
+        success: true,
+        message: "Exercice privé supprimé",
+      },
+      { status: 200 },
+    );
   } catch (error) {
     console.error("Erreur:", error);
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });

@@ -1,7 +1,7 @@
 export default function ExerciseGroupSelect({
   onSelectExerciseId,
   grouped,
-  errorNoExercise,
+  error,
 }) {
   return (
     <div>
@@ -28,9 +28,7 @@ export default function ExerciseGroupSelect({
           )),
         )}
       </select>
-      {errorNoExercise && (
-        <p className="formError my-3">Vous devez sélectionner un exercice</p>
-      )}
+      {error && <p className="formError my-3">{error}</p>}
     </div>
   );
 }
