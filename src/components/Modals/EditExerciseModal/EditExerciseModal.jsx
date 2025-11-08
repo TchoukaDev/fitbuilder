@@ -68,7 +68,10 @@ export default function EditExerciseModal({ exercise, onSave, onClose }) {
               required
               value={formData.sets}
               onChange={(e) =>
-                setFormData({ ...formData, sets: parseInt(e.target.value) })
+                setFormData({
+                  ...formData,
+                  sets: parseInt(e.target.value) || 0,
+                })
               }
             />
             <Label htmlFor="sets" value={formData.sets}>
@@ -106,9 +109,7 @@ export default function EditExerciseModal({ exercise, onSave, onClose }) {
               onChange={(e) =>
                 setFormData({
                   ...formData,
-                  targetWeight: e.target.value
-                    ? parseFloat(e.target.value)
-                    : "",
+                  targetWeight: e.target.value ? parseFloat(e.target.value) : 0,
                 })
               }
             />

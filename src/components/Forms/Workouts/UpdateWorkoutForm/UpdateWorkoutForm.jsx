@@ -303,20 +303,31 @@ export default function UpdatedWorkoutForm({
                           </p>
                         )}
                       </div>
-
                       {/* Actions */}
                       <div className="flex flex-col items-start gap-2">
-                        {/* ✅ Bouton MODIFIER */}
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setEditingExercise({ exercise, index })
-                          }
-                          className="p-1 text-blue-600 hover:bg-blue-50 rounded transition cursor-pointer"
-                          title="Modifier l'exercice"
-                        >
-                          <Edit size={20} />
-                        </button>
+                        <div className="flex gap-1">
+                          {/* ✅ Bouton MODIFIER */}
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setEditingExercise({ exercise, index })
+                            }
+                            className="p-1 text-blue-600 hover:bg-blue-50 rounded transition cursor-pointer"
+                            title="Modifier l'exercice"
+                          >
+                            <Edit size={20} />
+                          </button>
+
+                          {/* Bouton supprimer */}
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveExercise(index)}
+                            className="p-1 text-red-600 hover:bg-red-50 rounded transition cursor-pointer"
+                            title="Retirer l'exercice"
+                          >
+                            <SquareX size={20} />
+                          </button>
+                        </div>
 
                         {/* Boutons déplacer */}
                         {formData.exercises.length > 1 && (
@@ -342,16 +353,6 @@ export default function UpdatedWorkoutForm({
                             </button>
                           </div>
                         )}
-
-                        {/* Bouton supprimer */}
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveExercise(index)}
-                          className="p-1 text-red-600 hover:bg-red-50 rounded transition cursor-pointer"
-                          title="Retirer l'exercice"
-                        >
-                          <SquareX size={20} />
-                        </button>
                       </div>
                     </div>
                   </motion.div>

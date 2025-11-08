@@ -17,12 +17,7 @@ export default function ExerciseConfiguration({
   const [error, setError] = useState(null);
 
   const handleSubmit = () => {
-    if (
-      !sets.trim() ||
-      !reps.trim() ||
-      !targetWeight.trim() ||
-      !restTime.trim()
-    ) {
+    if (!sets || !reps || !targetWeight || !restTime) {
       setError(true);
       return;
     }
@@ -47,7 +42,7 @@ export default function ExerciseConfiguration({
           type="number"
           placeholder=""
           onChange={(e) =>
-            setSets(e.target.value ? parseInt(e.target.value) : "")
+            setSets(e.target.value ? parseInt(e.target.value) : 0)
           }
           required
         />

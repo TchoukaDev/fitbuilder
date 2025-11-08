@@ -2,7 +2,13 @@
 import Button from "@/components/Buttons/Button";
 import Label from "@/components/Forms/FormsComponents/Label/Label";
 import SelectExercicesModal from "@/components/Modals/SelectExercicesModal/SelectExercicesModal";
-import { SquareArrowDown, SquareArrowUp, SquareX, Plus } from "lucide-react";
+import {
+  SquareArrowDown,
+  SquareArrowUp,
+  SquareX,
+  Plus,
+  Edit,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { BeatLoader, ClipLoader } from "react-spinners";
@@ -10,6 +16,7 @@ import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { useCreateWorkout } from "@/hooks/useWorkouts";
+import EditExerciseModal from "@/components/Modals/EditExerciseModal/EditExerciseModal";
 
 export default function NewWorkoutForm({
   allExercises,
@@ -25,6 +32,7 @@ export default function NewWorkoutForm({
   const [isOpen, setIsOpen] = useState(false);
   const [hasLoaded, setHasLoaded] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [editingExercise, setEditingExercise] = useState(null); // ✅ Pour l'édition d'exercice
 
   // Variables
   const router = useRouter();
@@ -52,6 +60,7 @@ export default function NewWorkoutForm({
 
   // Fermeture modale
   const handleCloseExerciseSelector = () => setIsOpen(false);
+  const handleCloseEditModal = () => setEditingExercise(null);
 
   // Ajouter exercice
   const handleSelectExercise = (selectedExercise) => {
@@ -63,6 +72,19 @@ export default function NewWorkoutForm({
       ...prev,
       exercises: [...prev.exercises, orderedExercise],
     }));
+  };
+
+  // ✅ Modifier un exercice existant
+  const handleUpdateExercise = (updatedExercise) => {
+    const newExercises = formData.exercises.map((ex, i) =>
+      i === editingExercise.index
+        ? { ...updatedExercise, order: ex.order }
+        : ex,
+    );
+
+    setFormData({ ...formData, exercises: newExercises });
+    setEditingExercise(null);
+    toast.success("Exercice modifié");
   };
 
   // Supprimer exercice et modifier ordre
@@ -299,6 +321,29 @@ export default function NewWorkoutForm({
 
                       {/* Actions */}
                       <div className="flex flex-col items-start gap-2">
+                        <div className="flex gap-1">
+                          {/* ✅ Bouton MODIFIER */}
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setEditingExercise({ exercise, index })
+                            }
+                            className="p-1 text-blue-600 hover:bg-blue-50 rounded transition cursor-pointer"
+                            title="Modifier l'exercice"
+                          >
+                            <Edit size={20} />
+                          </button>
+
+                          {/* Bouton supprimer */}
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveExercise(index)}
+                            className="p-1 text-red-600 hover:bg-red-50 rounded transition cursor-pointer"
+                            title="Retirer l'exercice"
+                          >
+                            <SquareX size={20} />
+                          </button>
+                        </div>
                         {/* Boutons déplacer */}
                         {formData.exercises.length > 1 && (
                           <div className="flex gap-1">
@@ -323,16 +368,6 @@ export default function NewWorkoutForm({
                             </button>
                           </div>
                         )}
-
-                        {/* Bouton supprimer */}
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveExercise(index)}
-                          className="p-1 text-red-600 hover:bg-red-50 rounded transition cursor-pointer"
-                          title="Retirer l'exercice"
-                        >
-                          <SquareX size={20} />
-                        </button>
                       </div>
                     </div>
                   </motion.div>
@@ -389,6 +424,15 @@ export default function NewWorkoutForm({
           onCloseExerciseSelector={handleCloseExerciseSelector}
           allExercises={allExercises}
           favorites={favorites}
+        />
+      )}
+
+      {/* ✅ Modale d'édition d'exercice */}
+      {editingExercise && (
+        <EditExerciseModal
+          exercise={editingExercise.exercise}
+          onSave={handleUpdateExercise}
+          onClose={handleCloseEditModal}
         />
       )}
     </>
