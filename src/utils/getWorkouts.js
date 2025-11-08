@@ -24,5 +24,5 @@ export async function getWorkoutById(userId, workoutId) {
     .findOne({ _id: new ObjectId(userId) });
   const workout = user?.workouts.find((w) => w._id.toString() === workoutId);
 
-  return workout;
+  return { ...workout, _id: workoutId };
 }

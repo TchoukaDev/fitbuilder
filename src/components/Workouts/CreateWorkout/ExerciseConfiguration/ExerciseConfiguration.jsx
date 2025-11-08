@@ -46,7 +46,9 @@ export default function ExerciseConfiguration({
           className="input peer"
           type="number"
           placeholder=""
-          onChange={(e) => setSets(e.target.value)}
+          onChange={(e) =>
+            setSets(e.target.value ? parseInt(e.target.value) : "")
+          }
           required
         />
         <Label htmlFor="sets" value={sets}>
@@ -59,11 +61,13 @@ export default function ExerciseConfiguration({
           className="input peer"
           type="number"
           placeholder=""
-          onChange={(e) => setReps(e.target.value)}
+          onChange={(e) =>
+            setReps(e.target.value ? parseInt(e.target.value) : "")
+          }
           required
         />
         <Label htmlFor="reps" value={reps}>
-          Nombre de répétitions*
+          Répétitions* (ex: "10" ou "8-12")
         </Label>
       </div>{" "}
       {/* Charge */}
@@ -72,11 +76,13 @@ export default function ExerciseConfiguration({
           className="input peer"
           type="number"
           placeholder=""
-          onChange={(e) => setTargetWeight(e.target.value)}
+          onChange={(e) =>
+            setTargetWeight(e.target.value ? parseFloat(e.target.value) : "")
+          }
           required
         />
         <Label htmlFor="weight" value={targetWeight}>
-          Charge cible (kg)*
+          Poids prévu (kg)*
         </Label>
       </div>{" "}
       {/* Repos */}
@@ -85,11 +91,13 @@ export default function ExerciseConfiguration({
           className="input peer"
           placeholder=""
           type="number"
-          onChange={(e) => setRestTime(e.target.value)}
+          onChange={(e) =>
+            setRestTime(e.target.value ? parseInt(e.target.value) : "")
+          }
           required
         />
         <Label htmlFor="rest" value={restTime}>
-          Temps de repos (s)*
+          Temps de repos (secondes)*
         </Label>
       </div>{" "}
       {/* Notes (optionnel) */}
@@ -104,6 +112,9 @@ export default function ExerciseConfiguration({
         <Label htmlFor="notes" value={notes}>
           Notes (Optionnel)
         </Label>
+        <p className="text-xs text-gray-500 mt-1">
+          Ex: "Tempo lent", "Prise large", etc.
+        </p>
       </div>{" "}
       {error && (
         <p className="formError my-3">
@@ -125,7 +136,9 @@ export default function ExerciseConfiguration({
           Ajouter
         </Button>
       </div>{" "}
-      <p className="text-center text-xs">(*) Champs obligatoires</p>
+      <p className="text-xs text-gray-500 text-center">
+        <span className="text-red-500">*</span> Champs obligatoires
+      </p>
     </div>
   );
 }

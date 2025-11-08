@@ -84,7 +84,7 @@ export function useUpdateWorkout(userId) {
   const key = ["workout", userId];
   return useMutation({
     mutationFn: async ({ id, updatedWorkout }) => {
-      const res = await fetch(`/api/workout/${id}`, {
+      const res = await fetch(`/api/workouts/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedWorkout),

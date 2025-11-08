@@ -11,7 +11,7 @@ import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { useCreateWorkout } from "@/hooks/useWorkouts";
 
-export default function WorkoutTemplateForm({
+export default function NewWorkoutForm({
   allExercises,
   favorites,
   isAdmin,
@@ -188,8 +188,6 @@ export default function WorkoutTemplateForm({
                 type="number"
                 className="input peer"
                 placeholder=""
-                min="15"
-                step="5"
                 {...register("estimatedDuration", {
                   required: "Veuillez saisir une durée estimée",
                 })}
