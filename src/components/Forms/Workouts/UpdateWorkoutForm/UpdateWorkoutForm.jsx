@@ -135,7 +135,6 @@ export default function UpdatedWorkoutForm({
       },
       {
         onSuccess: (result) => {
-          toast.success(result.message || "Plan modifié avec succès");
           router.push(`/workouts/${workout._id}`);
           router.refresh();
         },
@@ -288,9 +287,12 @@ export default function UpdatedWorkoutForm({
                             {exercise.sets} séries × {exercise.reps} reps
                           </span>
 
-                          {exercise.targetWeight && (
-                            <span>🏋️ {exercise.targetWeight} kg</span>
-                          )}
+                          <span>
+                            🏋️{" "}
+                            {exercise.targetWeight === 0
+                              ? "Poids du corps"
+                              : exercise.targetWeight + "kg"}{" "}
+                          </span>
 
                           {exercise.restTime && (
                             <span>⏱️ Repos: {exercise.restTime}s</span>

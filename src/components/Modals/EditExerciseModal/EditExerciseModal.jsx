@@ -1,15 +1,14 @@
 "use client";
 import { useState } from "react";
-import { X } from "lucide-react";
 import Button from "@/components/Buttons/Button";
 import Label from "@/components/Forms/FormsComponents/Label/Label";
-import { toast } from "react-toastify";
 
 export default function EditExerciseModal({ exercise, onSave, onClose }) {
+  const [error, setError] = useState(null);
   const [formData, setFormData] = useState({
     sets: exercise.sets || 3,
     reps: exercise.reps || "10",
-    targetWeight: exercise.targetWeight || "",
+    targetWeight: exercise.targetWeight || 0,
     restTime: exercise.restTime || 90,
     notes: exercise.notes || "",
   });
@@ -18,8 +17,12 @@ export default function EditExerciseModal({ exercise, onSave, onClose }) {
     e.preventDefault();
 
     // Validation
-    if (!formData.sets || !formData.reps) {
-      toast.error("Séries et répétitions sont obligatoires");
+    if (
+      formData.sets === "" ||
+      formData.reps === "" ||
+      formData.restTime === ""
+    ) {
+      setError(true);
       return;
     }
 
@@ -89,7 +92,7 @@ export default function EditExerciseModal({ exercise, onSave, onClose }) {
               required
               value={formData.reps}
               onChange={(e) =>
-                setFormData({ ...formData, reps: e.target.value })
+                setFormData({ ...formData, reps: e.target.value || 0 })
               }
             />
             <Label htmlFor="reps" value={formData.reps}>
@@ -109,7 +112,7 @@ export default function EditExerciseModal({ exercise, onSave, onClose }) {
               onChange={(e) =>
                 setFormData({
                   ...formData,
-                  targetWeight: e.target.value ? parseFloat(e.target.value) : 0,
+                  targetWeight: parseFloat(e.target.value) || 0,
                 })
               }
             />
@@ -130,7 +133,7 @@ export default function EditExerciseModal({ exercise, onSave, onClose }) {
               onChange={(e) =>
                 setFormData({
                   ...formData,
-                  restTime: e.target.value ? parseInt(e.target.value) : "",
+                  restTime: parseInt(e.target.value) || 0,
                 })
               }
             />
@@ -159,6 +162,13 @@ export default function EditExerciseModal({ exercise, onSave, onClose }) {
               Ex: "Tempo lent", "Prise large", etc.
             </p>
           </div>
+
+          {/* Erreur formulaire  */}
+          {error && (
+            <p className="formError my-3">
+              Certains champs obligatoires ne sont pas remplis.
+            </p>
+          )}
 
           {/* Boutons */}
           <div className="flex gap-3 pt-4 border-t border-gray-200">

@@ -86,7 +86,7 @@ export async function POST(req) {
     return NextResponse.json(
       {
         success: true,
-        id: exerciseId,
+        id: exerciseId.toString(),
         message: "Exercice personnel créé",
       },
       { status: 201 },

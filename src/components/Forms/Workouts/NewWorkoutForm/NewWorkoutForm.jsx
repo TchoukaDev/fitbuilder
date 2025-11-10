@@ -212,6 +212,7 @@ export default function NewWorkoutForm({
                 placeholder=""
                 {...register("estimatedDuration", {
                   required: "Veuillez saisir une durée estimée",
+                  valueAsNumber: true,
                 })}
               />
               <Label
@@ -303,11 +304,14 @@ export default function NewWorkoutForm({
                             {exercise.sets} séries × {exercise.reps} reps
                           </span>
 
-                          {exercise.targetWeight && (
-                            <span>🏋️ {exercise.targetWeight} kg</span>
-                          )}
+                          <span>
+                            🏋️{" "}
+                            {exercise.targetWeight === 0
+                              ? "Poids du corps"
+                              : exercise.targetWeight + "kg"}{" "}
+                          </span>
 
-                          {exercise.restTime && (
+                          {exercise.restTime != null && (
                             <span>⏱️ Repos: {exercise.restTime}s</span>
                           )}
                         </div>
@@ -337,7 +341,10 @@ export default function NewWorkoutForm({
                           {/* Bouton supprimer */}
                           <button
                             type="button"
-                            onClick={() => handleRemoveExercise(index)}
+                            onClick={() => {
+                              if (confirm("Voulez vous retirer cet exercice?"))
+                                handleRemoveExercise(index);
+                            }}
                             className="p-1 text-red-600 hover:bg-red-50 rounded transition cursor-pointer"
                             title="Retirer l'exercice"
                           >

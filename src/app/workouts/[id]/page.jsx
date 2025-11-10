@@ -3,11 +3,11 @@ import Header from "@/components/Layout/Header/Header";
 import Button from "@/components/Buttons/Button";
 import { getServerSession } from "next-auth";
 import { notFound } from "next/navigation";
-import { Calendar, Clock, Dumbbell, Edit, Play, ArrowLeft } from "lucide-react";
+import { Calendar, Clock, Dumbbell, Edit, ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import WorkoutDetailClient from "@/components/Workouts/WorkoutDetailDelete/WorkoutDetailDelete";
 import { getWorkoutById } from "@/utils/getWorkouts";
 import WorkoutDetailDelete from "@/components/Workouts/WorkoutDetailDelete/WorkoutDetailDelete";
+import StartWorkoutButton from "@/components/Buttons/StartWorkoutButton";
 
 export default async function WorkoutDetailPage({ params }) {
   const session = await getServerSession(authOptions);
@@ -81,11 +81,10 @@ export default async function WorkoutDetailPage({ params }) {
 
           {/* Actions */}
           <div className="flex gap-3 pt-4 border-t border-gray-200 items-center">
-            <Button className="flex-1 flex items-center justify-center gap-2">
-              <Play size={20} />
-              Commencer cette séance
-            </Button>
+            {/* Démarrer la session */}
+            <StartWorkoutButton userId={userId} workout={workout} />
 
+            {/* Modifier */}
             <Link href={`/workouts/${workout._id}/edit`}>
               <button className="px-4 py-2 flex items-center gap-2 border border-blue-600 text-blue-600 hover:bg-blue-50 rounded-md transition cursor-pointer">
                 <Edit size={18} />
@@ -93,6 +92,7 @@ export default async function WorkoutDetailPage({ params }) {
               </button>
             </Link>
 
+            {/* Supprimer */}
             <WorkoutDetailDelete workoutId={workoutId} userId={userId} />
           </div>
         </div>

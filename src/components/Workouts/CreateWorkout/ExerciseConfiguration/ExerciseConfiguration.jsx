@@ -1,6 +1,7 @@
 import Button from "@/components/Buttons/Button";
 import Label from "@/components/Forms/FormsComponents/Label/Label";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 export default function ExerciseConfiguration({
   exerciseSelected,
@@ -17,7 +18,7 @@ export default function ExerciseConfiguration({
   const [error, setError] = useState(null);
 
   const handleSubmit = () => {
-    if (!sets || !reps || !targetWeight || !restTime) {
+    if (sets === "" || reps === "" || targetWeight === "" || restTime === "") {
       setError(true);
       return;
     }
@@ -29,6 +30,7 @@ export default function ExerciseConfiguration({
       restTime,
       notes,
     };
+    toast.success("Exercice ajouté!");
     onSelectExercise(exerciseToAdd);
     onCloseExerciseSelector();
   };
@@ -54,11 +56,8 @@ export default function ExerciseConfiguration({
       <div className="relative">
         <input
           className="input peer"
-          type="number"
           placeholder=""
-          onChange={(e) =>
-            setReps(e.target.value ? parseInt(e.target.value) : "")
-          }
+          onChange={(e) => setReps(e.target.value || 0)}
           required
         />
         <Label htmlFor="reps" value={reps}>
@@ -72,7 +71,7 @@ export default function ExerciseConfiguration({
           type="number"
           placeholder=""
           onChange={(e) =>
-            setTargetWeight(e.target.value ? parseFloat(e.target.value) : "")
+            setTargetWeight(e.target.value ? parseFloat(e.target.value) : 0)
           }
           required
         />
@@ -87,7 +86,7 @@ export default function ExerciseConfiguration({
           placeholder=""
           type="number"
           onChange={(e) =>
-            setRestTime(e.target.value ? parseInt(e.target.value) : "")
+            setRestTime(e.target.value ? parseInt(e.target.value) : 0)
           }
           required
         />
@@ -111,12 +110,14 @@ export default function ExerciseConfiguration({
           Ex: "Tempo lent", "Prise large", etc.
         </p>
       </div>{" "}
+      {/* Erreur formulaire  */}
       {error && (
         <p className="formError my-3">
           Certains champs obligatoires ne sont pas remplis.
         </p>
       )}
       <div className="flex items-center gap-3">
+        {/* Bouton retour Etape 1 */}
         <Button
           type="button"
           close
@@ -126,7 +127,8 @@ export default function ExerciseConfiguration({
           }}
         >
           Retour
-        </Button>
+        </Button>{" "}
+        {/* Bouton validation */}
         <Button type="button" onClick={handleSubmit}>
           Ajouter
         </Button>

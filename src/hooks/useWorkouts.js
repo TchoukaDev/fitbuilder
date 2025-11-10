@@ -7,7 +7,6 @@ import {
 import { toast } from "react-toastify";
 
 export function useWorkouts(initialData, userId) {
-  const queryClient = useQueryClient();
   return useQuery({
     queryKey: ["workouts", userId],
     queryFn: async () => {
@@ -21,7 +20,7 @@ export function useWorkouts(initialData, userId) {
     initialData: initialData,
     placeholderData: keepPreviousData,
     staleTime: 1000 * 60 * 5,
-    gcTime: 1000 * 60 * 60,
+    gcTime: 1000 * 60 * 30,
     enabled: !!userId,
   });
 }
@@ -68,7 +67,6 @@ export function useCreateWorkout(userId) {
 
     onError: (err, newWorkout, context) => {
       queryClient.setQueryData(key, context.previousWorkouts);
-      console.error("Erreur:", err);
     },
 
     onSettled: () => {
