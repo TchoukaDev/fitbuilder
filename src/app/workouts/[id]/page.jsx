@@ -1,12 +1,11 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import Header from "@/components/Layout/Header/Header";
-import Button from "@/components/Buttons/Button";
 import { getServerSession } from "next-auth";
 import { notFound } from "next/navigation";
 import { Calendar, Clock, Dumbbell, Edit, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { getWorkoutById } from "@/utils/getWorkouts";
-import WorkoutDetailDelete from "@/components/Workouts/WorkoutDetailDelete/WorkoutDetailDelete";
+import WorkoutDetailDelete from "@/components/Features/Workouts/WorkoutDetailDelete/WorkoutDetailDelete";
 import StartWorkoutButton from "@/components/Buttons/StartWorkoutButton";
 
 export default async function WorkoutDetailPage({ params }) {

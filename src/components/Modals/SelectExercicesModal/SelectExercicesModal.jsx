@@ -1,6 +1,6 @@
 "use client";
 
-import ExercisesList from "@/components/Exercises/ExercisesList/ExercisesList";
+import ExercisesList from "@/components/Features/Exercises/ExercisesList/ExercisesList";
 import { createPortal } from "react-dom";
 
 export default function SelectExercicesModal({

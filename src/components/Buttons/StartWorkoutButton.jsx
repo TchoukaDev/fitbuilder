@@ -18,7 +18,7 @@ export default function StartWorkoutButton({ userId, workout }) {
       },
       {
         onSuccess: (data) => {
-          router.push(`/session/${data.sessionId}`);
+          router.push(`/sessions/${data.sessionId}`);
         },
         onError: (error) => {
           toast.error(error.message || "Une erreur est survenue"); //
