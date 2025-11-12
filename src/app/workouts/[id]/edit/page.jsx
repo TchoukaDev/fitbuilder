@@ -13,7 +13,6 @@ export default async function EditWorkout({ params }) {
   const workoutId = resolvedparams?.id;
   const allExercises = await getAllExercises(userId);
   const workout = await getWorkoutById(userId, workoutId);
-  console.log(workout);
   const favorites = await getFavoritesExercises(userId);
 
   return (

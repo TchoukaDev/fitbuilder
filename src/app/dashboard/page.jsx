@@ -4,7 +4,6 @@ import Header from "../../components/Layout/Header/Header";
 
 export default async function Dashboard({ searchParams }) {
   const session = await getServerSession(authOptions);
-  console.log(session.user?.role);
   const resolvedSearchParams = await searchParams;
   const error = resolvedSearchParams?.error;
 

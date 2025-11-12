@@ -10,7 +10,7 @@ import { toast } from "react-toastify";
 import FinishSessionModal from "@/components/Modals/FinishSessionModal/FinishSessionModal";
 import CancelSessionModal from "@/components/Modals/CancelModalSession/CancelModalSession";
 
-export default function SessionExecution({ initialSessionData, userId }) {
+export default function SessionExecution({ initialSessionData }) {
   const router = useRouter();
 
   const { data: sessionData = [] } = useGetSessionById(
@@ -28,7 +28,6 @@ export default function SessionExecution({ initialSessionData, userId }) {
   const [isMounted, setIsMounted] = useState(false); // Pour le placeholder du chronomètre
   const [isFinishModalOpen, setIsFinishModalOpen] = useState(false); //Gestion de la modale de fin
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false); //Gestion de la modale d'annulation
-
   const completedCount = exercises.filter((ex) => ex.completed).length; //Nombre d'exercices complétés
   const totalExercises = exercises.length;
 

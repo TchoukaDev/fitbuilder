@@ -21,7 +21,6 @@ export default function SessionExerciseCard({
   useEffect(() => {
     if (isActive) setIsExpanded(true);
   }, [isActive]);
-
   return (
     <div
       className={`

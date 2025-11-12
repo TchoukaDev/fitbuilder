@@ -8,8 +8,6 @@ import { toast } from "react-toastify";
 
 export default function WorkoutTemplateCard({ workout, onUpdate, userId }) {
   const { mutate: deleteWorkout, isPending } = useDeleteWorkout(userId);
-  const { mutate: updateWorkout, isPending: isUpdating } =
-    useUpdateWorkout(userId);
   const date = new Date(workout.createdAt);
   const workoutDate = date.toLocaleDateString("fr-FR", {
     day: "numeric",
@@ -23,8 +21,6 @@ export default function WorkoutTemplateCard({ workout, onUpdate, userId }) {
       onError: (err) => toast.error(err),
     });
   };
-
-  const handleUpdate = () => {};
 
   return (
     <div className="border border-gray-300 rounded-lg p-5 bg-white shadow-sm hover:shadow-md transition-all">
@@ -69,7 +65,7 @@ export default function WorkoutTemplateCard({ workout, onUpdate, userId }) {
         {workout.timesUsed > 0 && (
           <div className="flex items-center gap-1">
             <Calendar size={16} />
-            <span>Utilisé {workout.timesUsed}x</span>
+            <span>Réalisé {workout.timesUsed}x</span>
           </div>
         )}
       </div>

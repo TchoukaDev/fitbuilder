@@ -3,6 +3,7 @@ import { authOptions } from "../auth/[...nextauth]/route";
 import { NextResponse } from "next/server";
 import connectDB from "@/libs/mongodb";
 import { ObjectId } from "mongodb";
+import { revalidatePath } from "next/cache";
 
 export async function POST(req) {
   const session = await getServerSession(authOptions);
@@ -40,6 +41,12 @@ export async function POST(req) {
       completed: false,
     }));
 
+    // ✅ AJOUTE CE LOG
+    console.log("🔍 sessionExercises créés:", sessionExercises);
+    console.log(
+      "🔍 Premier exercice:",
+      JSON.stringify(sessionExercises[0], null, 2),
+    );
     // Créer la session
     const sessionId = new ObjectId();
 
@@ -113,6 +120,10 @@ export async function POST(req) {
       },
     );
 
+    revalidatePath("/sessions");
+    revalidatePath(`/sessions/${sessionId}`);
+    revalidatePath("/dashboard");
+    revalidatePath("/admin");
     return NextResponse.json(
       {
         success: true,

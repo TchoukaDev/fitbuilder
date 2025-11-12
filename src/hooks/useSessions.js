@@ -65,9 +65,11 @@ export function useCreateSession(userId) {
     // onError: (error, newSession, context) => {
     //   queryClient.setQueryData(key, context.previousSessions);
     // },
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast.success("L'entraînement a démarré, bon courage! 💪");
+      const sessionId = data.sessionId;
       queryClient.invalidateQueries({ queryKey: key });
+      queryClient.invalidateQueries({ queryKey: ["session", sessionId] });
     },
   });
 }
@@ -89,11 +91,9 @@ export function useGetSessionById(initialData, sessionId) {
     },
     initialData: initialData,
     placeholderData: keepPreviousData,
-    staleTime: Infinity,
-    gcTime: Infinity,
-    refetchOnMount: false, // ✅ Ne pas refetch au montage
+    staleTime: 1000 * 60 * 2,
+    gcTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false, // ✅ Ne pas refetch au focus
-    refetchOnReconnect: false, // Pas de refetch pendant l'exécution de la session
     enabled: !!sessionId,
   });
 }

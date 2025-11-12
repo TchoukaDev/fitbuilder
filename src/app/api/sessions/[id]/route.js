@@ -28,6 +28,7 @@ export async function GET(req, { params }) {
         { status: 404 },
       );
     }
+
     return NextResponse.json(singleSession, { status: 200 });
   } catch (error) {
     return NextResponse.json(
@@ -52,7 +53,7 @@ export async function PATCH(req, { params }) {
   }
 
   const { exercises } = await req.json();
-  console.log(exercises);
+
   if (!exercises || !Array.isArray(exercises)) {
     return NextResponse.json({ error: "Exercices invalides" }, { status: 400 });
   }
@@ -77,7 +78,12 @@ export async function PATCH(req, { params }) {
         { status: 404 },
       );
     }
+
+    revalidatePath("/sessions");
     revalidatePath(`/sessions/${sessionId}`);
+    revalidatePath("/dashboard");
+    revalidatePath("/admin");
+
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
     return NextResponse.json(
@@ -150,6 +156,11 @@ export async function PUT(req, { params }) {
         { status: 500 },
       );
     }
+
+    revalidatePath("/sessions");
+    revalidatePath(`/sessions/${sessionId}`);
+    revalidatePath("/dashboard");
+    revalidatePath("/admin");
 
     return NextResponse.json(
       {
@@ -260,6 +271,11 @@ export async function DELETE(req, { params }) {
         $set: { "workouts.$.lastUsedAt": newLastUsedAt }, // ✅ Restaurer ou null
       },
     );
+
+    revalidatePath("/sessions");
+    revalidatePath(`/sessions/${sessionId}`);
+    revalidatePath("/dashboard");
+    revalidatePath("/admin");
 
     return NextResponse.json(
       {
