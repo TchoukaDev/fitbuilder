@@ -13,7 +13,9 @@ export default async function ExercisesPage() {
   const userId = session?.user?.id;
 
   const exercises = (await getAllExercises(userId)) || [];
+  const serializedExercises = JSON.parse(JSON.stringify(exercises));
   const favorites = (await getFavoritesExercises(userId)) || [];
+  const serializedFavorites = JSON.parse(JSON.stringify(favorites));
 
   return (
     <>
@@ -21,8 +23,8 @@ export default async function ExercisesPage() {
       <main>
         <h1>Mes exercices</h1>
         <ExercisesList
-          initialExercises={exercises}
-          initialFavorites={favorites}
+          initialExercises={serializedExercises}
+          initialFavorites={serializedFavorites}
           isAdmin={isAdmin}
           userId={userId}
         />

@@ -1,4 +1,7 @@
 profil
 not-found
 muscle secondaire
-Revoir fermeture des modales
+Ajouter Bouton Start diredctement sur carte Workout
+calendrier
+stats
+stats admin

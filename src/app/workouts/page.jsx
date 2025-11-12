@@ -10,13 +10,17 @@ export default async function WorkoutsPage() {
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
   const templates = (await getWorkouts(userId)) || [];
+  const serializedTemplates = JSON.parse(JSON.stringify(templates));
 
   return (
     <>
       <Header />
       <main>
         <h1>Mes plans d'entraînement</h1>
-        <WorkoutTemplateList initialTemplates={templates} userId={userId} />
+        <WorkoutTemplateList
+          initialTemplates={serializedTemplates}
+          userId={userId}
+        />
       </main>
     </>
   );

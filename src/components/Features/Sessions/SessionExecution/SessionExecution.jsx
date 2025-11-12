@@ -5,18 +5,12 @@ import { useRouter } from "next/navigation";
 import { Clock } from "lucide-react";
 import Button from "@/components/Buttons/Button";
 import SessionExerciseCard from "../SessionExerciseCard/SessionExerciseCard";
-import { useGetSessionById } from "@/hooks/useSessions";
 import { toast } from "react-toastify";
 import FinishSessionModal from "@/components/Modals/FinishSessionModal/FinishSessionModal";
 import CancelSessionModal from "@/components/Modals/CancelModalSession/CancelModalSession";
 
-export default function SessionExecution({ initialSessionData }) {
+export default function SessionExecution({ sessionData, sessionId }) {
   const router = useRouter();
-
-  const { data: sessionData = [] } = useGetSessionById(
-    initialSessionData,
-    initialSessionData._id,
-  );
 
   // ═══════════════════════════════════════════════════════
   // 📊 STATE MANAGEMENT
@@ -31,51 +25,48 @@ export default function SessionExecution({ initialSessionData }) {
   const completedCount = exercises.filter((ex) => ex.completed).length; //Nombre d'exercices complétés
   const totalExercises = exercises.length;
 
+  //Sécurité Vérifier que exercises existe
+  if (!sessionData.exercises || sessionData.exercises.length === 0) {
+    return (
+      <div className="container mx-auto p-6 max-w-4xl">
+        <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded">
+          <p className="font-bold">Attention</p>
+          <p>Cette session ne contient aucun exercice.</p>
+          <Button onClick={() => router.push("/workouts")} className="mt-4">
+            Retour aux entraînements
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   // ═══════════════════════════════════════════════════════
   // ⏱️ CHRONOMÈTRE GLOBAL
   // ═══════════════════════════════════════════════════════
   useEffect(() => {
     if (!sessionData?.startedAt) return;
-    // ═══════════════════════════════════════════════════════
-    // 📅 1. CALCULER LE TEMPS DE DÉPART
-    // ═══════════════════════════════════════════════════════
+
+    // Calculer temps de départ (millisecondes)
+
     const startTime = new Date(sessionData.startedAt).getTime();
-    // sessionData.startedAt = "2024-01-15T10:30:00.000Z" (string ISO)
-    // new Date(...) = Convertit en objet Date
-    // .getTime() = Convertit en timestamp (millisecondes depuis 1970)
-    // Exemple : 1705318200000
 
-    // ═══════════════════════════════════════════════════════
-    // ⏲️ 2. CRÉER UN INTERVAL (s'exécute toutes les 1000ms = 1s)
-    // ═══════════════════════════════════════════════════════
+    // Interval de 1 seconde
     const interval = setInterval(() => {
-      // Cette fonction s'exécute CHAQUE SECONDE
+      //  Récupérer l'heure actuelle en millisecondes
 
-      // ───────────────────────────────────────────────────
-      // 🕐 Récupérer l'heure actuelle en millisecondes
-      // ───────────────────────────────────────────────────
       const now = Date.now();
-      // Exemple : 1705320000000 (15 minutes après startTime)
 
-      // ───────────────────────────────────────────────────
-      // ➗ Calculer le temps écoulé
-      // ───────────────────────────────────────────────────
+      // ➗ Calculer le temps écoulé (secondes)
+
       const elapsed = Math.floor((now - startTime) / 1000);
-      // now - startTime = 1800000 millisecondes (30 min)
-      // / 1000 = 1800 secondes
-      // Math.floor() = Arrondir à l'entier inférieur (1800.5 → 1800)
 
-      // ───────────────────────────────────────────────────
-      // 💾 Mettre à jour le state (déclenche un re-render)
-      // ───────────────────────────────────────────────────
       if (!isNaN(elapsed) && elapsed >= 0) {
         setElapsedTime(elapsed);
-        setIsMounted(true); // ✅ Marquer comme monté après le 1er calcul
+        setIsMounted(true);
       }
-      // elapsedTime passe de 0 → 1 → 2 → 3... chaque seconde
-    }, 1000); // ← Exécuter toutes les 1000ms (1 seconde)
+    }, 1000);
 
-    // Calculer immédiatement (pas attendre 1 seconde)
+    // Calculer immédiatement pour le début
     const now = Date.now();
     const elapsed = Math.floor((now - startTime) / 1000);
     if (!isNaN(elapsed) && elapsed >= 0) {
@@ -83,72 +74,24 @@ export default function SessionExecution({ initialSessionData }) {
       setIsMounted(true); // ✅
     }
 
-    // ═══════════════════════════════════════════════════════
-    // 🧹 3. CLEANUP FUNCTION (nettoyage)
-    // ═══════════════════════════════════════════════════════
+    // CLEANUP
     return () => clearInterval(interval);
-    // Pourquoi ? Si le composant se démonte (changement de page),
-    // il faut ARRÊTER l'interval sinon il continue à tourner
-    // en arrière-plan et cause des fuites mémoire + erreurs
   }, [sessionData.startedAt]);
-  // ↑ Dépendances : Re-exécuter ce useEffect SI startedAt change
-  //    (normalement il ne change jamais, donc useEffect s'exécute
-  //     seulement au montage du composant)
-
-  // ═══════════════════════════════════════════════════════
-  // 🔢 CALCULS & HELPERS
-  // ═══════════════════════════════════════════════════════
 
   const formatTime = (seconds) => {
-    // ═══════════════════════════════════════════════════════
-    // 🕐 CALCULER LES HEURES
-    // ═══════════════════════════════════════════════════════
+    // Calculer les heures
     const h = Math.floor(seconds / 3600);
-    // 3600 secondes = 1 heure
-    // Exemple : 7265 secondes / 3600 = 2.01
-    // Math.floor(2.01) = 2 heures
 
-    // ═══════════════════════════════════════════════════════
-    // 🕑 CALCULER LES MINUTES (du reste)
-    // ═══════════════════════════════════════════════════════
+    //  Calculer minutes
     const m = Math.floor((seconds % 3600) / 60);
-    // seconds % 3600 = reste après avoir retiré les heures
-    // 7265 % 3600 = 65 secondes restantes
-    // 65 / 60 = 1.08
-    // Math.floor(1.08) = 1 minute
 
-    // ═══════════════════════════════════════════════════════
-    // 🕒 CALCULER LES SECONDES (du reste)
-    // ═══════════════════════════════════════════════════════
+    // Calculer secondes
     const s = seconds % 60;
-    // 7265 % 60 = 5 secondes
 
-    // ═══════════════════════════════════════════════════════
-    // 🎨 FORMATER EN STRING (avec zéros devant si besoin)
-    // ═══════════════════════════════════════════════════════
+    //  Formatter
     return `${h.toString().padStart(2, "0")}:${m
       .toString()
       .padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
-
-    // ───────────────────────────────────────────────────────
-    // .toString() = Convertir nombre en string
-    // ───────────────────────────────────────────────────────
-    // h = 2 → "2"
-    // m = 1 → "1"
-    // s = 5 → "5"
-
-    // ───────────────────────────────────────────────────────
-    // .padStart(2, "0") = Ajouter des "0" devant si < 2 caractères
-    // ───────────────────────────────────────────────────────
-    // "2".padStart(2, "0") → "02"
-    // "1".padStart(2, "0") → "01"
-    // "5".padStart(2, "0") → "05"
-    // "12".padStart(2, "0") → "12" (déjà 2 caractères, rien à faire)
-
-    // ───────────────────────────────────────────────────────
-    // Résultat final :
-    // ───────────────────────────────────────────────────────
-    // → "02:01:05"
   };
 
   // ═══════════════════════════════════════════════════════
@@ -236,6 +179,21 @@ export default function SessionExecution({ initialSessionData }) {
     }
   };
 
+  //
+  // Auto-save (après 30 secondes sans modification)
+  //
+  useEffect(() => {
+    if (!exercises || exercises.length === 0) {
+      return;
+    }
+
+    const timeoutId = setTimeout(() => {
+      saveProgress(exercises);
+    }, 1000 * 30);
+
+    return () => clearTimeout(timeoutId);
+  }, [exercises]);
+
   // Annuler et supprimer la séance
   const deleteSession = async () => {
     setIsSaving(true);
@@ -250,6 +208,11 @@ export default function SessionExecution({ initialSessionData }) {
         throw new Error(error.error);
       }
 
+      // ✅ NETTOYER LE BACKUP après suppression
+      if (sessionId) {
+        localStorage.removeItem(`session-backup-${sessionId}`);
+        console.log("🗑️ Backup local supprimé (session annulée)");
+      }
       toast.success("Séance annulée");
       router.push("/workouts"); // Retour aux workouts
       router.refresh();
@@ -258,6 +221,70 @@ export default function SessionExecution({ initialSessionData }) {
       setIsSaving(false);
     }
   };
+
+  // ═══════════════════════════════════════════════════════
+  // 💾 BACKUP LOCAL : Sauvegarder dans localStorage
+  // ═══════════════════════════════════════════════════════
+  useEffect(() => {
+    // Vérifier que les données existent
+    if (!exercises || exercises.length === 0 || !sessionId) {
+      return;
+    }
+
+    try {
+      // Créer l'objet à sauvegarder
+      const backupData = {
+        exercises: exercises,
+        timestamp: Date.now(), // Pour savoir quand le backup a été fait
+      };
+
+      // Sauvegarder dans localStorage
+      localStorage.setItem(
+        `session-backup-${sessionId}`, // ✅ Clé unique par session
+        JSON.stringify(backupData),
+      );
+    } catch (error) {
+      console.warn("⚠️ Impossible de sauvegarder en localStorage:", error);
+    }
+  }, [exercises, sessionId]);
+
+  // ═══════════════════════════════════════════════════════
+  // 🔄 RESTAURATION : Récupérer le backup au montage
+  // ═══════════════════════════════════════════════════════
+  useEffect(() => {
+    // Vérifier que sessionId existe
+    if (!sessionId) return;
+
+    try {
+      // Récupérer le backup depuis localStorage
+      const backupString = localStorage.getItem(`session-backup-${sessionId}`);
+
+      // Si pas de backup, ne rien faire
+      if (!backupString) {
+        return;
+      }
+
+      // Parser le backup
+      const backupData = JSON.parse(backupString);
+      const { exercises: backupExercises, timestamp } = backupData;
+
+      // Créer des dates pour comparer
+      const backupDate = new Date(timestamp);
+      const serverDate = new Date(
+        sessionData?.updatedAt || sessionData?.createdAt,
+      );
+
+      // ✅ Vérifier si le backup est plus récent que les données serveur
+      if (backupDate > serverDate) {
+        setExercises(backupExercises);
+      } else {
+        // Le backup est plus ancien, le supprimer
+        localStorage.removeItem(`session-backup-${sessionId}`);
+      }
+    } catch (error) {
+      console.error("❌ Erreur lors de la lecture du backup:", error);
+    }
+  }, [sessionId]);
 
   // Terminer la séance (ouvrir la modale et vérifier)
   const handleFinishSession = async () => {
@@ -295,6 +322,10 @@ export default function SessionExecution({ initialSessionData }) {
       if (!response.ok) {
         const error = await response.json();
         throw new Error(error.error);
+      }
+      // ✅ NETTOYER LE BACKUP après succès
+      if (sessionId) {
+        localStorage.removeItem(`session-backup-${sessionId}`);
       }
 
       toast.success("🎉 Séance terminée avec succès !");

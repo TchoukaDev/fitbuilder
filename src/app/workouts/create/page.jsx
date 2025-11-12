@@ -10,15 +10,17 @@ export default async function CreateWorkoutPage() {
   const isAdmin = session?.user?.role === "ADMIN";
   const userId = session?.user?.id;
   const exercises = (await getAllExercises(userId)) || [];
+  const serializedExercises = JSON.parse(JSON.stringify(exercises));
   const favorites = (await getFavoritesExercises(userId)) || [];
+  const serializedFavorites = JSON.parse(JSON.stringify(favorites));
   return (
     <>
       <Header />
       <main>
         <h1>Créer un nouvel entraînement</h1>
         <NewWorkoutForm
-          allExercises={exercises}
-          favorites={favorites}
+          allExercises={serializedExercises}
+          favorites={serializedFavorites}
           isAdmin={isAdmin}
           userId={userId}
         />

@@ -2,8 +2,20 @@
 import { createPortal } from "react-dom";
 import NewExerciceForm from "../../Forms/Exercises/newExerciceForm/newExerciceForm";
 import UpdateExerciseForm from "../../Forms/Exercises/UpdateExerciseForm.jsx/UpdateExerciseForm";
+import { useEffect } from "react";
 
 export default function ExerciseModal({ onClose, exerciseToUpdate = null }) {
+  // Bloquer le scroll quand la modale est ouverte
+  useEffect(() => {
+    // Bloquer le scroll
+    document.body.style.overflow = "hidden";
+
+    // Réactiver le scroll quand la modale se ferme / composant détruit
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, []);
+
   return createPortal(
     <div
       onClick={() => onClose()}

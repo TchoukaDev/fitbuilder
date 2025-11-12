@@ -16,6 +16,7 @@ export default async function WorkoutDetailPage({ params }) {
 
   // TODO: Récupérer le workout depuis la DB
   const workout = await getWorkoutById(userId, workoutId);
+  const serializedWorkout = JSON.parse(JSON.stringify(workout));
   if (!workout) {
     notFound();
   }
@@ -81,7 +82,7 @@ export default async function WorkoutDetailPage({ params }) {
           {/* Actions */}
           <div className="flex gap-3 pt-4 border-t border-gray-200 items-center">
             {/* Démarrer la session */}
-            <StartWorkoutButton userId={userId} workout={workout} />
+            <StartWorkoutButton userId={userId} workout={serializedWorkout} />
 
             {/* Modifier */}
             <Link href={`/workouts/${workout._id}/edit`}>

@@ -2,6 +2,8 @@
 import { useState } from "react";
 import Button from "@/components/Buttons/Button";
 import Label from "@/components/Forms/FormsComponents/Label/Label";
+import { createPortal } from "react-dom";
+import { X } from "lucide-react";
 
 export default function EditExerciseModal({ exercise, onSave, onClose }) {
   const [error, setError] = useState(null);
@@ -12,6 +14,17 @@ export default function EditExerciseModal({ exercise, onSave, onClose }) {
     restTime: exercise.restTime || 90,
     notes: exercise.notes || "",
   });
+
+  // Bloquer le scroll quand la modale est ouverte
+  useEffect(() => {
+    // Bloquer le scroll
+    document.body.style.overflow = "hidden";
+
+    // Réactiver le scroll quand la modale se ferme / composant détruit
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -33,20 +46,17 @@ export default function EditExerciseModal({ exercise, onSave, onClose }) {
     });
   };
 
-  return (
-    <div
-      onClick={() => {
-        onClose();
-      }}
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
-    >
-      <div
-        onClick={(e) => {
-          e.stopPropagation();
-        }}
-        className="bg-white rounded-lg shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto"
-      >
+  return createPortal(
+    <div className="fixed inset-0 bg-black/50 z-50 p-4 overflow-scroll">
+      <div className="relative bg-white rounded-lg shadow-xl max-w-lg w-full  m-auto overflow-y-auto">
         {/* Header */}
+        {/* Fermeture */}
+        <button
+          className="absolute right-4 top-4 cursor-pointer hover:text-accent-600"
+          onClick={onClose}
+        >
+          <X size={24} />
+        </button>{" "}
         <div className="flex justify-between items-center p-6 border-b border-gray-200">
           <div className="m-auto">
             <h2 className="text-2xl font-bold text-primary-900">
@@ -54,7 +64,6 @@ export default function EditExerciseModal({ exercise, onSave, onClose }) {
             </h2>
           </div>
         </div>
-
         {/* Formulaire */}
         <form
           onSubmit={handleSubmit}
@@ -185,6 +194,7 @@ export default function EditExerciseModal({ exercise, onSave, onClose }) {
           </p>
         </form>
       </div>
-    </div>
+    </div>,
+    document.getElementById("portal-root"),
   );
 }

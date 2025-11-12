@@ -2,6 +2,7 @@
 
 import { X, CheckCircle, Clock, Dumbbell } from "lucide-react";
 import Button from "@/components/Buttons/Button";
+import { useEffect } from "react";
 
 export default function FinishSessionModal({
   isOpen,
@@ -13,6 +14,17 @@ export default function FinishSessionModal({
   duration,
   isLoading,
 }) {
+  // Bloquer le scroll quand la modale est ouverte
+  useEffect(() => {
+    // Bloquer le scroll
+    document.body.style.overflow = "hidden";
+
+    // Réactiver le scroll quand la modale se ferme / composant détruit
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, []);
+
   if (!isOpen) return null;
 
   return (
@@ -21,7 +33,7 @@ export default function FinishSessionModal({
         {/* Fermeture Modale */}
         <button
           onClick={onClose}
-          className="absolute right-2 top-2 cursor-pointer hover:text-accent-600"
+          className="absolute right-4 top-4 cursor-pointer hover:text-accent-600"
           disabled={isLoading}
         >
           <X size={24} />

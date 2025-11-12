@@ -2,6 +2,7 @@
 
 import { X, AlertTriangle } from "lucide-react";
 import Button from "@/components/Buttons/Button";
+import { useEffect } from "react";
 
 export default function CancelSessionModal({
   isOpen,
@@ -11,12 +12,23 @@ export default function CancelSessionModal({
 }) {
   if (!isOpen) return null;
 
+  // Bloquer le scroll quand la modale est ouverte
+  useEffect(() => {
+    // Bloquer le scroll
+    document.body.style.overflow = "hidden";
+
+    // Réactiver le scroll quand la modale se ferme / composant détruit
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, []);
+
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg shadow-xl max-w-md w-full relative">
         {/* Fermeture */}
         <button
-          className="absolute right-2 top-2 cursor-pointer hover:text-accent-600"
+          className="absolute right-4 top-4 cursor-pointer hover:text-accent-600"
           onClick={onClose}
           disabled={isLoading}
         >
