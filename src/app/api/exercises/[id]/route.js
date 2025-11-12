@@ -75,7 +75,7 @@ export async function PATCH(request, { params }) {
         },
       },
     );
-    console.log(id);
+
     if (result.matchedCount === 0) {
       return NextResponse.json(
         { error: "Exercice non trouvé ou non autorisé" },

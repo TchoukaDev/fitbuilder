@@ -14,9 +14,13 @@ export function useExercises(userId, isAdmin, initialData) {
   return useQuery({
     queryKey: key,
     queryFn: async () => {
-      const res = await fetch("/api/exercises");
-      if (!res.ok) throw new Error("Erreur fetch");
-      const data = await res.json();
+      const response = await fetch("/api/exercises");
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error);
+      }
+
+      const data = await response.json();
       return data;
     },
     initialData: initialData,
@@ -34,13 +38,17 @@ export function useCreateExercise(userId, isAdmin) {
 
   return useMutation({
     mutationFn: async (newExercice) => {
-      const res = await fetch("/api/exercises", {
+      const response = await fetch("/api/exercises", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newExercice),
       });
-      if (!res.ok) throw new Error("Erreur création");
-      return res.json();
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error);
+      }
+
+      return response.json();
     },
 
     // 🔥 RENDU OPTIMISTE
@@ -65,7 +73,7 @@ export function useCreateExercise(userId, isAdmin) {
 
     onError: (err, newExercice, context) => {
       queryClient.setQueryData(key, context.previousExercices);
-      console.error("Erreur:", err);
+      throw new Error("Erreur:", err);
     },
 
     onSettled: () => {
@@ -82,13 +90,17 @@ export function useUpdateExercise(userId, isAdmin) {
 
   return useMutation({
     mutationFn: async ({ id, updatedExercise }) => {
-      const res = await fetch(`/api/exercises/${id}`, {
+      const response = await fetch(`/api/exercises/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedExercise),
       });
-      if (!res.ok) throw new Error("Erreur mise à jour");
-      return res.json();
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error);
+      }
+
+      return response.json();
     },
 
     // 🔥 RENDU OPTIMISTE
@@ -134,8 +146,10 @@ export function useDeleteExercise(userId, isAdmin) {
         method: "DELETE",
       });
       if (!response.ok) {
-        throw new Error("Erreur lors de la suppression de l'exercice");
+        const errorData = await response.json();
+        throw new Error(errorData.error);
       }
+
       return response.json();
     },
     onMutate: async (id) => {
@@ -162,7 +176,11 @@ export function useFavorites(userId, initialData) {
     queryKey: ["favorites", userId],
     queryFn: async () => {
       const response = await fetch("/api/exercises/favorites");
-      if (!response.ok) throw new Error("Erreur fetch favoris");
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error);
+      }
+
       const data = await response.json();
       return data.favorites || []; // ✅ Retourne le tableau directement
     },
@@ -188,7 +206,10 @@ export function useToggleFavorite(userId) {
         }),
       });
 
-      if (!response.ok) throw new Error("Erreur toggle favori");
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error);
+      }
 
       const data = await response.json();
       return data.favorites || [];
@@ -220,7 +241,7 @@ export function useToggleFavorite(userId) {
         ["favorites", userId],
         context?.previousFavorites,
       );
-      console.error("Erreur toggle favori:", err);
+      throw new Error("Erreur toggle favori:", err);
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["favorites", userId] });

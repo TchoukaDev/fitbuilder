@@ -7,7 +7,7 @@ export default function ExerciseModal({ onClose, exerciseToUpdate = null }) {
   return createPortal(
     <div
       onClick={() => onClose()}
-      className="fixed bg-black/25 inset-0 flex justify-center items-center"
+      className="fixed bg-black/50 inset-0 flex justify-center items-center"
     >
       <div
         onClick={(e) => e.stopPropagation()}

@@ -112,6 +112,25 @@
     @apply flex items-center justify-center min-w-[150px] w-fit gap-2 bg-primary-500 hover:bg-primary-600 disabled:bg-primary-300 text-primary-50
             p-3 rounded cursor-pointer transition-all duration-200;
   }
+
+  /* --- BARRE non remplie (après le curseur, Firefox uniquement) --- */
+  .slider::-moz-range-track {
+    @apply bg-gray-300 h-2 rounded-lg;
+  }
+  /* --- THUMB (curseur Chrome / Edge / Safari) --- */
+  .slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    @apply w-4 h-4 bg-primary-500 rounded-full cursor-pointer transition;
+    margin-top: -4px; /* ✅ recentre le curseur sur la barre */
+  }
+  /* Curseur Hover */
+  .slider::-webkit-slider-thumb:hover {
+    @apply bg-primary-800;
+  }
+  /* Curseur (Firefox) */
+  .slider::-moz-range-thumb {
+    @apply w-4 h-4 bg-primary-500 rounded-full cursor-pointer;
+  }
 }
 
 /* Neutraliser le comportement d'autofill */

@@ -12,8 +12,10 @@ export function useWorkouts(initialData, userId) {
     queryFn: async () => {
       const response = await fetch("/api/workouts");
       if (!response.ok) {
-        throw new Error("Erreur fetch workouts");
+        const errorData = await response.json();
+        console.error(errorData.error);
       }
+
       const data = await response.json();
       return data;
     },
@@ -32,17 +34,18 @@ export function useCreateWorkout(userId) {
 
   return useMutation({
     mutationFn: async (newWorkout) => {
-      const res = await fetch("/api/workouts", {
+      const response = await fetch("/api/workouts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newWorkout),
       });
 
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.error);
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error(errorData.error);
       }
-      return res.json();
+
+      return response.json();
     },
 
     // 🔥 RENDU OPTIMISTE
@@ -82,16 +85,17 @@ export function useUpdateWorkout(userId) {
   const key = ["workout", userId];
   return useMutation({
     mutationFn: async ({ id, updatedWorkout }) => {
-      const res = await fetch(`/api/workouts/${id}`, {
+      const response = await fetch(`/api/workouts/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedWorkout),
       });
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.error);
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error(errorData.error);
       }
-      const data = await res.json();
+
+      const data = await response.json();
       return data;
     },
 
@@ -136,9 +140,9 @@ export function useDeleteWorkout(userId) {
         method: "DELETE",
       });
       if (!response.ok) {
-        throw new Error("Erreur lors de la suppression de l'entraînement");
+        const errorData = await response.json();
+        console.error(errorData.error);
       }
-      return response.json();
     },
     onMutate: async (id) => {
       queryClient.cancelQueries({ queryKey: key });

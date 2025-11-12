@@ -14,5 +14,5 @@ export default async function SingleSessionPage({ params }) {
     return notFound();
   }
 
-  return <SessionExecution sessionData={sessionData} userId={userId} />;
+  return <SessionExecution initialSessionData={sessionData} userId={userId} />;
 }

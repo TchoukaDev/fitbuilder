@@ -15,7 +15,7 @@ export default function SelectExercicesModal({
   return createPortal(
     <div
       onClick={onCloseExerciseSelector}
-      className="fixed bg-black/25 inset-0 flex justify-center items-center overflow-scroll"
+      className="fixed bg-black/50 inset-0 flex justify-center items-center overflow-scroll"
     >
       <div
         onClick={(e) => e.stopPropagation()}

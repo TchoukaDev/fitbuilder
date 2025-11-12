@@ -27,7 +27,7 @@ export async function POST(req) {
   try {
     // Préparer les exercices pour la session (avec champs actualSets vides)
     const sessionExercises = exercises.map((ex) => ({
-      exerciseId: ex.exerciseId,
+      exerciseId: ex._id,
       exerciseName: ex.name,
       order: ex.order,
       targetSets: ex.sets,
@@ -54,8 +54,6 @@ export async function POST(req) {
       completedDate: null,
       duration: 0,
       exercises: sessionExercises,
-      overallNotes: "",
-      overallFeeling: null,
       createdAt: new Date(),
       updatedAt: new Date(),
     };

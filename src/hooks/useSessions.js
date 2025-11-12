@@ -66,8 +66,34 @@ export function useCreateSession(userId) {
     //   queryClient.setQueryData(key, context.previousSessions);
     // },
     onSuccess: () => {
-      toast.success("L'entraînement a démarré, bon courage!");
+      toast.success("L'entraînement a démarré, bon courage! 💪");
       queryClient.invalidateQueries({ queryKey: key });
     },
+  });
+}
+
+export function useGetSessionById(initialData, sessionId) {
+  const key = ["session", sessionId];
+  return useQuery({
+    queryKey: key,
+    queryFn: async () => {
+      const response = await fetch(`/api/sessions/${sessionId}`);
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error);
+      }
+
+      const data = await response.json();
+      return data;
+    },
+    initialData: initialData,
+    placeholderData: keepPreviousData,
+    staleTime: Infinity,
+    gcTime: Infinity,
+    refetchOnMount: false, // ✅ Ne pas refetch au montage
+    refetchOnWindowFocus: false, // ✅ Ne pas refetch au focus
+    refetchOnReconnect: false, // Pas de refetch pendant l'exécution de la session
+    enabled: !!sessionId,
   });
 }

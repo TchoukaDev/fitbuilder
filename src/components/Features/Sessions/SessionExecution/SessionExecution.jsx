@@ -2,48 +2,154 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Clock, CheckCircle, Circle } from "lucide-react";
+import { Clock } from "lucide-react";
 import Button from "@/components/Buttons/Button";
+import SessionExerciseCard from "../SessionExerciseCard/SessionExerciseCard";
+import { useGetSessionById } from "@/hooks/useSessions";
+import { toast } from "react-toastify";
+import FinishSessionModal from "@/components/Modals/FinishSessionModal/FinishSessionModal";
+import CancelSessionModal from "@/components/Modals/CancelModalSession/CancelModalSession";
 
-export default function SessionExecution({ sessionData, userId }) {
+export default function SessionExecution({ initialSessionData, userId }) {
   const router = useRouter();
+
+  const { data: sessionData = [] } = useGetSessionById(
+    initialSessionData,
+    initialSessionData._id,
+  );
 
   // ═══════════════════════════════════════════════════════
   // 📊 STATE MANAGEMENT
   // ═══════════════════════════════════════════════════════
-  const [exercises, setExercises] = useState(sessionData.exercises);
-  const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
+  const [exercises, setExercises] = useState(sessionData.exercises); //Exercises de la session
+  const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0); //Exercice en cours d'exécution
   const [elapsedTime, setElapsedTime] = useState(0); // Secondes écoulées
-  const [isSaving, setIsSaving] = useState(false);
+  const [isSaving, setIsSaving] = useState(false); //Etat de sauvegarde de la session
+  const [isMounted, setIsMounted] = useState(false); // Pour le placeholder du chronomètre
+  const [isFinishModalOpen, setIsFinishModalOpen] = useState(false); //Gestion de la modale de fin
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false); //Gestion de la modale d'annulation
+
+  const completedCount = exercises.filter((ex) => ex.completed).length; //Nombre d'exercices complétés
+  const totalExercises = exercises.length;
 
   // ═══════════════════════════════════════════════════════
   // ⏱️ CHRONOMÈTRE GLOBAL
   // ═══════════════════════════════════════════════════════
   useEffect(() => {
+    if (!sessionData?.startedAt) return;
+    // ═══════════════════════════════════════════════════════
+    // 📅 1. CALCULER LE TEMPS DE DÉPART
+    // ═══════════════════════════════════════════════════════
     const startTime = new Date(sessionData.startedAt).getTime();
+    // sessionData.startedAt = "2024-01-15T10:30:00.000Z" (string ISO)
+    // new Date(...) = Convertit en objet Date
+    // .getTime() = Convertit en timestamp (millisecondes depuis 1970)
+    // Exemple : 1705318200000
 
+    // ═══════════════════════════════════════════════════════
+    // ⏲️ 2. CRÉER UN INTERVAL (s'exécute toutes les 1000ms = 1s)
+    // ═══════════════════════════════════════════════════════
     const interval = setInterval(() => {
-      const now = Date.now();
-      const elapsed = Math.floor((now - startTime) / 1000);
-      setElapsedTime(elapsed);
-    }, 1000);
+      // Cette fonction s'exécute CHAQUE SECONDE
 
+      // ───────────────────────────────────────────────────
+      // 🕐 Récupérer l'heure actuelle en millisecondes
+      // ───────────────────────────────────────────────────
+      const now = Date.now();
+      // Exemple : 1705320000000 (15 minutes après startTime)
+
+      // ───────────────────────────────────────────────────
+      // ➗ Calculer le temps écoulé
+      // ───────────────────────────────────────────────────
+      const elapsed = Math.floor((now - startTime) / 1000);
+      // now - startTime = 1800000 millisecondes (30 min)
+      // / 1000 = 1800 secondes
+      // Math.floor() = Arrondir à l'entier inférieur (1800.5 → 1800)
+
+      // ───────────────────────────────────────────────────
+      // 💾 Mettre à jour le state (déclenche un re-render)
+      // ───────────────────────────────────────────────────
+      if (!isNaN(elapsed) && elapsed >= 0) {
+        setElapsedTime(elapsed);
+        setIsMounted(true); // ✅ Marquer comme monté après le 1er calcul
+      }
+      // elapsedTime passe de 0 → 1 → 2 → 3... chaque seconde
+    }, 1000); // ← Exécuter toutes les 1000ms (1 seconde)
+
+    // Calculer immédiatement (pas attendre 1 seconde)
+    const now = Date.now();
+    const elapsed = Math.floor((now - startTime) / 1000);
+    if (!isNaN(elapsed) && elapsed >= 0) {
+      setElapsedTime(elapsed);
+      setIsMounted(true); // ✅
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // 🧹 3. CLEANUP FUNCTION (nettoyage)
+    // ═══════════════════════════════════════════════════════
     return () => clearInterval(interval);
+    // Pourquoi ? Si le composant se démonte (changement de page),
+    // il faut ARRÊTER l'interval sinon il continue à tourner
+    // en arrière-plan et cause des fuites mémoire + erreurs
   }, [sessionData.startedAt]);
+  // ↑ Dépendances : Re-exécuter ce useEffect SI startedAt change
+  //    (normalement il ne change jamais, donc useEffect s'exécute
+  //     seulement au montage du composant)
 
   // ═══════════════════════════════════════════════════════
   // 🔢 CALCULS & HELPERS
   // ═══════════════════════════════════════════════════════
-  const completedCount = exercises.filter((ex) => ex.completed).length;
-  const totalExercises = exercises.length;
 
   const formatTime = (seconds) => {
+    // ═══════════════════════════════════════════════════════
+    // 🕐 CALCULER LES HEURES
+    // ═══════════════════════════════════════════════════════
     const h = Math.floor(seconds / 3600);
+    // 3600 secondes = 1 heure
+    // Exemple : 7265 secondes / 3600 = 2.01
+    // Math.floor(2.01) = 2 heures
+
+    // ═══════════════════════════════════════════════════════
+    // 🕑 CALCULER LES MINUTES (du reste)
+    // ═══════════════════════════════════════════════════════
     const m = Math.floor((seconds % 3600) / 60);
+    // seconds % 3600 = reste après avoir retiré les heures
+    // 7265 % 3600 = 65 secondes restantes
+    // 65 / 60 = 1.08
+    // Math.floor(1.08) = 1 minute
+
+    // ═══════════════════════════════════════════════════════
+    // 🕒 CALCULER LES SECONDES (du reste)
+    // ═══════════════════════════════════════════════════════
     const s = seconds % 60;
+    // 7265 % 60 = 5 secondes
+
+    // ═══════════════════════════════════════════════════════
+    // 🎨 FORMATER EN STRING (avec zéros devant si besoin)
+    // ═══════════════════════════════════════════════════════
     return `${h.toString().padStart(2, "0")}:${m
       .toString()
       .padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+
+    // ───────────────────────────────────────────────────────
+    // .toString() = Convertir nombre en string
+    // ───────────────────────────────────────────────────────
+    // h = 2 → "2"
+    // m = 1 → "1"
+    // s = 5 → "5"
+
+    // ───────────────────────────────────────────────────────
+    // .padStart(2, "0") = Ajouter des "0" devant si < 2 caractères
+    // ───────────────────────────────────────────────────────
+    // "2".padStart(2, "0") → "02"
+    // "1".padStart(2, "0") → "01"
+    // "5".padStart(2, "0") → "05"
+    // "12".padStart(2, "0") → "12" (déjà 2 caractères, rien à faire)
+
+    // ───────────────────────────────────────────────────────
+    // Résultat final :
+    // ───────────────────────────────────────────────────────
+    // → "02:01:05"
   };
 
   // ═══════════════════════════════════════════════════════
@@ -67,9 +173,34 @@ export default function SessionExecution({ sessionData, userId }) {
     setExercises(newExercises);
   };
 
-  // Valider une série (checkbox)
+  // Modifier les notes d'un exercice
+  const handleNotesChange = (exerciseIndex, value) => {
+    const newExercises = [...exercises];
+    newExercises[exerciseIndex].notes = value;
+    setExercises(newExercises);
+  };
+
+  // Modifier l'effort (RPE) d'un exercice
+  const handleEffortChange = (exerciseIndex, value) => {
+    const newExercises = [...exercises];
+    newExercises[exerciseIndex].effort = value;
+    setExercises(newExercises);
+  };
+
+  // Valider/Dévalider une série (checkbox toggle)
   const handleSetComplete = (exerciseIndex, setIndex) => {
-    handleSetChange(exerciseIndex, setIndex, "completed", true);
+    const currentValue =
+      exercises[exerciseIndex].actualSets?.[setIndex]?.completed || false;
+    handleSetChange(exerciseIndex, setIndex, "completed", !currentValue); // ✅ Inverse
+  };
+  // Réouvrir un exercice complété (si erreur)
+  const handleReopenExercise = (exerciseIndex) => {
+    const newExercises = [...exercises];
+    newExercises[exerciseIndex].completed = false;
+    setExercises(newExercises);
+
+    // Revenir à cet exercice
+    setCurrentExerciseIndex(exerciseIndex);
   };
 
   // Marquer un exercice comme terminé
@@ -79,7 +210,7 @@ export default function SessionExecution({ sessionData, userId }) {
     setExercises(newExercises);
 
     // Sauvegarder en DB
-    await saveProgress(newExercises);
+    await saveProgress(exercises);
 
     // Passer à l'exercice suivant
     if (exerciseIndex < exercises.length - 1) {
@@ -90,6 +221,7 @@ export default function SessionExecution({ sessionData, userId }) {
   // Sauvegarder la progression
   const saveProgress = async (updatedExercises) => {
     setIsSaving(true);
+
     try {
       const response = await fetch(`/api/sessions/${sessionData._id}`, {
         method: "PATCH",
@@ -99,81 +231,158 @@ export default function SessionExecution({ sessionData, userId }) {
 
       if (!response.ok) throw new Error("Erreur sauvegarde");
     } catch (error) {
-      console.error(error);
-      // toast.error si tu veux
+      toast.error(error);
     } finally {
       setIsSaving(false);
     }
   };
 
-  // Terminer la séance
-  const handleFinishSession = () => {
-    // Ouvrir une modale de confirmation avec notes/feeling
-    // Puis appeler PUT /api/sessions/[id]
-    // Puis rediriger
+  // Annuler et supprimer la séance
+  const deleteSession = async () => {
+    setIsSaving(true);
+
+    try {
+      const response = await fetch(`/api/sessions/${sessionData._id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error);
+      }
+
+      toast.success("Séance annulée");
+      router.push("/workouts"); // Retour aux workouts
+      router.refresh();
+    } catch (error) {
+      toast.error(error.message || "Erreur lors de l'annulation");
+      setIsSaving(false);
+    }
+  };
+
+  // Terminer la séance (ouvrir la modale et vérifier)
+  const handleFinishSession = async () => {
+    const hasCompletedExercises = exercises.some((ex) => ex.completed);
+
+    if (!hasCompletedExercises) {
+      // Aucun exercice complété → Proposer d'annuler
+      setIsCancelModalOpen(true);
+      return;
+    }
+
+    setIsFinishModalOpen(true);
+  };
+
+  // Confirmer l'annulation
+  const handleConfirmCancel = async () => {
+    setIsCancelModalOpen(false);
+    await deleteSession();
+  };
+
+  // Confirmer la fin
+  const handleConfirmFinish = async () => {
+    setIsSaving(true);
+
+    try {
+      const response = await fetch(`/api/sessions/${sessionData._id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          exercises: exercises,
+          duration: formatTime(elapsedTime),
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error);
+      }
+
+      toast.success("🎉 Séance terminée avec succès !");
+      router.push("/dashboard"); // ou "/sessions"
+      router.refresh();
+    } catch (error) {
+      toast.error(error.message || "Erreur lors de la finalisation");
+      setIsSaving(false);
+    }
   };
 
   // ═══════════════════════════════════════════════════════
   // 🎨 RENDER
   // ═══════════════════════════════════════════════════════
   return (
-    <div className="container mx-auto p-6 max-w-4xl">
-      {/* ─────────────────────────────────────────────────── */}
-      {/* HEADER */}
-      {/* ─────────────────────────────────────────────────── */}
-      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-        <h1 className="text-3xl font-bold text-primary-900 mb-2">
-          {sessionData.templateName}
-        </h1>
+    <>
+      <div className="container mx-auto p-6 max-w-4xl">
+        {/* ─────────────────────────────────────────────────── */}
+        {/* HEADER */}
+        {/* ─────────────────────────────────────────────────── */}
+        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+          <h1 className="text-3xl font-bold text-primary-900 mb-2">
+            {sessionData.templateName}
+          </h1>
 
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-2 text-lg">
-            <Clock size={20} />
-            <span>{formatTime(elapsedTime)}</span>
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-2 text-lg">
+              <Clock size={20} />{" "}
+              {sessionData && sessionData.startedAt && isMounted ? (
+                <span>{formatTime(elapsedTime)}</span>
+              ) : (
+                <span>--:--:--</span>
+              )}
+            </div>
+
+            <div className="text-sm text-gray-600">
+              {completedCount} / {totalExercises} exercices
+            </div>
           </div>
+          <button
+            onClick={() => setIsCancelModalOpen(true)}
+            className="bg-accent-500 hover:bg-accent-600 text-accent-50 disabled:bg-accent-300 rounded p-2 text-xs my-1 cursor-pointer"
+          >
+            Abandonner
+          </button>
 
-          <div className="text-sm text-gray-600">
-            {completedCount} / {totalExercises} exercices
+          {/* Barre de progression */}
+          <div className="w-full bg-gray-200 rounded-full h-2 mt-3">
+            <div
+              className="bg-primary-600 h-2 rounded-full transition-all"
+              style={{ width: `${(completedCount / totalExercises) * 100}%` }}
+            />
           </div>
         </div>
 
-        {/* Barre de progression */}
-        <div className="w-full bg-gray-200 rounded-full h-2 mt-3">
-          <div
-            className="bg-primary-600 h-2 rounded-full transition-all"
-            style={{ width: `${(completedCount / totalExercises) * 100}%` }}
-          />
+        {/* ─────────────────────────────────────────────────── */}
+        {/* LISTE DES EXERCICES */}
+        {/* ─────────────────────────────────────────────────── */}
+        <div className="space-y-4">
+          {exercises.map((exercise, index) => (
+            <SessionExerciseCard
+              key={exercise.exerciseId}
+              exercise={exercise}
+              index={index}
+              isActive={index === currentExerciseIndex}
+              onSetChange={handleSetChange}
+              onNotesChange={handleNotesChange}
+              onEffortChange={handleEffortChange}
+              onSetComplete={handleSetComplete}
+              onExerciseComplete={handleExerciseComplete}
+              onReopenExercise={handleReopenExercise}
+            />
+          ))}
         </div>
-      </div>
 
-      {/* ─────────────────────────────────────────────────── */}
-      {/* LISTE DES EXERCICES */}
-      {/* ─────────────────────────────────────────────────── */}
-      <div className="space-y-4">
-        {exercises.map((exercise, index) => (
-          <ExerciseCard
-            key={exercise._id}
-            exercise={exercise}
-            index={index}
-            isActive={index === currentExerciseIndex}
-            onSetChange={handleSetChange}
-            onSetComplete={handleSetComplete}
-            onExerciseComplete={handleExerciseComplete}
-          />
-        ))}
-      </div>
-
-      {/* ─────────────────────────────────────────────────── */}
-      {/* FOOTER ACTIONS */}
-      {/* ─────────────────────────────────────────────────── */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 shadow-lg">
-        <div className="container mx-auto max-w-4xl flex gap-3">
+        {/* ─────────────────────────────────────────────────── */}
+        {/* FOOTER ACTIONS */}
+        {/* ─────────────────────────────────────────────────── */}
+      </div>{" "}
+      <div className="sticky bottom-0 left-0 right-0 bg-primary-100 border-t border-primary-800 p-4 shadow-lg">
+        <div className="container mx-auto max-w-4xl flex justify-center gap-3">
           <Button
             onClick={() => saveProgress(exercises)}
             disabled={isSaving}
             className="flex-1"
           >
-            {isSaving ? "Sauvegarde..." : "💾 Sauvegarder"}
+            {isSaving ? "Sauvegarde..." : "💾 Sauvegarder la progression"}
           </Button>
 
           <Button onClick={handleFinishSession} className="flex-1">
@@ -181,128 +390,28 @@ export default function SessionExecution({ sessionData, userId }) {
           </Button>
         </div>
       </div>
-    </div>
-  );
-}
-
-// ═══════════════════════════════════════════════════════
-// 🧩 SOUS-COMPOSANT : ExerciseCard
-// ═══════════════════════════════════════════════════════
-function ExerciseCard({
-  exercise,
-  index,
-  isActive,
-  onSetChange,
-  onSetComplete,
-  onExerciseComplete,
-}) {
-  const [isExpanded, setIsExpanded] = useState(isActive);
-
-  useEffect(() => {
-    if (isActive) setIsExpanded(true);
-  }, [isActive]);
-
-  return (
-    <div
-      className={`
-      border rounded-lg p-4 transition-all
-      ${isActive ? "border-primary-500 bg-primary-50" : "border-gray-300"}
-      ${exercise.completed ? "opacity-60" : ""}
-    `}
-    >
-      {/* Header de l'exercice */}
-      <div
-        className="flex justify-between items-center cursor-pointer"
-        onClick={() => setIsExpanded(!isExpanded)}
-      >
-        <div className="flex items-center gap-3">
-          {exercise.completed ? (
-            <CheckCircle className="text-green-600" size={24} />
-          ) : (
-            <Circle className="text-gray-400" size={24} />
-          )}
-
-          <div>
-            <h3 className="font-semibold text-lg">{exercise.exerciseName}</h3>
-            <p className="text-sm text-gray-600">
-              {exercise.targetSets} × {exercise.targetReps}
-              {exercise.targetWeight && ` @ ${exercise.targetWeight}kg`}
-            </p>
-          </div>
-        </div>
-
-        <span className="text-2xl">{isExpanded ? "▼" : "▶"}</span>
-      </div>
-
-      {/* Détail des séries (déplié) */}
-      {isExpanded && !exercise.completed && (
-        <div className="mt-4 space-y-3">
-          {/* Afficher les séries (à implémenter) */}
-          {Array.from({ length: exercise.targetSets }).map((_, setIndex) => (
-            <SetRow
-              key={setIndex}
-              setIndex={setIndex}
-              setData={exercise.actualSets[setIndex]}
-              targetWeight={exercise.targetWeight}
-              onSetChange={(field, value) =>
-                onSetChange(index, setIndex, field, value)
-              }
-              onSetComplete={() => onSetComplete(index, setIndex)}
-            />
-          ))}
-
-          <Button
-            onClick={() => onExerciseComplete(index)}
-            className="w-full mt-4"
-          >
-            Exercice terminé
-          </Button>
-        </div>
+      {/* Modale de fin */}
+      {isFinishModalOpen && (
+        <FinishSessionModal
+          isOpen={isFinishModalOpen}
+          onClose={() => setIsFinishModalOpen(false)}
+          onConfirm={handleConfirmFinish}
+          sessionName={sessionData.templateName}
+          completedCount={completedCount}
+          totalExercises={totalExercises}
+          duration={formatTime(elapsedTime)}
+          isLoading={isSaving}
+        />
       )}
-    </div>
-  );
-}
-
-// ═══════════════════════════════════════════════════════
-// 🧩 SOUS-COMPOSANT : SetRow (une série)
-// ═══════════════════════════════════════════════════════
-function SetRow({
-  setIndex,
-  setData,
-  targetWeight,
-  onSetChange,
-  onSetComplete,
-}) {
-  return (
-    <div className="flex items-center gap-2 p-2 bg-white rounded border">
-      <span className="font-semibold w-8">#{setIndex + 1}</span>
-
-      <input
-        type="number"
-        placeholder="Poids"
-        value={setData?.weight || targetWeight || ""}
-        onChange={(e) => onSetChange("weight", parseFloat(e.target.value))}
-        className="input w-20"
-      />
-      <span>kg</span>
-
-      <span>×</span>
-
-      <input
-        type="number"
-        placeholder="Reps"
-        value={setData?.reps || ""}
-        onChange={(e) => onSetChange("reps", parseInt(e.target.value))}
-        className="input w-16"
-      />
-      <span>reps</span>
-
-      <input
-        type="checkbox"
-        checked={setData?.completed || false}
-        onChange={() => onSetComplete()}
-        className="w-5 h-5"
-      />
-    </div>
+      {/* Modale d'annulation */}
+      {isCancelModalOpen && (
+        <CancelSessionModal
+          isOpen={isCancelModalOpen}
+          onClose={() => setIsCancelModalOpen(false)}
+          onConfirm={handleConfirmCancel}
+          isLoading={isSaving}
+        />
+      )}
+    </>
   );
 }
