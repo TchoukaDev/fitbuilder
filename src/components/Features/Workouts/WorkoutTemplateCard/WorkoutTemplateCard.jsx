@@ -1,13 +1,16 @@
 "use client";
 
 import Button from "@/components/Buttons/Button";
+import StartWorkoutButton from "@/components/Buttons/StartWorkoutButton";
 import { useDeleteWorkout, useUpdateWorkout } from "@/hooks/useWorkouts";
-import { Calendar, Clock, Dumbbell, Edit, Trash2 } from "lucide-react";
+import { Calendar, Clock, Dumbbell, Edit, Search, Trash2 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
-export default function WorkoutTemplateCard({ workout, onUpdate, userId }) {
+export default function WorkoutTemplateCard({ workout, userId }) {
   const { mutate: deleteWorkout, isPending } = useDeleteWorkout(userId);
+  const router = useRouter();
   const date = new Date(workout.createdAt);
   const workoutDate = date.toLocaleDateString("fr-FR", {
     day: "numeric",
@@ -71,24 +74,36 @@ export default function WorkoutTemplateCard({ workout, onUpdate, userId }) {
       </div>
 
       {/* Actions */}
-      <div className="flex gap-2 pt-3 border-t border-gray-200">
-        <Link href={`/workouts/${workout._id}`} className="flex-1">
-          <Button className="w-full">Voir le détail</Button>
-        </Link>
-
-        <Link
-          href={`/workouts/${workout._id}/edit`}
-          className="LinkButton"
+      <div className="flex gap-2 pt-3 border-t flex-wrap  border-gray-200">
+        {/* <StartWorkoutButton userId={userId} workout={workout}/> */}
+        <div className="md:flex-1">
+          <Button
+            title="Voir les détails"
+            label="Voir les détails de l'entraînement"
+            width="w-12 md:w-auto"
+            onClick={() => router.push(`/workouts/${workout._id}`)}
+          >
+            <Search />
+            <span className="hidden md:inline">Voir les détails</span>
+          </Button>
+        </div>
+        <StartWorkoutButton userId={userId} workout={workout} />
+        <Button
+          onClick={() => router.push(`/workouts/${workout._id}/edit`)}
           title="Modifier"
+          label="Modifier l'entraînement"
+          width="w-12 md:w-auto"
         >
           <Edit size={20} />
-        </Link>
+        </Button>
 
         <Button
+          width={"w-12 md:w-auto"}
           disabled={isPending}
           close
           onClick={handleDelete}
           title="Supprimer"
+          label="Supprimer l'entraînement"
         >
           <Trash2 size={20} />
         </Button>

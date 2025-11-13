@@ -2,7 +2,7 @@
 
 import { X, CheckCircle, Clock, Dumbbell } from "lucide-react";
 import Button from "@/components/Buttons/Button";
-import { useEffect } from "react";
+import { useBlockScroll } from "@/hooks/useBlockScroll";
 
 export default function FinishSessionModal({
   isOpen,
@@ -14,18 +14,7 @@ export default function FinishSessionModal({
   duration,
   isLoading,
 }) {
-  // Bloquer le scroll quand la modale est ouverte
-  useEffect(() => {
-    // Bloquer le scroll
-    document.body.style.overflow = "hidden";
-
-    // Réactiver le scroll quand la modale se ferme / composant détruit
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, []);
-
-  if (!isOpen) return null;
+  useBlockScroll();
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">

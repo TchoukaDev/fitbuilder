@@ -6,7 +6,7 @@ import { useCreateSession } from "@/hooks/useSessions";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
-export default function StartWorkoutButton({ userId, workout }) {
+export default function StartWorkoutButton({ userId, workout, small }) {
   const { mutate: createSession, isPending } = useCreateSession(userId);
   const router = useRouter();
   const handleStart = () => {
@@ -27,10 +27,16 @@ export default function StartWorkoutButton({ userId, workout }) {
     );
   };
   return (
-    <Button disabled={isPending} onClick={handleStart}>
+    <Button
+      disabled={isPending}
+      onClick={handleStart}
+      title="Démarrer la séance"
+      label="Démarrer la séance"
+      width="w-12 md:w-auto"
+    >
       {" "}
       <Play size={20} />
-      Commencer cette séance
+      <span className="hidden md:inline">Démarrer la séance</span>
     </Button>
   );
 }

@@ -1,7 +1,7 @@
 profil
 not-found
 muscle secondaire
-Ajouter Bouton Start diredctement sur carte Workout
 calendrier
 stats
 stats admin
+responsive

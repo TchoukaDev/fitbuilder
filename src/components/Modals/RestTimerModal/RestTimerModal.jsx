@@ -4,6 +4,7 @@ import { X, Play, Pause, SkipForward } from "lucide-react";
 import { useState, useEffect } from "react";
 import Button from "@/components/Buttons/Button";
 import { useTimerEffects } from "@/hooks/useTimerEffects";
+import { useBlockScroll } from "@/hooks/useBlockScroll";
 
 export default function RestTimerModal({
   onClose,
@@ -24,6 +25,7 @@ export default function RestTimerModal({
   // Hook pour effets de fin de Timer
   const { triggerTimerComplete } = useTimerEffects();
 
+  useBlockScroll();
   // ═══════════════════════════════════════════════════════
   // ⏱️ EFFET : Décompte du timer
   // ═══════════════════════════════════════════════════════
@@ -53,17 +55,6 @@ export default function RestTimerModal({
     // 🧹 Cleanup : supprimer l'interval quand le composant se démonte ou isRunning change
     return () => clearInterval(interval);
   }, [isRunning, remainingTime]);
-
-  // Bloquer le scroll quand la modale est ouverte
-  useEffect(() => {
-    // Bloquer le scroll
-    document.body.style.overflow = "hidden";
-
-    // Réactiver le scroll quand la modale se ferme / composant détruit
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, []);
 
   // ═══════════════════════════════════════════════════════
   // 🎬 HANDLERS

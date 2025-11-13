@@ -2,26 +2,10 @@
 
 import { X, AlertTriangle } from "lucide-react";
 import Button from "@/components/Buttons/Button";
-import { useEffect } from "react";
+import { useBlockScroll } from "@/hooks/useBlockScroll";
 
-export default function CancelSessionModal({
-  isOpen,
-  onClose,
-  onConfirm,
-  isLoading,
-}) {
-  if (!isOpen) return null;
-
-  // Bloquer le scroll quand la modale est ouverte
-  useEffect(() => {
-    // Bloquer le scroll
-    document.body.style.overflow = "hidden";
-
-    // Réactiver le scroll quand la modale se ferme / composant détruit
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, []);
+export default function CancelSessionModal({ onClose, onConfirm, isLoading }) {
+  useBlockScroll();
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">

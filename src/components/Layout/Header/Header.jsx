@@ -23,12 +23,7 @@ export default async function Header() {
       <div className="absolute lg:static left-1/2 -translate-x-1/2 lg:translate-0">
         <Navbar />
       </div>
-      <div className="hidden lg:inline-block text-center text-xl font-display text-accent-600 font-semibold">
-        <p className="flex justify-center gap-3 items-center  ">
-          Hello {session?.user?.username} 💪
-        </p>
-        <p>Prêt pour une nouvelle séance?</p>
-      </div>
+
       {/* Bouton de déconnexion */}
       <LogoutButton />
     </div>

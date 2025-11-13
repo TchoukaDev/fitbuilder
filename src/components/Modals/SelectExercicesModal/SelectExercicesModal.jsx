@@ -1,8 +1,8 @@
 "use client";
 
 import ExercisesList from "@/components/Features/Exercises/ExercisesList/ExercisesList";
+import { useBlockScroll } from "@/hooks/useBlockScroll";
 import { X } from "lucide-react";
-import { useEffect } from "react";
 import { createPortal } from "react-dom";
 
 export default function SelectExercicesModal({
@@ -14,16 +14,7 @@ export default function SelectExercicesModal({
   isAdmin,
   userId,
 }) {
-  // Bloquer le scroll quand la modale est ouverte
-  useEffect(() => {
-    // Bloquer le scroll
-    document.body.style.overflow = "hidden";
-
-    // Réactiver le scroll quand la modale se ferme / composant détruit
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, []);
+  useBlockScroll();
 
   return createPortal(
     <div className="fixed bg-black/50 inset-0 p-4 flex justify-center overflow-scroll">

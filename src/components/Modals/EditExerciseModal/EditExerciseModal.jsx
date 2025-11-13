@@ -4,6 +4,7 @@ import Button from "@/components/Buttons/Button";
 import Label from "@/components/Forms/FormsComponents/Label/Label";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
+import { useBlockScroll } from "@/hooks/useBlockScroll";
 
 export default function EditExerciseModal({ exercise, onSave, onClose }) {
   const [error, setError] = useState(null);
@@ -15,16 +16,7 @@ export default function EditExerciseModal({ exercise, onSave, onClose }) {
     notes: exercise.notes || "",
   });
 
-  // Bloquer le scroll quand la modale est ouverte
-  useEffect(() => {
-    // Bloquer le scroll
-    document.body.style.overflow = "hidden";
-
-    // Réactiver le scroll quand la modale se ferme / composant détruit
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, []);
+  useBlockScroll();
 
   const handleSubmit = (e) => {
     e.preventDefault();
