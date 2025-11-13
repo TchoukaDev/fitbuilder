@@ -10,7 +10,7 @@ export default async function Header() {
   return (
     <div className="flex justify-between items-center relative pr-5 lg:pl-10 md:pr-20 border-b border-primary-50 shadow">
       {/* Logo */}
-      <div className="size-[100px] md:size-[200px] relative ">
+      <div className="size-[100px] -ml-3 md:ml-0 md:size-[200px] relative ">
         <Image
           src="/logos/logo-transparent-svg.svg"
           fill

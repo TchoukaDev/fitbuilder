@@ -44,16 +44,17 @@ export default function Navbar() {
 
   const pathname = usePathname();
   return (
-    <div className="flex items-center gap-3 md:gap-10 p-3 md:p-8 border border-primary-100 shadow rounded-full">
+    <nav className="flex  items-center gap-3 md:gap-10 p-3 md:p-8 border border-primary-100 shadow rounded-full">
       {links.map((link) => {
         if (link[3] === "reserved" && !isAdmin) {
           return null;
         }
         return (
-          <div key={link[1]}>
+          <div className="relative group" key={link[1]}>
             {" "}
             <Link
               title={link[0]}
+              aria-label={link[0]}
               className={`${
                 pathname === link[1] ? "text-primary-500" : "text-primary-300"
               } animatedRotation`}
@@ -61,9 +62,20 @@ export default function Navbar() {
             >
               {link[2]}
             </Link>
+            <div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className={`absolute opacity-0 group-hover:opacity-100 transition-opacity duration-300 group-hover:block font-semibold  ${
+                pathname === link[1] ? "text-primary-500 " : "text-primary-300"
+              } text-xs left-1/2 -translate-x-1/2 mt-1`}
+            >
+              {link[0]}
+            </div>
           </div>
         );
       })}
-    </div>
+    </nav>
   );
 }
