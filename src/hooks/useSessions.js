@@ -6,22 +6,53 @@ import {
 } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
-export function useGetSessions(initialData, userId) {
-  const key = ["sessions", userId];
+// ═══════════════════════════════════════════════════════
+// 🔍 GET SESSIONS (avec filtres server-side)
+// ═══════════════════════════════════════════════════════
+export function useGetSessions(initialData, userId, filters = {}) {
+  const { status = "all", dateFilter = "all", page = 1, limit = 20 } = filters;
+
+  // ✅ Tous les filtres dans la queryKey pour cache séparé
+  const key = ["sessions", userId, { status, dateFilter, page, limit }];
+
   return useQuery({
     queryKey: key,
     queryFn: async () => {
-      const response = await fetch("/api/sessions");
+      // ✅ Construction des query params
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: limit.toString(),
+      });
+
+      // ✅ Ajouter status si différent de "all"
+      if (status && status !== "all") {
+        params.append("status", status);
+      }
+
+      // ✅ Ajouter dateFilter si différent de "all"
+      if (dateFilter && dateFilter !== "all") {
+        params.append("dateFilter", dateFilter);
+      }
+
+      const response = await fetch(`/api/sessions?${params.toString()}`);
+
       if (!response.ok) {
         throw new Error("Erreur fetch sessions");
       }
+
       const data = await response.json();
-      return data;
+
+      // ✅ Retourner TOUT (sessions, pagination, stats)
+      return {
+        sessions: data.sessions || [],
+        pagination: data.pagination || {},
+        stats: data.stats || {},
+      };
     },
     initialData: initialData,
-    placeholderData: keepPreviousData,
-    staleTime: 1000 * 60 * 5,
-    gcTime: 1000 * 60 * 30,
+    placeholderData: keepPreviousData, // ✅ Garde les données pendant le fetch
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    gcTime: 1000 * 60 * 30, // 30 minutes
     enabled: !!userId,
   });
 }

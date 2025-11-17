@@ -51,7 +51,10 @@ export default function SessionExecution({ sessionData, sessionId }) {
       const response = await fetch(`/api/sessions/${sessionData._id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ exercises: updatedExercises }),
+        body: JSON.stringify({
+          exercises: updatedExercises,
+          duration: formattedTime,
+        }),
       });
       clearBackup();
       if (!response.ok) throw new Error("Erreur sauvegarde");

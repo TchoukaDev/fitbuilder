@@ -52,7 +52,7 @@ export async function PATCH(req, { params }) {
     return NextResponse.json({ error: "Accès refusé" }, { status: 401 });
   }
 
-  const { exercises } = await req.json();
+  const { exercises, duration } = await req.json();
 
   if (!exercises || !Array.isArray(exercises)) {
     return NextResponse.json({ error: "Exercices invalides" }, { status: 400 });
@@ -67,6 +67,7 @@ export async function PATCH(req, { params }) {
       {
         $set: {
           "sessions.$.exercises": exercises,
+          "sessions.$.duration": duration,
           "sessions.$.updatedAt": new Date(),
         },
       },

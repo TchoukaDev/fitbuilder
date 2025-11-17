@@ -140,3 +140,173 @@ export async function POST(req) {
     );
   }
 }
+
+export async function GET(req) {
+  const session = await getServerSession(authOptions);
+  const userId = session?.user?.id;
+
+  if (!userId) {
+    return NextResponse.json({ error: "Accès refusé" }, { status: 401 });
+  }
+
+  // Récupérer paramètre url
+  const { searchParams } = new URL(req.url);
+
+  const page = parseInt(searchParams.get("page")) || 1;
+  const limit = parseInt(searchParams.get("limit")) || 20;
+  const status = searchParams.get("status"); // "completed" | "in-progress" | "planned"
+  const dateFilter = searchParams.get("dateFilter"); // "week" | "month" | "quarter" | "year"
+
+  try {
+    const db = await connectDB();
+    const user = await db
+      .collection("users")
+      .findOne({ _id: new ObjectId(userId) });
+
+    if (!user) {
+      return NextResponse.json(
+        { error: "Utilisateur non trouvé" },
+        { status: 404 },
+      );
+    }
+
+    let sessions = user?.sessions || [];
+
+    // ═══════════════════════════════════════════════════════
+    // 🔍 FILTRE PAR STATUT
+    // ═══════════════════════════════════════════════════════
+    if (status && status !== "all") {
+      sessions = sessions.filter((s) => s.status === status);
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // 🔍 FILTRE PAR DATE
+    // ═══════════════════════════════════════════════════════
+    if (dateFilter) {
+      const now = new Date();
+      let startDate;
+
+      switch (dateFilter) {
+        case "week":
+          startDate = new Date();
+          startDate.setDate(now.getDate() - 7); // Soustraire 7 jours
+          break;
+        case "month":
+          startDate = new Date();
+          startDate.setDate(now.getDate() - 30); // Soustraire 30 jours
+          break;
+        case "quarter":
+          startDate = new Date();
+          startDate.setMonth(now.getMonth() - 3); // Soustraire 3 mois
+          break;
+        case "year":
+          startDate = new Date();
+          startDate.setFullYear(now.getFullYear() - 1); // Soustraire 1 an
+          break;
+      }
+
+      if (startDate) {
+        sessions = sessions.filter((s) => {
+          const sessionDate = new Date(
+            s.completedDate || s.startedAt || s.scheduledDate || s.createdAt,
+          );
+
+          // ✅ Comparaison de 2 objets Date
+          return sessionDate >= startDate;
+        });
+      }
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // 📊 TRIER (plus récent en premier)
+    // ═══════════════════════════════════════════════════════
+    sessions.sort((a, b) => {
+      const dateA = new Date(a.completedDate || a.startedAt || a.createdAt);
+      const dateB = new Date(b.completedDate || b.startedAt || b.createdAt);
+      return dateB - dateA;
+    });
+
+    // ✅ Pagination
+    const totalSessions = sessions.length; // Ex: 100 sessions
+
+    const startIndex = (page - 1) * limit;
+    // Page 1 : (1-1) * 20 = 0   → Commence à l'index 0
+    // Page 2 : (2-1) * 20 = 20  → Commence à l'index 20
+    // Page 3 : (3-1) * 20 = 40  → Commence à l'index 40
+
+    const endIndex = startIndex + limit;
+    // Page 1 : 0 + 20 = 20   → Termine à l'index 20
+    // Page 2 : 20 + 20 = 40  → Termine à l'index 40
+
+    // ✅ Extraire SEULEMENT les sessions de cette page
+    const sessionsForThisPage = sessions.slice(startIndex, endIndex);
+    // .slice(20, 40) retourne les éléments de l'index 20 à 39 (40 exclus)
+
+    const totalPages = Math.ceil(totalSessions / limit);
+    // 100 sessions / 20 par page = 5 pages
+    // Math.ceil() arrondit au supérieur (si 101 sessions → 6 pages)
+
+    const hasNextPage = page < totalPages;
+    // Page 2 < 5 pages → true (il y a une page 3)
+    // Page 5 < 5 pages → false (c'est la dernière)
+
+    const hasPreviousPage = page > 1;
+    // Page 2 > 1 → true (il y a une page 1 avant)
+    // Page 1 > 1 → false (c'est la première)
+
+    // ═══════════════════════════════════════════════════════
+    // ✅ SÉRIALISER (ObjectId → string, Date → ISO string)
+    // ═══════════════════════════════════════════════════════
+    const serializedSessions = sessionsForThisPage.map((s) => ({
+      ...s,
+      _id: s._id.toString(),
+      userId: s.userId.toString(),
+      templateId: s.templateId.toString(),
+      // ✅ Sérialiser TOUTES les dates
+      createdAt: s.createdAt?.toISOString?.() || s.createdAt,
+      updatedAt: s.updatedAt?.toISOString?.() || s.updatedAt,
+      startedAt: s.startedAt?.toISOString?.() || s.startedAt,
+      completedDate: s.completedDate?.toISOString?.() || s.completedDate,
+      scheduledDate: s.scheduledDate?.toISOString?.() || s.scheduledDate,
+    }));
+
+    // ═══════════════════════════════════════════════════════
+    // 📈 STATS (calculées sur TOUTES les sessions de l'user)
+    // ═══════════════════════════════════════════════════════
+    const allUserSessions = user?.sessions || [];
+    const stats = {
+      total: allUserSessions.length,
+      completed: allUserSessions.filter((s) => s.status === "completed").length,
+      inProgress: allUserSessions.filter((s) => s.status === "in-progress")
+        .length,
+      planned: allUserSessions.filter((s) => s.status === "planned").length,
+    };
+
+    // ═══════════════════════════════════════════════════════
+    // 🎉 RETOUR
+    // ═══════════════════════════════════════════════════════
+    return NextResponse.json(
+      {
+        sessions: serializedSessions,
+        pagination: {
+          page,
+          limit,
+          totalSessions,
+          totalPages,
+          hasNextPage: page < totalPages,
+          hasPreviousPage: page > 1,
+        },
+        stats,
+      },
+      { status: 200 },
+    );
+  } catch (error) {
+    console.error("Erreur GET sessions:", error);
+    return NextResponse.json(
+      {
+        error: "Une erreur est survenue lors de la récupération des sessions",
+      },
+      { status: 500 },
+    );
+  }
+}
