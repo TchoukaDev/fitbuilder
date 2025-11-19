@@ -153,6 +153,9 @@ input[data-autocompleted] {
   opacity: 0.1; /* ← ajuste ici */
   z-index: 1;
 }
+.heroBg > * {
+  z-index: 1;
+}
 
 /* À partir de md: → on désactive le background */
 @media (min-width: 768px) {

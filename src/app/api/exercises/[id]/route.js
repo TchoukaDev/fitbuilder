@@ -108,7 +108,6 @@ export async function DELETE(request, { params }) {
 
   const resolvedParams = await params;
   const { id } = resolvedParams;
-  console.log(id);
 
   try {
     const db = await connectDB();

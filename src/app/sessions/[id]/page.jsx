@@ -16,8 +16,7 @@ export default async function SingleSessionPage({ params }) {
 
   // ✅ FORCER LA SÉRIALISATION EN JSON PUR
   const serializedSession = JSON.parse(JSON.stringify(sessionData));
-  console.log(sessionData);
-  console.log(serializedSession);
+
   return (
     <SessionExecution
       key={sessionData._id}

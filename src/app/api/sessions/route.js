@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import connectDB from "@/libs/mongodb";
 import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
+import { date } from "zod";
 
 export async function POST(req) {
   const session = await getServerSession(authOptions);
@@ -41,12 +42,6 @@ export async function POST(req) {
       completed: false,
     }));
 
-    // ✅ AJOUTE CE LOG
-    console.log("🔍 sessionExercises créés:", sessionExercises);
-    console.log(
-      "🔍 Premier exercice:",
-      JSON.stringify(sessionExercises[0], null, 2),
-    );
     // Créer la session
     const sessionId = new ObjectId();
 
@@ -156,6 +151,7 @@ export async function GET(req) {
   const limit = parseInt(searchParams.get("limit")) || 20;
   const status = searchParams.get("status"); // "completed" | "in-progress" | "planned"
   const dateFilter = searchParams.get("dateFilter"); // "week" | "month" | "quarter" | "year"
+  const templateFilter = searchParams.get("templateFilter"); //nom des templates
 
   try {
     const db = await connectDB();
@@ -177,6 +173,13 @@ export async function GET(req) {
     // ═══════════════════════════════════════════════════════
     if (status && status !== "all") {
       sessions = sessions.filter((s) => s.status === status);
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // 🔍 FILTRE PAR TEMPLATE
+    // ═══════════════════════════════════════════════════════
+    if (templateFilter && templateFilter !== "all") {
+      sessions = sessions.filter((s) => s.templateName === templateFilter);
     }
 
     // ═══════════════════════════════════════════════════════

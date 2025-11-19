@@ -10,10 +10,20 @@ import { toast } from "react-toastify";
 // 🔍 GET SESSIONS (avec filtres server-side)
 // ═══════════════════════════════════════════════════════
 export function useGetSessions(initialData, userId, filters = {}) {
-  const { status = "all", dateFilter = "all", page = 1, limit = 20 } = filters;
+  const {
+    status = "all",
+    dateFilter = "all",
+    templateFilter = "all",
+    page = 1,
+    limit = 20,
+  } = filters;
 
   // ✅ Tous les filtres dans la queryKey pour cache séparé
-  const key = ["sessions", userId, { status, dateFilter, page, limit }];
+  const key = [
+    "sessions",
+    userId,
+    { status, dateFilter, templateFilter, page, limit },
+  ];
 
   return useQuery({
     queryKey: key,
@@ -34,6 +44,10 @@ export function useGetSessions(initialData, userId, filters = {}) {
         params.append("dateFilter", dateFilter);
       }
 
+      if (templateFilter && templateFilter !== "all") {
+        params.append("templateFilter", templateFilter);
+      }
+
       const response = await fetch(`/api/sessions?${params.toString()}`);
 
       if (!response.ok) {
@@ -49,7 +63,14 @@ export function useGetSessions(initialData, userId, filters = {}) {
         stats: data.stats || {},
       };
     },
-    initialData: initialData,
+    initialData:
+      status === "all" &&
+      dateFilter === "all" &&
+      templateFilter === "all" &&
+      page === 1 &&
+      limit === 20
+        ? initialData
+        : undefined,
     placeholderData: keepPreviousData, // ✅ Garde les données pendant le fetch
     staleTime: 1000 * 60 * 5, // 5 minutes
     gcTime: 1000 * 60 * 30, // 30 minutes

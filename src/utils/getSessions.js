@@ -4,7 +4,13 @@ const { ObjectId } = require("mongodb");
 export async function getAllSessions(userId, filters = {}) {
   if (!userId) return { sessions: [], pagination: {}, stats: {} };
 
-  const { status = "all", dateFilter = "all", page = 1, limit = 20 } = filters;
+  const {
+    status = "all",
+    dateFilter = "all",
+    templateFilter = "all",
+    page = 1,
+    limit = 20,
+  } = filters;
 
   try {
     const db = await connectDB();
@@ -23,6 +29,10 @@ export async function getAllSessions(userId, filters = {}) {
     // ═══════════════════════════════════════════════════════
     if (status && status !== "all") {
       sessions = sessions.filter((s) => s.status === status);
+    }
+
+    if (templateFilter && templateFilter !== "all") {
+      sessions = sessions.filter((s) => s.templateName === templateFilter);
     }
 
     // ═══════════════════════════════════════════════════════

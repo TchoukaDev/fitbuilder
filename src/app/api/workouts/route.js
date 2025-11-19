@@ -4,7 +4,6 @@ import { NextResponse } from "next/server";
 import connectDB from "@/libs/mongodb";
 import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
-import { object, success } from "zod";
 
 export async function POST(req) {
   const session = await getServerSession(authOptions);
