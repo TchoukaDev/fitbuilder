@@ -142,8 +142,32 @@ input[data-autocompleted] {
   background-color: transparent !important;
 }
 
+.heroBg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("/logos/logo-transparent-svg.svg");
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.1; /* ← ajuste ici */
+  z-index: 1;
+}
+
+/* À partir de md: → on désactive le background */
+@media (min-width: 768px) {
+  .heroBg::before {
+    background-image: none;
+  }
+}
+
+.animatedRotation {
+  transition: all 0.2s;
+}
+
 :hover.animatedRotation {
   animation: animatedRotation 0.3s ease-in-out infinite alternate;
+  scale: 1.5;
 }
 
 @keyframes animatedRotation {

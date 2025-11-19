@@ -1,5 +1,7 @@
 "use client";
+import LogoutButton from "@/components/Buttons/LogoutButton";
 import {
+  Activity,
   ClipboardPen,
   Dumbbell,
   LayoutDashboard,
@@ -15,7 +17,7 @@ export default function Navbar() {
   const isAdmin = session?.user?.role === "ADMIN";
   const links = [
     [
-      "Tableau de bord",
+      "Aperçu",
       "/dashboard",
       <LayoutDashboard className="size-6 md:size-10 animatedRotation" />,
     ],
@@ -28,6 +30,11 @@ export default function Navbar() {
       "Séances",
       "/workouts",
       <ClipboardPen className="size-6 md:size-10 animatedRotation" />,
+    ],
+    [
+      "Suivi",
+      "/sessions",
+      <Activity className="size-6 md:size-10 animatedRotation" />,
     ],
     [
       "Profil",
@@ -44,7 +51,7 @@ export default function Navbar() {
 
   const pathname = usePathname();
   return (
-    <nav className="flex  items-center gap-3 md:gap-10 p-3 md:p-8 border border-primary-100 shadow rounded-full">
+    <nav className="flex  items-center gap-3 md:gap-10 py-6 px-10 md:p-10 border border-primary-100 shadow rounded-full">
       {links.map((link) => {
         if (link[3] === "reserved" && !isAdmin) {
           return null;
@@ -63,19 +70,16 @@ export default function Navbar() {
               {link[2]}
             </Link>
             <div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
               className={`absolute opacity-0 group-hover:opacity-100 transition-opacity duration-300 group-hover:block font-semibold  ${
                 pathname === link[1] ? "text-primary-500 " : "text-primary-300"
-              } text-xs left-1/2 -translate-x-1/2 mt-1`}
+              } text-xs left-1/2 -translate-x-1/2 mt-3`}
             >
               {link[0]}
             </div>
           </div>
         );
       })}
+      <LogoutButton />
     </nav>
   );
 }
