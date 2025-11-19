@@ -1,6 +1,6 @@
 "use client";
 
-import ExercisesList from "@/app/Features/Exercises/ExercisesList/ExercisesList";
+import ExercisesList from "@/Features/Exercises/ExercisesList/ExercisesList";
 import { useBlockScroll } from "@/hooks/useBlockScroll";
 import { X } from "lucide-react";
 import { createPortal } from "react-dom";

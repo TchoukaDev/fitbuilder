@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { useExercises, useFavorites } from "@/hooks/useExercises";
-import ExerciceSelector from "@/app/Features/Workouts/CreateWorkout/ExerciceSelector/ExerciceSelector";
-import ExerciseConfiguration from "@/app/Features/Workouts/CreateWorkout/ExerciseConfiguration/ExerciseConfiguration";
+import ExerciceSelector from "@/Features/Workouts/CreateWorkout/ExerciceSelector/ExerciceSelector";
+import ExerciseConfiguration from "@/Features/Workouts/CreateWorkout/ExerciseConfiguration/ExerciseConfiguration";
 import ExercisePageList from "../ExercisePageList/ExercisePageList";
 
 export default function ExercisesList({

@@ -1,6 +1,6 @@
-import ExerciseGroupSelect from "@/app/Features/Exercises/ExerciseGroup/ExerciseGroupSelect";
-import ExerciseTabs from "@/app/Features/Exercises/ExerciseTabs/ExerciseTabs";
-import MuscleFilters from "@/app/Features/Exercises/MusclesFilters/MuscleFilters";
+import ExerciseGroupSelect from "@/Features/Exercises/ExerciseGroup/ExerciseGroupSelect";
+import ExerciseTabs from "@/Features/Exercises/ExerciseTabs/ExerciseTabs";
+import MuscleFilters from "@/Features/Exercises/MusclesFilters/MuscleFilters";
 import SearchExercise from "../SearchExercise/SearchExercise";
 import { useState } from "react";
 import Button from "@/components/Buttons/Button";

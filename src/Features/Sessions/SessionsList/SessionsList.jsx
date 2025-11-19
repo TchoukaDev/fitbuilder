@@ -48,7 +48,7 @@ export default function SessionsList({ initialSessions, userId }) {
       status: statusFilter,
       dateFilter: dateFilter,
       page: page,
-      limit: 1,
+      limit: 20,
     },
   );
 

@@ -4,7 +4,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 import { getAllSessions } from "@/utils/getSessions";
 import Header from "@/components/Layout/Header/Header";
-import SessionsList from "../Features/Sessions/SessionsList/SessionsList";
+import SessionsList from "@/Features/Sessions/SessionsList/SessionsList";
 
 // ✅ Accepter les searchParams de Next.js
 export default async function SessionPage({ searchParams }) {
