@@ -193,7 +193,7 @@ export default function SessionsList({
       {/* HEADER */}
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-primary-900 mb-2">
-          📜 Historique des séances
+          📈 Suivi des séances
         </h1>
         <p className="text-gray-600">
           {stats.total} séance{stats.total > 1 ? "s" : ""} au total
