@@ -17,6 +17,7 @@ import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { useUpdateWorkout } from "@/hooks/useWorkouts";
 import EditExerciseModal from "@/components/Modals/EditExerciseModal/EditExerciseModal";
+import { useModals } from "@/Context/ModalsContext/ModalContext";
 
 export default function UpdatedWorkoutForm({
   workout, // ✅ Le workout à modifier
@@ -30,9 +31,10 @@ export default function UpdatedWorkoutForm({
     exercises: workout.exercises || [], // ✅ Pré-remplir avec les exercices existants
   });
   const [error, setError] = useState("");
-  const [isOpen, setIsOpen] = useState(false);
-  const [editingExercise, setEditingExercise] = useState(null); // ✅ Pour l'édition d'exercice
   const [isMounted, setIsMounted] = useState(false);
+
+  // Modals
+  const { isOpen, openModal, closeModal, getModalData } = useModals();
 
   // Variables
   const router = useRouter();
@@ -73,13 +75,13 @@ export default function UpdatedWorkoutForm({
   // ✅ Modifier un exercice existant
   const handleUpdateExercise = (updatedExercise) => {
     const newExercises = formData.exercises.map((ex, i) =>
-      i === editingExercise.index
+      i === getModalData("editExercise").index
         ? { ...updatedExercise, order: ex.order }
         : ex,
     );
 
     setFormData({ ...formData, exercises: newExercises });
-    setEditingExercise(null);
+    closeModal("editExercise");
     toast.success("Exercice modifié");
   };
 
@@ -237,7 +239,7 @@ export default function UpdatedWorkoutForm({
               Exercices du plan ({formData.exercises.length})
             </h2>
 
-            <Button type="button" onClick={() => setIsOpen(true)}>
+            <Button type="button" onClick={() => openModal("selectExercise")}>
               <Plus size={20} />
               Ajouter un exercice
             </Button>
@@ -308,7 +310,7 @@ export default function UpdatedWorkoutForm({
                           <button
                             type="button"
                             onClick={() =>
-                              setEditingExercise({ exercise, index })
+                              openModal("editExercise", { exercise, index })
                             }
                             className="p-1 text-blue-600 hover:bg-blue-50 rounded transition cursor-pointer"
                             title="Modifier l'exercice"
@@ -410,11 +412,10 @@ export default function UpdatedWorkoutForm({
       )}
 
       {/* ✅ Modale d'édition d'exercice */}
-      {editingExercise && (
+      {isOpen("editExercise") && (
         <EditExerciseModal
-          exercise={editingExercise.exercise}
+          exercise={getModalData("editExercise").exercise}
           onSave={handleUpdateExercise}
-          onClose={handleCloseEditModal}
         />
       )}
     </>
