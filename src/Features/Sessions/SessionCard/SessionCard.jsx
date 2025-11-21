@@ -1,3 +1,5 @@
+// components/Features/Sessions/SessionCard/SessionCard.jsx
+
 "use client";
 
 import { Clock, Calendar, Dumbbell, CheckCircle, Play } from "lucide-react";
@@ -48,9 +50,7 @@ export default function SessionCard({ session }) {
 
   const formatTime = (time) => {
     if (!time) return "N/A";
-    // Si c'est déjà au format HH:MM:SS
     if (typeof time === "string" && time.includes(":")) return time;
-    // Sinon formatter
     return time;
   };
 
@@ -67,7 +67,7 @@ export default function SessionCard({ session }) {
       // Reprendre la séance en cours
       router.push(`/sessions/${session._id}`);
     } else if (session.status === "completed") {
-      // Voir le détail (on créera cette page plus tard)
+      // ✅ Voir le détail de la séance terminée
       router.push(`/sessions/${session._id}/detail`);
     } else if (session.status === "planned") {
       // Démarrer la séance planifiée
@@ -116,11 +116,14 @@ export default function SessionCard({ session }) {
         </div>
 
         {/* Durée (si complété) */}
-
-        <div className="flex items-center gap-2">
-          <Clock size={16} className="text-primary-600" />
-          <span className="text-gray-700">{formatTime(session.duration)}</span>
-        </div>
+        {session.duration && (
+          <div className="flex items-center gap-2">
+            <Clock size={16} className="text-primary-600" />
+            <span className="text-gray-700">
+              {formatTime(session.duration)}
+            </span>
+          </div>
+        )}
 
         {/* Date de création */}
         <div className="flex items-center gap-2">

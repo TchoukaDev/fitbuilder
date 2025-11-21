@@ -2,32 +2,27 @@
 import { createPortal } from "react-dom";
 import NewExerciceForm from "../../Forms/Exercises/newExerciceForm/newExerciceForm";
 import UpdateExerciseForm from "../../Forms/Exercises/UpdateExerciseForm.jsx/UpdateExerciseForm";
+import { useBlockScroll } from "@/hooks/useBlockScroll";
 
-export default function ExerciseModal({ onClose, exerciseToUpdate = null }) {
+export default function ExerciseModal({ update, exerciseToUpdate = null }) {
   useBlockScroll();
   return createPortal(
-    <div
-      onClick={() => onClose()}
-      className="fixed bg-black/50 inset-0 flex justify-center items-center"
-    >
+    <div className="fixed z-100 bg-black/50 inset-0 flex justify-center items-center">
       <div
         onClick={(e) => e.stopPropagation()}
         className="bg-blue-50 p-10 min-w-[300px] rounded"
       >
         {/* Modification d'un exercice */}
-        {exerciseToUpdate ? (
+        {exerciseToUpdate && update ? (
           <>
             <h2>Modifier l'exercice</h2>
-            <UpdateExerciseForm
-              onClose={onClose}
-              exerciseToUpdate={exerciseToUpdate}
-            />
+            <UpdateExerciseForm exerciseToUpdate={exerciseToUpdate} />
           </>
         ) : (
           <>
             {/* Ajout d'un exercice */}
             <h2>Créer un exercice</h2>
-            <NewExerciceForm onClose={onClose} />
+            <NewExerciceForm />
           </>
         )}
       </div>

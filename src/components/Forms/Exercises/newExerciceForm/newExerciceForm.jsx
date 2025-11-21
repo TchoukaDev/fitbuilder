@@ -7,8 +7,9 @@ import { toast } from "react-toastify";
 import { useCreateExercise } from "@/hooks/useExercises";
 import { useSession } from "next-auth/react";
 import { ClipLoader } from "react-spinners";
+import { useModals } from "@/Context/ModalsContext/ModalContext";
 
-export default function NewExerciceForm({ onClose }) {
+export default function NewExerciceForm() {
   const { data: session } = useSession();
   const isAdmin = session?.user?.role === "ADMIN";
   const userId = session?.user?.id;
@@ -19,6 +20,7 @@ export default function NewExerciceForm({ onClose }) {
   const [description, setDescription] = useState("");
   const [equipment, setEquipment] = useState("");
 
+  const { closeModal } = useModals();
   const {
     mutate: createExercice,
     isPending,
@@ -47,7 +49,7 @@ export default function NewExerciceForm({ onClose }) {
           setMuscle("");
           setDescription("");
           setEquipment("");
-          onClose();
+          closeModal("exercise");
         },
         // ✅ Callback d'erreur
         onError: () =>
@@ -137,7 +139,7 @@ export default function NewExerciceForm({ onClose }) {
         <div className="flex gap-4">
           <Button
             close
-            onClick={onClose}
+            onClick={() => closeModal("exercise")}
             type="button"
             disabled={isPending} // ✅ Empêche de fermer pendant l'envoi
           >

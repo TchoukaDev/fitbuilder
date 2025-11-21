@@ -1,12 +1,13 @@
 "use client";
 
+import { useModals } from "@/Context/ModalsContext/ModalContext";
 import ExercisesList from "@/Features/Exercises/ExercisesList/ExercisesList";
 import { useBlockScroll } from "@/hooks/useBlockScroll";
 import { X } from "lucide-react";
 import { createPortal } from "react-dom";
 
+// Modale de selection d'un exercice à ajouter à l'entraînement
 export default function SelectExercicesModal({
-  onCloseExerciseSelector,
   onSelectExercise,
   favorites,
   allExercises,
@@ -14,6 +15,7 @@ export default function SelectExercicesModal({
   isAdmin,
   userId,
 }) {
+  const { closeModal } = useModals();
   useBlockScroll();
 
   return createPortal(
@@ -22,7 +24,7 @@ export default function SelectExercicesModal({
         {/* Fermeture */}
         <button
           className="absolute right-4 top-4 cursor-pointer hover:text-accent-600"
-          onClick={onCloseExerciseSelector}
+          onClick={() => closeModal("selectExercise")}
         >
           <X size={24} />
         </button>{" "}
@@ -34,7 +36,6 @@ export default function SelectExercicesModal({
           exercisesAdded={exercisesAdded}
           inModal={true}
           onSelectExercise={onSelectExercise}
-          onCloseExerciseSelector={onCloseExerciseSelector}
         />
       </div>
     </div>,

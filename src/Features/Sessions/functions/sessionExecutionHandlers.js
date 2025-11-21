@@ -1,8 +1,7 @@
-export function useSessionHandlers(
+export function sessionExecutionHandlers(
   exercises,
   setExercises,
   setCurrentExerciseIndex,
-  saveProgress,
 ) {
   const handleSetChange = (exerciseIndex, setIndex, field, value) => {
     setExercises((prev) => {
@@ -57,29 +56,11 @@ export function useSessionHandlers(
     setCurrentExerciseIndex(exerciseIndex);
   };
 
-  // Marquer un exercice comme complété
-  const handleExerciseComplete = async (exerciseIndex) => {
-    setExercises((prev) => {
-      const newExercises = [...prev];
-      newExercises[exerciseIndex].completed = true;
-      return newExercises;
-    });
-
-    // Sauvegarder en db
-    await saveProgress(exercises);
-
-    // Passer à l'exercice suivant
-    if (exerciseIndex < exercises.length - 1) {
-      setCurrentExerciseIndex(exerciseIndex + 1);
-    }
-  };
-
   return {
     handleSetChange,
     handleNotesChange,
     handleEffortChange,
     handleSetComplete,
     handleReopenExercise,
-    handleExerciseComplete,
   };
 }

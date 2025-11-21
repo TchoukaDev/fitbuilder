@@ -58,10 +58,6 @@ export default function UpdatedWorkoutForm({
 
   const watchedFields = watch();
 
-  // Fermeture modales
-  const handleCloseExerciseSelector = () => setIsOpen(false);
-  const handleCloseEditModal = () => setEditingExercise(null);
-
   // Ajouter exercice
   const handleSelectExercise = (selectedExercise) => {
     const orderedExercise = {
@@ -408,7 +404,6 @@ export default function UpdatedWorkoutForm({
           userId={userId}
           isAdmin={isAdmin}
           onSelectExercise={handleSelectExercise}
-          onCloseExerciseSelector={handleCloseExerciseSelector}
           allExercises={allExercises}
           favorites={favorites}
         />

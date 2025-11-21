@@ -4,6 +4,7 @@ import MuscleFilters from "@/Features/Exercises/MusclesFilters/MuscleFilters";
 import SearchExercise from "../SearchExercise/SearchExercise";
 import { useState } from "react";
 import Button from "@/components/Buttons/Button";
+import { useModals } from "@/Context/ModalsContext/ModalContext";
 
 export default function ExerciceSelector({
   activeTab,
@@ -22,9 +23,11 @@ export default function ExerciceSelector({
   setStep,
   search,
   onSearchChange,
-  onCloseExerciseSelector,
 }) {
   const [error, setError] = useState(null); //Erreur si pas d'exercice sélectionné
+
+  const { closeModal } = useModals();
+
   // Vérifier si un exercice est sélectionner avant de passer à l'étape 2
   const handleSubmit = () => {
     if (!selectedExerciseId) {
@@ -87,11 +90,14 @@ export default function ExerciceSelector({
         onSelectExerciseId={setSelectedExerciseId}
         error={error}
         grouped={grouped}
-        onCloseExerciseSelector={onCloseExerciseSelector}
         exercisesAdded={exercisesAdded}
       />
       <div className="flex items-center gap-3 my-5">
-        <Button type="button" close onClick={onCloseExerciseSelector}>
+        <Button
+          type="button"
+          close
+          onClick={() => closeModal("selectExercise")}
+        >
           Annuler
         </Button>
         <Button type="button" onClick={handleSubmit}>

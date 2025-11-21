@@ -4,7 +4,6 @@ import { NextResponse } from "next/server";
 import connectDB from "@/libs/mongodb";
 import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
-import { date } from "zod";
 
 export async function POST(req) {
   const session = await getServerSession(authOptions);
@@ -34,9 +33,14 @@ export async function POST(req) {
       order: ex.order,
       targetSets: ex.sets,
       targetReps: ex.reps,
-      targetWeight: ex.targetWeight || null,
+      targetWeight: ex.targetWeight,
       restTime: ex.restTime || 90,
-      actualSets: [], // Sera rempli pendant l'exécution
+      // Initialiser actualSets pour la session
+      actualSets: Array.from({ length: ex.sets }).map(() => ({
+        reps: null,
+        weight: ex.targetWeight,
+        completed: false,
+      })),
       notes: "",
       effort: null,
       completed: false,

@@ -3,10 +3,9 @@
 import { X, CheckCircle, Clock, Dumbbell } from "lucide-react";
 import Button from "@/components/Buttons/Button";
 import { useBlockScroll } from "@/hooks/useBlockScroll";
+import { useModals } from "@/Context/ModalsContext/ModalContext";
 
 export default function FinishSessionModal({
-  isOpen,
-  onClose,
   onConfirm,
   sessionName,
   completedCount,
@@ -14,6 +13,7 @@ export default function FinishSessionModal({
   duration,
   isLoading,
 }) {
+  const { closeModal } = useModals();
   useBlockScroll();
 
   return (
@@ -21,7 +21,7 @@ export default function FinishSessionModal({
       <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full">
         {/* Fermeture Modale */}
         <button
-          onClick={onClose}
+          onClick={() => closeModal("finishSession")}
           className="absolute right-4 top-4 cursor-pointer hover:text-accent-600"
           disabled={isLoading}
         >
@@ -79,7 +79,7 @@ export default function FinishSessionModal({
         {/* Footer */}
         <div className="flex justify-center gap-3 p-6 border-t bg-gray-50">
           <Button
-            onClick={onClose}
+            onClick={() => closeModal("finishSession")}
             disabled={isLoading}
             close
             className="flex-1"

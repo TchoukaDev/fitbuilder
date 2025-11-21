@@ -119,7 +119,7 @@ export async function getAllSessions(userId, filters = {}) {
   }
 }
 
-export const getSessionbyId = async (userId, sessionId) => {
+export async function getSessionbyId(userId, sessionId) {
   try {
     const db = await connectDB();
     const user = await db
@@ -158,10 +158,9 @@ export const getSessionbyId = async (userId, sessionId) => {
       templateId: data.templateId.toString(),
     };
 
-    console.log("✅ Session trouvée:", session._id);
     return session;
   } catch (error) {
     console.error("❌ Erreur getSessionbyId:", error);
     return null;
   }
-};
+}

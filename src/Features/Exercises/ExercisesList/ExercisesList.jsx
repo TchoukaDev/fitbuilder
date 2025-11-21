@@ -13,7 +13,6 @@ export default function ExercisesList({
   userId,
   inModal,
   exercisesAdded,
-  onCloseExerciseSelector,
   onSelectExercise,
 }) {
   // HOOKS
@@ -150,7 +149,6 @@ export default function ExercisesList({
           grouped={grouped}
           exercisesAdded={exercisesAdded}
           setStep={setStep}
-          onCloseExerciseSelector={onCloseExerciseSelector}
           selectedExerciseId={selectedExerciseId}
           search={search}
           onSearchChange={setSearch}
@@ -166,7 +164,6 @@ export default function ExercisesList({
           setSelectedExerciseId={setSelectedExerciseId}
           onSelectExercise={onSelectExercise}
           setStep={setStep}
-          onCloseExerciseSelector={onCloseExerciseSelector}
         />
       );
     }

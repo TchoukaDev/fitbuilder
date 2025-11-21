@@ -4,8 +4,9 @@ import SetRow from "../SetRow/SetRow";
 import Button from "@/components/Buttons/Button";
 import { AnimatePresence, motion } from "framer-motion";
 import RestTimerModal from "@/components/Modals/RestTimerModal/RestTimerModal";
+import { useModals } from "@/Context/ModalsContext/ModalContext";
 
-// ═══════════════════════════════════════════════════════
+// Carte d'un exercice pendant l'exécution de la session
 export default function SessionExerciseCard({
   exercise,
   index,
@@ -18,17 +19,34 @@ export default function SessionExerciseCard({
   onReopenExercise,
 }) {
   const [isExpanded, setIsExpanded] = useState(isActive); //Pour ouvrir/fermer le formulaire des séries
-  const [isGrabbing, setIsGrabbing] = useState(false); // pour le cursor de l'input effort
-  const [isTimerOpen, setIsTimerOpen] = useState(false); //Ouverture/fermeture du timer
+  const [localEffort, setLocalEffort] = useState(exercise.effort ?? null);
 
-  const handleCloseTimer = () => {
-    setIsTimerOpen(false);
+  const { openModal, isOpen } = useModals();
+
+  const handleEffortChange = (value) => {
+    // Validation : entre 1 et 10, ou null si vide
+    const numValue = value === "" ? null : parseInt(value);
+
+    if (numValue === null || (numValue >= 1 && numValue <= 10)) {
+      setLocalEffort(numValue);
+      onEffortChange(index, numValue);
+    }
   };
 
-  // UseEffect, ouvrir le détail de l'exercice actif
+  // Synchronisation de l'input RPE avec exerciseEffort si existant
+  useEffect(() => {
+    setLocalEffort(exercise.effort ?? null);
+  }, [exercise.effort]);
+
+  // Ouvrir le détail de l'exercice actif
   useEffect(() => {
     if (isActive) setIsExpanded(true);
   }, [isActive]);
+
+  /*------------------
+  RENDER
+ ------------------- */
+
   return (
     <>
       <div
@@ -84,7 +102,7 @@ export default function SessionExerciseCard({
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      setIsTimerOpen(true);
+                      openModal("restTimer");
                     }}
                     className="text-xs bg-primary-500 hover:bg-primary-600 text-white px-2.5 py-1 rounded-full md:rounded inline-flex items-center gap-1.5 transition shadow-sm hover:shadow-md cursor-pointer"
                     title="Démarrer le timer de repos"
@@ -121,9 +139,9 @@ export default function SessionExerciseCard({
               {/* Résumé des séries */}
               <div>
                 <p className="font-semibold mb-2">Séries réalisées :</p>
-                {exercise.actualSets?.map((set, idx) => (
-                  <p key={idx} className="text-sm text-gray-700">
-                    Série {idx + 1}: {set.weight}kg × {set.reps} reps
+                {exercise.actualSets?.map((set, index) => (
+                  <p key={index} className="text-sm text-gray-700">
+                    Série {index + 1}: {set.weight}kg × {set.reps} reps
                     {set.completed && " ✓"}
                   </p>
                 ))}
@@ -175,7 +193,6 @@ export default function SessionExerciseCard({
                     key={setIndex}
                     setIndex={setIndex}
                     setData={exercise.actualSets[setIndex]}
-                    targetWeight={exercise.targetWeight}
                     onSetChange={(field, value) =>
                       onSetChange(index, setIndex, field, value)
                     }
@@ -187,35 +204,47 @@ export default function SessionExerciseCard({
               {/* ✅ EFFORT / RPE */}
 
               <div className="mt-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor={`effort-${index}`}
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   💪 Effort ressenti (RPE)
-                  {exercise.effort && (
-                    <span className="ml-2 text-primary-600 font-bold">
-                      {exercise.effort}/10
-                    </span>
-                  )}
+                  <span className="text-gray-500 text-xs ml-2">(1-10)</span>
                 </label>
 
-                <input
-                  onMouseDown={() => setIsGrabbing(true)}
-                  onMouseUp={() => setIsGrabbing(false)}
-                  type="range"
-                  min="1"
-                  max="10"
-                  value={exercise.effort || 5}
-                  onChange={(e) =>
-                    onEffortChange(index, parseInt(e.target.value))
-                  }
-                  className={`h-2 w-full ${
-                    isGrabbing ? "cursor-grabbing" : "cursor-grab"
-                  }`}
-                />
+                <div className="flex items-center justify-center gap-3">
+                  <input
+                    id={`effort-${index}`}
+                    type="number"
+                    min="1"
+                    max="10"
+                    required
+                    value={localEffort ?? ""}
+                    onChange={(e) => handleEffortChange(e.target.value)}
+                    className="input w-24 text-center pt-2 text-lg font-bold"
+                  />
 
-                {/* Labels sous le slider */}
-                <div className="flex justify-between text-xs text-gray-500 mt-1">
-                  <span>1 - Très facile</span>
-                  <span>5 - Modéré</span>
-                  <span>10 - Max</span>
+                  <div className=" text-xs text text-gray-500">
+                    {localEffort === null || localEffort === undefined ? (
+                      <span className="italic">Non renseigné</span>
+                    ) : localEffort <= 3 ? (
+                      <span className="text-green-600"> Très facile</span>
+                    ) : localEffort <= 6 ? (
+                      <span className="text-primary-600"> Modéré</span>
+                    ) : localEffort <= 8 ? (
+                      <span className="text-accent-600"> Intense</span>
+                    ) : (
+                      <span className="text-red-600"> Maximum</span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Légende */}
+                <div className="mt-2 text-xs text-center text-gray-400 space-y-1">
+                  <p>
+                    1-3 = Très facile • 4-6 = Modéré • 7-8 = Intense • 9-10 =
+                    Maximum
+                  </p>
                 </div>
               </div>
 
@@ -243,11 +272,8 @@ export default function SessionExerciseCard({
           )}
         </AnimatePresence>
       </div>
-      {isTimerOpen && (
-        <RestTimerModal
-          initialTime={exercise.restTime}
-          onClose={handleCloseTimer}
-        />
+      {isOpen("restTimer") && (
+        <RestTimerModal initialTime={exercise.restTime} />
       )}
     </>
   );

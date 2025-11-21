@@ -1,6 +1,7 @@
 "use client";
 import Button from "@/components/Buttons/Button";
 import ExerciseModal from "@/components/Modals/ExerciseModal/ExerciseModal";
+import { useModals } from "@/Context/ModalsContext/ModalContext";
 import { useDeleteExercise, useToggleFavorite } from "@/hooks/useExercises";
 
 import { useState } from "react";
@@ -14,8 +15,7 @@ export default function ExerciseCard({
   isAdmin,
 }) {
   // Modale
-  const [isOpen, setIsOpen] = useState(null);
-  const onClose = () => setIsOpen(null);
+  const { isOpen, openModal } = useModals();
 
   // Gestion des favoris
   const { mutate: toggleFavorite, isPending: isToggling } =
@@ -74,10 +74,10 @@ export default function ExerciseCard({
           {/* MODIFIER/SUPPRIMER (onglet "Mes exercices") */}
           {activeTab === "mine" && (
             <>
-              <Button onClick={() => setIsOpen("update")}>Modifier</Button>
+              <Button onClick={() => openModal("exercise")}>Modifier</Button>
               {/* Modal de modification d'exercice */}
-              {isOpen === "update" && (
-                <ExerciseModal onClose={onClose} exerciseToUpdate={exercise} />
+              {isOpen("exercise") && (
+                <ExerciseModal update exerciseToUpdate={exercise} />
               )}
               {/* Supprimer exercice */}
               <Button

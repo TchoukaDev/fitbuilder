@@ -7,8 +7,10 @@ import { toast } from "react-toastify";
 import { useSession } from "next-auth/react";
 import { useUpdateExercise } from "@/hooks/useExercises";
 import { ClipLoader } from "react-spinners";
+import { useModals } from "@/Context/ModalsContext/ModalContext";
 
-export default function UpdateExerciseForm({ onClose, exerciseToUpdate }) {
+export default function UpdateExerciseForm({ exerciseToUpdate }) {
+  const { closeModal } = useModals();
   // Session
   const { data: session } = useSession();
   const isAdmin = session?.user?.role === "ADMIN";
@@ -55,7 +57,7 @@ export default function UpdateExerciseForm({ onClose, exerciseToUpdate }) {
           setMuscle("");
           setDescription("");
           setEquipment("");
-          onClose();
+          closeModal("exercise");
         },
       },
       {
@@ -143,7 +145,7 @@ export default function UpdateExerciseForm({ onClose, exerciseToUpdate }) {
       </div>
       <div className="space-y-2">
         <div className="flex gap-4">
-          <Button close onClick={() => onClose()} type="button">
+          <Button close onClick={() => closeModal("exercise")} type="button">
             Fermer
           </Button>
           <Button disabled={isUpdating} type="submit">

@@ -3,11 +3,12 @@
 import { X, Play, Pause, SkipForward } from "lucide-react";
 import { useState, useEffect } from "react";
 import Button from "@/components/Buttons/Button";
-import { useTimerEffects } from "@/hooks/useTimerEffects";
+import { useTimerEffects } from "@/Features/Sessions/hooks/useTimerEffects";
 import { useBlockScroll } from "@/hooks/useBlockScroll";
+import { createPortal } from "react-dom";
+import { useModals } from "@/Context/ModalsContext/ModalContext";
 
 export default function RestTimerModal({
-  onClose,
   initialTime, // Temps de repos en secondes (ex: 90)
 }) {
   // ═══════════════════════════════════════════════════════
@@ -24,6 +25,8 @@ export default function RestTimerModal({
 
   // Hook pour effets de fin de Timer
   const { triggerTimerComplete } = useTimerEffects();
+
+  const { closeModal } = useModals();
 
   useBlockScroll();
   // ═══════════════════════════════════════════════════════
@@ -73,7 +76,7 @@ export default function RestTimerModal({
   // Passer le repos (skip)
   const handleSkip = () => {
     setIsRunning(false);
-    onClose(); // Fermer la modale
+    closeModal("restTimer"); // Fermer la modale
   };
 
   // Réinitialiser avec le temps initial
@@ -116,14 +119,14 @@ export default function RestTimerModal({
   // ═══════════════════════════════════════════════════════
   // 🎨 RENDER
   // ═══════════════════════════════════════════════════════
-  return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+  return createPortal(
+    <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg shadow-2xl max-w-md w-full relative">
         {/* ─────────────────────────────────────────────────── */}
         {/* BOUTON FERMER */}
         {/* ─────────────────────────────────────────────────── */}
         <button
-          onClick={onClose}
+          onClick={() => closeModal("restTimer")}
           className="absolute right-4 top-4 hover:text-accent-600 cursor-pointer transition-all"
         >
           <X size={24} />
@@ -254,6 +257,8 @@ export default function RestTimerModal({
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+
+    document.getElementById("portal-root"),
   );
 }

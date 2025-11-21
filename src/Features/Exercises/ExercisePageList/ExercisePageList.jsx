@@ -4,6 +4,7 @@ import Button from "@/components/Buttons/Button";
 import ExerciseModal from "@/components/Modals/ExerciseModal/ExerciseModal";
 import MuscleFilters from "../MusclesFilters/MuscleFilters";
 import ExerciseGroup from "../ExerciseGroup/ExerciseGroup";
+import { useModals } from "@/Context/ModalsContext/ModalContext";
 
 export default function ExercisePageList({
   activeTab,
@@ -19,11 +20,7 @@ export default function ExercisePageList({
   userId,
   isAdmin,
 }) {
-  const [isOpen, setIsOpen] = useState(null);
-
-  const onClose = () => {
-    setIsOpen(null);
-  };
+  const { isOpen, openModal } = useModals();
   return (
     <div>
       {/* ONGLETS */}
@@ -35,13 +32,13 @@ export default function ExercisePageList({
       {/* BOUTON CRÉER (onglet "Mes exercices") */}
       {activeTab === "mine" && (
         <div className="mb-5">
-          <Button onClick={() => setIsOpen("create")}>
+          <Button onClick={() => openModal("exercise")}>
             + Créer un nouvel exercice
           </Button>
         </div>
       )}
       {/* Modal de création d'exercice */}
-      {isOpen === "create" && <ExerciseModal onClose={onClose} />}
+      {isOpen("exercise") && <ExerciseModal />}
       {/* FILTRES PAR MUSCLE */}
       {activeTab === "all" && (
         <MuscleFilters

@@ -3,8 +3,10 @@
 import { X, AlertTriangle } from "lucide-react";
 import Button from "@/components/Buttons/Button";
 import { useBlockScroll } from "@/hooks/useBlockScroll";
+import { useModals } from "@/Context/ModalsContext/ModalContext";
 
-export default function CancelSessionModal({ onClose, onConfirm, isLoading }) {
+export default function CancelSessionModal({ onConfirm, isLoading }) {
+  const { closeModal } = useModals();
   useBlockScroll();
 
   return (
@@ -13,7 +15,7 @@ export default function CancelSessionModal({ onClose, onConfirm, isLoading }) {
         {/* Fermeture */}
         <button
           className="absolute right-4 top-4 cursor-pointer hover:text-accent-600"
-          onClick={onClose}
+          onClick={() => closeModal("cancelSession")}
           disabled={isLoading}
         >
           <X size={24} />
@@ -41,7 +43,11 @@ export default function CancelSessionModal({ onClose, onConfirm, isLoading }) {
         </div>
         {/* Footer */}
         <div className="flex justify-center gap-3 p-6 border-t bg-gray-50">
-          <Button onClick={onClose} disabled={isLoading} className="flex-1">
+          <Button
+            onClick={() => closeModal("cancelSession")}
+            disabled={isLoading}
+            className="flex-1"
+          >
             Continuer la séance
           </Button>
 

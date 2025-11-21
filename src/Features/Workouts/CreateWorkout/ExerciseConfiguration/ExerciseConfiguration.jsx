@@ -1,14 +1,15 @@
 import Button from "@/components/Buttons/Button";
 import Label from "@/components/Forms/FormsComponents/Label/Label";
+import { useModals } from "@/Context/ModalsContext/ModalContext";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
+// Composant pour configurer l'exercise à ajouter dans l'entraînement
 export default function ExerciseConfiguration({
   exerciseSelected,
   setStep,
   setSelectedExerciseId,
   onSelectExercise,
-  onCloseExerciseSelector,
 }) {
   const [sets, setSets] = useState("");
   const [reps, setReps] = useState("");
@@ -16,6 +17,8 @@ export default function ExerciseConfiguration({
   const [restTime, setRestTime] = useState("");
   const [notes, setNotes] = useState("");
   const [error, setError] = useState(null);
+
+  const { closeModal } = useModals();
 
   const handleSubmit = () => {
     if (sets === "" || reps === "" || targetWeight === "" || restTime === "") {
@@ -32,7 +35,7 @@ export default function ExerciseConfiguration({
     };
     toast.success("Exercice ajouté!");
     onSelectExercise(exerciseToAdd);
-    onCloseExerciseSelector();
+    closeModal("selectExercise");
   };
   return (
     <div className="flex flex-col items-center gap-5">

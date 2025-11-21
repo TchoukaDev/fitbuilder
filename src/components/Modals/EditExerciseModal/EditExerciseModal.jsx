@@ -5,8 +5,9 @@ import Label from "@/components/Forms/FormsComponents/Label/Label";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { useBlockScroll } from "@/hooks/useBlockScroll";
+import { useModals } from "@/Context/ModalsContext/ModalContext";
 
-export default function EditExerciseModal({ exercise, onSave, onClose }) {
+export default function EditExerciseModal({ exercise, onSave }) {
   const [error, setError] = useState(null);
   const [formData, setFormData] = useState({
     sets: exercise.sets || 3,
@@ -16,6 +17,7 @@ export default function EditExerciseModal({ exercise, onSave, onClose }) {
     notes: exercise.notes || "",
   });
 
+  const { closeModal } = useModals();
   useBlockScroll();
 
   const handleSubmit = (e) => {
@@ -45,7 +47,7 @@ export default function EditExerciseModal({ exercise, onSave, onClose }) {
         {/* Fermeture */}
         <button
           className="absolute right-4 top-4 cursor-pointer hover:text-accent-600"
-          onClick={onClose}
+          onClick={() => closeModal("editExercise")}
         >
           <X size={24} />
         </button>{" "}
@@ -173,7 +175,12 @@ export default function EditExerciseModal({ exercise, onSave, onClose }) {
 
           {/* Boutons */}
           <div className="flex gap-3 pt-4 border-t border-gray-200">
-            <Button type="button" close onClick={onClose} className="flex-1">
+            <Button
+              type="button"
+              close
+              onClick={() => closeModal("editExercise")}
+              className="flex-1"
+            >
               Annuler
             </Button>
             <Button type="submit" className="flex-1">

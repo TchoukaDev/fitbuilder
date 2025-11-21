@@ -104,3 +104,37 @@ export function useCreateSession(userId) {
     },
   });
 }
+
+export function useDeleteSession(userId) {
+  const queryClient = useQueryClient();
+  const key = ["sessions", userId];
+  return useMutation({
+    queryKey: key,
+    mutationFn: async (sessionId) => {
+      const response = await fetch(`/api/sessions/${sessionId}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(
+          errorData.error || "Erreur suppression de la session d'entraînement",
+        );
+      }
+      const data = response.json();
+      return data;
+    },
+    onMutate: async (id) => {
+      queryClient.cancelQueries({ queryKey: key });
+      const previousSessions = queryClient.getQueryData(key);
+      queryClient.setQueryData(key, (old = []) =>
+        old.filter((s) => s._id !== id),
+      );
+
+      return { previousSessions };
+    },
+
+    onError: (err, id, context) =>
+      queryClient.setQueryData(key, context?.previousSessions),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: key }),
+  });
+}
