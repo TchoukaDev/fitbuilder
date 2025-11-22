@@ -43,7 +43,7 @@ export default function WorkoutEditExerciseModal({ exercise, onSave }) {
 
   return createPortal(
     <div className="fixed inset-0 bg-black/50 z-50 p-4 overflow-scroll">
-      <div className="relative bg-primary-50 rounded-lg shadow-xl max-w-lg w-full  m-auto overflow-y-auto">
+      <div className="relative p-5 bg-white rounded-lg shadow-xl max-w-lg w-full  m-auto overflow-y-auto">
         {/* Header */}
         {/* Fermeture */}
         <button

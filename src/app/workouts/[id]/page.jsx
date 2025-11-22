@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import { Calendar, Clock, Dumbbell, Edit, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { getWorkoutById } from "@/Features/Workouts/utils/getWorkouts";
-import WorkoutDetailDelete from "@/Features/Workouts/components/WorkoutDetailDelete/WorkoutDetailDelete";
+import WorkoutDetailDelete from "@/Features/Workouts/components/WorkoutDetailDelete";
 import StartWorkoutButton from "@/components/Buttons/StartWorkoutButton";
 
 export default async function WorkoutDetailPage({ params }) {

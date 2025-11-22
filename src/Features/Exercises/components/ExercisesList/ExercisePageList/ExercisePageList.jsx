@@ -1,9 +1,9 @@
-import ExerciseTabs from "../ExerciseTabs/ExerciseTabs";
+import ExerciseTabs from "./ExerciseTabs";
 import Button from "@/Global/components/ui/Button";
-import MuscleFilters from "../MusclesFilters/MuscleFilters";
-import ExerciseGroup from "../ExerciseGroup/ExerciseGroup";
+import { ExerciseGroup } from "./ExerciseGroup";
 import { useModals } from "@/Providers/Modals/ModalContext";
-import NewExerciseModal from "../../modals/NewExerciseModal";
+import ExerciseMuscleFilters from "./ExerciseMuscleFilters";
+import { NewExerciseModal } from "@/Features/Exercises/modals";
 
 export default function ExercisePageList({
   activeTab,
@@ -40,21 +40,21 @@ export default function ExercisePageList({
       {isOpen("newExercise") && <NewExerciseModal />}
       {/* FILTRES PAR MUSCLE */}
       {activeTab === "all" && (
-        <MuscleFilters
+        <ExerciseMuscleFilters
           muscles={allExerciseMuscles}
           selectedMuscle={selectedMuscle}
           onMuscleChange={setSelectedMuscle}
         />
       )}
       {activeTab === "mine" && (
-        <MuscleFilters
+        <ExerciseMuscleFilters
           muscles={myExerciseMuscles}
           selectedMuscle={selectedMuscle}
           onMuscleChange={setSelectedMuscle}
         />
       )}
       {activeTab === "favorites" && (
-        <MuscleFilters
+        <ExerciseMuscleFilters
           muscles={favoriteExerciseMuscles}
           selectedMuscle={selectedMuscle}
           onMuscleChange={setSelectedMuscle}

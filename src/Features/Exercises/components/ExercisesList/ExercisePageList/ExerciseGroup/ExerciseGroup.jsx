@@ -1,4 +1,4 @@
-import ExerciseCard from "../ExerciseCard/ExerciseCard";
+import { ExerciseCard } from ".";
 
 export default function ExerciseGroup({
   muscle,

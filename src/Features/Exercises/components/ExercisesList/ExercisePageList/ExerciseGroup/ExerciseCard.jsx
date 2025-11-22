@@ -7,7 +7,7 @@ import {
 } from "@/Features/Exercises/hooks/useExercises";
 
 import { FaRegStar, FaStar } from "react-icons/fa";
-import UpdateExerciseModal from "../../modals/UpdateExerciseModal";
+import { UpdateExerciseModal } from "@/Features/Exercises/modals";
 
 export default function ExerciseCard({
   exercise,

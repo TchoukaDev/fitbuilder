@@ -1,6 +1,6 @@
 "use client";
 import { createPortal } from "react-dom";
-import UpdateExerciseForm from "../forms/UpdateExerciseForm.jsx/UpdateExerciseForm";
+import { UpdateExerciseForm } from "../forms";
 import { useBlockScroll } from "@/Global/hooks/useBlockScroll";
 import { X } from "lucide-react";
 import { useModals } from "@/Providers/Modals/ModalContext";

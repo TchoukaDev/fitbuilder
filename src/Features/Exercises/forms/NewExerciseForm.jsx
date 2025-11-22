@@ -1,15 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import Label from "../../../../Global/components/ui/FormsComponents/Label/Label";
-import Button from "../../../../Global/components/ui/Button";
+import Label from "@/Global/components/ui/FormsComponents/Label/Label";
+import Button from "@/Global/components/ui/Button";
 import { toast } from "react-toastify";
-import { useCreateExercise } from "@/Features/Exercises/hooks/useExercises";
+import { useCreateExercise } from "../hooks";
 import { useSession } from "next-auth/react";
 import { ClipLoader } from "react-spinners";
 import { useModals } from "@/Providers/Modals/ModalContext";
 
-export default function NewExerciceForm() {
+export default function NewExerciseForm() {
   const { data: session } = useSession();
   const isAdmin = session?.user?.role === "ADMIN";
   const userId = session?.user?.id;

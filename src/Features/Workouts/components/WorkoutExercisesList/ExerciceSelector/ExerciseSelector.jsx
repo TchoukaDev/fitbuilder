@@ -1,19 +1,18 @@
-import ExerciseGroupSelect from "@/Features/Exercises/components/ExerciseGroup/ExerciseGroupSelect";
-import ExerciseTabs from "@/Features/Exercises/components/ExerciseTabs/ExerciseTabs";
-import MuscleFilters from "@/Features/Exercises/components/MusclesFilters/MuscleFilters";
-import SearchExercise from "../SearchExercise/SearchExercise";
+import SearchExercise from "./SearchExercise";
 import { useState } from "react";
 import Button from "@/Global/components/ui/Button";
 import { useModals } from "@/Providers/Modals/ModalContext";
+import WorkoutExerciseTabs from "./WorkoutExerciseTab";
+import WorkoutMuscleFilters from "./WorkoutMuscleFilters";
+import WorkoutExerciseGroupSelect from "@/Features/Workouts/components/WorkoutExercisesList/ExerciceSelector/WorkoutExerciseGroupSelect";
 
-export default function ExerciceSelector({
+export default function ExerciseSelector({
   activeTab,
   setActiveTab,
   counts,
   muscleCounts,
   allExerciseMuscles,
   myExerciseMuscles,
-  selectedMuscle,
   setSelectedMuscle,
   favoriteExerciseMuscles,
   setSelectedExerciseId,
@@ -50,43 +49,31 @@ export default function ExerciceSelector({
       {/* Barre de recherche d'exercices */}
       <SearchExercise search={search} onSearchChange={onSearchChange} />
       {/* Sélecteur des exercices par type */}
-      <ExerciseTabs
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        counts={counts}
-        inModal={true}
-        muscleCounts={muscleCounts}
-      />
+      <WorkoutExerciseTabs onTabChange={setActiveTab} counts={counts} />
       {/* FILTRES PAR MUSCLE */}
       {activeTab === "all" && (
-        <MuscleFilters
+        <WorkoutMuscleFilters
           muscles={allExerciseMuscles}
-          selectedMuscle={selectedMuscle}
           onMuscleChange={setSelectedMuscle}
-          inModal={true}
           muscleCounts={muscleCounts}
         />
       )}
       {activeTab === "mine" && (
-        <MuscleFilters
+        <WorkoutMuscleFilters
           muscles={myExerciseMuscles}
-          selectedMuscle={selectedMuscle}
           onMuscleChange={setSelectedMuscle}
-          inModal={true}
           muscleCounts={muscleCounts}
         />
       )}
       {activeTab === "favorites" && (
-        <MuscleFilters
+        <WorkoutMuscleFilters
           muscles={favoriteExerciseMuscles}
-          selectedMuscle={selectedMuscle}
           onMuscleChange={setSelectedMuscle}
-          inModal={true}
         />
       )}
 
       {/*  sélecteur d'exercices par muscle */}
-      <ExerciseGroupSelect
+      <WorkoutExerciseGroupSelect
         onSelectExerciseId={setSelectedExerciseId}
         error={error}
         grouped={grouped}

@@ -5,10 +5,10 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useGetSessions } from "@/Features/Sessions/hooks/useSessions";
-import SessionCard from "../SessionCard/SessionCard";
-import SessionStats from "./SessionStats/SessionsStats";
-import SessionFilters from "./SessionsFilters/SessionsFilters";
-import SessionsPagination from "./SessionsPagination/SessionsPagination";
+import SessionCard from "./SessionCard";
+import SessionStats from "./SessionsStats";
+import SessionFilters from "./SessionsFilters";
+import SessionsPagination from "./SessionsPagination";
 import { Calendar } from "lucide-react";
 
 export default function SessionsList({

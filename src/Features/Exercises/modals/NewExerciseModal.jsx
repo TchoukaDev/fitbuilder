@@ -1,9 +1,9 @@
 "use client";
 import { createPortal } from "react-dom";
-import NewExerciceForm from "../forms/newExerciceForm/newExerciceForm";
 import { useBlockScroll } from "@/Global/hooks/useBlockScroll";
 import { X } from "lucide-react";
 import { useModals } from "@/Providers/Modals/ModalContext";
+import { NewExerciseForm } from "../forms";
 
 // Modal de création d'un nouvel exercice
 export default function NewExerciseModal() {
@@ -25,7 +25,7 @@ export default function NewExerciseModal() {
         <>
           {/* Ajout d'un exercice */}
           <h2>Créer un exercice</h2>
-          <NewExerciceForm />
+          <NewExerciseForm />
         </>
       </div>
     </div>,

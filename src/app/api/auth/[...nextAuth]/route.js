@@ -233,6 +233,8 @@ export const authOptions = {
             token.username = user.username || profile.name;
             token.image = user.image || profile.picture;
             token.provider = "google";
+            token.role =
+              user.email === process.env.ADMIN_EMAIL ? "ADMIN" : "USER";
             token.autoLogin = true; // Google = session longue
             token.maxAge = 30 * 24 * 60 * 60; // 30 jours
           } catch (error) {

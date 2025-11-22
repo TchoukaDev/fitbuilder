@@ -75,7 +75,6 @@ export default function WorkoutTemplateCard({ workout, userId }) {
 
       {/* Actions */}
       <div className="flex gap-2 pt-3 border-t flex-wrap  border-gray-200">
-        {/* <StartWorkoutButton userId={userId} workout={workout}/> */}
         <div className="md:flex-1">
           <Button
             title="Voir les détails"

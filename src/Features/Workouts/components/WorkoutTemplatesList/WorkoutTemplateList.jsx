@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import WorkoutTemplateCard from "../WorkoutTemplateCard/WorkoutTemplateCard";
+import WorkoutTemplateCard from "./WorkoutTemplateCard";
 import { useWorkouts } from "@/Features/Workouts/hooks/useWorkouts";
 
 export default function WorkoutTemplateList({ initialTemplates, userId }) {

@@ -1,4 +1,4 @@
-export default function ExerciseGroupSelect({
+export default function WorkoutExerciseGroupSelect({
   onSelectExerciseId,
   grouped,
   error,
