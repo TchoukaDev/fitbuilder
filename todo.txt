@@ -5,3 +5,7 @@ calendrier
 stats
 stats admin
 responsive
+Retirer server action CreaterUser et créer api route
+Factoriser composants trop longs
+Ajouter croix de fermeture dans toutes les modales
+ExerciseCard supprimer confirm et remplacer par modal

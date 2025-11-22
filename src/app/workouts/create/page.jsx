@@ -1,8 +1,11 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import Header from "@/components/Layout/Header/Header";
-import { getAllExercises, getFavoritesExercises } from "@/utils/getExercises";
+import Header from "@/Global/components/layout/Header";
+import {
+  getAllExercises,
+  getFavoritesExercises,
+} from "@/Features/Exercises/utils/getExercises";
 import { getServerSession } from "next-auth";
-import NewWorkoutForm from "@/components/Forms/Workouts/NewWorkoutForm/NewWorkoutForm";
+import NewWorkoutForm from "@/Features/Workouts/forms/NewWorkoutForm";
 
 export const revalidate = 60;
 export default async function CreateWorkoutPage() {

@@ -1,8 +1,11 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import UpdatedWorkoutForm from "@/components/Forms/Workouts/UpdateWorkoutForm/UpdateWorkoutForm";
-import Header from "@/components/Layout/Header/Header";
-import { getAllExercises, getFavoritesExercises } from "@/utils/getExercises";
-import { getWorkoutById } from "@/utils/getWorkouts";
+import UpdatedWorkoutForm from "@/Features/Workouts/forms/UpdateWorkoutForm";
+import Header from "@/Global/components/layout/Header";
+import {
+  getAllExercises,
+  getFavoritesExercises,
+} from "@/Features/Exercises/utils/getExercises";
+import { getWorkoutById } from "@/Features/Workouts/utils/getWorkouts";
 import { getServerSession } from "next-auth";
 
 export default async function EditWorkout({ params }) {

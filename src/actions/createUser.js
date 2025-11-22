@@ -2,7 +2,7 @@
 
 import connectDB from "@/libs/mongodb";
 import bcrypt from "bcryptjs";
-import { signUpSchema } from "@/utils/validation";
+import { signUpSchema } from "@/Features/Auth/utils/signUpSchema";
 
 export async function createUser(prevState, formData) {
   const standardError =

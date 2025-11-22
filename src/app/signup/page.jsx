@@ -1,6 +1,6 @@
 import Link from "next/link";
-import SignUpForm from "@/components/Forms/SignUpForm/SignUpForm";
-import WelcomeLayout from "../../components/Layout/WelcomeLayout/WelcomeLayout";
+import SignUpForm from "@/Features/Auth/forms/SignUpForm/SignUpForm";
+import WelcomeLayout from "../../Global/components/layout/WelcomeLayout";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";

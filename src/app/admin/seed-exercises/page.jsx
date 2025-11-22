@@ -1,6 +1,6 @@
 "use client";
 
-import PageLayout from "@/components/Layout/Header/Header";
+import PageLayout from "@/Global/components/layout/Header";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";

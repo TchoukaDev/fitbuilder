@@ -1,4 +1,4 @@
-import Header from "@/components/Layout/Header/Header";
+import Header from "@/Global/components/layout/Header";
 
 export default function notFound() {
   return (
