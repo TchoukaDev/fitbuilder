@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import { useCreateExercise } from "../hooks";
 import { useSession } from "next-auth/react";
 import { ClipLoader } from "react-spinners";
-import { useModals } from "@/Providers/Modals/ModalContext";
+import { useModals } from "@/Providers/ModalContext";
 
 export default function NewExerciseForm() {
   const { data: session } = useSession();

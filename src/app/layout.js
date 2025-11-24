@@ -1,8 +1,6 @@
 import { ToastContainer } from "react-toastify";
 import "./globals.css";
-import AuthProvider from "../Providers/Auth/AuthProvider";
-import { QueryProvider } from "@/Providers/QueryClient/QueryClientProvider";
-import { ModalProvider } from "@/Providers/Modals/ModalContext";
+import { AuthProvider, ModalProvider, QueryClientProvider } from "@/Providers";
 
 export const metadata = {
   title: "FitBuilder, votre assistant de musculation personnalisé",
@@ -14,7 +12,7 @@ export default function RootLayout({ children }) {
     <html lang="fr">
       <body className="bg-gradient-light bg-fixed text-primary-900 min-h-screen">
         <AuthProvider>
-          <QueryProvider>
+          <QueryClientProvider>
             <ModalProvider>
               <ToastContainer
                 position="top-right"
@@ -26,7 +24,7 @@ export default function RootLayout({ children }) {
               {children}
               <div id="portal-root"></div>
             </ModalProvider>{" "}
-          </QueryProvider>
+          </QueryClientProvider>
         </AuthProvider>
       </body>
     </html>

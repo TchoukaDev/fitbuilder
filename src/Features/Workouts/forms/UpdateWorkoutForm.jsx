@@ -15,7 +15,7 @@ import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { useUpdateWorkout } from "@/Features/Workouts/hooks/useWorkouts";
-import { useModals } from "@/Providers/Modals/ModalContext";
+import { useModals } from "@/Providers/ModalContext";
 import WorkoutEditExerciseModal from "../modals/WorkoutEditExerciseModal";
 import WorkoutSelectExerciseModal from "../modals/WorkoutSelectExerciseModal";
 

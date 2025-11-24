@@ -6,7 +6,7 @@ import Button from "@/Global/components/ui/Button";
 import { toast } from "react-toastify";
 import { useSession } from "next-auth/react";
 import { ClipLoader } from "react-spinners";
-import { useModals } from "@/Providers/Modals/ModalContext";
+import { useModals } from "@/Providers/ModalContext";
 import { useUpdateExercise } from "../hooks";
 
 export default function UpdateExerciseForm({ exerciseToUpdate }) {
@@ -51,7 +51,6 @@ export default function UpdateExerciseForm({ exerciseToUpdate }) {
       },
       {
         onSuccess: (data) => {
-          toast.success(data.message || "Exercié modifié avec succès");
           // Réinitialiser le formulaire
           setName("");
           setMuscle("");

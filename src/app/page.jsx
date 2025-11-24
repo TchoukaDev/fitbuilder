@@ -1,10 +1,11 @@
 import LoginForm from "../Features/Auth/forms/LoginForm/LoginForm";
 import Link from "next/link";
-import WelcomeLayout from "../Global/components/layout/WelcomeLayout";
+
 import GoogleBtn from "../Features/Auth/components/Buttons/GoogleBtn";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
+import { WelcomeLayout } from "@/Global/components/layout";
 
 export default async function Home() {
   const session = await getServerSession(authOptions);

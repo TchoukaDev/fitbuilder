@@ -1,4 +1,6 @@
+import { UpdateExerciseModal } from "@/Features/Exercises/modals";
 import { ExerciseCard } from ".";
+import { useModals } from "@/Providers";
 
 export default function ExerciseGroup({
   muscle,
@@ -8,6 +10,7 @@ export default function ExerciseGroup({
   userId,
   isAdmin,
 }) {
+  const { openModal } = useModals();
   return (
     <div className="mb-10">
       <h2 className="text-2xl font-bold mb-4">{muscle}</h2>
@@ -20,6 +23,7 @@ export default function ExerciseGroup({
             isFavorite={favorites.includes(ex._id)}
             userId={userId}
             isAdmin={isAdmin}
+            onEdit={() => openModal("updateExercise", { exercise: ex })}
           />
         ))}
       </div>

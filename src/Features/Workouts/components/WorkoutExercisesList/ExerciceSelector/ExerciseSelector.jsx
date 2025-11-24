@@ -1,7 +1,7 @@
 import SearchExercise from "./SearchExercise";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "@/Global/components/ui/Button";
-import { useModals } from "@/Providers/Modals/ModalContext";
+import { useModals } from "@/Providers/ModalContext";
 import WorkoutExerciseTabs from "./WorkoutExerciseTab";
 import WorkoutMuscleFilters from "./WorkoutMuscleFilters";
 import WorkoutExerciseGroupSelect from "@/Features/Workouts/components/WorkoutExercisesList/ExerciceSelector/WorkoutExerciseGroupSelect";
@@ -22,6 +22,7 @@ export default function ExerciseSelector({
   setStep,
   search,
   onSearchChange,
+  onSetTitle,
 }) {
   const [error, setError] = useState(null); //Erreur si pas d'exercice sélectionné
 
@@ -42,10 +43,13 @@ export default function ExerciseSelector({
     setError(null);
     setStep(2);
   };
+  // Modifier le titre de la modale
+  useEffect(() => {
+    onSetTitle("Ajouter un exercice");
+  }, []);
 
   return (
     <div className="flex flex-col items-center gap-3">
-      <h2>Ajouter un exercice</h2>
       {/* Barre de recherche d'exercices */}
       <SearchExercise search={search} onSearchChange={onSearchChange} />
       {/* Sélecteur des exercices par type */}

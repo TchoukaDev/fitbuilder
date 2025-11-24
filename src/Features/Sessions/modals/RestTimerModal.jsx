@@ -6,7 +6,8 @@ import Button from "@/Global/components/ui/Button";
 import { useTimerEffects } from "@/Features/Sessions/hooks/useTimerEffects";
 import { useBlockScroll } from "@/Global/hooks/useBlockScroll";
 import { createPortal } from "react-dom";
-import { useModals } from "@/Providers/Modals/ModalContext";
+import { useModals } from "@/Providers/ModalContext";
+import { ModalLayout } from "@/Global/components";
 
 // Modal du timer
 export default function RestTimerModal({
@@ -121,145 +122,123 @@ export default function RestTimerModal({
   // 🎨 RENDER
   // ═══════════════════════════════════════════════════════
   return createPortal(
-    <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4">
-      <div className="bg-primary-50 rounded-lg shadow-2xl max-w-md w-full relative">
-        {/* ─────────────────────────────────────────────────── */}
-        {/* BOUTON FERMER */}
-        {/* ─────────────────────────────────────────────────── */}
-        <button
-          onClick={() => closeModal("restTimer")}
-          className="absolute right-4 top-4 hover:text-accent-600 cursor-pointer transition-all"
-        >
-          <X size={24} />
-        </button>
+    <ModalLayout title="⏱️ Temps de repos" modalToClose="restTimer">
+      {/* ─────────────────────────────────────────────────── */}
+      {/* BODY - AFFICHAGE DU TIMER */}
+      {/* ─────────────────────────────────────────────────── */}
+      <div className="p-8 space-y-6">
+        {/* ⏰ Grand affichage du temps */}
+        <div className="text-center">
+          <div
+            className={`text-7xl font-bold transition-colors ${
+              remainingTime <= 10 && remainingTime > 0
+                ? "text-red-600 animate-pulse" // ⚠️ Alerte si moins de 10s
+                : remainingTime === 0
+                ? "text-green-600" // ✅ Vert si terminé
+                : "text-primary-900"
+            }`}
+          >
+            {formatTime(remainingTime)}
+          </div>
+          <p className="text-sm text-gray-600 mt-2">
+            {remainingTime === 0
+              ? "✅ Repos terminé !"
+              : isRunning
+              ? "⏳ En cours..."
+              : "⏸️ En pause"}
+          </p>
+        </div>
 
-        {/* ─────────────────────────────────────────────────── */}
-        {/* HEADER */}
-        {/* ─────────────────────────────────────────────────── */}
-        <div className="p-6 border-b">
-          <h2 className="text-2xl font-bold text-primary-900 text-center">
-            ⏱️ Temps de repos
-          </h2>
+        {/* 📊 Barre de progression */}
+        <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+          <div
+            className="bg-primary-600 h-full transition-all duration-1000 ease-linear"
+            style={{ width: `${percentage}%` }}
+          />
         </div>
 
         {/* ─────────────────────────────────────────────────── */}
-        {/* BODY - AFFICHAGE DU TIMER */}
+        {/* CONTRÔLES PRINCIPAUX */}
         {/* ─────────────────────────────────────────────────── */}
-        <div className="p-8 space-y-6">
-          {/* ⏰ Grand affichage du temps */}
-          <div className="text-center">
-            <div
-              className={`text-7xl font-bold transition-colors ${
-                remainingTime <= 10 && remainingTime > 0
-                  ? "text-red-600 animate-pulse" // ⚠️ Alerte si moins de 10s
-                  : remainingTime === 0
-                  ? "text-green-600" // ✅ Vert si terminé
-                  : "text-primary-900"
-              }`}
-            >
-              {formatTime(remainingTime)}
-            </div>
-            <p className="text-sm text-gray-600 mt-2">
-              {remainingTime === 0
-                ? "✅ Repos terminé !"
-                : isRunning
-                ? "⏳ En cours..."
-                : "⏸️ En pause"}
-            </p>
-          </div>
-
-          {/* 📊 Barre de progression */}
-          <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-            <div
-              className="bg-primary-600 h-full transition-all duration-1000 ease-linear"
-              style={{ width: `${percentage}%` }}
-            />
-          </div>
-
-          {/* ─────────────────────────────────────────────────── */}
-          {/* CONTRÔLES PRINCIPAUX */}
-          {/* ─────────────────────────────────────────────────── */}
-          <div className="flex justify-center gap-4">
-            {/* Bouton Play/Pause */}
-            {!isRunning ? (
-              <Button onClick={handleStart} className="flex items-center gap-2">
-                <Play size={20} />
-                {remainingTime === customTime ? "Démarrer" : "Reprendre"}
-              </Button>
-            ) : (
-              <Button onClick={handlePause} className="flex items-center gap-2">
-                <Pause size={20} />
-                Pause
-              </Button>
-            )}
-
-            {/* Bouton Skip */}
-            <Button
-              close
-              onClick={handleSkip}
-              className="flex items-center gap-2 bg-gray-600 hover:bg-gray-700"
-            >
-              <SkipForward size={20} />
-              Passer
+        <div className="flex justify-center gap-4">
+          {/* Bouton Play/Pause */}
+          {!isRunning ? (
+            <Button onClick={handleStart} className="flex items-center gap-2">
+              <Play size={20} />
+              {remainingTime === customTime ? "Démarrer" : "Reprendre"}
             </Button>
+          ) : (
+            <Button onClick={handlePause} className="flex items-center gap-2">
+              <Pause size={20} />
+              Pause
+            </Button>
+          )}
+
+          {/* Bouton Skip */}
+          <Button
+            close
+            onClick={handleSkip}
+            className="flex items-center gap-2 bg-gray-600 hover:bg-gray-700"
+          >
+            <SkipForward size={20} />
+            Passer
+          </Button>
+        </div>
+
+        {/* ─────────────────────────────────────────────────── */}
+        {/* MODIFICATION DU TEMPS */}
+        {/* ─────────────────────────────────────────────────── */}
+        <div className="border-t pt-4">
+          <p className="text-sm text-gray-600 mb-2">
+            Modifier le temps de repos (secondes) :
+          </p>
+          <div className="flex gap-2">
+            <input
+              type="number"
+              min={10}
+              value={customTime}
+              onChange={(e) => setCustomTime(e.target.value)}
+              className="input flex-1 p-2"
+            />
+            <Button onClick={handleApplyCustomTime}>Appliquer</Button>
           </div>
 
-          {/* ─────────────────────────────────────────────────── */}
-          {/* MODIFICATION DU TEMPS */}
-          {/* ─────────────────────────────────────────────────── */}
-          <div className="border-t pt-4">
-            <p className="text-sm text-gray-600 mb-2">
-              Modifier le temps de repos (secondes) :
-            </p>
-            <div className="flex gap-2">
-              <input
-                type="number"
-                min={10}
-                value={customTime}
-                onChange={(e) => setCustomTime(e.target.value)}
-                className="input flex-1 p-2"
-              />
-              <Button onClick={handleApplyCustomTime}>Appliquer</Button>
-            </div>
-
-            {/* Boutons rapides */}
-            <div className="flex justify-center gap-2 mt-2">
-              <button
-                onClick={() => {
-                  handleApplyCustomTime(60);
-                }}
-                className="text-sm px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded"
-              >
-                1 min
-              </button>
-              <button
-                onClick={() => {
-                  handleApplyCustomTime(90);
-                }}
-                className="text-sm px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded"
-              >
-                1:30
-              </button>
-              <button
-                onClick={() => {
-                  handleApplyCustomTime(120);
-                }}
-                className="text-sm px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded"
-              >
-                2 min
-              </button>
-              <button
-                onClick={handleReset}
-                className="text-sm px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded"
-              >
-                Réinitialiser
-              </button>
-            </div>
+          {/* Boutons rapides */}
+          <div className="flex justify-center gap-2 mt-2">
+            <button
+              onClick={() => {
+                handleApplyCustomTime(60);
+              }}
+              className="text-sm px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded"
+            >
+              1 min
+            </button>
+            <button
+              onClick={() => {
+                handleApplyCustomTime(90);
+              }}
+              className="text-sm px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded"
+            >
+              1:30
+            </button>
+            <button
+              onClick={() => {
+                handleApplyCustomTime(120);
+              }}
+              className="text-sm px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded"
+            >
+              2 min
+            </button>
+            <button
+              onClick={handleReset}
+              className="text-sm px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded"
+            >
+              Réinitialiser
+            </button>
           </div>
         </div>
       </div>
-    </div>,
-
+    </ModalLayout>,
     document.getElementById("portal-root"),
   );
 }

@@ -1,10 +1,10 @@
 import { CheckCircle, Circle, Timer } from "lucide-react";
 import { useEffect, useState } from "react";
-import SetRow from "../SetRow/SetRow";
+import { SetRow } from ".";
 import Button from "@/Global/components/ui/Button";
 import { AnimatePresence, motion } from "framer-motion";
 import RestTimerModal from "@/Features/Sessions/modals/RestTimerModal";
-import { useModals } from "@/Providers/Modals/ModalContext";
+import { useModals } from "@/Providers/ModalContext";
 
 // Carte d'un exercice pendant l'exécution de la session
 export default function SessionExerciseCard({

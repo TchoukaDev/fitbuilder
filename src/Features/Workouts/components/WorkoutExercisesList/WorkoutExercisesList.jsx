@@ -16,6 +16,7 @@ export default function WorkoutExercisesList({
   initialFavorites,
   exercisesAdded,
   onSelectExercise,
+  onSetTitle,
 }) {
   // State (étapes)
   const [step, setStep] = useState(1);
@@ -87,6 +88,7 @@ export default function WorkoutExercisesList({
         selectedExerciseId={selectedExerciseId}
         search={search}
         onSearchChange={setSearch}
+        onSetTitle={onSetTitle}
       />
     );
   }
@@ -99,6 +101,7 @@ export default function WorkoutExercisesList({
         setSelectedExerciseId={setSelectedExerciseId}
         onSelectExercise={onSelectExercise}
         setStep={setStep}
+        onSetTitle={onSetTitle}
       />
     );
   }

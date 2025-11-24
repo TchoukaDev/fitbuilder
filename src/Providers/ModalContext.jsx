@@ -6,7 +6,7 @@ const ModalContext = createContext();
 
 export const useModals = () => useContext(ModalContext);
 
-export function ModalProvider({ children }) {
+export default function ModalProvider({ children }) {
   const [modals, setModals] = useState({});
   const [modalData, setModalData] = useState({});
 

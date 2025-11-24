@@ -1,9 +1,12 @@
 import ExerciseTabs from "./ExerciseTabs";
 import Button from "@/Global/components/ui/Button";
 import { ExerciseGroup } from "./ExerciseGroup";
-import { useModals } from "@/Providers/Modals/ModalContext";
 import ExerciseMuscleFilters from "./ExerciseMuscleFilters";
-import { NewExerciseModal } from "@/Features/Exercises/modals";
+import {
+  NewExerciseModal,
+  UpdateExerciseModal,
+} from "@/Features/Exercises/modals";
+import { useModals } from "@/Providers";
 
 export default function ExercisePageList({
   activeTab,
@@ -19,7 +22,7 @@ export default function ExercisePageList({
   userId,
   isAdmin,
 }) {
-  const { isOpen, openModal } = useModals();
+  const { isOpen, openModal, getModalData } = useModals();
   return (
     <div>
       {/* ONGLETS */}
@@ -38,6 +41,12 @@ export default function ExercisePageList({
       )}
       {/* Modal de création d'exercice */}
       {isOpen("newExercise") && <NewExerciseModal />}
+      {/* Modal de modification d'un exercice */}
+      {isOpen("updateExercise") && (
+        <UpdateExerciseModal
+          exerciseToUpdate={getModalData("updateExercise").exercise}
+        />
+      )}
       {/* FILTRES PAR MUSCLE */}
       {activeTab === "all" && (
         <ExerciseMuscleFilters

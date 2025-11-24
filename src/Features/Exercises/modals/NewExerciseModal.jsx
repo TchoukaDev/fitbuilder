@@ -1,34 +1,16 @@
 "use client";
 import { createPortal } from "react-dom";
-import { useBlockScroll } from "@/Global/hooks/useBlockScroll";
-import { X } from "lucide-react";
-import { useModals } from "@/Providers/Modals/ModalContext";
+import { useModals } from "@/Providers/ModalContext";
 import { NewExerciseForm } from "../forms";
+import { ModalLayout } from "@/Global/components";
 
 // Modal de création d'un nouvel exercice
 export default function NewExerciseModal() {
-  useBlockScroll();
-  const { closeModal } = useModals();
   return createPortal(
-    <div className="fixed z-100 bg-black/50 inset-0 flex justify-center items-center">
-      <div
-        onClick={(e) => e.stopPropagation()}
-        className="relative bg-blue-50 p-10 min-w-[300px] rounded"
-      >
-        <button
-          className="absolute right-4 top-4 cursor-pointer hover:text-accent-600"
-          onClick={() => closeModal("newExercise")}
-        >
-          {" "}
-          <X size={24} />
-        </button>
-        <>
-          {/* Ajout d'un exercice */}
-          <h2>Créer un exercice</h2>
-          <NewExerciseForm />
-        </>
-      </div>
-    </div>,
+    <ModalLayout title="Créer un exercice" modalToClose="newExercise">
+      <NewExerciseForm />
+    </ModalLayout>,
+
     document.getElementById("portal-root"),
   );
 }

@@ -1,11 +1,7 @@
 import Image from "next/image";
 import Navbar from "./Navbar";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export default async function Header() {
-  const session = await getServerSession(authOptions);
-
   return (
     <div className="flex relative justify-evenly  heroBg  items-center  pr-5 lg:pl-10 md:pr-20 border-b border-primary-50 shadow">
       {/* Logo */}

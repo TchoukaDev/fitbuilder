@@ -2,7 +2,6 @@
 
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useDeleteSession } from "@/Features/Sessions/hooks/useSessions";
 import {
@@ -14,8 +13,8 @@ import {
   ChevronLeft,
 } from "lucide-react";
 import ExerciseDetailCard from "./ExerciseDetailCard";
-import DeleteConfirmModal from "@/Global/components/modals/DeleteConfirmModal";
-import { useModals } from "@/Providers/Modals/ModalContext";
+import { DeleteConfirmModal } from "@/Global/components";
+import { useModals } from "@/Providers/ModalContext";
 
 export default function SessionDetailClient({ session, userId }) {
   const router = useRouter();

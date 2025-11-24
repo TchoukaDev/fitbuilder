@@ -1,7 +1,7 @@
 import Button from "@/Global/components/ui/Button";
 import Label from "@/Global/components/ui/FormsComponents/Label/Label";
-import { useModals } from "@/Providers/Modals/ModalContext";
-import { useState } from "react";
+import { useModals } from "@/Providers/ModalContext";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 // Composant pour configurer l'exercise à ajouter dans l'entraînement
@@ -10,6 +10,7 @@ export default function ExerciseConfiguration({
   setStep,
   setSelectedExerciseId,
   onSelectExercise,
+  onSetTitle,
 }) {
   const [sets, setSets] = useState("");
   const [reps, setReps] = useState("");
@@ -37,9 +38,13 @@ export default function ExerciseConfiguration({
     onSelectExercise(exerciseToAdd);
     closeModal("workoutSelectExercise");
   };
+
+  useEffect(() =>
+    onSetTitle(`Configurer l'exercice "${exerciseSelected.name}"`),
+  );
+
   return (
     <div className="flex flex-col items-center gap-5">
-      <h2>Configurer l'exercice "{exerciseSelected.name}"</h2>
       <div className="relative">
         {/* Séries */}
         <input

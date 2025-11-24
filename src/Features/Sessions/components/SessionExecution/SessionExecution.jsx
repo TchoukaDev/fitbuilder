@@ -5,7 +5,7 @@
 import { useCallback } from "react";
 import { Clock } from "lucide-react";
 import Button from "@/Global/components/ui/Button";
-import SessionExerciseCard from "../SessionExerciseCard/SessionExerciseCard";
+import SessionExerciseCard from "./SessionExerciseCard";
 import FinishSessionModal from "@/Features/Sessions/modals/FinishSessionModal";
 import CancelSessionModal from "@/Features/Sessions/modals/CancelModalSession";
 import IncompleteExerciseModal from "@/Features/Sessions/modals/IncompleteExerciseModal";
@@ -20,7 +20,7 @@ import { useSessionCompletion } from "../../hooks/useSessionCompletion";
 // Functions
 import { sessionExecutionHandlers } from "../../utils/sessionExecutionHandlers";
 import { validateExercise } from "../../utils/validateExercise";
-import { useModals } from "@/Providers/Modals/ModalContext";
+import { useModals } from "@/Providers/ModalContext";
 
 export default function SessionExecution({ sessionData, sessionId, userId }) {
   // ═══════════════════════════════════════════════════════
