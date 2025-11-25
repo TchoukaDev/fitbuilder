@@ -1,4 +1,4 @@
-import Label from "@/Global/components/ui/FormsComponents/Label/Label";
+import { Label } from "@/Global/components";
 
 export default function SearchExercise({ onSearchChange, search }) {
   return (

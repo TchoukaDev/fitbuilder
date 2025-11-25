@@ -3,17 +3,18 @@
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { ClipLoader } from "react-spinners";
-import { Button, Label, ShowPassword } from "@/Global/components/ui";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import { Button, Label, ShowPassword } from "@/Global/components";
 
 export default function LoginForm() {
   const router = useRouter(); // ✅ Ajouter
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState(""); // ✅ Ajouter pour erreurs serveur
 
+  // RHF
   const {
     register,
     watch,
@@ -29,6 +30,7 @@ export default function LoginForm() {
   const email = watch("email");
   const password = watch("password");
 
+  // Décomposition pour référence
   const emailRegister = register("email", {
     required: "Veuillez saisir une adresse email valide",
     pattern: {
@@ -37,6 +39,7 @@ export default function LoginForm() {
     },
   });
 
+  // Référence pour focus
   const emailRef = useRef(null);
 
   useEffect(() => {

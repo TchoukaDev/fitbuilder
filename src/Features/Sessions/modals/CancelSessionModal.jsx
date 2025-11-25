@@ -1,9 +1,9 @@
 "use client";
 
-import { X, AlertTriangle } from "lucide-react";
-import Button from "@/Global/components/ui/Button";
-import { useBlockScroll } from "@/Global/hooks/useBlockScroll";
-import { useModals } from "@/Providers/ModalContext";
+import { AlertTriangle } from "lucide-react";
+import { Button } from "@/Global/components";
+import { useBlockScroll } from "@/Global/hooks";
+import { useModals } from "@/Providers/Modals";
 import { createPortal } from "react-dom";
 import { ModalLayout } from "@/Global/components";
 

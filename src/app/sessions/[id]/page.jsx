@@ -1,8 +1,8 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../api/auth/[...nextauth]/route";
-import { getSessionbyId } from "@/Features/Sessions/utils/getSessions";
+import { getSessionbyId } from "@/Features/Sessions/utils";
 import { notFound } from "next/navigation";
-import SessionExecution from "@/Features/Sessions/components/SessionExecution/SessionExecution";
+import { SessionExecution } from "@/Features/Sessions/components";
 
 export default async function SingleSessionPage({ params }) {
   const resolvedParams = await params;

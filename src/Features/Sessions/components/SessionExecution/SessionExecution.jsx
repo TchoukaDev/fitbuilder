@@ -1,26 +1,29 @@
-// components/Features/Sessions/SessionExecution/SessionExecution.jsx
-
 "use client";
 
 import { useCallback } from "react";
 import { Clock } from "lucide-react";
-import Button from "@/Global/components/ui/Button";
-import SessionExerciseCard from "./SessionExerciseCard";
-import FinishSessionModal from "@/Features/Sessions/modals/FinishSessionModal";
-import CancelSessionModal from "@/Features/Sessions/modals/CancelModalSession";
-import IncompleteExerciseModal from "@/Features/Sessions/modals/IncompleteExerciseModal";
+import { Button } from "@/Global/components";
+import { SessionExerciseCard } from "./SessionExerciseCard";
 
 // Hooks
-import { useSessionTimer } from "@/Features/Sessions/hooks/useSessionTimer";
-import { useAutoSave } from "@/Features/Sessions/hooks/useAutoSave";
-import { useSessionBackup } from "@/Features/Sessions/hooks/useSessionBackUp";
-import { useSessionState } from "../../hooks/useSessionState";
-import { useSessionCompletion } from "../../hooks/useSessionCompletion";
+import {
+  useSessionTimer,
+  useAutoSave,
+  useSessionBackup,
+  useSessionState,
+  useSessionCompletion,
+} from "../../hooks";
 
 // Functions
-import { sessionExecutionHandlers } from "../../utils/sessionExecutionHandlers";
-import { validateExercise } from "../../utils/validateExercise";
-import { useModals } from "@/Providers/ModalContext";
+import { validateExercise, sessionExecutionHandlers } from "../../utils";
+import { useModals } from "@/Providers/Modals";
+
+// Modals
+import {
+  FinishSessionModal,
+  IncompleteExerciseModal,
+  CancelSessionModal,
+} from "../../modals";
 
 export default function SessionExecution({ sessionData, sessionId, userId }) {
   // ═══════════════════════════════════════════════════════

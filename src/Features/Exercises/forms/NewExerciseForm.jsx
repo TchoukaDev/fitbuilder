@@ -1,13 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import Label from "@/Global/components/ui/FormsComponents/Label/Label";
-import Button from "@/Global/components/ui/Button";
+import { Button, Label } from "@/Global/components";
 import { toast } from "react-toastify";
 import { useCreateExercise } from "../hooks";
 import { useSession } from "next-auth/react";
 import { ClipLoader } from "react-spinners";
-import { useModals } from "@/Providers/ModalContext";
+import { useModals } from "@/Providers/Modals";
 
 export default function NewExerciseForm() {
   const { data: session } = useSession();

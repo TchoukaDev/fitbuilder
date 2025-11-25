@@ -1,4 +1,6 @@
-const { default: connectDB } = require("@/libs/mongodb");
+"use server";
+import connectDB from "@/libs/mongodb";
+
 const { ObjectId } = require("mongodb");
 
 export async function getAllSessions(userId, filters = {}) {

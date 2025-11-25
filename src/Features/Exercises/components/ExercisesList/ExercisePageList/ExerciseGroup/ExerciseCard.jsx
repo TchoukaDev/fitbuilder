@@ -1,5 +1,5 @@
 "use client";
-import Button from "@/Global/components/ui/Button";
+import { Button } from "@/Global/components";
 import {
   useDeleteExercise,
   useToggleFavorite,

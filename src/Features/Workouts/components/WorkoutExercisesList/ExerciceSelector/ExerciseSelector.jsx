@@ -1,10 +1,11 @@
-import SearchExercise from "./SearchExercise";
+"use client";
 import { useEffect, useState } from "react";
-import Button from "@/Global/components/ui/Button";
-import { useModals } from "@/Providers/ModalContext";
+import { Button } from "@/Global/components";
+import { useModals } from "@/Providers/Modals";
 import WorkoutExerciseTabs from "./WorkoutExerciseTab";
 import WorkoutMuscleFilters from "./WorkoutMuscleFilters";
-import WorkoutExerciseGroupSelect from "@/Features/Workouts/components/WorkoutExercisesList/ExerciceSelector/WorkoutExerciseGroupSelect";
+import WorkoutExerciseGroupSelect from "./WorkoutExerciseGroupSelect";
+import SearchExercise from "./SearchExercise";
 
 export default function ExerciseSelector({
   activeTab,

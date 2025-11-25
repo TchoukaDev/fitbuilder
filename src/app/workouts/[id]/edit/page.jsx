@@ -1,12 +1,13 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import UpdatedWorkoutForm from "@/Features/Workouts/forms/UpdateWorkoutForm";
-import Header from "@/Global/components/layout/Header";
+
+import { getWorkoutById } from "@/Features/Workouts/utils";
+import { getServerSession } from "next-auth";
 import {
   getAllExercises,
   getFavoritesExercises,
-} from "@/Features/Exercises/utils/getExercises";
-import { getWorkoutById } from "@/Features/Workouts/utils/getWorkouts";
-import { getServerSession } from "next-auth";
+} from "@/Features/Exercises/utils";
+import { Header } from "@/Global/components";
+import { UpdateWorkoutForm } from "@/Features/Workouts/forms";
 
 export default async function EditWorkout({ params }) {
   const session = await getServerSession(authOptions);
@@ -22,7 +23,7 @@ export default async function EditWorkout({ params }) {
     <>
       <Header />
       <main>
-        <UpdatedWorkoutForm
+        <UpdateWorkoutForm
           workout={workout}
           isAdmin={isAdmin}
           userId={userId}

@@ -1,5 +1,6 @@
 "use client";
-import LogoutButton from "@/Features/Auth/components/Buttons/LogoutButton";
+
+import { LogoutButton } from "@/Features/Auth/components";
 import {
   Activity,
   ClipboardPen,

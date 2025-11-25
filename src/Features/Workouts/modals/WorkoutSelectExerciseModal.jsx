@@ -1,9 +1,6 @@
 "use client";
 
-import { useModals } from "@/Providers/ModalContext";
 import WorkoutExercisesList from "../components/WorkoutExercisesList/WorkoutExercisesList";
-import { useBlockScroll } from "@/Global/hooks/useBlockScroll";
-import { X } from "lucide-react";
 import { createPortal } from "react-dom";
 import { ModalLayout } from "@/Global/components";
 import { useState } from "react";

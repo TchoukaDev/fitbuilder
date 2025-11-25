@@ -1,84 +1,82 @@
 "use client";
+
 import { useForm } from "react-hook-form";
-import {
-  startTransition,
-  useActionState,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import { Button, Label, ShowPassword } from "@/Global/components/ui";
+import { useEffect, useRef, useState } from "react";
+import { Button, Label, ShowPassword } from "@/Global/components";
 import { ClipLoader } from "react-spinners";
 import { signUpSchema } from "../utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createUser } from "@/actions/createUser";
-import { useRouter } from "next/navigation";
-import { toast } from "react-toastify";
+import { useSignUp } from "@/Global/hooks";
 
 export default function SignUpForm() {
-  // State
+  // ═══════════════════════════════════════════════════════
+  // 📊 STATE
+  // ═══════════════════════════════════════════════════════
   const [showPassword, setShowPassword] = useState(false);
   const [showPassword2, setShowPassword2] = useState(false);
 
-  // RHF
+  // ═══════════════════════════════════════════════════════
+  // 🔧 HOOKS
+  // ═══════════════════════════════════════════════════════
+  const usernameRef = useRef(null);
+  const { signUp, serverErrors, globalError, clearServerError } = useSignUp();
+
+  // React Hook Form
   const {
     register,
     handleSubmit,
     watch,
-    formState: { errors: clientsErrors, isSubmitting },
+    formState: { errors: clientErrors, isSubmitting },
   } = useForm({
     resolver: zodResolver(signUpSchema),
     mode: "onSubmit",
     reValidateMode: "onChange",
   });
 
-  const [serverState, formAction, isPending] = useActionState(createUser, null);
+  const usernameRegister = register("username");
 
-  const usernameRegister = register("username", {
-    required: "Veuillez choisir un nom d'utilisateur",
-    maxLength: {
-      value: 20,
-      message: "Votre nom d'utilisateur ne peut excéder 20 caractères",
-    },
-  });
-
-  // Variables
-  const router = useRouter();
+  // Watch values
   const username = watch("username");
   const email = watch("email");
   const password = watch("password");
   const confirmPassword = watch("confirmPassword");
 
-  const usernameRef = useRef(null);
+  // ═══════════════════════════════════════════════════════
+  // 🎬 HANDLERS
+  // ═══════════════════════════════════════════════════════
 
-  // Gestion du formulaire
+  // ✅ Fonction de soumission
   const onSubmit = async (data) => {
-    const formData = new FormData();
-    Object.entries(data).forEach(([key, value]) => formData.append(key, value));
-    startTransition(() => {
-      formAction(formData);
-    });
+    await signUp(data);
   };
-
+  // ═══════════════════════════════════════════════════════
+  // 🔄 EFFECTS
+  // ═══════════════════════════════════════════════════════
+  console.log(serverErrors);
   // Focus au chargement
   useEffect(() => {
-    usernameRef?.current.focus();
+    usernameRef?.current?.focus();
   }, []);
 
-  // Message + redirection après success
-  useEffect(() => {
-    if (serverState?.success) {
-      toast.success(serverState.message);
-      router.push("/");
-    }
-  }, [serverState?.success]);
+  // ═══════════════════════════════════════════════════════
+  // 🎨 RENDER
+  // ═══════════════════════════════════════════════════════
   return (
     <form
       className="gap-5 flex flex-col items-center"
       onSubmit={handleSubmit(onSubmit)}
     >
-      {/* Nom d'utilisateur */}
-      <div className="relative">
+      {/* ✅ Erreur globale serveur */}
+      {globalError && Object.keys(serverErrors).length === 0 && (
+        <div className="w-full p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+          {globalError}
+        </div>
+      )}
+
+      {/* ─────────────────────────────────────────────────── */}
+      {/* NOM D'UTILISATEUR */}
+      {/* ─────────────────────────────────────────────────── */}
+      <div className="relative ">
         <input
           type="text"
           className="input peer"
@@ -88,21 +86,30 @@ export default function SignUpForm() {
           placeholder=""
           {...usernameRegister}
           ref={(e) => {
-            usernameRegister.ref(e), (usernameRef.current = e);
+            usernameRegister.ref(e);
+            usernameRef.current = e;
+          }}
+          onChange={(e) => {
+            usernameRegister.onChange(e); // ✅ RHF onChange
+            clearServerError("username"); // ✅ Effacer erreur serveur
           }}
         />
         <Label htmlFor="username" value={username}>
           Nom d'utilisateur
         </Label>
       </div>
+
       {/* Erreurs */}
-      {clientsErrors?.username && (
-        <p className="formError">{clientsErrors.username.message}</p>
+      {clientErrors?.username && (
+        <p className="formError">{clientErrors.username.message}</p>
       )}
-      {serverState?.fieldErrors?.username && !clientsErrors.username && (
-        <p className="formError">{serverState.fieldErrors.username}</p>
+      {serverErrors?.username && !clientErrors.username && (
+        <p className="formError">{serverErrors.username}</p>
       )}
-      {/* Email */}
+
+      {/* ─────────────────────────────────────────────────── */}
+      {/* EMAIL */}
+      {/* ─────────────────────────────────────────────────── */}
       <div className="relative">
         <input
           autoComplete="email"
@@ -111,93 +118,92 @@ export default function SignUpForm() {
           name="email"
           className="input peer"
           placeholder=""
-          {...register("email")}
+          {...register("email", {
+            onChange: () => clearServerError("email"), // ✅ Effacer erreur serveur
+          })}
         />
-        {/* Label animé */}
         <Label htmlFor="email" value={email}>
           Adresse email
         </Label>
       </div>
+
       {/* Erreurs */}
-      {clientsErrors?.email && (
-        <p className="formError">{clientsErrors.email.message}</p>
+      {clientErrors?.email && (
+        <p className="formError">{clientErrors.email.message}</p>
       )}
-      {serverState?.fieldErrors?.email && !clientsErrors.email && (
-        <p className="formError">{serverState.fieldErrors.email}</p>
+      {serverErrors?.email && !clientErrors.email && (
+        <p className="formError">{serverErrors.email}</p>
       )}
 
-      {/* Mot de passe */}
+      {/* ─────────────────────────────────────────────────── */}
+      {/* MOT DE PASSE */}
+      {/* ─────────────────────────────────────────────────── */}
       <div className="relative">
         <input
-          autoComplete="password"
-          type={`${showPassword ? "text" : "password"}`}
+          autoComplete="new-password"
+          type={showPassword ? "text" : "password"}
           id="password"
           name="password"
           className="input peer"
           placeholder=""
           {...register("password", {
-            required: "Veuillez saisir votre mot de passe",
-            validate: (value) =>
-              value.trim() !== "" ||
-              "Le mot de passe ne peut pas contenir uniquement des espaces",
+            onChange: () => clearServerError("password"), // ✅ Effacer erreur serveur
           })}
         />
-        {/* Label animé */}
         <Label htmlFor="password" value={password}>
           Mot de passe
         </Label>
-        {/* Show password */}
         <ShowPassword
           showPassword={showPassword}
           onClick={() => setShowPassword((prev) => !prev)}
         />
       </div>
+
       {/* Erreurs */}
-      {clientsErrors?.password && (
-        <p className="formError">{clientsErrors.password.message}</p>
+      {clientErrors?.password && (
+        <p className="formError">{clientErrors.password.message}</p>
       )}
-      {serverState?.fieldErrors?.password && !clientsErrors.password && (
-        <p className="formError">{serverState.fieldErrors.password}</p>
+      {serverErrors?.password && !clientErrors.password && (
+        <p className="formError">{serverErrors.password}</p>
       )}
-      {/* Confirmation du mot de passe */}
+
+      {/* ─────────────────────────────────────────────────── */}
+      {/* CONFIRMATION MOT DE PASSE */}
+      {/* ─────────────────────────────────────────────────── */}
       <div className="relative">
         <input
-          autoComplete="password"
-          type={`${showPassword2 ? "text" : "password"}`}
+          autoComplete="new-password"
+          type={showPassword2 ? "text" : "password"}
           id="confirmPassword"
           name="confirmPassword"
           className="input peer"
           placeholder=""
           {...register("confirmPassword", {
-            required: "Veuillez confirmer votre mot de passe",
+            onChange: () => clearServerError("confirmPassword"), // ✅ Effacer erreur serveur
           })}
         />
-        {/* Label animé */}
         <Label htmlFor="confirmPassword" value={confirmPassword}>
-          Mot de passe
+          Confirmer le mot de passe
         </Label>
-        {/* Show password */}
         <ShowPassword
           showPassword={showPassword2}
           onClick={() => setShowPassword2((prev) => !prev)}
         />
       </div>
+
       {/* Erreurs */}
-      {clientsErrors?.confirmPassword && (
-        <p className="formError">{clientsErrors.confirmPassword.message}</p>
+      {clientErrors?.confirmPassword && (
+        <p className="formError">{clientErrors.confirmPassword.message}</p>
       )}
-      {serverState?.fieldErrors?.confirmPassword &&
-        !clientsErrors.confirmPassword && (
-          <p className="formError">{serverState.fieldErrors.confirmPassword}</p>
-        )}
-
-      {/* Erreur serveur générale */}
-      {serverState?.error && !serverState?.fieldErrors && (
-        <div className="formError">{serverState.error}</div>
+      {serverErrors?.confirmPassword && !clientErrors.confirmPassword && (
+        <p className="formError">{serverErrors.confirmPassword}</p>
       )}
 
-      <Button type="submit" disabled={isPending || isSubmitting}>
-        {isPending || isSubmitting ? (
+      {/* ─────────────────────────────────────────────────── */}
+      {/* BOUTON SUBMIT */}
+      {/* ─────────────────────────────────────────────────── */}
+      <Button type="submit" disabled={isSubmitting}>
+        {isSubmitting ? (
           <>
             <span>Inscription en cours</span>
             <ClipLoader size={15} color="#e8e3ff" />

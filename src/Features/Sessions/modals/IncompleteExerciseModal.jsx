@@ -1,8 +1,6 @@
-// components/Modals/IncompleteExerciseModal/IncompleteExerciseModal.jsx
-
 "use client";
 
-import Button from "@/Global/components/ui/Button";
+import { Button } from "@/Global/components";
 import { createPortal } from "react-dom";
 import { ModalLayout } from "@/Global/components";
 

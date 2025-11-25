@@ -1,5 +1,3 @@
-// components/Features/Sessions/SessionDetail/ExerciseDetailCard.jsx
-
 "use client";
 
 import { Dumbbell, TrendingUp, Clock, MessageSquare } from "lucide-react";

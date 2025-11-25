@@ -1,9 +1,9 @@
 "use client";
 
-import Button from "@/Global/components/ui/Button";
+import { Button } from "../ui";
 import { createPortal } from "react-dom";
 import { ModalLayout } from "../layout";
-import { useModals } from "@/Providers";
+import { useModals } from "@/Providers/Modals";
 
 // Modale de confirmation de suppression
 export default function DeleteConfirmModal({

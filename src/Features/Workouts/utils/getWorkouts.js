@@ -1,3 +1,4 @@
+"use server";
 import connectDB from "@/libs/mongodb";
 import { ObjectId } from "mongodb";
 

@@ -1,8 +1,8 @@
 "use client";
 
-import Button from "@/Global/components/ui/Button";
+import { Button } from "@/Global/components";
 import StartWorkoutButton from "../StartWorkoutButton";
-import { useDeleteWorkout } from "@/Features/Workouts/hooks/useWorkouts";
+import { useDeleteWorkout } from "../../hooks";
 import { Calendar, Clock, Dumbbell, Edit, Search, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";

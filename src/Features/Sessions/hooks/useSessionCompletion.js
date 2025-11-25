@@ -1,9 +1,8 @@
 // hooks/useSessionCompletion.js
 
 import { useRouter } from "next/navigation";
-import { useCallback } from "react";
 import { toast } from "react-toastify";
-import { useDeleteSession } from "@/Features/Sessions/hooks/useSessions";
+import { useDeleteSession } from "./useSessions";
 
 export function useSessionCompletion(
   sessionId,

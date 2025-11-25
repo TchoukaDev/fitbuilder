@@ -1,24 +1,19 @@
-"use server";
-
 import connectDB from "@/libs/mongodb";
 import bcrypt from "bcryptjs";
-import { signUpSchema } from "@/Features/Auth/utils/signUpSchema";
+import { signUpSchema } from "@/Features/Auth/utils";
+import { NextResponse } from "next/server";
 
-export async function createUser(prevState, formData) {
+// Création d'utilisateur
+export async function POST(req) {
   const standardError =
     "Une erreur est survenue côté serveur. Merci de réessayer plus tard.";
 
   try {
-    // 1. Extraction des données
-    const rawData = {
-      username: formData.get("username"),
-      email: formData.get("email"),
-      password: formData.get("password"),
-      confirmPassword: formData.get("confirmPassword"),
-    };
+    // 2. Extraction des données du body
+    const body = await req.json();
 
     // 2. Validation Zod
-    const validationResult = signUpSchema.safeParse(rawData);
+    const validationResult = signUpSchema.safeParse(body);
 
     if (!validationResult.success) {
       const fieldErrors = {};
@@ -26,11 +21,14 @@ export async function createUser(prevState, formData) {
         fieldErrors[issue.path[0]] = issue.message;
       });
 
-      return {
-        success: false,
-        error: standardError,
-        fieldErrors: fieldErrors,
-      };
+      return NextResponse.json(
+        {
+          success: false,
+          error: standardError,
+          fieldErrors: fieldErrors,
+        },
+        { status: 400 },
+      );
     }
 
     const validatedData = validationResult.data;
@@ -45,11 +43,14 @@ export async function createUser(prevState, formData) {
     });
 
     if (existingEmail) {
-      return {
-        success: false,
-        error: standardError,
-        fieldErrors: { email: "Cet email est déjà utilisé" },
-      };
+      return NextResponse.json(
+        {
+          success: false,
+          error: standardError,
+          fieldErrors: { email: "Cet email est déjà utilisé" },
+        },
+        { status: 409 },
+      );
     }
 
     // 5. Vérifier si le username existe
@@ -58,11 +59,14 @@ export async function createUser(prevState, formData) {
     });
 
     if (existingUsername) {
-      return {
-        success: false,
-        error: standardError,
-        fieldErrors: { username: "Ce nom d'utilisateur est déjà pris" },
-      };
+      return NextResponse.json(
+        {
+          success: false,
+          error: standardError,
+          fieldErrors: { username: "Ce nom d'utilisateur est déjà pris" },
+        },
+        { status: 409 },
+      );
     }
 
     // 6. Hasher le mot de passe
@@ -73,26 +77,36 @@ export async function createUser(prevState, formData) {
       username: validatedData.username,
       email: validatedData.email.toLowerCase(),
       password: hashedPassword,
+      exercises: [],
+      favoritesExercises: [],
+      workouts: [],
+      sessions: [],
       createdAt: new Date(),
       updatedAt: new Date(),
     });
 
     // 8. Retourner le succès
-    return {
-      success: true,
-      message: "Compte créé avec succès !",
-      user: {
-        id: result.insertedId.toString(),
-        username: validatedData.username,
-        email: validatedData.email.toLowerCase(),
+    return NextResponse.json(
+      {
+        success: true,
+        message: "Compte créé avec succès !",
+        user: {
+          id: result.insertedId.toString(),
+          username: validatedData.username,
+          email: validatedData.email.toLowerCase(),
+        },
       },
-    };
+      { status: 201 },
+    );
   } catch (error) {
     console.error("Erreur création utilisateur:", error);
 
-    return {
-      success: false,
-      error: standardError,
-    };
+    return NextResponse.json(
+      {
+        success: false,
+        error: standardError,
+      },
+      { status: 500 },
+    );
   }
 }

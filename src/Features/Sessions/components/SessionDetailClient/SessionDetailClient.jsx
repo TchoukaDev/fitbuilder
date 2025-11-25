@@ -1,9 +1,7 @@
-// components/Features/Sessions/SessionDetail/SessionDetailClient.jsx
-
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useDeleteSession } from "@/Features/Sessions/hooks/useSessions";
+import { useDeleteSession } from "../../hooks";
 import {
   Calendar,
   Clock,
@@ -12,9 +10,9 @@ import {
   Trash2,
   ChevronLeft,
 } from "lucide-react";
-import ExerciseDetailCard from "./ExerciseDetailCard";
 import { DeleteConfirmModal } from "@/Global/components";
-import { useModals } from "@/Providers/ModalContext";
+import { useModals } from "@/Providers/Modals";
+import { ExerciseDetailCard } from ".";
 
 export default function SessionDetailClient({ session, userId }) {
   const router = useRouter();

@@ -1,4 +1,4 @@
-import { useModals } from "@/Providers";
+import { useModals } from "@/Providers/Modals";
 import { X } from "lucide-react";
 import { useBlockScroll } from "@/Global/hooks";
 import { ModalHeader } from ".";

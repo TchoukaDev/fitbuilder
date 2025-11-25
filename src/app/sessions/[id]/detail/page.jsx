@@ -2,10 +2,10 @@
 
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { getSessionbyId } from "@/Features/Sessions/utils/getSessions";
+import { getSessionbyId } from "@/Features/Sessions/utils";
 import { redirect } from "next/navigation";
-import SessionDetailClient from "@/Features/Sessions/components/SessionDetailClient/SessionDetailClient";
-import Header from "@/Global/components/layout/Header";
+import { SessionDetailClient } from "@/Features/Sessions/components";
+import { Header } from "@/Global/components";
 
 export default async function SessionDetailPage({ params }) {
   const resolvedParams = await params;

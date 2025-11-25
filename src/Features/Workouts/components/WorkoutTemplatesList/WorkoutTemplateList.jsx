@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import WorkoutTemplateCard from "./WorkoutTemplateCard";
-import { useWorkouts } from "@/Features/Workouts/hooks/useWorkouts";
+import { useWorkouts } from "../../hooks";
 
 export default function WorkoutTemplateList({ initialTemplates, userId }) {
   const { data: templates = [] } = useWorkouts(initialTemplates, userId);

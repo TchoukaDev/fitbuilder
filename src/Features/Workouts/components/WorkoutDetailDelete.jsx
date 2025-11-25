@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
-import { useDeleteWorkout } from "@/Features/Workouts/hooks/useWorkouts";
+import { useDeleteWorkout } from "../hooks";
 
 export default function WorkoutDetailDelete({ workoutId, userId }) {
   const { mutate: deleteWorkout, isPending } = useDeleteWorkout(userId);

@@ -1,6 +1,6 @@
 "use client";
 
-import PageLayout from "@/Global/components/layout/Header";
+import { Header } from "@/Global/components";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -272,7 +272,7 @@ export default function SeedExercises() {
 
   return (
     <div style={{ padding: "40px", textAlign: "center" }}>
-      <PageLayout />
+      <Header />
       <h1>Seed la base de données</h1>
       <p>Ajouter 30 exercices d'un coup</p>
 

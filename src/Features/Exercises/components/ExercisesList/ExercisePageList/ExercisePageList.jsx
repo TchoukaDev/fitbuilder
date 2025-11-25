@@ -1,12 +1,11 @@
-import ExerciseTabs from "./ExerciseTabs";
-import Button from "@/Global/components/ui/Button";
-import { ExerciseGroup } from "./ExerciseGroup";
-import ExerciseMuscleFilters from "./ExerciseMuscleFilters";
+import { Button } from "@/Global/components";
+import { ExerciseGroup } from ".";
 import {
   NewExerciseModal,
   UpdateExerciseModal,
 } from "@/Features/Exercises/modals";
-import { useModals } from "@/Providers";
+import { useModals } from "@/Providers/Modals";
+import { ExerciseMuscleFilters, ExerciseTabs } from ".";
 
 export default function ExercisePageList({
   activeTab,

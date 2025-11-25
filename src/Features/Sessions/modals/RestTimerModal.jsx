@@ -1,12 +1,12 @@
 "use client";
 
-import { X, Play, Pause, SkipForward } from "lucide-react";
+import { Play, Pause, SkipForward } from "lucide-react";
 import { useState, useEffect } from "react";
-import Button from "@/Global/components/ui/Button";
+import { Button } from "@/Global/components";
 import { useTimerEffects } from "@/Features/Sessions/hooks/useTimerEffects";
 import { useBlockScroll } from "@/Global/hooks/useBlockScroll";
 import { createPortal } from "react-dom";
-import { useModals } from "@/Providers/ModalContext";
+import { useModals } from "@/Providers/Modals";
 import { ModalLayout } from "@/Global/components";
 
 // Modal du timer

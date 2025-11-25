@@ -1,9 +1,8 @@
 "use client";
 import { useState } from "react";
-import Button from "@/Global/components/ui/Button";
-import Label from "@/Global/components/ui/FormsComponents/Label/Label";
+import { Button, Label } from "@/Global/components";
 import { createPortal } from "react-dom";
-import { useModals } from "@/Providers/ModalContext";
+import { useModals } from "@/Providers/Modals";
 import { ModalLayout } from "@/Global/components";
 
 // Modale de modifier d'un exercice ajouté dans l'entraînement

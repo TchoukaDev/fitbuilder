@@ -1,9 +1,9 @@
 "use client";
 
-import { X, CheckCircle, Clock, Dumbbell } from "lucide-react";
-import Button from "@/Global/components/ui/Button";
+import { CheckCircle, Clock } from "lucide-react";
+import { Button } from "@/Global/components";
 import { useBlockScroll } from "@/Global/hooks/useBlockScroll";
-import { useModals } from "@/Providers/ModalContext";
+import { useModals } from "@/Providers/Modals";
 import { createPortal } from "react-dom";
 import { ModalLayout } from "@/Global/components";
 

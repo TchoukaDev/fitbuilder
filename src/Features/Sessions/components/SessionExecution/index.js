@@ -1,2 +1,2 @@
-export { default } from "./SessionExecution";
+export { default as SessionExecution } from "./SessionExecution";
 export * from "./SessionExerciseCard";

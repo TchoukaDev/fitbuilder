@@ -1,15 +1,15 @@
-// components/Features/Sessions/SessionsList/SessionsList.jsx
-
 "use client";
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useGetSessions } from "@/Features/Sessions/hooks/useSessions";
-import SessionCard from "./SessionCard";
-import SessionStats from "./SessionsStats";
-import SessionFilters from "./SessionsFilters";
-import SessionsPagination from "./SessionsPagination";
 import { Calendar } from "lucide-react";
+import { useGetSessions } from "../../hooks";
+import {
+  SessionCard,
+  SessionsFilters,
+  SessionsPagination,
+  SessionsStats,
+} from ".";
 
 export default function SessionsList({
   initialSessions,
@@ -201,10 +201,10 @@ export default function SessionsList({
       </div>
 
       {/* STATS */}
-      <SessionStats stats={stats} />
+      <SessionsStats stats={stats} />
 
       {/* FILTRES */}
-      <SessionFilters
+      <SessionsFilters
         statusFilter={statusFilter}
         dateFilter={dateFilter}
         templateFilter={templateFilter}

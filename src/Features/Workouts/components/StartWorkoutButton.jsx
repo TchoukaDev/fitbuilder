@@ -1,8 +1,8 @@
 "use client";
 
 import { Play } from "lucide-react";
-import Button from "@/Global/components/ui/Button";
-import { useCreateSession } from "@/Features/Sessions/hooks/useSessions";
+import { Button } from "@/Global/components";
+import { useCreateSession } from "@/Features/Sessions/hooks";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 

@@ -1,11 +1,11 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import ExercisesList from "@/Features/Exercises/components/ExercisesList";
-import Header from "@/Global/components/layout/Header";
+import { ExercisesList } from "@/Features/Exercises/components";
 import {
   getAllExercises,
   getFavoritesExercises,
 } from "@/Features/Exercises/utils";
+import { Header } from "@/Global/components";
 
 // ✅ Cache ISR de 60 secondes
 export const revalidate = 60;

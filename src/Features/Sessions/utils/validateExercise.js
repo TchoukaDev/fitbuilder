@@ -1,4 +1,4 @@
-export const validateExercise = (exercises, exerciseIndex) => {
+export function validateExercise(exercises, exerciseIndex) {
   const exercise = exercises[exerciseIndex];
   const missingFields = {
     incompleteSets: [],
@@ -47,4 +47,4 @@ export const validateExercise = (exercises, exerciseIndex) => {
     isComplete,
     missingFields,
   };
-};
+}

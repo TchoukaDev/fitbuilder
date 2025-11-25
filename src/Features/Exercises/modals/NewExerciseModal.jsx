@@ -1,6 +1,5 @@
 "use client";
 import { createPortal } from "react-dom";
-import { useModals } from "@/Providers/ModalContext";
 import { NewExerciseForm } from "../forms";
 import { ModalLayout } from "@/Global/components";
 

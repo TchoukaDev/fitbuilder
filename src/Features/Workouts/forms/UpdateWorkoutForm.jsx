@@ -1,6 +1,6 @@
 "use client";
-import Button from "@/Global/components/ui/Button";
-import Label from "@/Global/components/ui/FormsComponents/Label/Label";
+import { Button, Label } from "@/Global/components";
+
 import {
   SquareArrowDown,
   SquareArrowUp,
@@ -14,12 +14,14 @@ import { BeatLoader, ClipLoader } from "react-spinners";
 import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import { useUpdateWorkout } from "@/Features/Workouts/hooks/useWorkouts";
-import { useModals } from "@/Providers/ModalContext";
-import WorkoutEditExerciseModal from "../modals/WorkoutEditExerciseModal";
-import WorkoutSelectExerciseModal from "../modals/WorkoutSelectExerciseModal";
+import { useUpdateWorkout } from "../hooks";
+import { useModals } from "@/Providers/Modals";
+import {
+  WorkoutEditExerciseModal,
+  WorkoutSelectExerciseModal,
+} from "../modals";
 
-export default function UpdatedWorkoutForm({
+export default function UpdateWorkoutForm({
   workout, // ✅ Le workout à modifier
   allExercises,
   favorites,

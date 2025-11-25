@@ -1,12 +1,15 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import Header from "@/Global/components/layout/Header";
 import { getServerSession } from "next-auth";
 import { notFound } from "next/navigation";
 import { Calendar, Clock, Dumbbell, Edit, ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { getWorkoutById } from "@/Features/Workouts/utils/getWorkouts";
-import WorkoutDetailDelete from "@/Features/Workouts/components/WorkoutDetailDelete";
-import StartWorkoutButton from "@/components/Buttons/StartWorkoutButton";
+
+import { Header } from "@/Global/components";
+import { getWorkoutById } from "@/Features/Workouts/utils";
+import {
+  StartWorkoutButton,
+  WorkoutDetailDelete,
+} from "@/Features/Workouts/components";
 
 export default async function WorkoutDetailPage({ params }) {
   const session = await getServerSession(authOptions);

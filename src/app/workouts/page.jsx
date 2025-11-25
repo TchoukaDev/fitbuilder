@@ -1,7 +1,7 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import Header from "@/Global/components/layout/Header";
 import WorkoutTemplateList from "@/Features/Workouts/components/WorkoutTemplatesList/WorkoutTemplateList";
-import { getWorkouts } from "@/Features/Workouts/utils/getWorkouts";
+import { getWorkouts } from "@/Features/Workouts/utils";
+import { Header } from "@/Global/components";
 import { getServerSession } from "next-auth";
 
 export const revalidate = 60;

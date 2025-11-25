@@ -1,6 +1,6 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";
-import Header from "../../Global/components/layout/Header";
+import { Header } from "@/Global/components";
 
 export default async function Dashboard({ searchParams }) {
   const session = await getServerSession(authOptions);

@@ -1,12 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import Label from "@/Global/components/ui/FormsComponents/Label/Label";
-import Button from "@/Global/components/ui/Button";
-import { toast } from "react-toastify";
+import { Button, Label } from "@/Global/components";
 import { useSession } from "next-auth/react";
 import { ClipLoader } from "react-spinners";
-import { useModals } from "@/Providers/ModalContext";
+import { useModals } from "@/Providers/Modals";
 import { useUpdateExercise } from "../hooks";
 
 export default function UpdateExerciseForm({ exerciseToUpdate }) {

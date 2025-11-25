@@ -1,6 +1,8 @@
 import { ToastContainer } from "react-toastify";
 import "./globals.css";
-import { AuthProvider, ModalProvider, QueryClientProvider } from "@/Providers";
+import { QueryClientProvider } from "@/Providers/QueryClient";
+import { ModalProvider } from "@/Providers/Modals";
+import { AuthProvider } from "@/Providers/Auth";
 
 export const metadata = {
   title: "FitBuilder, votre assistant de musculation personnalisé",

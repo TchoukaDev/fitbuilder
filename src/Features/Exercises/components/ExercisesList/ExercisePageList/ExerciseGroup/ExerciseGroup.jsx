@@ -1,6 +1,5 @@
-import { UpdateExerciseModal } from "@/Features/Exercises/modals";
 import { ExerciseCard } from ".";
-import { useModals } from "@/Providers";
+import { useModals } from "@/Providers/Modals";
 
 export default function ExerciseGroup({
   muscle,

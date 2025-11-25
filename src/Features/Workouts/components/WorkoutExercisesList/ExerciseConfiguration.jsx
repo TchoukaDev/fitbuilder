@@ -1,6 +1,6 @@
-import Button from "@/Global/components/ui/Button";
-import Label from "@/Global/components/ui/FormsComponents/Label/Label";
-import { useModals } from "@/Providers/ModalContext";
+"use client";
+import { Button, Label } from "@/Global/components";
+import { useModals } from "@/Providers/Modals";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
