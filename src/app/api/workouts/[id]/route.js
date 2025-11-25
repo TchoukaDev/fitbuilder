@@ -79,6 +79,22 @@ export async function PATCH(req, { params }) {
   const db = await connectDB();
 
   try {
+    //   Vérifier s'il existe déjà un workout avec ce nom
+    const user = await db
+      .collection("users")
+      .findOne({ _id: new ObjectId(userId) });
+
+    const nameExists = user?.workouts?.some(
+      (w) => w.name.toLowerCase() === name.toLowerCase(),
+    );
+
+    if (nameExists) {
+      return NextResponse.json(
+        { error: "Un plan avec ce nom existe déjà" },
+        { status: 409 },
+      );
+    }
+
     const result = await db.collection("users").updateOne(
       { _id: new ObjectId(userId), "workouts._id": new ObjectId(workoutId) },
       {

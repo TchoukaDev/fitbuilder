@@ -71,7 +71,7 @@ export default function WorkoutDetailPageClient({
             <div className="flex items-center gap-2">
               <Clock size={20} className="text-primary-600" />
               <span className="font-medium">
-                {workout.estimatedDuration} min estimées
+                {workout.estimatedDuration} min
               </span>
             </div>
           )}

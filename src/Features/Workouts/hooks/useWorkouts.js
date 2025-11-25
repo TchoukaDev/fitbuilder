@@ -13,7 +13,7 @@ export function useWorkouts(initialData, userId) {
       const response = await fetch("/api/workouts");
       if (!response.ok) {
         const errorData = await response.json();
-        console.error(errorData.error);
+        throw new Error(errorData.error);
       }
 
       const data = await response.json();
@@ -42,7 +42,7 @@ export function useCreateWorkout(userId) {
 
       if (!response.ok) {
         const errorData = await response.json();
-        console.error(errorData.error);
+        throw new Error(errorData.error);
       }
 
       return response.json();
@@ -92,7 +92,7 @@ export function useUpdateWorkout(userId) {
       });
       if (!response.ok) {
         const errorData = await response.json();
-        console.error(errorData.error);
+        throw new Error(errorData.error);
       }
 
       const data = await response.json();
@@ -141,7 +141,7 @@ export function useDeleteWorkout(userId) {
       });
       if (!response.ok) {
         const errorData = await response.json();
-        console.error(errorData.error);
+        throw new Error(errorData.error);
       }
     },
     onMutate: async (id) => {

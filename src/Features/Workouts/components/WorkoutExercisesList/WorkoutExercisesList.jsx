@@ -46,7 +46,6 @@ export default function WorkoutExercisesList({
     setSearch,
     grouped,
     counts,
-    muscleCounts,
     fixedMuscleCounts,
     allExerciseMuscles,
     myExerciseMuscles,

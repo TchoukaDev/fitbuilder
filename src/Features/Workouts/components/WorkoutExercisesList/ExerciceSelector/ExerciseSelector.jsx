@@ -53,9 +53,11 @@ export default function ExerciseSelector({
     <div className="flex flex-col items-center gap-3">
       {/* Barre de recherche d'exercices */}
       <SearchExercise search={search} onSearchChange={onSearchChange} />
+
       {/* Sélecteur des exercices par type */}
       <WorkoutExerciseTabs onTabChange={setActiveTab} counts={counts} />
-      {/* FILTRES PAR MUSCLE */}
+
+      {/* Filtres par muscle*/}
       {activeTab === "all" && (
         <WorkoutMuscleFilters
           muscles={allExerciseMuscles}
@@ -84,6 +86,8 @@ export default function ExerciseSelector({
         grouped={grouped}
         exercisesAdded={exercisesAdded}
       />
+
+      {/* Actions */}
       <div className="flex items-center gap-3 my-5">
         <Button
           type="button"

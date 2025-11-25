@@ -106,7 +106,7 @@ export default function ExerciseConfiguration({
           Temps de repos (secondes)*
         </Label>
       </div>{" "}
-      {/* Notes (optionnel) */}
+      {/* Commentaire (optionnel) */}
       <div className="relative">
         <textarea
           rows={3}
@@ -116,7 +116,7 @@ export default function ExerciseConfiguration({
           onChange={(e) => setNotes(e.target.value)}
         />
         <Label htmlFor="notes" value={notes}>
-          Notes (Optionnel)
+          Commentaires (Optionnel)
         </Label>
         <p className="text-xs text-gray-500 mt-1">
           Ex: "Tempo lent", "Prise large", etc.
@@ -128,6 +128,7 @@ export default function ExerciseConfiguration({
           Certains champs obligatoires ne sont pas remplis.
         </p>
       )}
+      {/* Actions */}
       <div className="flex items-center gap-3">
         {/* Bouton retour Etape 1 */}
         <Button

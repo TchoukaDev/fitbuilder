@@ -3,6 +3,7 @@ export default function WorkoutMuscleFilters({
   onMuscleChange,
   muscleCounts = {},
 }) {
+  // Compteur de tous les exercices
   const totalCount = Object.values(muscleCounts).reduce((acc, mus) => {
     return acc + mus;
   }, 0);

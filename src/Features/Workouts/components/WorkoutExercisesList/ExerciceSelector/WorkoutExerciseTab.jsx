@@ -1,4 +1,5 @@
 export default function WorkoutExerciseTabs({ onTabChange, counts }) {
+  // Filtres
   const tabs = [
     { id: "all", label: "Tous", count: counts.all },
     {
