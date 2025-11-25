@@ -8,6 +8,7 @@ import { useBlockScroll } from "@/Global/hooks/useBlockScroll";
 import { createPortal } from "react-dom";
 import { useModals } from "@/Providers/Modals";
 import { ModalLayout } from "@/Global/components";
+import { handleKeyDown } from "@/Global/utils";
 
 // Modal du timer
 export default function RestTimerModal({
@@ -195,6 +196,7 @@ export default function RestTimerModal({
           <div className="flex gap-2">
             <input
               type="number"
+              onKeyDown={handleKeyDown}
               min={10}
               value={customTime}
               onChange={(e) => setCustomTime(e.target.value)}

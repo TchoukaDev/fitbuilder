@@ -1,5 +1,6 @@
 // components/Features/Sessions/SetRow/SetRow.jsx
 
+import { handleKeyDown } from "@/Global/utils";
 import { motion } from "framer-motion";
 
 export default function SetRow({
@@ -8,13 +9,6 @@ export default function SetRow({
   onSetChange,
   onSetComplete,
 }) {
-  // ✅ Bloquer les touches interdites
-  const handleKeyDown = (e) => {
-    if (["-", "+", "e", "E"].includes(e.key)) {
-      e.preventDefault();
-    }
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}

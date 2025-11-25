@@ -21,6 +21,7 @@ import {
   WorkoutEditExerciseModal,
   WorkoutSelectExerciseModal,
 } from "../modals";
+import { handleKeyDown } from "@/Global/utils";
 
 export default function NewWorkoutForm({
   allExercises,
@@ -209,6 +210,7 @@ export default function NewWorkoutForm({
             <div className="relative">
               <input
                 type="number"
+                onKeyDown={handleKeyDown}
                 className="input peer"
                 placeholder=""
                 {...register("estimatedDuration", {

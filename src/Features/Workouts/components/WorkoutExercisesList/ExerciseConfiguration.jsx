@@ -1,5 +1,6 @@
 "use client";
 import { Button, Label } from "@/Global/components";
+import { handleKeyDown } from "@/Global/utils";
 import { useModals } from "@/Providers/Modals";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -50,6 +51,7 @@ export default function ExerciseConfiguration({
         <input
           className="input peer"
           type="number"
+          onKeyDown={handleKeyDown}
           placeholder=""
           onChange={(e) =>
             setSets(e.target.value ? parseInt(e.target.value) : 0)
@@ -77,6 +79,7 @@ export default function ExerciseConfiguration({
         <input
           className="input peer"
           type="number"
+          onKeyDown={handleKeyDown}
           placeholder=""
           onChange={(e) =>
             setTargetWeight(e.target.value ? parseFloat(e.target.value) : 0)
@@ -93,6 +96,7 @@ export default function ExerciseConfiguration({
           className="input peer"
           placeholder=""
           type="number"
+          onKeyDown={handleKeyDown}
           onChange={(e) =>
             setRestTime(e.target.value ? parseInt(e.target.value) : 0)
           }

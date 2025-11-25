@@ -1,4 +1,4 @@
-import { Button } from "@/Global/components";
+import { Button, DeleteConfirmModal } from "@/Global/components";
 import { ExerciseGroup } from ".";
 import {
   NewExerciseModal,
@@ -6,6 +6,7 @@ import {
 } from "@/Features/Exercises/modals";
 import { useModals } from "@/Providers/Modals";
 import { ExerciseMuscleFilters, ExerciseTabs } from ".";
+import { useDeleteExercise } from "@/Features/Exercises/hooks";
 
 export default function ExercisePageList({
   activeTab,
@@ -21,7 +22,19 @@ export default function ExercisePageList({
   userId,
   isAdmin,
 }) {
-  const { isOpen, openModal, getModalData } = useModals();
+  const { isOpen, openModal, getModalData, closeModal } = useModals();
+  // Supprimer exercice
+  const { mutate: deleteExercise, isPending: isDeleting } = useDeleteExercise(
+    userId,
+    isAdmin,
+  );
+  const title = "Retirer l'exercice";
+  const message = "Souhaitez-vous retirer cet exercice du programme?";
+
+  const handleModalConfirm = () => {
+    deleteExercise(getModalData("deleteConfirm").id);
+    closeModal("deleteConfirm");
+  };
   return (
     <div>
       {/* ONGLETS */}
@@ -44,6 +57,15 @@ export default function ExercisePageList({
       {isOpen("updateExercise") && (
         <UpdateExerciseModal
           exerciseToUpdate={getModalData("updateExercise").exercise}
+        />
+      )}
+      {/* Modal de suppression d'un exercice */}
+      {isOpen("deleteConfirm") && (
+        <DeleteConfirmModal
+          title={title}
+          message={message}
+          isLoading={isDeleting}
+          onConfirm={handleModalConfirm}
         />
       )}
       {/* FILTRES PAR MUSCLE */}

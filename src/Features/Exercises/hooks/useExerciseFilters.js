@@ -55,6 +55,23 @@ export function useExerciseFilters({
       ? myExercises
       : favoriteExercises;
 
+  // Calculer un compteur de muscle stable pour Le selecteur d'exercice dans Workout
+  const displayedWithoutMuscleFilters = displayed;
+  const unfilteredGrouped = displayedWithoutMuscleFilters.reduce((acc, ex) => {
+    if (!acc[ex.muscle]) acc[ex.muscle] = [];
+    acc[ex.muscle].push(ex);
+    return acc;
+  }, {});
+
+  const fixedMuscleCounts = Object.entries(unfilteredGrouped).reduce(
+    (acc, [muscle, exs]) => {
+      acc[muscle] = exs.length;
+      return acc;
+    },
+    {},
+  );
+
+  // Ensuite filter par muscle
   if (selectedMuscle !== "all") {
     displayed = displayed.filter((ex) => ex.muscle === selectedMuscle);
   }
@@ -93,6 +110,7 @@ export function useExerciseFilters({
     grouped,
     counts,
     muscleCounts,
+    fixedMuscleCounts,
     allExerciseMuscles,
     myExerciseMuscles,
     favoriteExerciseMuscles,

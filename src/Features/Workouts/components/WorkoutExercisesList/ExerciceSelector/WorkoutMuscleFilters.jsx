@@ -9,6 +9,7 @@ export default function WorkoutMuscleFilters({
   if (muscles.length === 0) {
     return null;
   }
+
   return (
     <div>
       <p className="text-center my-3">Filtrer par muscle</p>

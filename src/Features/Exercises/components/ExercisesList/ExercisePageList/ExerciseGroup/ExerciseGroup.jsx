@@ -23,6 +23,7 @@ export default function ExerciseGroup({
             userId={userId}
             isAdmin={isAdmin}
             onEdit={() => openModal("updateExercise", { exercise: ex })}
+            onDelete={() => openModal("deleteConfirm", { id: ex._id })}
           />
         ))}
       </div>

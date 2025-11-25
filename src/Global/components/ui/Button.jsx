@@ -4,6 +4,7 @@ export default function Button({
   disabled,
   children,
   close,
+  edit,
   full,
   width,
   title,
@@ -21,6 +22,8 @@ export default function Button({
       } gap-2 ${full && "w-full"} ${
         close
           ? "bg-accent-500 hover:bg-accent-600 text-accent-50 disabled:bg-accent-300"
+          : edit
+          ? "bg-primary-400 hover:bg-primary-500/85 disabled:bg-primary-100 text-primary-50"
           : "bg-primary-500 hover:bg-primary-600 disabled:bg-primary-300 text-primary-50"
       }  p-3 rounded cursor-pointer transition-all duration-200`}
     >

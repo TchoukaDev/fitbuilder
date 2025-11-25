@@ -1,9 +1,6 @@
 "use client";
 import { Button } from "@/Global/components";
-import {
-  useDeleteExercise,
-  useToggleFavorite,
-} from "@/Features/Exercises/hooks/useExercises";
+import { useToggleFavorite } from "@/Features/Exercises/hooks/useExercises";
 import { FaRegStar, FaStar } from "react-icons/fa";
 
 export default function ExerciseCard({
@@ -11,24 +8,12 @@ export default function ExerciseCard({
   activeTab,
   isFavorite,
   userId,
-  isAdmin,
   onEdit,
+  onDelete,
 }) {
   // Gestion des favoris
   const { mutate: toggleFavorite, isPending: isToggling } =
     useToggleFavorite(userId);
-
-  // Supprimer exercice
-  const { mutate: deleteExercise, isPending: isDeleting } = useDeleteExercise(
-    userId,
-    isAdmin,
-  );
-
-  const onDelete = (id) => {
-    if (!confirm("Voulez-vous supprimer cet exercice?")) {
-      return;
-    } else deleteExercise(id);
-  };
 
   return (
     <div className="border border-gray-300 p-4 rounded-lg bg-white shadow-sm hover:shadow-md transition">
@@ -74,11 +59,7 @@ export default function ExerciseCard({
               <Button onClick={onEdit}>Modifier</Button>
 
               {/* Supprimer exercice */}
-              <Button
-                disabled={isDeleting}
-                onClick={() => onDelete(exercise._id)}
-                close
-              >
+              <Button onClick={onDelete} close>
                 Supprimer
               </Button>
             </>

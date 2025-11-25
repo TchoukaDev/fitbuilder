@@ -4,6 +4,7 @@ import { Button, Label } from "@/Global/components";
 import { createPortal } from "react-dom";
 import { useModals } from "@/Providers/Modals";
 import { ModalLayout } from "@/Global/components";
+import { handleKeyDown } from "@/Global/utils";
 
 // Modale de modifier d'un exercice ajouté dans l'entraînement
 export default function WorkoutEditExerciseModal({ exercise, onSave }) {
@@ -52,6 +53,7 @@ export default function WorkoutEditExerciseModal({ exercise, onSave }) {
         <div className="relative">
           <input
             type="number"
+            onKeyDown={handleKeyDown}
             className="input peer"
             placeholder=""
             id="sets"
@@ -92,6 +94,7 @@ export default function WorkoutEditExerciseModal({ exercise, onSave }) {
         <div className="relative">
           <input
             type="number"
+            onKeyDown={handleKeyDown}
             className="input peer"
             placeholder=""
             id="targetWeight"
@@ -113,6 +116,7 @@ export default function WorkoutEditExerciseModal({ exercise, onSave }) {
         <div className="relative">
           <input
             type="number"
+            onKeyDown={handleKeyDown}
             className="input peer"
             placeholder=""
             id="restTime"

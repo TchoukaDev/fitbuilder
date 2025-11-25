@@ -7,6 +7,7 @@ import { Button } from "@/Global/components";
 import { AnimatePresence, motion } from "framer-motion";
 import { RestTimerModal } from "@/Features/Sessions/modals";
 import { useModals } from "@/Providers/Modals";
+import { handleKeyDown } from "@/Global/utils";
 
 // Carte d'un exercice pendant l'exécution de la session
 export default function SessionExerciseCard({
@@ -218,6 +219,7 @@ export default function SessionExerciseCard({
                   <input
                     id={`effort-${index}`}
                     type="number"
+                    onKeyDown={handleKeyDown}
                     min="1"
                     max="10"
                     required

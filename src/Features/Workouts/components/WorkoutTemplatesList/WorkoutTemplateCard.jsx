@@ -1,15 +1,13 @@
 "use client";
 
 import { Button } from "@/Global/components";
-import StartWorkoutButton from "../StartWorkoutButton";
-import { useDeleteWorkout } from "../../hooks";
+import StartWorkoutButton from "../Buttons/StartWorkoutButton";
 import { Calendar, Clock, Dumbbell, Edit, Search, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { toast } from "react-toastify";
+import { WorkoutDeleteButton } from "../Buttons";
 
 export default function WorkoutTemplateCard({ workout, userId }) {
-  const { mutate: deleteWorkout, isPending } = useDeleteWorkout(userId);
   const router = useRouter();
   const date = new Date(workout.createdAt);
   const workoutDate = date.toLocaleDateString("fr-FR", {
@@ -17,13 +15,6 @@ export default function WorkoutTemplateCard({ workout, userId }) {
     month: "2-digit",
     year: "2-digit",
   });
-
-  const handleDelete = () => {
-    if (!confirm(`Supprimer "${workout.name}" ?`)) return;
-    deleteWorkout(workout._id, {
-      onError: (err) => toast.error(err),
-    });
-  };
 
   return (
     <div className="border border-gray-300 rounded-lg p-5 bg-white shadow-sm hover:shadow-md transition-all">
@@ -96,16 +87,7 @@ export default function WorkoutTemplateCard({ workout, userId }) {
           <Edit size={20} />
         </Button>
 
-        <Button
-          width={"w-12 md:w-auto"}
-          disabled={isPending}
-          close
-          onClick={handleDelete}
-          title="Supprimer"
-          label="Supprimer l'entraînement"
-        >
-          <Trash2 size={20} />
-        </Button>
+        <WorkoutDeleteButton workoutId={workout._id} sm />
       </div>
     </div>
   );

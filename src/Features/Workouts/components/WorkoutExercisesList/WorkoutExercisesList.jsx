@@ -47,6 +47,7 @@ export default function WorkoutExercisesList({
     grouped,
     counts,
     muscleCounts,
+    fixedMuscleCounts,
     allExerciseMuscles,
     myExerciseMuscles,
     favoriteExerciseMuscles,
@@ -76,7 +77,7 @@ export default function WorkoutExercisesList({
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         counts={counts}
-        muscleCounts={muscleCounts}
+        muscleCounts={fixedMuscleCounts}
         allExerciseMuscles={allExerciseMuscles}
         favoriteExerciseMuscles={favoriteExerciseMuscles}
         myExerciseMuscles={myExerciseMuscles}

@@ -1,4 +1,4 @@
-export { default as StartWorkoutButton } from "./StartWorkoutButton";
-export { default as WorkoutDetailDelete } from "./WorkoutDetailDelete";
+export { default as WorkoutDetailPageClient } from "./WorkoutDetailPageClient";
 export * from "./WorkoutExercisesList";
 export * from "./WorkoutTemplatesList";
+export * from "./Buttons";

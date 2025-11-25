@@ -2,13 +2,31 @@
 
 import Link from "next/link";
 import WorkoutTemplateCard from "./WorkoutTemplateCard";
-import { useWorkouts } from "../../hooks";
+import { useDeleteWorkout, useWorkouts } from "../../hooks";
+import { DeleteConfirmModal } from "@/Global/components";
+import { useModals } from "@/Providers/Modals";
+import { useRouter } from "next/navigation";
 
 export default function WorkoutTemplateList({ initialTemplates, userId }) {
   const { data: templates = [] } = useWorkouts(initialTemplates, userId);
+  const { mutate: deleteWorkout, isPending } = useDeleteWorkout(userId);
+  const { isOpen, closeModal, getModalData } = useModals();
+  const router = useRouter();
 
-  const count = templates?.length || 0;
-
+  const handleDelete = async (workoutId) => {
+    deleteWorkout(workoutId, {
+      onSuccess: () => {
+        router.push("/workouts");
+        router.refresh();
+        closeModal("deleteConfirm");
+      },
+      onError: (error) => {
+        toast.error("Erreur lors de la suppression");
+      },
+    });
+  };
+  const title = "Supprimer l'entraînement";
+  const message = "Êtes-vous sûr de vouloir supprimer ce plan d'entraînement ?";
   return (
     <div>
       <Link href="/workouts/create" className="LinkButton mb-10">
@@ -22,6 +40,15 @@ export default function WorkoutTemplateList({ initialTemplates, userId }) {
           userId={userId}
         />
       ))}
+      {/* Modale de suppression */}
+      {isOpen("deleteConfirm") && (
+        <DeleteConfirmModal
+          title={title}
+          message={message}
+          isLoading={isPending}
+          onConfirm={() => handleDelete(getModalData("deleteConfirm").id)}
+        />
+      )}
     </div>
   );
 }
