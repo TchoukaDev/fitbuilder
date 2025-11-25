@@ -23,6 +23,7 @@ export default async function EditWorkout({ params }) {
     <>
       <Header />
       <main>
+        <h1>Modifier le plan d'entraînement "{workout.name}"</h1>
         <UpdateWorkoutForm
           workout={workout}
           isAdmin={isAdmin}

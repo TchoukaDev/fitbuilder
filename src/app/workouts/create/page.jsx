@@ -20,7 +20,7 @@ export default async function CreateWorkoutPage() {
     <>
       <Header />
       <main>
-        <h1>Créer un nouvel entraînement</h1>
+        <h1>Créer un nouveau plan d'entraînement</h1>
         <NewWorkoutForm
           allExercises={serializedExercises}
           favorites={serializedFavorites}

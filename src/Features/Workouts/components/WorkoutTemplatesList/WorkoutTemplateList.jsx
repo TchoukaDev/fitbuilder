@@ -25,30 +25,35 @@ export default function WorkoutTemplateList({ initialTemplates, userId }) {
       },
     });
   };
+  const count = templates?.length;
   const title = "Supprimer l'entraînement";
   const message = "Êtes-vous sûr de vouloir supprimer ce plan d'entraînement ?";
   return (
-    <div>
-      <Link href="/workouts/create" className="LinkButton mb-10">
-        + Créer un nouvel entraînement
-      </Link>
-      {/* Cards */}
-      {templates?.map((template) => (
-        <WorkoutTemplateCard
-          key={template?._id}
-          workout={template}
-          userId={userId}
-        />
-      ))}
-      {/* Modale de suppression */}
-      {isOpen("deleteConfirm") && (
-        <DeleteConfirmModal
-          title={title}
-          message={message}
-          isLoading={isPending}
-          onConfirm={() => handleDelete(getModalData("deleteConfirm").id)}
-        />
-      )}
-    </div>
+    <>
+      {/* Titre h1 dans composant client pour compteur géré par useQuery */}
+      <h1>Mes plans d'entraînement ({count})</h1>
+      <div>
+        <Link href="/workouts/create" className="LinkButton mb-10">
+          + Créer un nouvel entraînement
+        </Link>
+        {/* Cards */}
+        {templates?.map((template) => (
+          <WorkoutTemplateCard
+            key={template?._id}
+            workout={template}
+            userId={userId}
+          />
+        ))}
+        {/* Modale de suppression */}
+        {isOpen("deleteConfirm") && (
+          <DeleteConfirmModal
+            title={title}
+            message={message}
+            isLoading={isPending}
+            onConfirm={() => handleDelete(getModalData("deleteConfirm").id)}
+          />
+        )}
+      </div>
+    </>
   );
 }
