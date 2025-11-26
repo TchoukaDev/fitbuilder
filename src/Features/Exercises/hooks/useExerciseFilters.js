@@ -1,6 +1,11 @@
 "use client";
 import { useState } from "react";
 
+/**
+ * Gère les filtres (onglets, muscle, recherche) pour la liste d'exercices.
+ *
+ * @param {{ exercises?: any[], favorites?: string[], isAdmin?: boolean }} params
+ */
 export function useExerciseFilters({
   exercises = [],
   favorites = [],

@@ -1,14 +1,14 @@
 import { useCallback } from "react";
 
+/**
+ * Regroupe les effets liés au timer (sons, vibration, notification).
+ */
 export function useTimerEffects() {
-  // ═══════════════════════════════════════════════════════
-  // 🔊 JOUER UN SON
-  // ═══════════════════════════════════════════════════════
+  /**
+   * Joue un son de fin de timer (fichier audio ou bip de fallback).
+   */
   const playSound = useCallback(() => {
     try {
-      // ─────────────────────────────────────────────────────
-      // Option A : Utiliser un fichier audio
-      // ─────────────────────────────────────────────────────
       const audio = new Audio("/sounds/timer.mp3");
       audio.volume = 0.5; // Volume à 50%
       audio.play().catch((err) => {
@@ -22,9 +22,9 @@ export function useTimerEffects() {
     }
   }, []);
 
-  // ─────────────────────────────────────────────────────
-  // Option B : Synthétiser un bip avec Web Audio API
-  // ─────────────────────────────────────────────────────
+  /**
+   * Joue un bip synthétique via l'API Web Audio.
+   */
   const playBeep = useCallback(() => {
     try {
       // Créer un contexte audio
@@ -58,9 +58,9 @@ export function useTimerEffects() {
     }
   }, []);
 
-  // ═══════════════════════════════════════════════════════
-  // 📳 VIBRATION (mobile uniquement)
-  // ═══════════════════════════════════════════════════════
+  /**
+   * Déclenche une courte vibration sur mobile (si supportée).
+   */
   const vibrate = useCallback(() => {
     // Vérifier si l'API Vibration est disponible
     if ("vibrate" in navigator) {
@@ -72,9 +72,12 @@ export function useTimerEffects() {
     }
   }, []);
 
-  // ═══════════════════════════════════════════════════════
-  // 🔔 NOTIFICATION NAVIGATEUR (optionnel)
-  // ═══════════════════════════════════════════════════════
+  /**
+   * Affiche une notification navigateur (si supportée / autorisée).
+   *
+   * @param {string} title - Titre de la notification.
+   * @param {string} body - Message de la notification.
+   */
   const showNotification = useCallback((title, body) => {
     // Vérifier si les notifications sont supportées
     if (!("Notification" in window)) {
@@ -99,9 +102,9 @@ export function useTimerEffects() {
     }
   }, []);
 
-  // ═══════════════════════════════════════════════════════
-  // 🎯 FONCTION PRINCIPALE : Tout déclencher en une fois
-  // ═══════════════════════════════════════════════════════
+  /**
+   * Déclenche tous les effets de fin de timer (son, vibration, notification).
+   */
   const triggerTimerComplete = useCallback(() => {
     playSound(); // 🔊 Son
     vibrate(); // 📳 Vibration

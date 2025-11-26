@@ -1,5 +1,13 @@
 import { useEffect } from "react";
 
+/**
+ * Gère le backup local d'une session dans `localStorage` (sauvegarde + restauration).
+ *
+ * @param {string} sessionId - Identifiant de la session.
+ * @param {any[]} exercises - Exercices courants.
+ * @param {(exs: any[]) => void} setExercises - Setter pour les exercices.
+ * @param {Object} sessionData - Données serveur de la session (pour comparer les dates).
+ */
 export function useSessionBackup(
   sessionId,
   exercises,
@@ -59,6 +67,9 @@ export function useSessionBackup(
   // ═══════════════════════════════════════════════════════
   // 🧹 Fonction de nettoyage
   // ═══════════════════════════════════════════════════════
+  /**
+   * Supprime le backup de la session dans `localStorage`.
+   */
   const clearBackup = () => {
     if (sessionId) {
       localStorage.removeItem(`session-backup-${sessionId}`);

@@ -6,6 +6,12 @@ import {
 } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
+/**
+ * Récupère la liste des workouts pour un utilisateur via React Query.
+ *
+ * @param {any[]} initialData - Données initiales optionnelles pour hydrater le cache.
+ * @param {string} userId - Identifiant de l'utilisateur.
+ */
 export function useWorkouts(initialData, userId) {
   return useQuery({
     queryKey: ["workouts", userId],
@@ -28,6 +34,11 @@ export function useWorkouts(initialData, userId) {
 }
 
 // CREATE
+/**
+ * Crée un workout pour un utilisateur (mutation React Query).
+ *
+ * @param {string} userId - Identifiant de l'utilisateur.
+ */
 export function useCreateWorkout(userId) {
   const queryClient = useQueryClient();
   const key = ["workouts", userId];
@@ -78,8 +89,12 @@ export function useCreateWorkout(userId) {
   });
 }
 
-//Update
-
+// UPDATE
+/**
+ * Met à jour un workout existant pour un utilisateur (mutation React Query).
+ *
+ * @param {string} userId - Identifiant de l'utilisateur.
+ */
 export function useUpdateWorkout(userId) {
   const queryClient = useQueryClient();
   const key = ["workout", userId];
@@ -131,6 +146,11 @@ export function useUpdateWorkout(userId) {
 }
 
 // DELETE
+/**
+ * Supprime un workout pour un utilisateur (mutation React Query).
+ *
+ * @param {string} userId - Identifiant de l'utilisateur.
+ */
 export function useDeleteWorkout(userId) {
   const queryClient = useQueryClient();
   const key = ["workouts", userId];

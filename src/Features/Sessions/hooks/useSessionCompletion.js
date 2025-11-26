@@ -4,6 +4,15 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { useDeleteSession } from "./useSessions";
 
+/**
+ * Fournit les actions de fin de session (sauvegarder, terminer, annuler).
+ *
+ * @param {string} sessionId - Identifiant de la session.
+ * @param {string} userId - Identifiant de l'utilisateur.
+ * @param {Function} clearBackup - Fonction pour nettoyer le backup local.
+ * @param {Function} setIsSaving - Setter d'état de sauvegarde.
+ * @param {string} formattedTime - Durée formatée de la session.
+ */
 export function useSessionCompletion(
   sessionId,
   userId,
@@ -15,6 +24,11 @@ export function useSessionCompletion(
   const { mutate: deleteSession } = useDeleteSession(userId);
 
   // ✅ useCallback pour éviter de recréer la fonction à chaque render
+  /**
+   * Sauvegarde la progression courante de la session (PATCH partiel).
+   *
+   * @param {any[]} exercises - Liste des exercices à sauvegarder.
+   */
   const saveProgress = async (exercises) => {
     setIsSaving(true);
 
@@ -39,6 +53,12 @@ export function useSessionCompletion(
   };
 
   // ✅ Nettoyer les données
+  /**
+   * Nettoie / normalise les données des exercices avant envoi au backend.
+   *
+   * @param {any[]} exercises - Exercices bruts.
+   * @returns {any[]} Exercices nettoyés.
+   */
   const cleanExercisesData = (exercises) => {
     return exercises.map((ex) => ({
       ...ex,
@@ -55,6 +75,11 @@ export function useSessionCompletion(
   };
 
   // ✅ Finaliser la session
+  /**
+   * Finalise la session : envoie toutes les données et redirige l'utilisateur.
+   *
+   * @param {any[]} exercises - Exercices de la session.
+   */
   const finishSession = async (exercises) => {
     setIsSaving(true);
 
@@ -86,6 +111,9 @@ export function useSessionCompletion(
   };
 
   // ✅ Annuler la session
+  /**
+   * Annule la session (suppression côté serveur + nettoyage backup).
+   */
   const cancelSession = () => {
     setIsSaving(true);
 

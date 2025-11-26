@@ -1,6 +1,10 @@
 import { useState } from "react";
 
-// State Global de l'exécution de la session
+/**
+ * Gère l'état global d'exécution d'une session (exercices, index courant, sauvegarde).
+ *
+ * @param {{ exercises: any[] }} sessionData - Données initiales de la session.
+ */
 export function useSessionState(sessionData) {
   const [exercises, setExercises] = useState(sessionData.exercises); //Exercises de la session
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0); //Exercice en cours d'exécution

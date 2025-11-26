@@ -4,8 +4,13 @@ import { useModals } from "@/Providers/Modals";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
+/**
+ * Hook pour gérer le formulaire de workout (liste d'exercices + localStorage).
+ *
+ * @param {{ workout?: { exercises?: any[] } | null, newForm?: boolean }} params
+ */
 export function useWorkoutForm({ workout = null, newForm = false }) {
-  // State
+  // Etat principal du formulaire
   const [formData, setFormData] = useState({
     exercises: workout?.exercises || [],
   });
@@ -16,7 +21,10 @@ export function useWorkoutForm({ workout = null, newForm = false }) {
   // Modal
   const { getModalData, closeModal } = useModals();
 
-  // Ajouter exercice
+  /**
+   * Ajoute un exercice à la fin de la liste.
+   * @param {Object} selectedExercise
+   */
   const selectExercise = (selectedExercise) => {
     const orderedExercise = {
       ...selectedExercise,
@@ -28,7 +36,10 @@ export function useWorkoutForm({ workout = null, newForm = false }) {
     }));
   };
 
-  // Modifier un exercice existant
+  /**
+   * Met à jour l'exercice en cours d'édition (index récupéré via `getModalData`).
+   * @param {Object} updatedExercise
+   */
   const updateExercise = (updatedExercise) => {
     const newExercises = formData.exercises.map((ex, i) =>
       i === getModalData("workoutEditExercise").index
@@ -41,7 +52,10 @@ export function useWorkoutForm({ workout = null, newForm = false }) {
     toast.success("Exercice modifié");
   };
 
-  // Supprimer exercice et modifier ordre
+  /**
+   * Supprime un exercice (index provenant du modal `deleteConfirm`) et recalcule `order`.
+   * @param {number} index
+   */
   const removeExercise = (index) => {
     const reorderedExercises = formData.exercises
       .filter((ex, i) => i !== getModalData("deleteConfirm").index)
@@ -54,7 +68,11 @@ export function useWorkoutForm({ workout = null, newForm = false }) {
     closeModal("deleteConfirm");
   };
 
-  // Réorganiser les exercises
+  /**
+   * Déplace un exercice dans la liste puis recalcule `order`.
+   * @param {number} index
+   * @param {"up"|"down"} direction
+   */
   const moveExercise = (index, direction) => {
     const newExercises = [...formData.exercises];
     if (direction === "up" && index > 0) {
@@ -75,7 +93,9 @@ export function useWorkoutForm({ workout = null, newForm = false }) {
     setFormData({ ...formData, exercises: reorderedExercises });
   };
 
-  // Load from localStorage
+  /**
+   * Charge les exercices depuis `localStorage` au montage si `newForm` est vrai.
+   */
   useEffect(() => {
     if (newForm) {
       const stored = localStorage.getItem("exercises");
@@ -91,14 +111,18 @@ export function useWorkoutForm({ workout = null, newForm = false }) {
     setIsMounted(true);
   }, []);
 
-  // Save to localStorage
+  /**
+   * Sauvegarde `formData.exercises` dans `localStorage` quand ils changent.
+   */
   useEffect(() => {
     if (hasLoaded && newForm) {
       localStorage.setItem("exercises", JSON.stringify(formData.exercises));
     }
   }, [formData.exercises, hasLoaded, newForm]);
 
-  // Clear localStorage
+  /**
+   * Supprime la clé `"exercises"` du `localStorage` pour un nouveau formulaire.
+   */
   const clearStorage = () => {
     if (newForm) {
       localStorage.removeItem("exercises");
@@ -109,7 +133,6 @@ export function useWorkoutForm({ workout = null, newForm = false }) {
     error,
     setError,
     isMounted,
-    selectExercise,
     selectExercise,
     removeExercise,
     updateExercise,

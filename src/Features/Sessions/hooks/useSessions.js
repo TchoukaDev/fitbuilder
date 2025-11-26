@@ -5,10 +5,13 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-
-// ═══════════════════════════════════════════════════════
-// 🔍 GET SESSIONS (avec filtres server-side)
-// ═══════════════════════════════════════════════════════
+/**
+ * Récupère la liste paginée de sessions avec filtres côté serveur.
+ *
+ * @param {any} initialData - Données initiales pour hydrater le cache.
+ * @param {string} userId - Identifiant de l'utilisateur.
+ * @param {Object} [filters] - Filtres (status, dateFilter, templateFilter, page, limit).
+ */
 export function useGetSessions(initialData, userId, filters = {}) {
   const {
     status = "all",
@@ -78,6 +81,11 @@ export function useGetSessions(initialData, userId, filters = {}) {
   });
 }
 
+/**
+ * Crée une nouvelle session d'entraînement (mutation React Query).
+ *
+ * @param {string} userId - Identifiant de l'utilisateur.
+ */
 export function useCreateSession(userId) {
   const queryClient = useQueryClient();
   const key = ["sessions", userId];
@@ -105,6 +113,11 @@ export function useCreateSession(userId) {
   });
 }
 
+/**
+ * Supprime une session d'entraînement (mutation React Query).
+ *
+ * @param {string} userId - Identifiant de l'utilisateur.
+ */
 export function useDeleteSession(userId) {
   const queryClient = useQueryClient();
   const key = ["sessions", userId];

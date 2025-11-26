@@ -7,7 +7,13 @@ import {
 } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
-// 1️⃣ Hook pour LIRE les exercices
+/**
+ * Récupère la liste des exercices (globale ou filtrée par utilisateur).
+ *
+ * @param {string} userId - Identifiant de l'utilisateur.
+ * @param {boolean} isAdmin - Indique si l'utilisateur est admin.
+ * @param {any[]} initialData - Données initiales pour hydrater le cache.
+ */
 export function useExercises(userId, isAdmin, initialData) {
   const key = isAdmin ? ["exercises"] : ["exercises", userId];
 
@@ -32,6 +38,12 @@ export function useExercises(userId, isAdmin, initialData) {
 }
 
 // 2️⃣ Hook pour CRÉER un exercice
+/**
+ * Crée un nouvel exercice (mutation React Query).
+ *
+ * @param {string} userId - Identifiant de l'utilisateur.
+ * @param {boolean} isAdmin - Indique si l'utilisateur est admin.
+ */
 export function useCreateExercise(userId, isAdmin) {
   const queryClient = useQueryClient();
   const key = isAdmin ? ["exercises"] : ["exercises", userId];
@@ -83,7 +95,12 @@ export function useCreateExercise(userId, isAdmin) {
 }
 
 // Hook pour MODIFIER un exercice
-
+/**
+ * Met à jour un exercice existant (mutation React Query).
+ *
+ * @param {string} userId - Identifiant de l'utilisateur.
+ * @param {boolean} isAdmin - Indique si l'utilisateur est admin.
+ */
 export function useUpdateExercise(userId, isAdmin) {
   const queryClient = useQueryClient();
   const key = isAdmin ? ["exercises"] : ["exercises", userId];
@@ -137,6 +154,12 @@ export function useUpdateExercise(userId, isAdmin) {
 }
 
 // DELETE
+/**
+ * Supprime un exercice (mutation React Query).
+ *
+ * @param {string} userId - Identifiant de l'utilisateur.
+ * @param {boolean} isAdmin - Indique si l'utilisateur est admin.
+ */
 export function useDeleteExercise(userId, isAdmin) {
   const queryClient = useQueryClient();
   const key = isAdmin ? ["exercises"] : ["exercises", userId];
@@ -171,6 +194,12 @@ export function useDeleteExercise(userId, isAdmin) {
 }
 
 // READ - Récupérer les favoris
+/**
+ * Récupère les exercices favoris d'un utilisateur.
+ *
+ * @param {string} userId - Identifiant de l'utilisateur.
+ * @param {string[]} initialData - Tableau initial d'identifiants favoris.
+ */
 export function useFavorites(userId, initialData) {
   return useQuery({
     queryKey: ["favorites", userId],
@@ -192,6 +221,11 @@ export function useFavorites(userId, initialData) {
 }
 
 // TOGGLE - Ajouter ou retirer un favori
+/**
+ * Ajoute ou retire un exercice des favoris (mutation React Query).
+ *
+ * @param {string} userId - Identifiant de l'utilisateur.
+ */
 export function useToggleFavorite(userId) {
   const queryClient = useQueryClient();
   return useMutation({

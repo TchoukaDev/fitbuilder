@@ -4,11 +4,19 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
+/**
+ * Gère l'inscription utilisateur (appel API + gestion des erreurs serveur).
+ */
 export function useSignUp() {
   const router = useRouter();
   const [serverErrors, setServerErrors] = useState({});
   const [globalError, setGlobalError] = useState("");
 
+  /**
+   * Envoie les données d'inscription à l'API.
+   *
+   * @param {Object} data - Données du formulaire (email, mot de passe, etc.).
+   */
   const signUp = async (data) => {
     setServerErrors({});
     setGlobalError("");
@@ -44,6 +52,11 @@ export function useSignUp() {
     }
   };
 
+  /**
+   * Efface l'erreur serveur pour un champ spécifique.
+   *
+   * @param {string} fieldName - Nom du champ à nettoyer.
+   */
   const clearServerError = (fieldName) => {
     if (serverErrors[fieldName]) {
       setServerErrors((prev) => {

@@ -1,8 +1,6 @@
 "use client";
 import { Button, DeleteConfirmModal } from "@/Global/components";
 import { ClipLoader } from "react-spinners";
-import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { useUpdateWorkout } from "../hooks";
@@ -11,8 +9,7 @@ import {
   WorkoutEditExerciseModal,
   WorkoutSelectExerciseModal,
 } from "../modals";
-import WorkoutFormFields from "./WorkoutFormFields";
-import WorkoutFormExercisesList from "./WorkoutFormExercisesList";
+import { WorkoutFormFields, WorkoutFormExercisesList } from "./formsComponents";
 import { useWorkoutForm } from "../hooks/useWorkoutForm";
 
 export default function UpdateWorkoutForm({
