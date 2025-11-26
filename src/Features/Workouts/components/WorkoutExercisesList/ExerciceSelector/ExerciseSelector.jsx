@@ -1,4 +1,6 @@
 "use client";
+
+// Étape de sélection d'un exercice (recherche, filtres, groupes) avant configuration.
 import { useEffect, useState } from "react";
 import { Button } from "@/Global/components";
 import { useModals } from "@/Providers/Modals";
@@ -6,7 +8,6 @@ import WorkoutExerciseTabs from "./WorkoutExerciseTab";
 import WorkoutMuscleFilters from "./WorkoutMuscleFilters";
 import WorkoutExerciseGroupSelect from "./WorkoutExerciseGroupSelect";
 import SearchExercise from "./SearchExercise";
-
 export default function ExerciseSelector({
   activeTab,
   setActiveTab,

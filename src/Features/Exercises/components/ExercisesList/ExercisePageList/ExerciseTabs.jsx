@@ -1,10 +1,10 @@
+// Onglets de navigation pour filtrer les exercices (Tous / Mes exercices / Favoris)
 export default function ExerciseTabs({ activeTab, onTabChange, counts }) {
   const tabs = [
     { id: "all", label: "🏋️ Tous", count: counts.all },
     {
       id: "mine",
       label: "🗒️ Mes exercices personnalisés",
-
       count: counts.mine,
     },
     {

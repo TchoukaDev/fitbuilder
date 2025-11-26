@@ -1,3 +1,4 @@
+// Page de liste des exercices avec onglets, filtres, modals et actions
 import { Button, DeleteConfirmModal } from "@/Global/components";
 import { ExerciseGroup } from ".";
 import {
@@ -23,11 +24,12 @@ export default function ExercisePageList({
   isAdmin,
 }) {
   const { isOpen, openModal, getModalData, closeModal } = useModals();
-  // Supprimer exercice
+  
   const { mutate: deleteExercise, isPending: isDeleting } = useDeleteExercise(
     userId,
     isAdmin,
   );
+  
   const title = "Retirer l'exercice";
   const message = "Souhaitez-vous retirer cet exercice du programme?";
 
@@ -35,15 +37,17 @@ export default function ExercisePageList({
     deleteExercise(getModalData("deleteConfirm").id);
     closeModal("deleteConfirm");
   };
+
   return (
     <div>
-      {/* ONGLETS */}
+      {/* Onglets de navigation */}
       <ExerciseTabs
         activeTab={activeTab}
         onTabChange={setActiveTab}
         counts={counts}
-      />{" "}
-      {/* BOUTON CRÉER (onglet "Mes exercices") */}
+      />
+
+      {/* Bouton de création (onglet "Mes exercices") */}
       {activeTab === "mine" && (
         <div className="mb-5">
           <Button onClick={() => openModal("newExercise")}>
@@ -51,15 +55,14 @@ export default function ExercisePageList({
           </Button>
         </div>
       )}
-      {/* Modal de création d'exercice */}
+
+      {/* Modals */}
       {isOpen("newExercise") && <NewExerciseModal />}
-      {/* Modal de modification d'un exercice */}
       {isOpen("updateExercise") && (
         <UpdateExerciseModal
           exerciseToUpdate={getModalData("updateExercise").exercise}
         />
       )}
-      {/* Modal de suppression d'un exercice */}
       {isOpen("deleteConfirm") && (
         <DeleteConfirmModal
           title={title}
@@ -68,7 +71,8 @@ export default function ExercisePageList({
           onConfirm={handleModalConfirm}
         />
       )}
-      {/* FILTRES PAR MUSCLE */}
+
+      {/* Filtres par muscle selon l'onglet actif */}
       {activeTab === "all" && (
         <ExerciseMuscleFilters
           muscles={allExerciseMuscles}
@@ -90,7 +94,8 @@ export default function ExercisePageList({
           onMuscleChange={setSelectedMuscle}
         />
       )}
-      {/* LISTE DES EXERCICES GROUPÉS */}
+
+      {/* Liste des exercices groupés par muscle */}
       {Object.keys(grouped).length === 0 ? (
         <p className="text-center text-gray-500 py-10">
           {activeTab === "mine"

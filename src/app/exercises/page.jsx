@@ -1,3 +1,4 @@
+// Page de liste de tous les exercices (publics + personnalisés + favoris)
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { ExercisesList } from "@/Features/Exercises/components";
@@ -7,7 +8,6 @@ import {
 } from "@/Features/Exercises/utils";
 import { Header } from "@/Global/components";
 
-// ✅ Cache ISR de 60 secondes
 export const revalidate = 60;
 
 export default async function ExercisesPage() {
@@ -15,6 +15,7 @@ export default async function ExercisesPage() {
   const isAdmin = session?.user?.role === "ADMIN";
   const userId = session?.user?.id;
 
+  // Récupération des exercices et favoris
   const exercises = (await getAllExercises(userId)) || [];
   const serializedExercises = JSON.parse(JSON.stringify(exercises));
   const favorites = (await getFavoritesExercises(userId)) || [];

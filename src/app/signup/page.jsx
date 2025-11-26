@@ -1,3 +1,4 @@
+// Page d'inscription avec formulaire
 import Link from "next/link";
 import { SignUpForm } from "@/Features/Auth/forms";
 import { WelcomeLayout } from "@/Global/components";
@@ -8,7 +9,7 @@ import { redirect } from "next/navigation";
 export default async function signUpPage() {
   const session = await getServerSession(authOptions);
 
-  // Si utilisateur connecté, le renvoyer sur dashboard
+  // Redirection si déjà connecté
   if (session?.user?.email) {
     redirect("/dashboard");
   }

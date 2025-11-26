@@ -4,13 +4,7 @@ import { memo } from "react";
 import { motion } from "framer-motion";
 import { SquareArrowDown, SquareArrowUp, SquareX, Edit } from "lucide-react";
 
-/**
- * Affiche une carte d'exercice avec ses informations et ses actions
- * (modifier, supprimer, déplacer).
- *
- * Composant purement présentatif : toute la logique métier reste dans
- * le parent via les callbacks passés en props.
- */
+// Carte d'exercice avec infos et actions (modifier, supprimer, déplacer).
 function ExerciseItem({
   exercise,
   index,

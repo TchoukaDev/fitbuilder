@@ -1,4 +1,6 @@
 "use client";
+
+// Liste et configuration des exercices à ajouter dans l'entraînement (flux en 2 étapes).
 import {
   useExerciseFilters,
   useExercises,
@@ -8,8 +10,6 @@ import {
 import ExerciseConfiguration from "./ExerciseConfiguration";
 import { useState } from "react";
 import ExerciseSelector from "./ExerciceSelector/ExerciseSelector";
-
-// Liste des exercices à ajouter dans l'entraînement
 export default function WorkoutExercisesList({
   userId,
   isAdmin,

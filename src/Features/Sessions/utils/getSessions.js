@@ -3,6 +3,8 @@ import connectDB from "@/libs/mongodb";
 
 const { ObjectId } = require("mongodb");
 
+// Récupère toutes les sessions d'un utilisateur avec filtres (statut, date, template) et pagination.
+// Retourne { sessions: [], pagination: {}, stats: {} }.
 export async function getAllSessions(userId, filters = {}) {
   if (!userId) return { sessions: [], pagination: {}, stats: {} };
 
@@ -121,6 +123,8 @@ export async function getAllSessions(userId, filters = {}) {
   }
 }
 
+// Récupère une session spécifique par son ID pour un utilisateur donné.
+// Retourne la session avec les ObjectId convertis en strings ou null si non trouvée.
 export async function getSessionbyId(userId, sessionId) {
   try {
     const db = await connectDB();

@@ -1,5 +1,6 @@
 "use client";
 
+// Liste les plans d'entraînement de l'utilisateur avec leurs actions.
 import Link from "next/link";
 import WorkoutTemplateCard from "./WorkoutTemplateCard";
 import { useDeleteWorkout, useWorkouts } from "../../hooks";

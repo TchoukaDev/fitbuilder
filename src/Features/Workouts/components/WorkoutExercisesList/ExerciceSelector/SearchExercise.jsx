@@ -1,3 +1,4 @@
+// Champ de recherche pour filtrer les exercices par nom.
 import { Label } from "@/Global/components";
 
 export default function SearchExercise({ onSearchChange, search }) {

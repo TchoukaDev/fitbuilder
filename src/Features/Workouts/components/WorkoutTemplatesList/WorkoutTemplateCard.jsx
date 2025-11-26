@@ -1,5 +1,6 @@
 "use client";
 
+// Carte d'affichage d'un plan d'entraînement dans la liste avec ses informations et actions.
 import { Button } from "@/Global/components";
 import StartWorkoutButton from "../Buttons/StartWorkoutButton";
 import { Calendar, Clock, Dumbbell, Edit, Search, Trash2 } from "lucide-react";

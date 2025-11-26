@@ -19,6 +19,7 @@ export default function IncompleteExerciseModal({
 
       {/* Liste des champs manquants */}
       <ul className="space-y-2 mb-6 bg-accent-50 rounded-lg p-4">
+        {/* Séries non cochées */}
         {missingFields.incompleteSets.length > 0 && (
           <li className="flex items-start gap-2 text-sm text-gray-700">
             <span className="text-accent-600 font-bold">•</span>
@@ -29,6 +30,7 @@ export default function IncompleteExerciseModal({
           </li>
         )}
 
+        {/* Séries sans répétitions renseignées */}
         {missingFields.setsWithoutReps.length > 0 && (
           <li className="flex items-start gap-2 text-sm text-gray-700">
             <span className="text-accent-600 font-bold">•</span>
@@ -39,6 +41,7 @@ export default function IncompleteExerciseModal({
           </li>
         )}
 
+        {/* Séries sans poids renseigné */}
         {missingFields.setsWithoutWeight.length > 0 && (
           <li className="flex items-start gap-2 text-sm text-gray-700">
             <span className="text-accent-600 font-bold">•</span>
@@ -49,6 +52,7 @@ export default function IncompleteExerciseModal({
           </li>
         )}
 
+        {/* Effort (RPE) non saisi */}
         {missingFields.effortMissing && (
           <li className="flex items-start gap-2 text-sm text-gray-700">
             <span className="text-accent-600 font-bold">•</span>

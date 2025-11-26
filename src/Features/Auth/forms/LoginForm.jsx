@@ -1,5 +1,6 @@
 "use client";
 
+// Formulaire de connexion avec validation et gestion d'erreurs
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { ClipLoader } from "react-spinners";
@@ -10,11 +11,11 @@ import { toast } from "react-toastify";
 import { Button, Label, ShowPassword } from "@/Global/components";
 
 export default function LoginForm() {
-  const router = useRouter(); // ✅ Ajouter
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
-  const [loginError, setLoginError] = useState(""); // ✅ Ajouter pour erreurs serveur
+  const [loginError, setLoginError] = useState("");
 
-  // RHF
+  // React Hook Form
   const {
     register,
     watch,
@@ -30,7 +31,7 @@ export default function LoginForm() {
   const email = watch("email");
   const password = watch("password");
 
-  // Décomposition pour référence
+  // Configuration du champ email avec validation
   const emailRegister = register("email", {
     required: "Veuillez saisir une adresse email valide",
     pattern: {
@@ -39,19 +40,18 @@ export default function LoginForm() {
     },
   });
 
-  // Référence pour focus
   const emailRef = useRef(null);
 
+  // Focus automatique sur le champ email
   useEffect(() => {
     emailRef?.current?.focus();
   }, []);
 
-  // ✅ CORRECTION ICI
+  // Soumission du formulaire
   const onSubmit = async (data) => {
-    setLoginError(""); // Réinitialiser l'erreur
+    setLoginError("");
 
     try {
-      // 1️⃣ Tenter la connexion avec NextAuth
       const result = await signIn("credentials", {
         email: data.email,
         password: data.password,
@@ -59,7 +59,7 @@ export default function LoginForm() {
         redirect: false,
       });
 
-      // ✅ Succès
+      // Connexion réussie
       if (result?.ok && !result?.error) {
         toast.success("Connexion réussie!");
         router.push("/dashboard");
@@ -67,10 +67,9 @@ export default function LoginForm() {
         return;
       }
 
-      // ❌ Échec : Récupérer le statut de l'utilisateur
+      // Échec de connexion
       if (result?.error) {
         setLoginError(result.error);
-        // Compte bloqué
       }
     } catch (error) {
       console.error("Erreur de connexion:", error);
@@ -85,7 +84,7 @@ export default function LoginForm() {
       className="gap-5 flex flex-col items-center"
       onSubmit={handleSubmit(onSubmit)}
     >
-      {/* Email */}
+      {/* Champ email */}
       <div className="relative">
         <input
           autoComplete="email"
@@ -108,10 +107,10 @@ export default function LoginForm() {
         <p className="formError">{clientsErrors.email.message}</p>
       )}
 
-      {/* Mot de passe */}
+      {/* Champ mot de passe */}
       <div className="relative">
         <input
-          autoComplete="current-password" // ✅ Meilleur autocomplete
+          autoComplete="current-password"
           type={showPassword ? "text" : "password"}
           id="password"
           name="password"
@@ -136,13 +135,14 @@ export default function LoginForm() {
         <p className="formError">{clientsErrors.password.message}</p>
       )}
 
-      {/* ✅ Afficher l'erreur serveur */}
+      {/* Erreur de connexion */}
       {loginError && <p className="formError">{loginError}</p>}
 
       <Link href="/forgot-password" className="text-xs -mt-3 link">
         Vous avez oublié votre mot de passe?
       </Link>
 
+      {/* Bouton de soumission */}
       <div className="flex flex-col justify-center items-center gap-2">
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? (
@@ -155,6 +155,7 @@ export default function LoginForm() {
           )}
         </Button>
 
+        {/* Checkbox "Se souvenir de moi" */}
         <div className="flex items-center justify-center gap-1">
           <label htmlFor="autoLogin" className="text-xs cursor-pointer">
             Se souvenir de moi

@@ -1,5 +1,4 @@
-// components/Features/Sessions/SessionCard/SessionCard.jsx
-
+// Carte d'affichage d'une séance dans la liste (statut, exercices, durée, progression).
 "use client";
 
 import { Clock, Calendar, Dumbbell, CheckCircle, Play } from "lucide-react";

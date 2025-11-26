@@ -1,4 +1,6 @@
 "use client";
+
+// Carte d'affichage d'un exercice avec ses actions (favoris, modifier, supprimer)
 import { Button } from "@/Global/components";
 import { useToggleFavorite } from "@/Features/Exercises/hooks/useExercises";
 import { FaRegStar, FaStar } from "react-icons/fa";
@@ -11,13 +13,13 @@ export default function ExerciseCard({
   onEdit,
   onDelete,
 }) {
-  // Gestion des favoris
   const { mutate: toggleFavorite, isPending: isToggling } =
     useToggleFavorite(userId);
 
   return (
     <div className="border border-gray-300 p-4 rounded-lg bg-white shadow-sm hover:shadow-md transition">
       <div className="flex justify-between items-start">
+        {/* Informations de l'exercice */}
         <div className="flex-1">
           <h3 className="text-lg font-bold">
             {exercise.name} {exercise.type === "private" && "🗒️"}
@@ -26,8 +28,9 @@ export default function ExerciseCard({
           <p className="text-sm mt-2">{exercise.description}</p>
         </div>
 
+        {/* Actions */}
         <div className="flex gap-2.5 ml-4">
-          {/* FAVORIS (onglets "Tous" et "Mes exercices") */}
+          {/* Bouton favoris (onglets "Tous" et "Mes exercices") */}
           {(activeTab === "all" || activeTab === "mine") && (
             <button
               onClick={() =>
@@ -41,7 +44,7 @@ export default function ExerciseCard({
             </button>
           )}
 
-          {/* RETIRER DES FAVORIS (onglet "Favoris") */}
+          {/* Retirer des favoris (onglet "Favoris") */}
           {activeTab === "favorites" && (
             <Button
               close
@@ -53,12 +56,10 @@ export default function ExerciseCard({
             </Button>
           )}
 
-          {/* MODIFIER/SUPPRIMER (onglet "Mes exercices") */}
+          {/* Modifier/Supprimer (onglet "Mes exercices") */}
           {activeTab === "mine" && (
             <>
               <Button onClick={onEdit}>Modifier</Button>
-
-              {/* Supprimer exercice */}
               <Button onClick={onDelete} close>
                 Supprimer
               </Button>

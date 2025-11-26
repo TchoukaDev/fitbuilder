@@ -1,5 +1,4 @@
-// components/Features/Sessions/SetRow/SetRow.jsx
-
+// Ligne d'une série : affiche poids, reps et case à cocher pour valider la série.
 import { handleKeyDown } from "@/Global/utils";
 import { motion } from "framer-motion";
 

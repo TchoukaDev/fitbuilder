@@ -2,6 +2,7 @@
 import connectDB from "@/libs/mongodb";
 import { ObjectId } from "mongodb";
 
+// Récupère tous les exercices publics triés par muscle puis nom
 export async function getPublicExercises() {
   const db = await connectDB();
   const publicExercises =
@@ -18,6 +19,7 @@ export async function getPublicExercises() {
   }));
 }
 
+// Récupère les exercices privés d'un utilisateur triés par muscle puis nom
 export async function getPrivateExercises(userId) {
   const db = await connectDB();
 
@@ -26,7 +28,6 @@ export async function getPrivateExercises(userId) {
     .findOne({ _id: new ObjectId(userId) });
 
   const privateExercises = (user?.exercises || []).sort((a, b) => {
-    // Tri par muscle puis name
     return a.muscle.localeCompare(b.muscle) || a.name.localeCompare(b.name);
   });
 
@@ -37,8 +38,8 @@ export async function getPrivateExercises(userId) {
   }));
 }
 
+// Récupère tous les exercices (publics + privés) en parallèle
 export async function getAllExercises(userId) {
-  // ✅ Exécuter les deux requêtes en parallèle (plus rapide)
   const [publicExercises, privateExercises] = await Promise.all([
     getPublicExercises(),
     getPrivateExercises(userId),
@@ -46,6 +47,7 @@ export async function getAllExercises(userId) {
 
   const allExercises = [...publicExercises, ...privateExercises];
 
+  // Tri global par muscle puis nom
   allExercises.sort((a, b) => {
     return a.muscle.localeCompare(b.muscle) || a.name.localeCompare(b.name);
   });
@@ -53,6 +55,7 @@ export async function getAllExercises(userId) {
   return allExercises;
 }
 
+// Récupère les IDs des exercices favoris d'un utilisateur
 export async function getFavoritesExercises(userId) {
   const db = await connectDB();
   const user = await db

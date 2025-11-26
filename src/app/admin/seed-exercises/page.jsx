@@ -1,5 +1,6 @@
 "use client";
 
+// Page d'administration pour initialiser la base de données avec des exercices
 import { Header } from "@/Global/components";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";

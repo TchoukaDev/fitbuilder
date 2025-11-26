@@ -1,3 +1,4 @@
+// Sélecteur d'exercices groupés par muscle avec gestion d'erreur.
 export default function WorkoutExerciseGroupSelect({
   onSelectExerciseId,
   grouped,

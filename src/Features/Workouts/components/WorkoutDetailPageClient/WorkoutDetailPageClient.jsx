@@ -1,11 +1,15 @@
 "use client";
+
+// Page client qui affiche le détail d'un plan d'entraînement et ses exercices.
 import { Button, DeleteConfirmModal } from "@/Global/components";
-import { WorkoutDeleteButton, StartWorkoutButton } from ".";
+import { WorkoutDeleteButton, StartWorkoutButton } from "..";
 import Link from "next/link";
 import { Calendar, Clock, Dumbbell, Edit, ArrowLeft } from "lucide-react";
-import { useDeleteWorkout } from "../hooks";
+import { useDeleteWorkout } from "../../hooks";
 import { useModals } from "@/Providers/Modals";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
+import { WorkoutExerciseItem } from ".";
 
 export default function WorkoutDetailPageClient({
   userId,
@@ -23,7 +27,7 @@ export default function WorkoutDetailPageClient({
         router.refresh();
         closeModal("deleteConfirm");
       },
-      onError: (error) => {
+      onError: () => {
         toast.error("Erreur lors de la suppression");
       },
     });
@@ -124,44 +128,10 @@ export default function WorkoutDetailPageClient({
         ) : (
           <div className="space-y-4">
             {workout.exercises?.map((exercise, index) => (
-              <div
-                key={exercise.id || index}
-                className="border border-gray-200 rounded-lg p-4 hover:border-primary-300 transition"
-              >
-                <div className="flex items-start gap-4">
-                  {/* Numéro */}
-                  <div className="shrink-0 w-8 h-8 bg-primary-600 text-white rounded-full flex items-center justify-center font-bold">
-                    {exercise.order}
-                  </div>
-
-                  {/* Infos exercice */}
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-lg text-gray-900 mb-2">
-                      {exercise.name}
-                    </h3>
-
-                    <div className="flex flex-wrap gap-4 text-sm text-gray-600">
-                      <span className="font-medium">
-                        {exercise.sets} séries × {exercise.reps} reps
-                      </span>
-
-                      {exercise.targetWeight && (
-                        <span>🏋️ {exercise.targetWeight} kg</span>
-                      )}
-
-                      {exercise.restTime && (
-                        <span>⏱️ Repos: {exercise.restTime}s</span>
-                      )}
-                    </div>
-
-                    {exercise.notes && (
-                      <p className="text-sm text-gray-500 italic mt-2 bg-gray-50 p-2 rounded">
-                        📝 {exercise.notes}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
+              <WorkoutExerciseItem
+                key={exercise._id || exercise.id || index}
+                exercise={exercise}
+              />
             ))}
           </div>
         )}

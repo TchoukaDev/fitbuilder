@@ -1,5 +1,6 @@
 "use client";
 
+// Formulaire d'inscription avec validation Zod et gestion d'erreurs client/serveur
 import { useForm } from "react-hook-form";
 import { useEffect, useRef, useState } from "react";
 import { Button, Label, ShowPassword } from "@/Global/components";
@@ -9,19 +10,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useSignUp } from "@/Global/hooks";
 
 export default function SignUpForm() {
-  // ═══════════════════════════════════════════════════════
-  // 📊 STATE
-  // ═══════════════════════════════════════════════════════
   const [showPassword, setShowPassword] = useState(false);
   const [showPassword2, setShowPassword2] = useState(false);
 
-  // ═══════════════════════════════════════════════════════
-  // 🔧 HOOKS
-  // ═══════════════════════════════════════════════════════
   const usernameRef = useRef(null);
   const { signUp, serverErrors, globalError, clearServerError } = useSignUp();
 
-  // React Hook Form
+  // React Hook Form avec validation Zod
   const {
     register,
     handleSubmit,
@@ -35,47 +30,33 @@ export default function SignUpForm() {
 
   const usernameRegister = register("username");
 
-  // Watch values
   const username = watch("username");
   const email = watch("email");
   const password = watch("password");
   const confirmPassword = watch("confirmPassword");
 
-  // ═══════════════════════════════════════════════════════
-  // 🎬 HANDLERS
-  // ═══════════════════════════════════════════════════════
-
-  // ✅ Fonction de soumission
   const onSubmit = async (data) => {
     await signUp(data);
   };
-  // ═══════════════════════════════════════════════════════
-  // 🔄 EFFECTS
-  // ═══════════════════════════════════════════════════════
-  console.log(serverErrors);
-  // Focus au chargement
+
+  // Focus automatique sur le champ username
   useEffect(() => {
     usernameRef?.current?.focus();
   }, []);
 
-  // ═══════════════════════════════════════════════════════
-  // 🎨 RENDER
-  // ═══════════════════════════════════════════════════════
   return (
     <form
       className="gap-5 flex flex-col items-center"
       onSubmit={handleSubmit(onSubmit)}
     >
-      {/* ✅ Erreur globale serveur */}
+      {/* Erreur globale serveur */}
       {globalError && Object.keys(serverErrors).length === 0 && (
         <div className="w-full p-3 bg-red-100 border border-red-400 text-red-700 rounded">
           {globalError}
         </div>
       )}
 
-      {/* ─────────────────────────────────────────────────── */}
-      {/* NOM D'UTILISATEUR */}
-      {/* ─────────────────────────────────────────────────── */}
+      {/* Champ nom d'utilisateur */}
       <div className="relative ">
         <input
           type="text"
@@ -90,16 +71,14 @@ export default function SignUpForm() {
             usernameRef.current = e;
           }}
           onChange={(e) => {
-            usernameRegister.onChange(e); // ✅ RHF onChange
-            clearServerError("username"); // ✅ Effacer erreur serveur
+            usernameRegister.onChange(e);
+            clearServerError("username");
           }}
         />
         <Label htmlFor="username" value={username}>
           Nom d'utilisateur
         </Label>
       </div>
-
-      {/* Erreurs */}
       {clientErrors?.username && (
         <p className="formError">{clientErrors.username.message}</p>
       )}
@@ -107,9 +86,7 @@ export default function SignUpForm() {
         <p className="formError">{serverErrors.username}</p>
       )}
 
-      {/* ─────────────────────────────────────────────────── */}
-      {/* EMAIL */}
-      {/* ─────────────────────────────────────────────────── */}
+      {/* Champ email */}
       <div className="relative">
         <input
           autoComplete="email"
@@ -119,15 +96,13 @@ export default function SignUpForm() {
           className="input peer"
           placeholder=""
           {...register("email", {
-            onChange: () => clearServerError("email"), // ✅ Effacer erreur serveur
+            onChange: () => clearServerError("email"),
           })}
         />
         <Label htmlFor="email" value={email}>
           Adresse email
         </Label>
       </div>
-
-      {/* Erreurs */}
       {clientErrors?.email && (
         <p className="formError">{clientErrors.email.message}</p>
       )}
@@ -135,9 +110,7 @@ export default function SignUpForm() {
         <p className="formError">{serverErrors.email}</p>
       )}
 
-      {/* ─────────────────────────────────────────────────── */}
-      {/* MOT DE PASSE */}
-      {/* ─────────────────────────────────────────────────── */}
+      {/* Champ mot de passe */}
       <div className="relative">
         <input
           autoComplete="new-password"
@@ -147,7 +120,7 @@ export default function SignUpForm() {
           className="input peer"
           placeholder=""
           {...register("password", {
-            onChange: () => clearServerError("password"), // ✅ Effacer erreur serveur
+            onChange: () => clearServerError("password"),
           })}
         />
         <Label htmlFor="password" value={password}>
@@ -158,8 +131,6 @@ export default function SignUpForm() {
           onClick={() => setShowPassword((prev) => !prev)}
         />
       </div>
-
-      {/* Erreurs */}
       {clientErrors?.password && (
         <p className="formError">{clientErrors.password.message}</p>
       )}
@@ -167,9 +138,7 @@ export default function SignUpForm() {
         <p className="formError">{serverErrors.password}</p>
       )}
 
-      {/* ─────────────────────────────────────────────────── */}
-      {/* CONFIRMATION MOT DE PASSE */}
-      {/* ─────────────────────────────────────────────────── */}
+      {/* Champ confirmation mot de passe */}
       <div className="relative">
         <input
           autoComplete="new-password"
@@ -179,7 +148,7 @@ export default function SignUpForm() {
           className="input peer"
           placeholder=""
           {...register("confirmPassword", {
-            onChange: () => clearServerError("confirmPassword"), // ✅ Effacer erreur serveur
+            onChange: () => clearServerError("confirmPassword"),
           })}
         />
         <Label htmlFor="confirmPassword" value={confirmPassword}>
@@ -190,8 +159,6 @@ export default function SignUpForm() {
           onClick={() => setShowPassword2((prev) => !prev)}
         />
       </div>
-
-      {/* Erreurs */}
       {clientErrors?.confirmPassword && (
         <p className="formError">{clientErrors.confirmPassword.message}</p>
       )}
@@ -199,9 +166,7 @@ export default function SignUpForm() {
         <p className="formError">{serverErrors.confirmPassword}</p>
       )}
 
-      {/* ─────────────────────────────────────────────────── */}
-      {/* BOUTON SUBMIT */}
-      {/* ─────────────────────────────────────────────────── */}
+      {/* Bouton de soumission */}
       <Button type="submit" disabled={isSubmitting}>
         {isSubmitting ? (
           <>

@@ -1,5 +1,6 @@
 "use client";
 
+// Carte détaillée d'un exercice terminé : toutes les séries, poids max, volume, RPE, notes.
 import { Dumbbell, TrendingUp, Clock, MessageSquare } from "lucide-react";
 
 export default function ExerciseDetailCard({ exercise }) {

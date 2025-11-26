@@ -1,5 +1,4 @@
-// app/sessions/[id]/detail/page.jsx
-
+// Page de détail d'une séance terminée avec récapitulatif
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getSessionbyId } from "@/Features/Sessions/utils";
@@ -14,19 +13,18 @@ export default async function SessionDetailPage({ params }) {
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
 
-  // ✅ Récupérer la session
+  // Récupération de la séance
   const sessionData = await getSessionbyId(userId, sessionId);
 
   if (!sessionData) {
     redirect("/sessions");
   }
 
-  // ✅ Rediriger si la séance n'est pas terminée
+  // Redirection si la séance n'est pas terminée
   if (sessionData.status !== "completed") {
     redirect(`/sessions/${sessionId}`);
   }
 
-  // ✅ Sérialiser
   const serializedSession = JSON.parse(JSON.stringify(sessionData));
 
   return (
@@ -37,7 +35,7 @@ export default async function SessionDetailPage({ params }) {
   );
 }
 
-// ✅ Metadata dynamique
+// Metadata dynamique pour SEO
 export async function generateMetadata({ params }) {
   const resolvedParams = await params;
   const sessionId = resolvedParams.id;

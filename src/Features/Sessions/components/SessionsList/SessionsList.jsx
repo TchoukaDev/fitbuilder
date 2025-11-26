@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+// Liste des séances avec filtres (statut, date, template), pagination et stats.
 import { Calendar } from "lucide-react";
-import { useGetSessions } from "../../hooks";
+import { useSessionsList } from "../../hooks";
 import {
   SessionCard,
   SessionsFilters,
@@ -16,140 +15,23 @@ export default function SessionsList({
   userId,
   initialFilters,
 }) {
-  const router = useRouter();
-  const searchParams = useSearchParams();
+  const {
+    statusFilter,
+    dateFilter,
+    templateFilter,
+    sessions,
+    pagination,
+    stats,
+    isLoading,
+    isFetching,
+    handleStatusChange,
+    handleDateFilterChange,
+    handleTemplateFilterChange,
+    handlePageChange,
+    handleResetFilters,
+  } = useSessionsList(initialSessions, userId, initialFilters);
 
-  // ═══════════════════════════════════════════════════════
-  // 📊 STATE
-  // ═══════════════════════════════════════════════════════
-  const [statusFilter, setStatusFilter] = useState(
-    searchParams.get("status") || "all",
-  );
-  const [dateFilter, setDateFilter] = useState(
-    searchParams.get("dateFilter") || "all",
-  );
-  const [templateFilter, setTemplateFilter] = useState(
-    searchParams.get("templateFilter") || "all",
-  );
-
-  const [page, setPage] = useState(parseInt(searchParams.get("page")) || 1);
-
-  // ✅ Sync avec URL (bouton back navigateur)
-  useEffect(() => {
-    const urlStatus = searchParams.get("status") || "all";
-    const urlDateFilter = searchParams.get("dateFilter") || "all";
-    const urlTemplateFilter = searchParams.get("templateFilter" || "all");
-    const urlPage = parseInt(searchParams.get("page")) || 1;
-
-    if (
-      urlStatus !== statusFilter ||
-      urlDateFilter !== dateFilter ||
-      urlTemplateFilter !== templateFilter ||
-      urlPage !== page
-    ) {
-      setStatusFilter(urlStatus);
-      setDateFilter(urlDateFilter);
-      setPage(urlPage);
-    }
-  }, [searchParams]);
-
-  // ═══════════════════════════════════════════════════════
-  // 🔄 REACT QUERY
-  // ═══════════════════════════════════════════════════════
-  const { data, isLoading, isFetching } = useGetSessions(
-    initialSessions,
-    userId,
-
-    initialFilters,
-  );
-
-  const sessions = data?.sessions || [];
-  const pagination = data?.pagination || {};
-  const stats = data?.stats || {};
-
-  // ═══════════════════════════════════════════════════════
-  // 🎬 HANDLERS
-  // ═══════════════════════════════════════════════════════
-  const updateURL = (newFilters) => {
-    const params = new URLSearchParams();
-
-    if (newFilters.status && newFilters.status !== "all") {
-      params.set("status", newFilters.status);
-    }
-    if (newFilters.dateFilter && newFilters.dateFilter !== "all") {
-      params.set("dateFilter", newFilters.dateFilter);
-    }
-
-    if (newFilters.templateFilter && newFilters.templateFilter !== "all") {
-      params.set("templateFilter", newFilters.templateFilter);
-    }
-    if (newFilters.page && newFilters.page !== 1) {
-      params.set("page", newFilters.page);
-    }
-
-    const newURL = params.toString()
-      ? `/sessions?${params.toString()}`
-      : "/sessions";
-
-    router.push(newURL, { scroll: false });
-  };
-
-  const handleStatusChange = (newStatus) => {
-    setStatusFilter(newStatus);
-    setPage(1);
-    updateURL({
-      status: newStatus,
-      dateFilter,
-      templateFilter: templateFilter,
-      page: 1,
-    });
-  };
-
-  const handleDateFilterChange = (newDateFilter) => {
-    setDateFilter(newDateFilter);
-    setPage(1);
-    updateURL({
-      status: statusFilter,
-      dateFilter: newDateFilter,
-      templateFilter: templateFilter,
-      page: 1,
-    });
-  };
-
-  const handleTemplateFilterChange = (newTemplateFilter) => {
-    setTemplateFilter(newTemplateFilter);
-    setPage(1);
-    updateURL({
-      status: statusFilter,
-      dateFilter: dateFilter,
-      templateFilter: newTemplateFilter,
-      page: 1,
-    });
-  };
-
-  const handlePageChange = (newPage) => {
-    setPage(newPage);
-    updateURL({
-      status: statusFilter,
-      dateFilter,
-      templateFilter: templateFilter,
-      page: newPage,
-    });
-    window.scrollTo({ top: 150, behavior: "smooth" });
-  };
-
-  const handleResetFilters = () => {
-    setStatusFilter("all");
-    setDateFilter("all");
-    setTemplateFilter("all");
-    setPage(1);
-    router.push("/sessions");
-    window.scrollTo({ top: 150, behavior: "smooth" });
-  };
-
-  // ═══════════════════════════════════════════════════════
-  // 🎨 RENDER - LOADING
-  // ═══════════════════════════════════════════════════════
+  // État de chargement
   if (isLoading) {
     return (
       <div className="container mx-auto p-6 max-w-4xl">
@@ -163,9 +45,7 @@ export default function SessionsList({
     );
   }
 
-  // ═══════════════════════════════════════════════════════
-  // 🎨 RENDER - VIDE
-  // ═══════════════════════════════════════════════════════
+  // Aucune séance
   if (stats.total === 0) {
     return (
       <div className="container mx-auto p-6 max-w-4xl">
@@ -185,9 +65,6 @@ export default function SessionsList({
     );
   }
 
-  // ═══════════════════════════════════════════════════════
-  // 🎨 RENDER - NORMAL
-  // ═══════════════════════════════════════════════════════
   return (
     <div className="container mx-auto p-6 max-w-4xl">
       {/* HEADER */}

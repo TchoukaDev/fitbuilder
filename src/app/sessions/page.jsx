@@ -1,29 +1,26 @@
-// app/sessions/page.jsx
-
+// Page de liste des séances avec filtres et pagination
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 import { SessionsList } from "@/Features/Sessions/components";
 import { Header } from "@/Global/components";
 import { getAllSessions } from "@/Features/Sessions/utils";
 
-// ✅ Accepter les searchParams de Next.js
 export default async function SessionsPage({ searchParams }) {
   const resolvedSearchParams = await searchParams;
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
 
-  // ✅ Extraire les filtres de l'URL (SSR)
+  // Extraction des filtres depuis l'URL
   const status = resolvedSearchParams?.status || "all";
   const dateFilter = resolvedSearchParams?.dateFilter || "all";
   const templateFilter = resolvedSearchParams?.templateFilter || "all";
   const page = parseInt(resolvedSearchParams?.page) || 1;
-  const limit = 20;
+  const limit = 5;
 
-  // ✅ Fetch initial côté serveur sans filtres
+  // Récupération des données initiales
   const initialData = await getAllSessions(userId, {});
-
-  // ✅ Sérialiser
   const serializedData = JSON.parse(JSON.stringify(initialData));
+
   return (
     <>
       <Header />
@@ -42,7 +39,7 @@ export default async function SessionsPage({ searchParams }) {
   );
 }
 
-// ✅ Metadata dynamique pour SEO
+// Metadata dynamique pour SEO
 export async function generateMetadata({ searchParams }) {
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;

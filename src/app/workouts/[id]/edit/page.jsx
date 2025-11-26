@@ -1,5 +1,5 @@
+// Page de modification d'un plan d'entraînement existant
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-
 import { getWorkoutById } from "@/Features/Workouts/utils";
 import { getServerSession } from "next-auth";
 import {
@@ -15,6 +15,8 @@ export default async function EditWorkout({ params }) {
   const isAdmin = session?.user?.role === "ADMIN";
   const resolvedparams = await params;
   const workoutId = resolvedparams?.id;
+
+  // Récupération des données
   const allExercises = await getAllExercises(userId);
   const workout = await getWorkoutById(userId, workoutId);
   const favorites = await getFavoritesExercises(userId);

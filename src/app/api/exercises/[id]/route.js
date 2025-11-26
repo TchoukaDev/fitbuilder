@@ -1,3 +1,4 @@
+// API Route pour les opérations sur un exercice spécifique (modification et suppression)
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/route";
 import { NextResponse } from "next/server";
@@ -5,9 +6,7 @@ import connectDB from "@/libs/mongodb";
 import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
 
-// ========================================
-// PATCH - Modifier un exercice
-// ========================================
+// PATCH - Modifier un exercice (public si admin, privé si utilisateur)
 export async function PATCH(request, { params }) {
   const session = await getServerSession(authOptions);
 
@@ -18,6 +17,7 @@ export async function PATCH(request, { params }) {
   const { id } = resolvedParams;
   const { name, muscle, equipment, description } = await request.json();
 
+  // Validation des champs obligatoires
   if (!name || !muscle || !equipment) {
     return NextResponse.json(
       {
@@ -60,7 +60,7 @@ export async function PATCH(request, { params }) {
       });
     }
 
-    // Sinon, c'est un exercice privé → Modifier dans le tableau user
+    // Exercice privé: modifier dans le tableau de l'utilisateur
     const result = await db.collection("users").updateOne(
       {
         _id: new ObjectId(session.user.id),
@@ -96,9 +96,7 @@ export async function PATCH(request, { params }) {
   }
 }
 
-// ========================================
-// DELETE - Supprimer un exercice
-// ========================================
+// DELETE - Supprimer un exercice (public si admin, privé si utilisateur)
 export async function DELETE(request, { params }) {
   const session = await getServerSession(authOptions);
 
@@ -138,7 +136,7 @@ export async function DELETE(request, { params }) {
       });
     }
 
-    // Sinon, exercice privé → Retirer du tableau
+    // Exercice privé: retirer du tableau de l'utilisateur
     const result = await db
       .collection("users")
       .updateOne(
@@ -146,7 +144,6 @@ export async function DELETE(request, { params }) {
         { $pull: { exercises: { _id: new ObjectId(id) } } },
       );
 
-    //   Si matchedCount (=nombre d'exercice trouvé dans updateOne) = 0
     if (result.matchedCount === 0) {
       return NextResponse.json(
         { error: "Exercice non trouvé" },

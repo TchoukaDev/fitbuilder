@@ -1,5 +1,6 @@
 "use client";
 
+// Page détaillée d'une séance terminée : affiche les exercices, stats, volume total, etc.
 import { useRouter } from "next/navigation";
 import { useDeleteSession } from "../../hooks";
 import {

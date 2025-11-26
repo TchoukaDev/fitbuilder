@@ -1,3 +1,4 @@
+// API Route pour la gestion des séances d'entraînement (création et récupération avec filtres/pagination)
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/route";
 import { NextResponse } from "next/server";
@@ -5,6 +6,7 @@ import connectDB from "@/libs/mongodb";
 import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
 
+// POST - Démarrer une nouvelle séance à partir d'un plan d'entraînement
 export async function POST(req) {
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
@@ -26,7 +28,7 @@ export async function POST(req) {
   const db = await connectDB();
 
   try {
-    // Préparer les exercices pour la session (avec champs actualSets vides)
+    // Initialiser les exercices pour la nouvelle séance
     const sessionExercises = exercises.map((ex) => ({
       exerciseId: ex._id,
       exerciseName: ex.name,
@@ -35,7 +37,7 @@ export async function POST(req) {
       targetReps: ex.reps,
       targetWeight: ex.targetWeight,
       restTime: ex.restTime || 90,
-      // Initialiser actualSets pour la session
+      // Initialiser les séries avec valeurs vides
       actualSets: Array.from({ length: ex.sets }).map(() => ({
         reps: null,
         weight: ex.targetWeight,
@@ -46,7 +48,6 @@ export async function POST(req) {
       completed: false,
     }));
 
-    // Créer la session
     const sessionId = new ObjectId();
 
     const newSession = {
@@ -54,7 +55,7 @@ export async function POST(req) {
       userId: new ObjectId(userId),
       templateId: new ObjectId(templateId),
       templateName: templateName,
-      scheduledDate: new Date(), // Date du jour
+      scheduledDate: new Date(),
       status: "in-progress",
       startedAt: new Date(),
       completedDate: null,
@@ -64,51 +65,14 @@ export async function POST(req) {
       updatedAt: new Date(),
     };
 
-    // Incrémenter timesUsed du template
+    // Ajouter la séance et mettre à jour les stats du plan d'entraînement
     await db.collection("users").updateOne(
-      // ═══════════════════════════════════════════════════════
-      // 🎯 FILTRE : Quel document modifier ?
-      // ═══════════════════════════════════════════════════════
       { _id: new ObjectId(userId) },
-      // ↑ On cherche l'utilisateur par son ID
-
-      // ═══════════════════════════════════════════════════════
-      // 🔧 OPÉRATIONS : Que modifier ?
-      // ═══════════════════════════════════════════════════════
       {
-        // ─────────────────────────────────────────────────────
-        // 📈 $inc : INCrémenter une valeur numérique
-        // ─────────────────────────────────────────────────────
-        $inc: {
-          "workouts.$[workout].timesUsed": 1,
-          // ↑ "workouts" = le tableau
-          // ↑ "$[workout]" = placeholder pour "l'élément qui match la condition"
-          // ↑ ".timesUsed" = le champ à incrémenter
-          // ↑ 1 = incrémenter de 1 (peut être 2, 5, -1, etc.)
-        },
-
-        // ─────────────────────────────────────────────────────
-        // 🔄 $set : Remplacer/définir une valeur
-        // ─────────────────────────────────────────────────────
-        $set: {
-          "workouts.$[workout].lastUsedAt": new Date(),
-          // ↑ Même placeholder "$[workout]"
-          // ↑ On remplace lastUsedAt par la date actuelle
-        },
-
-        // ─────────────────────────────────────────────────────
-        // ➕ $push : Ajouter un élément à un tableau
-        // ─────────────────────────────────────────────────────
-        $push: {
-          sessions: newSession,
-          // ↑ "sessions" = le tableau (à la racine du user)
-          // ↑ newSession = l'objet à ajouter à la fin du tableau
-        },
+        $inc: { "workouts.$[workout].timesUsed": 1 }, // Incrémenter le compteur d'utilisation
+        $set: { "workouts.$[workout].lastUsedAt": new Date() }, // Mettre à jour la dernière utilisation
+        $push: { sessions: newSession }, // Ajouter la nouvelle séance
       },
-
-      // ═══════════════════════════════════════════════════════
-      // 🎯 arrayFilters : Définir les conditions des placeholders
-      // ═══════════════════════════════════════════════════════
       {
         arrayFilters: [
           // ↓ Définit ce que signifie "$[workout]" utilisé ci-dessus
@@ -140,6 +104,7 @@ export async function POST(req) {
   }
 }
 
+// GET - Récupérer les séances avec filtres (statut, date, template) et pagination
 export async function GET(req) {
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
@@ -148,14 +113,13 @@ export async function GET(req) {
     return NextResponse.json({ error: "Accès refusé" }, { status: 401 });
   }
 
-  // Récupérer paramètre url
+  // Extraction des paramètres d'URL
   const { searchParams } = new URL(req.url);
-
   const page = parseInt(searchParams.get("page")) || 1;
   const limit = parseInt(searchParams.get("limit")) || 20;
-  const status = searchParams.get("status"); // "completed" | "in-progress" | "planned"
-  const dateFilter = searchParams.get("dateFilter"); // "week" | "month" | "quarter" | "year"
-  const templateFilter = searchParams.get("templateFilter"); //nom des templates
+  const status = searchParams.get("status");
+  const dateFilter = searchParams.get("dateFilter");
+  const templateFilter = searchParams.get("templateFilter");
 
   try {
     const db = await connectDB();
@@ -172,23 +136,17 @@ export async function GET(req) {
 
     let sessions = user?.sessions || [];
 
-    // ═══════════════════════════════════════════════════════
-    // 🔍 FILTRE PAR STATUT
-    // ═══════════════════════════════════════════════════════
+    // Filtre par statut
     if (status && status !== "all") {
       sessions = sessions.filter((s) => s.status === status);
     }
 
-    // ═══════════════════════════════════════════════════════
-    // 🔍 FILTRE PAR TEMPLATE
-    // ═══════════════════════════════════════════════════════
+    // Filtre par plan d'entraînement
     if (templateFilter && templateFilter !== "all") {
       sessions = sessions.filter((s) => s.templateName === templateFilter);
     }
 
-    // ═══════════════════════════════════════════════════════
-    // 🔍 FILTRE PAR DATE
-    // ═══════════════════════════════════════════════════════
+    // Filtre par période
     if (dateFilter) {
       const now = new Date();
       let startDate;
@@ -224,18 +182,15 @@ export async function GET(req) {
       }
     }
 
-    // ═══════════════════════════════════════════════════════
-    // 📊 TRIER (plus récent en premier)
-    // ═══════════════════════════════════════════════════════
+    // Tri par date décroissante
     sessions.sort((a, b) => {
       const dateA = new Date(a.completedDate || a.startedAt || a.createdAt);
       const dateB = new Date(b.completedDate || b.startedAt || b.createdAt);
       return dateB - dateA;
     });
 
-    // ✅ Pagination
-    const totalSessions = sessions.length; // Ex: 100 sessions
-
+    // Pagination
+    const totalSessions = sessions.length;
     const startIndex = (page - 1) * limit;
     // Page 1 : (1-1) * 20 = 0   → Commence à l'index 0
     // Page 2 : (2-1) * 20 = 20  → Commence à l'index 20
@@ -261,15 +216,12 @@ export async function GET(req) {
     // Page 2 > 1 → true (il y a une page 1 avant)
     // Page 1 > 1 → false (c'est la première)
 
-    // ═══════════════════════════════════════════════════════
-    // ✅ SÉRIALISER (ObjectId → string, Date → ISO string)
-    // ═══════════════════════════════════════════════════════
+    // Sérialisation des données
     const serializedSessions = sessionsForThisPage.map((s) => ({
       ...s,
       _id: s._id.toString(),
       userId: s.userId.toString(),
       templateId: s.templateId.toString(),
-      // ✅ Sérialiser TOUTES les dates
       createdAt: s.createdAt?.toISOString?.() || s.createdAt,
       updatedAt: s.updatedAt?.toISOString?.() || s.updatedAt,
       startedAt: s.startedAt?.toISOString?.() || s.startedAt,
@@ -277,9 +229,7 @@ export async function GET(req) {
       scheduledDate: s.scheduledDate?.toISOString?.() || s.scheduledDate,
     }));
 
-    // ═══════════════════════════════════════════════════════
-    // 📈 STATS (calculées sur TOUTES les sessions de l'user)
-    // ═══════════════════════════════════════════════════════
+    // Statistiques globales
     const allUserSessions = user?.sessions || [];
     const stats = {
       total: allUserSessions.length,
@@ -289,9 +239,6 @@ export async function GET(req) {
       planned: allUserSessions.filter((s) => s.status === "planned").length,
     };
 
-    // ═══════════════════════════════════════════════════════
-    // 🎉 RETOUR
-    // ═══════════════════════════════════════════════════════
     return NextResponse.json(
       {
         sessions: serializedSessions,

@@ -1,3 +1,4 @@
+// API Route pour la gestion des plans d'entraînement (création et récupération)
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/route";
 import { NextResponse } from "next/server";
@@ -5,17 +6,20 @@ import connectDB from "@/libs/mongodb";
 import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
 
+// POST - Créer un nouveau plan d'entraînement
 export async function POST(req) {
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
-  //Vérification de session
+
+  // Vérification de l'authentification
   if (!userId) {
     return NextResponse.json({ error: "Accès non autorisé" }, { status: 401 });
   }
+
   const { name, description, category, estimatedDuration, exercises } =
     await req.json();
 
-  // Vérification des champs
+  // Validation des champs obligatoires
   if (
     !name.trim() ||
     !category.trim() ||
@@ -30,10 +34,11 @@ export async function POST(req) {
       { status: 400 },
     );
   }
-  // Connexion MongoDB
+
   const db = await connectDB();
+
   try {
-    //   Vérifier s'il existe déjà un workout avec ce nom
+    // Vérifier l'unicité du nom
     const user = await db
       .collection("users")
       .findOne({ _id: new ObjectId(userId) });
@@ -49,8 +54,8 @@ export async function POST(req) {
       );
     }
 
+    // Création du plan
     const workoutId = new ObjectId();
-    //Ajout du workout en db
     await db.collection("users").updateOne(
       { _id: new ObjectId(userId) },
       {
@@ -94,6 +99,7 @@ export async function POST(req) {
   }
 }
 
+// GET - Récupérer tous les plans d'entraînement de l'utilisateur
 export async function GET(req) {
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;

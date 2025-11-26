@@ -1,8 +1,11 @@
+// Regroupe les handlers pour manipuler les exercices en cours d'exécution d'une session.
+// (Modifier sets, notes, effort, compléter un set, rouvrir un exercice).
 export function sessionExecutionHandlers(
   exercises,
   setExercises,
   setCurrentExerciseIndex,
 ) {
+  // Met à jour un champ d'un set donné (reps, weight, completed)
   const handleSetChange = (exerciseIndex, setIndex, field, value) => {
     setExercises((prev) => {
       const newExercises = [...prev];
@@ -21,7 +24,7 @@ export function sessionExecutionHandlers(
     });
   };
 
-  // Notes de l'exercices
+  // Met à jour les notes d'un exercice
   const handleNotesChange = (exerciseIndex, value) => {
     setExercises((prev) => {
       const newExercises = [...prev];
@@ -30,7 +33,7 @@ export function sessionExecutionHandlers(
     });
   };
 
-  // Effort de l'exercice
+  // Met à jour l'effort (RPE) d'un exercice
   const handleEffortChange = (exerciseIndex, value) => {
     setExercises((prev) => {
       const newExercises = [...prev];
@@ -39,14 +42,14 @@ export function sessionExecutionHandlers(
     });
   };
 
-  // Checkbox set complété
+  // Bascule le statut "complété" d'un set (checkbox)
   const handleSetComplete = (exerciseIndex, setIndex) => {
     const currentValue =
       exercises[exerciseIndex].actualSets?.[setIndex]?.completed || false;
     handleSetChange(exerciseIndex, setIndex, "completed", !currentValue); // ✅ Inverse
   };
 
-  // Réouvrir un exercice terminé
+  // Rouvre un exercice marqué comme terminé pour le modifier à nouveau
   const handleReopenExercise = (exerciseIndex) => {
     setExercises((prev) => {
       const newExercises = [...prev];

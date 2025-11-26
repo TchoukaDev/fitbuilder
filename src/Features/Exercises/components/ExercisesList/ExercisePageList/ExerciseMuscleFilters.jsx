@@ -1,3 +1,4 @@
+// Boutons de filtrage par groupe musculaire
 export default function ExerciseMuscleFilters({
   muscles,
   selectedMuscle,
@@ -6,8 +7,10 @@ export default function ExerciseMuscleFilters({
   if (muscles.length === 0) {
     return null;
   }
+
   return (
     <div className="flex gap-2.5 mb-5 flex-wrap">
+      {/* Bouton "Tous" */}
       <button
         onClick={() => onMuscleChange("all")}
         className={`py-2 px-4 border-none rounded-md cursor-pointer ${
@@ -19,6 +22,7 @@ export default function ExerciseMuscleFilters({
         Tous
       </button>
 
+      {/* Boutons par muscle */}
       {muscles.map((muscle) => (
         <button
           key={muscle}

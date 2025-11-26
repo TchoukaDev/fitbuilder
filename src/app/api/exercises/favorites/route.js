@@ -1,3 +1,4 @@
+// API Route pour la gestion des exercices favoris (ajout, retrait, récupération)
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import connectDB from "@/libs/mongodb";
 import { ObjectId } from "mongodb";
@@ -5,7 +6,7 @@ import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 
-// PATCH - Ajouter ou retirer un seul favori
+// PATCH - Ajouter ou retirer un exercice des favoris
 export async function PATCH(req) {
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
@@ -15,8 +16,9 @@ export async function PATCH(req) {
   }
 
   try {
-    const { exerciseId, action } = await req.json(); // action: "add" ou "remove"
+    const { exerciseId, action } = await req.json();
 
+    // Validation des paramètres
     if (!exerciseId || !["add", "remove"].includes(action)) {
       return NextResponse.json(
         { error: "Paramètres invalides" },
@@ -27,7 +29,6 @@ export async function PATCH(req) {
     const db = await connectDB();
 
     if (action === "add") {
-      // Ajoute si pas déjà présent
       await db
         .collection("users")
         .updateOne(
@@ -35,7 +36,6 @@ export async function PATCH(req) {
           { $addToSet: { favoritesExercises: exerciseId } },
         );
     } else {
-      // Retire
       await db
         .collection("users")
         .updateOne(
@@ -48,7 +48,7 @@ export async function PATCH(req) {
     revalidatePath("/exercises");
     revalidatePath(`/exercices/${exerciseId}`);
 
-    // Récupère la nouvelle liste
+    // Récupérer la liste mise à jour
     const user = await db
       .collection("users")
       .findOne(

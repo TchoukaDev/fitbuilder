@@ -1,5 +1,4 @@
-// components/Features/Sessions/SessionsList/SessionStats.jsx
-
+// Affiche les statistiques globales des séances (total, terminées, en cours, planifiées).
 export default function SessionStats({ stats }) {
   if (!stats) return null;
 

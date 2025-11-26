@@ -1,5 +1,4 @@
-// components/Features/Sessions/SessionsList/SessionFilters.jsx
-
+// Filtres pour les séances : période, statut (complétées/en cours/planifiées), template.
 import { Calendar, Filter } from "lucide-react";
 
 export default function SessionFilters({
@@ -120,9 +119,7 @@ export default function SessionFilters({
   );
 }
 
-// ═══════════════════════════════════════════════════════
-// 🔘 COMPOSANT BOUTON FILTRE RÉUTILISABLE
-// ═══════════════════════════════════════════════════════
+// Bouton de filtre réutilisable avec état actif
 function FilterButton({
   label,
   isActive,

@@ -1,3 +1,5 @@
+// Valide qu'un exercice est complété (toutes les séries cochées, reps/poids renseignés, effort RPE saisi).
+// Retourne { isComplete: boolean, missingFields: object }.
 export function validateExercise(exercises, exerciseIndex) {
   const exercise = exercises[exerciseIndex];
   const missingFields = {

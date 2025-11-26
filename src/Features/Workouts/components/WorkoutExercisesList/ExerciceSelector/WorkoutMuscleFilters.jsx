@@ -1,3 +1,4 @@
+// Filtre par groupe musculaire avec compteurs d'exercices par muscle.
 export default function WorkoutMuscleFilters({
   muscles,
   onMuscleChange,

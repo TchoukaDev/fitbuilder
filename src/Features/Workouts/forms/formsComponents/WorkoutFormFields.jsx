@@ -1,5 +1,6 @@
 "use client";
 
+// Bloc de formulaire pour les informations générales d'un plan d'entraînement.
 import { Label } from "@/Global/components";
 import { handleKeyDown } from "@/Global/utils";
 

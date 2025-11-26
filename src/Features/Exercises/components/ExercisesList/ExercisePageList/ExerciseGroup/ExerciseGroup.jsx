@@ -1,3 +1,4 @@
+// Groupe d'exercices affichés sous un titre de muscle
 import { ExerciseCard } from ".";
 import { useModals } from "@/Providers/Modals";
 
@@ -10,9 +11,13 @@ export default function ExerciseGroup({
   isAdmin,
 }) {
   const { openModal } = useModals();
+
   return (
     <div className="mb-10">
+      {/* Titre du groupe musculaire */}
       <h2 className="text-2xl font-bold mb-4">{muscle}</h2>
+
+      {/* Liste des exercices */}
       <div className="grid gap-4">
         {exercises.map((ex) => (
           <ExerciseCard

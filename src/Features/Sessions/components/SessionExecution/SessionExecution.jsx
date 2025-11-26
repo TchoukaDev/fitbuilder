@@ -1,5 +1,6 @@
 "use client";
 
+// Page d'exécution d'une session : affiche les exercices, gère le timer, la validation et la sauvegarde.
 import { useCallback } from "react";
 import { Clock } from "lucide-react";
 import { Button } from "@/Global/components";

@@ -1,6 +1,7 @@
 "use client";
 
-import { FcGoogle } from "react-icons/fc"; //icône Google
+// Bouton de connexion avec Google OAuth
+import { FcGoogle } from "react-icons/fc";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -20,7 +21,7 @@ export default function GoogleBtn({ children }) {
       });
 
       if (result?.error) {
-        toast.error("Erreur lors de la connexion avec Google"); // ✅ Toast erreur
+        toast.error("Erreur lors de la connexion avec Google");
         setLoading(false);
         return;
       }

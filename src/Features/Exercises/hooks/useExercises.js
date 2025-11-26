@@ -82,6 +82,9 @@ export function useCreateExercise(userId, isAdmin) {
 
       return { previousExercices };
     },
+    onSuccess: () => {
+      toast.success("Votre exercice a été créé.");
+    },
 
     onError: (err, newExercice, context) => {
       queryClient.setQueryData(key, context.previousExercices);

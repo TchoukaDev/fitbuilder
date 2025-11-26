@@ -1,5 +1,6 @@
 "use client";
 
+// Composant parent pour la liste des exercices avec filtres et onglets
 import { ExercisePageList } from "./ExercisePageList";
 import { useExerciseFilters, useExercises, useFavorites } from "../../hooks";
 
@@ -9,18 +10,17 @@ export default function ExercisesList({
   isAdmin,
   userId,
 }) {
-  // HOOKS
-
-  // Récupérer exercices
+  // Récupération des exercices
   const { data: cachedExercises = [] } = useExercises(
     userId,
     isAdmin,
     initialExercises,
   );
 
-  // Récupérer favoris
+  // Récupération des favoris
   const { data: favorites = [] } = useFavorites(userId, initialFavorites);
 
+  // Gestion des filtres et onglets
   const {
     activeTab,
     setActiveTab,
@@ -33,7 +33,6 @@ export default function ExercisesList({
     favoriteExerciseMuscles,
   } = useExerciseFilters({ exercises: cachedExercises, favorites, isAdmin });
 
-  // LISTE POUR PAGE EXERCICES
   return (
     <ExercisePageList
       activeTab={activeTab}

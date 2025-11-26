@@ -1,3 +1,4 @@
+// Page serveur qui affiche le détail d'un plan d'entraînement pour un utilisateur.
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth";
 import { notFound } from "next/navigation";

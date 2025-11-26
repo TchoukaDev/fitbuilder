@@ -1,17 +1,18 @@
 "use client";
+
+// Formulaire client pour créer un nouveau plan d'entraînement.
 import { Button, DeleteConfirmModal } from "@/Global/components";
 import { ClipLoader } from "react-spinners";
 import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import { useCreateWorkout } from "../hooks";
+import { useCreateWorkout, useWorkoutForm } from "../hooks";
 import { useModals } from "@/Providers/Modals";
 import {
   WorkoutEditExerciseModal,
   WorkoutSelectExerciseModal,
 } from "../modals";
 import { WorkoutFormFields, WorkoutFormExercisesList } from "./formsComponents";
-import { useWorkoutForm } from "../hooks/useWorkoutForm";
 
 export default function NewWorkoutForm({
   allExercises,
@@ -19,6 +20,7 @@ export default function NewWorkoutForm({
   isAdmin,
   userId,
 }) {
+  // Gestion du formulaire d'exercices avec persistance locale (newForm)
   const {
     error,
     setError,
@@ -31,7 +33,7 @@ export default function NewWorkoutForm({
     formData,
   } = useWorkoutForm({ newForm: true });
 
-  // Variables
+  // Navigation et variables UI
   const router = useRouter();
   const exercisesAdded = formData.exercises;
   const title = "Supprimer l'exercice";
@@ -39,10 +41,10 @@ export default function NewWorkoutForm({
 
   const { mutate: createWorkout, isPending } = useCreateWorkout(userId);
 
-  // Modal
+  // Modales (sélection / édition / suppression d'exercice)
   const { isOpen, openModal, getModalData } = useModals();
 
-  // React Hook Form
+  // Configuration de React Hook Form
   const {
     register,
     handleSubmit,
@@ -61,7 +63,7 @@ export default function NewWorkoutForm({
 
   const watchedFields = watch();
 
-  // Gestion du formulaire
+  // Soumission du formulaire (validation + création côté API)
   const onSubmit = async (data) => {
     setError("");
     if (formData.exercises.length === 0) {

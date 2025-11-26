@@ -1,16 +1,17 @@
 "use client";
+
+// Formulaire client pour modifier un plan d'entraînement existant.
 import { Button, DeleteConfirmModal } from "@/Global/components";
 import { ClipLoader } from "react-spinners";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import { useUpdateWorkout } from "../hooks";
+import { useUpdateWorkout, useWorkoutForm } from "../hooks";
 import { useModals } from "@/Providers/Modals";
 import {
   WorkoutEditExerciseModal,
   WorkoutSelectExerciseModal,
 } from "../modals";
 import { WorkoutFormFields, WorkoutFormExercisesList } from "./formsComponents";
-import { useWorkoutForm } from "../hooks/useWorkoutForm";
 
 export default function UpdateWorkoutForm({
   workout,
@@ -19,6 +20,7 @@ export default function UpdateWorkoutForm({
   isAdmin,
   userId,
 }) {
+  // Gestion du formulaire d'exercices via hook dédié
   const {
     error,
     setError,
@@ -29,18 +31,18 @@ export default function UpdateWorkoutForm({
     moveExercise,
     formData,
   } = useWorkoutForm({ workout });
-  // Modals
+  // Modales (sélection / édition / suppression d'exercice)
   const { isOpen, openModal, getModalData } = useModals();
   console.log(getModalData("workoutEditExercise")?.index);
 
-  // Variables
+  // Navigation et mutations
   const router = useRouter();
   const exercisesAdded = formData.exercises;
   const { mutate: updateWorkout, isPending } = useUpdateWorkout(userId);
   const title = "Supprimer l'exercice";
   const message = "Souhaitez vous retirer cet exercice du plan d'entraînement?";
 
-  // React Hook Form avec valeurs pré-remplies
+  // React Hook Form avec valeurs pré-remplies du workout existant
   const {
     register,
     handleSubmit,
@@ -59,7 +61,7 @@ export default function UpdateWorkoutForm({
 
   const watchedFields = watch();
 
-  // Gestion du formulaire
+  // Soumission du formulaire (validation + appel API)
   const onSubmit = async (data) => {
     setError("");
     if (formData.exercises.length === 0) {

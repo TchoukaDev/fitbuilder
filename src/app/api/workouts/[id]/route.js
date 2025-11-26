@@ -1,3 +1,4 @@
+// API Route pour les opérations sur un plan d'entraînement spécifique (modification et suppression)
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/route";
 import { NextResponse } from "next/server";
@@ -5,6 +6,7 @@ import connectDB from "@/libs/mongodb";
 import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
 
+// DELETE - Supprimer un plan d'entraînement
 export async function DELETE(req, { params }) {
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
@@ -12,10 +14,12 @@ export async function DELETE(req, { params }) {
   if (!userId) {
     return NextResponse.json({ error: "Accès refusé" }, { status: 401 });
   }
+
   const resolvedParams = await params;
   const workoutId = resolvedParams.id;
 
   const db = await connectDB();
+
   try {
     const result = await db
       .collection("users")
@@ -47,6 +51,7 @@ export async function DELETE(req, { params }) {
   }
 }
 
+// PATCH - Modifier un plan d'entraînement
 export async function PATCH(req, { params }) {
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
@@ -54,13 +59,14 @@ export async function PATCH(req, { params }) {
   if (!userId) {
     return NextResponse.json({ error: "Accès refusé" }, { status: 401 });
   }
+
   const resolvedParams = await params;
   const workoutId = resolvedParams.id;
 
   const { name, description, category, estimatedDuration, exercises } =
     await req.json();
 
-  // Vérification des champs
+  // Validation des champs obligatoires
   if (
     !name.trim() ||
     !category.trim() ||
@@ -79,7 +85,7 @@ export async function PATCH(req, { params }) {
   const db = await connectDB();
 
   try {
-    //   Vérifier s'il existe déjà un workout avec ce nom
+    // Vérifier l'unicité du nom
     const user = await db
       .collection("users")
       .findOne({ _id: new ObjectId(userId) });
@@ -95,6 +101,7 @@ export async function PATCH(req, { params }) {
       );
     }
 
+    // Mise à jour du plan
     const result = await db.collection("users").updateOne(
       { _id: new ObjectId(userId), "workouts._id": new ObjectId(workoutId) },
       {
@@ -118,6 +125,7 @@ export async function PATCH(req, { params }) {
 
     revalidatePath("/workouts");
     revalidatePath(`/workouts/${workoutId}`);
+
     return NextResponse.json(
       { success: true, message: "Entraînement modifié avec succès" },
       { status: 200 },

@@ -1,3 +1,4 @@
+// API Route pour les opérations sur une séance spécifique (récupération, modification, finalisation, suppression)
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/route";
 import { NextResponse } from "next/server";
@@ -5,7 +6,7 @@ import connectDB from "@/libs/mongodb";
 import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
 
-// GET
+// GET - Récupérer une séance spécifique
 export async function GET(req, { params }) {
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
@@ -41,7 +42,7 @@ export async function GET(req, { params }) {
   }
 }
 
-// PATCH
+// PATCH - Mettre à jour les exercices et la durée d'une séance en cours
 export async function PATCH(req, { params }) {
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
@@ -96,7 +97,7 @@ export async function PATCH(req, { params }) {
   }
 }
 
-// PUT (fin de séance)
+// PUT - Terminer une séance (changement de statut à "completed")
 export async function PUT(req, { params }) {
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
@@ -113,7 +114,7 @@ export async function PUT(req, { params }) {
   try {
     const db = await connectDB();
 
-    // Récupérer la session pour calculer la durée
+    // Vérifier que la séance existe
     const user = await db.collection("users").findOne({
       _id: new ObjectId(userId),
       "sessions._id": new ObjectId(sessionId),
@@ -134,7 +135,7 @@ export async function PUT(req, { params }) {
       );
     }
 
-    // Mettre à jour la session
+    // Finaliser la séance
     const result = await db.collection("users").updateOne(
       {
         _id: new ObjectId(userId),
@@ -179,7 +180,7 @@ export async function PUT(req, { params }) {
   }
 }
 
-// DELETE
+// DELETE - Supprimer une séance et mettre à jour les stats du plan d'entraînement
 export async function DELETE(req, { params }) {
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
@@ -194,9 +195,7 @@ export async function DELETE(req, { params }) {
   try {
     const db = await connectDB();
 
-    // ═══════════════════════════════════════════════════════
-    // 1. RÉCUPÉRER LA SESSION À SUPPRIMER
-    // ═══════════════════════════════════════════════════════
+    // Récupérer la séance à supprimer
     const user = await db.collection("users").findOne({
       _id: new ObjectId(userId),
       "sessions._id": new ObjectId(sessionId),
@@ -222,9 +221,7 @@ export async function DELETE(req, { params }) {
 
     const templateId = sessionToDelete.templateId;
 
-    // ═══════════════════════════════════════════════════════
-    // 2. SUPPRIMER LA SESSION
-    // ═══════════════════════════════════════════════════════
+    // Supprimer la séance
     await db.collection("users").updateOne(
       { _id: new ObjectId(userId) },
       {
@@ -234,10 +231,7 @@ export async function DELETE(req, { params }) {
       },
     );
 
-    // ═══════════════════════════════════════════════════════
-    // 3. DÉCRÉMENTER timesUsed DU WORKOUT
-    // ═══════════════════════════════════════════════════════
-    // Chercher les autres sessions de ce workout (pour lastUsedAt)
+    // Mettre à jour les stats du plan d'entraînement
     const updatedUser = await db.collection("users").findOne({
       _id: new ObjectId(userId),
     });
@@ -249,10 +243,9 @@ export async function DELETE(req, { params }) {
           s.status === "completed", // Seulement les séances terminées
       ) || [];
 
-    // Trouver la date de la dernière session restante
+    // Calculer la nouvelle date de dernière utilisation
     let newLastUsedAt = null;
     if (otherSessions.length > 0) {
-      // Trier par date décroissante et prendre la première
       otherSessions.sort(
         (a, b) =>
           new Date(b.completedDate).getTime() -
@@ -261,15 +254,15 @@ export async function DELETE(req, { params }) {
       newLastUsedAt = otherSessions[0].completedDate;
     }
 
-    // Mettre à jour le workout
+    // Décrémenter le compteur et mettre à jour la date
     await db.collection("users").updateOne(
       {
         _id: new ObjectId(userId),
         "workouts._id": new ObjectId(templateId),
       },
       {
-        $inc: { "workouts.$.timesUsed": -1 }, // ✅ Décrémenter
-        $set: { "workouts.$.lastUsedAt": newLastUsedAt }, // ✅ Restaurer ou null
+        $inc: { "workouts.$.timesUsed": -1 },
+        $set: { "workouts.$.lastUsedAt": newLastUsedAt },
       },
     );
 

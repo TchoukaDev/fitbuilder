@@ -1,3 +1,4 @@
+// Page d'exécution d'une séance d'entraînement en cours
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../api/auth/[...nextauth]/route";
 import { getSessionbyId } from "@/Features/Sessions/utils";
@@ -9,12 +10,13 @@ export default async function SingleSessionPage({ params }) {
   const sessionId = resolvedParams.id;
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
+
+  // Récupération de la séance
   const sessionData = await getSessionbyId(userId, sessionId);
   if (!sessionData) {
     return notFound();
   }
 
-  // ✅ FORCER LA SÉRIALISATION EN JSON PUR
   const serializedSession = JSON.parse(JSON.stringify(sessionData));
 
   return (

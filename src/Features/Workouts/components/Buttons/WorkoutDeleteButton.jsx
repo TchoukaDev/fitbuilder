@@ -1,5 +1,6 @@
 "use client";
 
+// Bouton qui ouvre une modale de confirmation pour supprimer un plan d'entraînement.
 import { Trash2 } from "lucide-react";
 import { useModals } from "@/Providers/Modals";
 import { Button } from "@/Global/components";

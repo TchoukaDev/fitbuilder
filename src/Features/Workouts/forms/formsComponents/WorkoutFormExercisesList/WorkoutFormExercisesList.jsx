@@ -1,6 +1,7 @@
 // components/Features/Workouts/ExercisesList/ExercisesList.jsx
 "use client";
 
+// Bloc de formulaire qui affiche et gère la liste des exercices du plan.
 import { Button } from "@/Global/components";
 import { Plus } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
