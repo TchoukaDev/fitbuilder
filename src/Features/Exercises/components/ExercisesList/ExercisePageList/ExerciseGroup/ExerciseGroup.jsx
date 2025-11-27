@@ -6,7 +6,7 @@ export default function ExerciseGroup({
   muscle,
   exercises,
   activeTab,
-  favorites,
+  favoritesExercises,
   userId,
   isAdmin,
 }) {
@@ -24,7 +24,7 @@ export default function ExerciseGroup({
             key={ex._id}
             exercise={ex}
             activeTab={activeTab}
-            isFavorite={favorites.includes(ex._id)}
+            isFavorite={favoritesExercises.includes(ex._id)}
             userId={userId}
             isAdmin={isAdmin}
             onEdit={() => openModal("updateExercise", { exercise: ex })}

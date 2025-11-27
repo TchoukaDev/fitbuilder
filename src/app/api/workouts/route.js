@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 import connectDB from "@/libs/mongodb";
 import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
+import { ApiError, ApiSuccess } from "@/libs/apiResponse";
 
 // POST - Créer un nouveau plan d'entraînement
 export async function POST(req) {
@@ -13,7 +14,7 @@ export async function POST(req) {
 
   // Vérification de l'authentification
   if (!userId) {
-    return NextResponse.json({ error: "Accès non autorisé" }, { status: 401 });
+    return NextResponse.json(ApiError.UNAUTHORIZED, { status: 401 });
   }
 
   const { name, description, category, estimatedDuration, exercises } =
@@ -27,10 +28,9 @@ export async function POST(req) {
     exercises.length === 0
   ) {
     return NextResponse.json(
-      {
-        error:
-          "Le modèle d'entraînement doit comporter au moins un nom, une catégorie, une durée et un exercice",
-      },
+      ApiError.INVALID_DATA(
+        "Le plan doit comporter un nom, une catégorie, une durée et au moins un exercice",
+      ),
       { status: 400 },
     );
   }
@@ -48,10 +48,9 @@ export async function POST(req) {
     );
 
     if (nameExists) {
-      return NextResponse.json(
-        { error: "Un plan avec ce nom existe déjà" },
-        { status: 409 },
-      );
+      return NextResponse.json(ApiError.DUPLICATE("Un plan avec ce nom"), {
+        status: 409,
+      });
     }
 
     // Création du plan
@@ -83,19 +82,14 @@ export async function POST(req) {
 
     return NextResponse.json(
       {
-        success: true,
+        ...ApiSuccess.CREATED("Plan d'entraînement"),
         workoutId: workoutId.toString(),
-        message: "Plan d'entraînement créé avec succès",
       },
       { status: 201 },
     );
   } catch (error) {
-    return NextResponse.json(
-      {
-        error: "Une erreur est survenue lors de la création de l'entraînement",
-      },
-      { status: 500 },
-    );
+    console.error("Erreur création workout:", error);
+    return NextResponse.json(ApiError.SERVER_ERROR, { status: 500 });
   }
 }
 
@@ -105,7 +99,7 @@ export async function GET(req) {
   const userId = session?.user?.id;
 
   if (!userId) {
-    return NextResponse.json({ error: "Accès non autorisé" }, { status: 401 });
+    return NextResponse.json(ApiError.UNAUTHORIZED, { status: 401 });
   }
 
   const db = await connectDB();
@@ -119,12 +113,7 @@ export async function GET(req) {
 
     return NextResponse.json(workouts, { status: 200 });
   } catch (error) {
-    return NextResponse.json(
-      {
-        error:
-          "Une erreur est survenue lors de la récupération des plans d'entraînement",
-      },
-      { status: 500 },
-    );
+    console.error("Erreur récupération workouts:", error);
+    return NextResponse.json(ApiError.SERVER_ERROR, { status: 500 });
   }
 }

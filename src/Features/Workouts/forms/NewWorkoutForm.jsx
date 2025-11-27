@@ -1,9 +1,7 @@
 "use client";
 
 // Formulaire client pour créer un nouveau plan d'entraînement.
-import { Button, DeleteConfirmModal } from "@/Global/components";
-import { ClipLoader } from "react-spinners";
-import { toast } from "react-toastify";
+import { DeleteConfirmModal, LoaderButton } from "@/Global/components";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { useCreateWorkout, useWorkoutForm } from "../hooks";
@@ -16,7 +14,7 @@ import { WorkoutFormFields, WorkoutFormExercisesList } from "./formsComponents";
 
 export default function NewWorkoutForm({
   allExercises,
-  favorites,
+  favoritesExercises,
   isAdmin,
   userId,
 }) {
@@ -31,6 +29,7 @@ export default function NewWorkoutForm({
     moveExercise,
     clearStorage,
     formData,
+    isClearingStorage,
   } = useWorkoutForm({ newForm: true });
 
   // Navigation et variables UI
@@ -39,7 +38,8 @@ export default function NewWorkoutForm({
   const title = "Supprimer l'exercice";
   const message = "Souhaitez vous retirer cet exercice du plan d'entraînement?";
 
-  const { mutate: createWorkout, isPending } = useCreateWorkout(userId);
+  const { mutate: createWorkout, isPending: isCreating } =
+    useCreateWorkout(userId);
 
   // Modales (sélection / édition / suppression d'exercice)
   const { isOpen, openModal, getModalData } = useModals();
@@ -73,8 +73,7 @@ export default function NewWorkoutForm({
     createWorkout(
       { ...data, exercises: formData.exercises },
       {
-        onSuccess: (result) => {
-          toast.success(result.message);
+        onSuccess: () => {
           clearStorage();
           router.refresh();
           router.push("/workouts");
@@ -111,41 +110,37 @@ export default function NewWorkoutForm({
         />
 
         {/* Message d'erreur global */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-            {error}
-          </div>
-        )}
+        {error && <div className="formError">{error}</div>}
 
         {/* Boutons d'action */}
         <div className="flex justify-between items-center bg-white rounded-lg shadow-md p-6">
           <p className="text-sm text-gray-600">
-            <span className="text-red-500">*</span> Champs obligatoires
+            <span className="text-accent-500">*</span> Champs obligatoires
           </p>
 
           <div className="flex gap-3">
-            <Button
+            <LoaderButton
               type="button"
               close
               onClick={() => {
                 clearStorage();
                 router.back();
               }}
-              disabled={isPending}
+              disabled={isClearingStorage}
+              loadingText="Annulation en cours"
+              label="Annuler"
             >
               Annuler
-            </Button>
+            </LoaderButton>
 
-            <Button disabled={isPending} type="submit">
-              {isPending ? (
-                <span className="flex items-center gap-2">
-                  <ClipLoader size={15} color="#e8e3ff" />
-                  Création en cours...
-                </span>
-              ) : (
-                "Créer le plan d'entraînement"
-              )}
-            </Button>
+            <LoaderButton
+              isLoading={isCreating}
+              loadingText="Création en cours"
+              type="submit"
+              label="Créer le plan d'entraînement"
+            >
+              Créer le plan d'entraînement
+            </LoaderButton>
           </div>
         </div>
       </form>
@@ -158,7 +153,7 @@ export default function NewWorkoutForm({
           isAdmin={isAdmin}
           onSelectExercise={selectExercise}
           allExercises={allExercises}
-          favorites={favorites}
+          favoritesExercises={favoritesExercises}
         />
       )}
 

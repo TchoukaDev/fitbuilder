@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 import connectDB from "@/libs/mongodb";
 import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
+import { ApiError, ApiSuccess } from "@/libs/apiResponse";
 
 // GET - Récupérer une séance spécifique
 export async function GET(req, { params }) {
@@ -14,7 +15,7 @@ export async function GET(req, { params }) {
   const sessionId = resolvedParams.id;
 
   if (!userId) {
-    return NextResponse.json({ error: "Accès refusé" }, { status: 401 });
+    return NextResponse.json(ApiError.UNAUTHORIZED, { status: 401 });
   }
 
   try {
@@ -24,21 +25,13 @@ export async function GET(req, { params }) {
       "sessions._id": new ObjectId(sessionId),
     });
     if (!singleSession) {
-      return NextResponse.json(
-        { error: "Cette session n'existe pas" },
-        { status: 404 },
-      );
+      return NextResponse.json(ApiError.NOT_FOUND("Session"), { status: 404 });
     }
 
     return NextResponse.json(singleSession, { status: 200 });
   } catch (error) {
-    return NextResponse.json(
-      {
-        error:
-          "Une erreur est intervenue lors de la récupération de la session",
-      },
-      { status: 500 },
-    );
+    console.error("Erreur GET session:", error);
+    return NextResponse.json(ApiError.SERVER_ERROR, { status: 500 });
   }
 }
 
@@ -50,13 +43,16 @@ export async function PATCH(req, { params }) {
   const sessionId = resolvedParams.id;
 
   if (!userId) {
-    return NextResponse.json({ error: "Accès refusé" }, { status: 401 });
+    return NextResponse.json(ApiError.UNAUTHORIZED, { status: 401 });
   }
 
   const { exercises, duration } = await req.json();
 
   if (!exercises || !Array.isArray(exercises)) {
-    return NextResponse.json({ error: "Exercices invalides" }, { status: 400 });
+    return NextResponse.json(
+      ApiError.INVALID_DATA("Les exercices fournis ne sont pas valides"),
+      { status: 400 },
+    );
   }
   try {
     const db = await connectDB();
@@ -75,10 +71,7 @@ export async function PATCH(req, { params }) {
     );
 
     if (result.matchedCount === 0) {
-      return NextResponse.json(
-        { error: "Cette session n'existe pas" },
-        { status: 404 },
-      );
+      return NextResponse.json(ApiError.NOT_FOUND("Session"), { status: 404 });
     }
 
     revalidatePath("/sessions");
@@ -86,14 +79,13 @@ export async function PATCH(req, { params }) {
     revalidatePath("/dashboard");
     revalidatePath("/admin");
 
-    return NextResponse.json({ success: true }, { status: 200 });
-  } catch (error) {
     return NextResponse.json(
-      {
-        error: "Une erreur est intervenue lors de la modification",
-      },
-      { status: 500 },
+      ApiSuccess.OPERATION_SUCCESS("Sauvegarde de la progression"),
+      { status: 200 },
     );
+  } catch (error) {
+    console.error("Erreur PATCH session:", error);
+    return NextResponse.json(ApiError.SERVER_ERROR, { status: 500 });
   }
 }
 
@@ -103,7 +95,7 @@ export async function PUT(req, { params }) {
   const userId = session?.user?.id;
 
   if (!userId) {
-    return NextResponse.json({ error: "Accès refusé" }, { status: 401 });
+    return NextResponse.json(ApiError.UNAUTHORIZED, { status: 401 });
   }
 
   const resolvedParams = await params;
@@ -121,7 +113,9 @@ export async function PUT(req, { params }) {
     });
 
     if (!user) {
-      return NextResponse.json({ error: "Utilisateur" }, { status: 404 });
+      return NextResponse.json(ApiError.NOT_FOUND("Utilisateur"), {
+        status: 404,
+      });
     }
 
     const existingSession = user.sessions.find(
@@ -129,10 +123,7 @@ export async function PUT(req, { params }) {
     );
 
     if (!existingSession) {
-      return NextResponse.json(
-        { error: "Session non trouvée" },
-        { status: 404 },
-      );
+      return NextResponse.json(ApiError.NOT_FOUND("Session"), { status: 404 });
     }
 
     // Finaliser la séance
@@ -153,10 +144,7 @@ export async function PUT(req, { params }) {
     );
 
     if (result.matchedCount === 0) {
-      return NextResponse.json(
-        { error: "Échec de la mise à jour" },
-        { status: 500 },
-      );
+      return NextResponse.json(ApiError.SERVER_ERROR, { status: 500 });
     }
 
     revalidatePath("/sessions");
@@ -164,19 +152,12 @@ export async function PUT(req, { params }) {
     revalidatePath("/dashboard");
     revalidatePath("/admin");
 
-    return NextResponse.json(
-      {
-        success: true,
-        message: "Séance terminée avec succès",
-      },
-      { status: 200 },
-    );
+    return NextResponse.json(ApiSuccess.OPERATION_SUCCESS("Session terminée"), {
+      status: 200,
+    });
   } catch (error) {
     console.error("Erreur PUT session:", error);
-    return NextResponse.json(
-      { error: "Erreur lors de la finalisation" },
-      { status: 500 },
-    );
+    return NextResponse.json(ApiError.SERVER_ERROR, { status: 500 });
   }
 }
 
@@ -186,7 +167,7 @@ export async function DELETE(req, { params }) {
   const userId = session?.user?.id;
 
   if (!userId) {
-    return NextResponse.json({ error: "Accès refusé" }, { status: 401 });
+    return NextResponse.json(ApiError.UNAUTHORIZED, { status: 401 });
   }
 
   const resolvedParams = await params;
@@ -202,10 +183,9 @@ export async function DELETE(req, { params }) {
     });
 
     if (!user) {
-      return NextResponse.json(
-        { error: "Session non trouvée" },
-        { status: 404 },
-      );
+      return NextResponse.json(ApiError.NOT_FOUND("Utilisateur"), {
+        status: 404,
+      });
     }
 
     const sessionToDelete = user.sessions.find(
@@ -213,10 +193,7 @@ export async function DELETE(req, { params }) {
     );
 
     if (!sessionToDelete) {
-      return NextResponse.json(
-        { error: "Session non trouvée" },
-        { status: 404 },
-      );
+      return NextResponse.json(ApiError.NOT_FOUND("Session"), { status: 404 });
     }
 
     const templateId = sessionToDelete.templateId;
@@ -271,18 +248,9 @@ export async function DELETE(req, { params }) {
     revalidatePath("/dashboard");
     revalidatePath("/admin");
 
-    return NextResponse.json(
-      {
-        success: true,
-        message: "Séance annulée avec succès",
-      },
-      { status: 200 },
-    );
+    return NextResponse.json(ApiSuccess.DELETED("Session"), { status: 200 });
   } catch (error) {
     console.error("Erreur DELETE session:", error);
-    return NextResponse.json(
-      { error: "Erreur lors de l'annulation" },
-      { status: 500 },
-    );
+    return NextResponse.json(ApiError.SERVER_ERROR, { status: 500 });
   }
 }

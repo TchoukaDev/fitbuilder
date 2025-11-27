@@ -53,7 +53,7 @@ export function useCreateWorkout(userId) {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error);
+        throw new Error(errorData.error.message);
       }
 
       return response.json();
@@ -78,6 +78,9 @@ export function useCreateWorkout(userId) {
 
       return { previousWorkouts };
     },
+    onSuccess: () => {
+      toast.success("Votre entraînement a été créé avec succès.");
+    },
 
     onError: (err, newWorkout, context) => {
       queryClient.setQueryData(key, context.previousWorkouts);
@@ -97,7 +100,7 @@ export function useCreateWorkout(userId) {
  */
 export function useUpdateWorkout(userId) {
   const queryClient = useQueryClient();
-  const key = ["workout", userId];
+  const key = ["workouts", userId];
   return useMutation({
     mutationFn: async ({ id, updatedWorkout }) => {
       const response = await fetch(`/api/workouts/${id}`, {
@@ -107,7 +110,7 @@ export function useUpdateWorkout(userId) {
       });
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error);
+        throw new Error(errorData.error.message);
       }
 
       const data = await response.json();
@@ -136,7 +139,7 @@ export function useUpdateWorkout(userId) {
       queryClient.setQueryData(key, context?.previousWorkouts);
     },
     onSuccess: () => {
-      toast.success("Votre entraînement a été modifié.");
+      toast.success("Votre entraînement a été modifié avec succès.");
     },
     // ✅ Sync avec serveur après succès/erreur
     onSettled: () => {
@@ -161,7 +164,7 @@ export function useDeleteWorkout(userId) {
       });
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error);
+        throw new Error(errorData.error.message);
       }
     },
     onMutate: async (id) => {

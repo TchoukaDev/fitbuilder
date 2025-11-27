@@ -16,8 +16,13 @@ export default function WorkoutExerciseTabs({ onTabChange, counts }) {
   ];
 
   return (
-    <div>
-      <p className="text-center my-3">Filtrer par type d'exercice</p>
+    <div className="flex flex-col text-center gap-2 mt-3">
+      <label
+        htmlFor="exerciseTab"
+        className="text-sm text-primary-500 font-semibold"
+      >
+        Filtrer par type d'exercice:
+      </label>
       <select
         className="input pt-2"
         onChange={(e) => onTabChange(e.target.value)}

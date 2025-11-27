@@ -4,11 +4,11 @@ import { useState } from "react";
 /**
  * Gère les filtres (onglets, muscle, recherche) pour la liste d'exercices.
  *
- * @param {{ exercises?: any[], favorites?: string[], isAdmin?: boolean }} params
+ * @param {{ exercises?: any[], favoritesExercises?: string[], isAdmin?: boolean }} params
  */
 export function useExerciseFilters({
   exercises = [],
-  favorites = [],
+  favoritesExercises = [],
   isAdmin,
 }) {
   // --- STATES CONTROLÉS ---
@@ -16,8 +16,10 @@ export function useExerciseFilters({
   const [selectedMuscle, setSelectedMuscle] = useState("all");
   const [search, setSearch] = useState("");
 
-  // Sécurise favorites pour éviter l’erreur includes()
-  const safeFavorites = Array.isArray(favorites) ? favorites : [];
+  // Sécurise favoritesExercises pour éviter l’erreur includes()
+  const safeFavorites = Array.isArray(favoritesExercises)
+    ? favoritesExercises
+    : [];
 
   // ----------------------------
   // 1. Filtre Search

@@ -3,12 +3,11 @@
 // Formulaire de connexion avec validation et gestion d'erreurs
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { ClipLoader } from "react-spinners";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import { Button, Label, ShowPassword } from "@/Global/components";
+import { Label, ShowPassword, LoaderButton } from "@/Global/components";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -144,16 +143,15 @@ export default function LoginForm() {
 
       {/* Bouton de soumission */}
       <div className="flex flex-col justify-center items-center gap-2">
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? (
-            <>
-              <span>Connexion en cours</span>
-              <ClipLoader size={15} color="#e8e3ff" />
-            </>
-          ) : (
-            "Se connecter"
-          )}
-        </Button>
+        <LoaderButton
+          isLoading={isSubmitting}
+          loadingText="Connexion en cours"
+          type="submit"
+          disabled={isSubmitting}
+          label="Se connecter"
+        >
+          Se connecter
+        </LoaderButton>
 
         {/* Checkbox "Se souvenir de moi" */}
         <div className="flex items-center justify-center gap-1">

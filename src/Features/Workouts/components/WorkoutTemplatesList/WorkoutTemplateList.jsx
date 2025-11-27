@@ -10,7 +10,8 @@ import { useRouter } from "next/navigation";
 
 export default function WorkoutTemplateList({ initialTemplates, userId }) {
   const { data: templates = [] } = useWorkouts(initialTemplates, userId);
-  const { mutate: deleteWorkout, isPending } = useDeleteWorkout(userId);
+  const { mutate: deleteWorkout, isPending: isDeleting } =
+    useDeleteWorkout(userId);
   const { isOpen, closeModal, getModalData } = useModals();
   const router = useRouter();
 
@@ -50,7 +51,7 @@ export default function WorkoutTemplateList({ initialTemplates, userId }) {
           <DeleteConfirmModal
             title={title}
             message={message}
-            isLoading={isPending}
+            isLoading={isDeleting}
             onConfirm={() => handleDelete(getModalData("deleteConfirm").id)}
           />
         )}

@@ -1,13 +1,14 @@
 "use client";
 
 import { Play } from "lucide-react";
-import { Button } from "@/Global/components";
+import { LoaderButton } from "@/Global/components";
 import { useCreateSession } from "@/Features/Sessions/hooks";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
 export default function StartWorkoutButton({ userId, workout, small }) {
-  const { mutate: createSession, isPending } = useCreateSession(userId);
+  const { mutate: createSession, isPending: isCreating } =
+    useCreateSession(userId);
   const router = useRouter();
   const handleStart = () => {
     createSession(
@@ -27,8 +28,10 @@ export default function StartWorkoutButton({ userId, workout, small }) {
     );
   };
   return (
-    <Button
-      disabled={isPending}
+    <LoaderButton
+      isLoading={isCreating}
+      loadingText="Démarrage en cours"
+      type="button"
       onClick={handleStart}
       title="Démarrer la séance"
       label="Démarrer la séance"
@@ -37,6 +40,6 @@ export default function StartWorkoutButton({ userId, workout, small }) {
       {" "}
       <Play size={20} />
       <span className="hidden md:inline">Démarrer la séance</span>
-    </Button>
+    </LoaderButton>
   );
 }

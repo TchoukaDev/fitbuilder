@@ -11,7 +11,7 @@ import {
   Trash2,
   ChevronLeft,
 } from "lucide-react";
-import { DeleteConfirmModal } from "@/Global/components";
+import { Button, DeleteConfirmModal } from "@/Global/components";
 import { useModals } from "@/Providers/Modals";
 import { ExerciseDetailCard } from ".";
 
@@ -21,7 +21,8 @@ export default function SessionDetailClient({ session, userId }) {
   // Modals
   const { isOpen, openModal } = useModals();
 
-  const { mutate: deleteSessionMutation } = useDeleteSession(userId);
+  const { mutate: deleteSessionMutation, isPending: isDeleting } =
+    useDeleteSession(userId);
 
   // ═══════════════════════════════════════════════════════
   // 📊 CALCULS
@@ -98,13 +99,14 @@ export default function SessionDetailClient({ session, userId }) {
 
           {/* Actions */}
           <div className="flex gap-2">
-            <button
+            <Button
               onClick={() => openModal("deleteConfirm")}
-              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition"
+              close
               title="Supprimer"
+              label="Supprimer la séance"
             >
-              <Trash2 size={20} />
-            </button>
+              <Trash2 size={20} /> Supprimer la séance
+            </Button>
           </div>
         </div>
 
@@ -195,7 +197,7 @@ export default function SessionDetailClient({ session, userId }) {
           title="Supprimer cette séance ?"
           message="Cette action est irréversible. Toutes les données de cette séance seront supprimées."
           onConfirm={handleDelete}
-          isLoading={deleteSessionMutation.isPending}
+          isLoading={isDeleting}
         />
       )}
     </div>

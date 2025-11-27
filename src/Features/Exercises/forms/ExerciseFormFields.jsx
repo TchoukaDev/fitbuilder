@@ -1,6 +1,5 @@
 // Champs de formulaire réutilisables pour les exercices
-import { Button, Label } from "@/Global/components";
-import { ClipLoader } from "react-spinners";
+import { Label, LoaderButton, Button } from "@/Global/components";
 
 export default function ExerciseFormFields({
   name,
@@ -39,7 +38,7 @@ export default function ExerciseFormFields({
           disabled={isPending}
         />
         <Label htmlFor="name" value={name}>
-          Intitulé*
+          Intitulé <span className="text-accent-500">*</span>
         </Label>
       </div>
 
@@ -56,7 +55,7 @@ export default function ExerciseFormFields({
           disabled={isPending}
         />
         <Label htmlFor="muscle" value={muscle}>
-          Muscle*
+          Muscle <span className="text-accent-500">*</span>
         </Label>
       </div>
 
@@ -71,7 +70,7 @@ export default function ExerciseFormFields({
         disabled={isPending}
       >
         <option value="" className="font-semibold">
-          -- Matériel nécessaire* --
+          -- Matériel nécessaire <span className="text-accent-500">*</span> --
         </option>
         <option value="Poids du corps">Poids du corps</option>
         <option value="Haltères">Haltères</option>
@@ -103,18 +102,19 @@ export default function ExerciseFormFields({
           <Button close onClick={onClose} type="button" disabled={isPending}>
             Fermer
           </Button>
-          <Button disabled={isPending} type="submit">
-            {isPending ? (
-              <span className="flex items-center gap-2">
-                <span>{loadingLabel}</span>
-                <ClipLoader size={15} color="#e8e3ff" />
-              </span>
-            ) : (
-              submitLabel
-            )}
-          </Button>
+          <LoaderButton
+            isLoading={isPending}
+            loadingText={loadingLabel}
+            type="submit"
+            disabled={isPending}
+            label={submitLabel}
+          >
+            {submitLabel}
+          </LoaderButton>
         </div>
-        <div className="text-xs text-end">(*) champs obligatoires</div>
+        <p className="text-xs text-gray-500 text-center">
+          <span className="text-accent-500">*</span> Champs obligatoires
+        </p>
       </div>
     </form>
   );

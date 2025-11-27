@@ -5,13 +5,14 @@ import { NextResponse } from "next/server";
 import connectDB from "@/libs/mongodb";
 import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
+import { ApiError, ApiSuccess } from "@/libs/apiResponse";
 
 // PATCH - Modifier un exercice (public si admin, privé si utilisateur)
 export async function PATCH(request, { params }) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.id) {
-    return NextResponse.json({ error: "Accès refusé" }, { status: 401 });
+    return NextResponse.json(ApiError.UNAUTHORIZED, { status: 401 });
   }
   const resolvedParams = await params;
   const { id } = resolvedParams;
@@ -54,10 +55,7 @@ export async function PATCH(request, { params }) {
       revalidatePath("/exercices");
       revalidatePath(`/exercises/${id}`);
 
-      return NextResponse.json({
-        success: true,
-        message: "L'exercice a été modifié",
-      });
+      return NextResponse.json(ApiSuccess.UPDATED("Exercice public"));
     }
 
     // Exercice privé: modifier dans le tableau de l'utilisateur
@@ -86,13 +84,10 @@ export async function PATCH(request, { params }) {
     revalidatePath("/exercices");
     revalidatePath(`/exercises/${id}`);
 
-    return NextResponse.json({
-      success: true,
-      message: "L'exercice a été modifié.",
-    });
+    return NextResponse.json(ApiSuccess.UPDATED("Exercice privé"));
   } catch (error) {
-    console.error("Erreur:", error);
-    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
+    console.error("Erreur modification exercice:", error);
+    return NextResponse.json(ApiError.SERVER_ERROR, { status: 500 });
   }
 }
 
@@ -101,7 +96,7 @@ export async function DELETE(request, { params }) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.id) {
-    return NextResponse.json({ error: "Accès refusé" }, { status: 401 });
+    return NextResponse.json(ApiError.UNAUTHORIZED, { status: 401 });
   }
 
   const resolvedParams = await params;
@@ -130,10 +125,7 @@ export async function DELETE(request, { params }) {
       revalidatePath("/dashboard");
       revalidatePath("/workouts/create");
 
-      return NextResponse.json({
-        success: true,
-        message: "Exercice public supprimé",
-      });
+      return NextResponse.json(ApiSuccess.DELETED("Exercice public"));
     }
 
     // Exercice privé: retirer du tableau de l'utilisateur
@@ -155,15 +147,11 @@ export async function DELETE(request, { params }) {
     revalidatePath("/dashboard");
     revalidatePath("/workouts/create");
 
-    return NextResponse.json(
-      {
-        success: true,
-        message: "Exercice privé supprimé",
-      },
-      { status: 200 },
-    );
+    return NextResponse.json(ApiSuccess.DELETED("Exercice privé"), {
+      status: 200,
+    });
   } catch (error) {
-    console.error("Erreur:", error);
-    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
+    console.error("Erreur suppression exercice:", error);
+    return NextResponse.json(ApiError.SERVER_ERROR, { status: 500 });
   }
 }

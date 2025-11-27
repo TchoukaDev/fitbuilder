@@ -1,9 +1,9 @@
 "use client";
 
-import { Button } from "../ui";
-import { createPortal } from "react-dom";
+import { Button, LoaderButton } from "../ui";
 import { ModalLayout } from "../layout";
 import { useModals } from "@/Providers/Modals";
+import { createPortal } from "react-dom";
 
 // Modale de confirmation de suppression
 export default function DeleteConfirmModal({
@@ -27,9 +27,16 @@ export default function DeleteConfirmModal({
         >
           Annuler
         </Button>
-        <Button onClick={onConfirm} disabled={isLoading}>
-          {isLoading ? "Suppression..." : "Supprimer"}
-        </Button>
+        <LoaderButton
+          isLoading={isLoading}
+          loadingText="Suppression en cours"
+          type="button"
+          disabled={isLoading}
+          onClick={onConfirm}
+          label="Supprimer"
+        >
+          Supprimer
+        </LoaderButton>
       </div>
     </ModalLayout>,
     document.getElementById("portal-root"),

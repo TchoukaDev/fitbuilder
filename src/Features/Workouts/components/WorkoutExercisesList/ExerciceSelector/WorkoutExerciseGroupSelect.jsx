@@ -5,8 +5,13 @@ export default function WorkoutExerciseGroupSelect({
   error,
 }) {
   return (
-    <div>
-      <p className="text-center my-3">Choisir un exercice*</p>
+    <div className="flex flex-col gap-2 mt-3">
+      <label
+        htmlFor="exercise"
+        className="text-sm text-primary-500 text-center font-semibold"
+      >
+        Choisir un exercice: <span className="text-accent-500">*</span>
+      </label>
 
       <select
         className="input pt-2"
@@ -15,7 +20,7 @@ export default function WorkoutExerciseGroupSelect({
         }}
       >
         <option value="" className="font-semibold">
-          --- Sélectionner un exercice ---
+          --- Sélectionner un exercices
         </option>
         {Object.entries(grouped).length === 0 && (
           <option value="">Aucun exercice trouvé</option>

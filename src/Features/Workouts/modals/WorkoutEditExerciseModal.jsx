@@ -68,7 +68,7 @@ export default function WorkoutEditExerciseModal({ exercise, onSave }) {
             }
           />
           <Label htmlFor="sets" value={formData.sets}>
-            Nombre de séries*
+            Nombre de séries <span className="text-accent-500">*</span>
           </Label>
         </div>
 
@@ -86,7 +86,8 @@ export default function WorkoutEditExerciseModal({ exercise, onSave }) {
             }
           />
           <Label htmlFor="reps" value={formData.reps}>
-            Répétitions* (ex: "10" ou "8-12")
+            Répétitions <span className="text-accent-500">*</span> (ex: "10" ou
+            "8-12")
           </Label>
         </div>
 
@@ -178,7 +179,7 @@ export default function WorkoutEditExerciseModal({ exercise, onSave }) {
         </div>
 
         <p className="text-xs text-gray-500 text-center">
-          <span className="text-red-500">*</span> Champs obligatoires
+          <span className="text-accent-500">*</span> Champs obligatoires
         </p>
       </form>
     </ModalLayout>,

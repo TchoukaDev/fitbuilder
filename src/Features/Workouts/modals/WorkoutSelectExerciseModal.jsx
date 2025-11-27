@@ -8,7 +8,7 @@ import { useState } from "react";
 // Modale de selection d'un exercice à ajouter à l'entraînement
 export default function WorkoutSelectExerciseModal({
   onSelectExercise,
-  favorites,
+  favoritesExercises,
   allExercises,
   exercisesAdded,
   isAdmin,
@@ -22,7 +22,7 @@ export default function WorkoutSelectExerciseModal({
         userId={userId}
         isAdmin={isAdmin}
         initialExercises={allExercises}
-        initialFavorites={favorites}
+        initialFavorites={favoritesExercises}
         exercisesAdded={exercisesAdded}
         onSelectExercise={onSelectExercise}
         onSetTitle={setTitle}

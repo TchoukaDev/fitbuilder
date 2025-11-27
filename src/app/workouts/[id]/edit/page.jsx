@@ -19,7 +19,7 @@ export default async function EditWorkout({ params }) {
   // Récupération des données
   const allExercises = await getAllExercises(userId);
   const workout = await getWorkoutById(userId, workoutId);
-  const favorites = await getFavoritesExercises(userId);
+  const favoritesExercises = await getFavoritesExercises(userId);
 
   return (
     <>
@@ -31,7 +31,7 @@ export default async function EditWorkout({ params }) {
           isAdmin={isAdmin}
           userId={userId}
           allExercises={allExercises}
-          favorites={favorites}
+          favoritesExercises={favoritesExercises}
         />
       </main>
     </>

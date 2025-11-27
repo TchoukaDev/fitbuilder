@@ -5,13 +5,14 @@ import { NextResponse } from "next/server";
 import connectDB from "@/libs/mongodb";
 import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
+import { ApiError, ApiSuccess } from "@/libs/apiResponse";
 
 // POST - Créer un exercice (public si admin, privé sinon)
 export async function POST(req) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.id) {
-    return NextResponse.json({ error: "Accès refusé" }, { status: 401 });
+    return NextResponse.json(ApiError.UNAUTHORIZED, { status: 401 });
   }
 
   const isAdmin = session?.user?.role === "ADMIN";
@@ -20,9 +21,7 @@ export async function POST(req) {
   // Validation des champs obligatoires
   if (!name || !muscle || !equipment) {
     return NextResponse.json(
-      {
-        error: "L'intitulé', le groupe musculaire et l'équipement sont requis",
-      },
+      ApiError.MISSING_FIELDS(["nom", "groupe musculaire", "équipement"]),
       { status: 400 },
     );
   }
@@ -46,9 +45,8 @@ export async function POST(req) {
 
       return NextResponse.json(
         {
-          success: true,
+          ...ApiSuccess.CREATED("Exercice public"),
           id: result.insertedId,
-          message: "Exercice public créé",
         },
         { status: 201 },
       );
@@ -79,15 +77,14 @@ export async function POST(req) {
 
     return NextResponse.json(
       {
-        success: true,
+        ...ApiSuccess.CREATED("Exercice personnel"),
         id: exerciseId.toString(),
-        message: "Exercice personnel créé",
       },
       { status: 201 },
     );
   } catch (error) {
-    console.error("Erreur:", error);
-    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
+    console.error("Erreur création exercice:", error);
+    return NextResponse.json(ApiError.SERVER_ERROR, { status: 500 });
   }
 }
 
@@ -156,10 +153,7 @@ export async function GET(req) {
 
     return NextResponse.json(allExercises, { status: 200 });
   } catch (error) {
-    console.error("Erreur:", error);
-    return NextResponse.json(
-      { error: "Erreur lors de la récupération" },
-      { status: 500 },
-    );
+    console.error("Erreur récupération exercices:", error);
+    return NextResponse.json(ApiError.SERVER_ERROR, { status: 500 });
   }
 }

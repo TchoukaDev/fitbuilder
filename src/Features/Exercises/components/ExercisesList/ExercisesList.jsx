@@ -18,7 +18,10 @@ export default function ExercisesList({
   );
 
   // Récupération des favoris
-  const { data: favorites = [] } = useFavorites(userId, initialFavorites);
+  const { data: favoritesExercises = [] } = useFavorites(
+    userId,
+    initialFavorites,
+  );
 
   // Gestion des filtres et onglets
   const {
@@ -31,7 +34,11 @@ export default function ExercisesList({
     allExerciseMuscles,
     myExerciseMuscles,
     favoriteExerciseMuscles,
-  } = useExerciseFilters({ exercises: cachedExercises, favorites, isAdmin });
+  } = useExerciseFilters({
+    exercises: cachedExercises,
+    favoritesExercises,
+    isAdmin,
+  });
 
   return (
     <ExercisePageList
@@ -44,7 +51,7 @@ export default function ExercisesList({
       myExerciseMuscles={myExerciseMuscles}
       favoriteExerciseMuscles={favoriteExerciseMuscles}
       grouped={grouped}
-      favorites={favorites}
+      favoritesExercises={favoritesExercises}
       userId={userId}
       isAdmin={isAdmin}
     />

@@ -20,7 +20,7 @@ export default function WorkoutFormFields({ register, errors, watchedFields }) {
             {...register("name", { required: "Veuillez choisir un nom" })}
           />
           <Label htmlFor="name" value={watchedFields.name}>
-            Nom du plan*
+            Nom du plan <span className="text-accent-500">*</span>
           </Label>
           {errors.name && (
             <p className="formError mt-1">{errors.name.message}</p>
@@ -56,7 +56,7 @@ export default function WorkoutFormFields({ register, errors, watchedFields }) {
             htmlFor="estimatedDuration"
             value={watchedFields.estimatedDuration}
           >
-            Durée estimée (minutes)*
+            Durée estimée (minutes) <span className="text-accent-500">*</span>
           </Label>
           {errors.estimatedDuration && (
             <p className="formError mt-1">{errors.estimatedDuration.message}</p>
@@ -64,14 +64,24 @@ export default function WorkoutFormFields({ register, errors, watchedFields }) {
         </div>
 
         {/* Catégorie */}
-        <div>
+
+        <div className="flex flex-col gap-3">
+          {" "}
+          <label
+            htmlFor="category"
+            className="text-sm  text-primary-500 font-semibold"
+          >
+            Catégorie: <span className="text-accent-500">*</span>
+          </label>
           <select
+            id="category"
+            name="category"
             {...register("category", {
               required: "Veuillez sélectionner une catégorie",
             })}
             className="input pt-2"
           >
-            <option value="">--- Catégorie* ---</option>
+            <option value="">--- Sélectionner une catégorie ---</option>
             <option value="Push">Push (Poussée)</option>
             <option value="Pull">Pull (Tirage)</option>
             <option value="Legs">Legs (Jambes)</option>

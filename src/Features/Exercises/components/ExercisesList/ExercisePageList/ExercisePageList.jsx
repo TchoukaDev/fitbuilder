@@ -19,17 +19,17 @@ export default function ExercisePageList({
   myExerciseMuscles,
   favoriteExerciseMuscles,
   grouped,
-  favorites,
+  favoritesExercises,
   userId,
   isAdmin,
 }) {
   const { isOpen, openModal, getModalData, closeModal } = useModals();
-  
+
   const { mutate: deleteExercise, isPending: isDeleting } = useDeleteExercise(
     userId,
     isAdmin,
   );
-  
+
   const title = "Retirer l'exercice";
   const message = "Souhaitez-vous retirer cet exercice du programme?";
 
@@ -111,7 +111,7 @@ export default function ExercisePageList({
             muscle={muscle}
             exercises={exs}
             activeTab={activeTab}
-            favorites={favorites}
+            favoritesExercises={favoritesExercises}
             userId={userId}
             isAdmin={isAdmin}
           />

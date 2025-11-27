@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 import connectDB from "@/libs/mongodb";
 import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
+import { ApiError, ApiSuccess } from "@/libs/apiResponse";
 
 // POST - Démarrer une nouvelle séance à partir d'un plan d'entraînement
 export async function POST(req) {
@@ -12,7 +13,7 @@ export async function POST(req) {
   const userId = session?.user?.id;
 
   if (!userId) {
-    return NextResponse.json({ error: "Accès non autorisé" }, { status: 401 });
+    return NextResponse.json(ApiError.UNAUTHORIZED, { status: 401 });
   }
 
   const { templateId, templateName, exercises } = await req.json();
@@ -20,7 +21,9 @@ export async function POST(req) {
   // Validation
   if (!templateId || !templateName || exercises.length === 0) {
     return NextResponse.json(
-      { error: "Un entraînement est nécessaire pour démarrer la session" },
+      ApiError.INVALID_DATA(
+        "La session doit être liée à un plan et contenir au moins un exercice",
+      ),
       { status: 400 },
     );
   }

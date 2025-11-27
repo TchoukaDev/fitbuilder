@@ -1,0 +1,29 @@
+---
+alwaysApply: true
+models:
+  - claude-3.5-sonnet
+  - claude-3-haiku
+  - claude-4.5-sonnet
+---
+
+rules:
+
+# Tâches simples : documentation, commentaires, petites explications, HTML/CSS
+
+- match: "documentation|commentaires|explication simple|html|css|petit fix|debug léger"
+  use: claude-3-haiku
+
+# Tâches intermédiaires : debug complexe, refactor léger, logique métier
+
+- match: "refactor|debug|logique|fonction|composant"
+  use: claude-3.5-sonnet
+
+# Tâches critiques : architecture, gros refactor, optimisation profonde, audits
+
+- match: "architecture|gros refactor|optimisation|audit|analyse complexe"
+  use: claude-4.5-sonnet
+
+# Règle générale : toujours utiliser Claude, jamais GPT ou autre
+
+- match: ".\*"
+  use: claude-3.5-sonnet

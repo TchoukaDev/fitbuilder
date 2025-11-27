@@ -1,8 +1,7 @@
 "use client";
 
 // Formulaire client pour modifier un plan d'entraînement existant.
-import { Button, DeleteConfirmModal } from "@/Global/components";
-import { ClipLoader } from "react-spinners";
+import { DeleteConfirmModal, LoaderButton, Button } from "@/Global/components";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { useUpdateWorkout, useWorkoutForm } from "../hooks";
@@ -16,7 +15,7 @@ import { WorkoutFormFields, WorkoutFormExercisesList } from "./formsComponents";
 export default function UpdateWorkoutForm({
   workout,
   allExercises,
-  favorites,
+  favoritesExercises,
   isAdmin,
   userId,
 }) {
@@ -38,7 +37,8 @@ export default function UpdateWorkoutForm({
   // Navigation et mutations
   const router = useRouter();
   const exercisesAdded = formData.exercises;
-  const { mutate: updateWorkout, isPending } = useUpdateWorkout(userId);
+  const { mutate: updateWorkout, isPending: isUpdating } =
+    useUpdateWorkout(userId);
   const title = "Supprimer l'exercice";
   const message = "Souhaitez vous retirer cet exercice du plan d'entraînement?";
 
@@ -110,16 +110,12 @@ export default function UpdateWorkoutForm({
         />
 
         {/* Message d'erreur global */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-            {error}
-          </div>
-        )}
+        {error && <div className="formError">{error}</div>}
 
         {/* Boutons d'action */}
         <div className="flex justify-between items-center bg-white rounded-lg shadow-md p-6">
           <p className="text-sm text-gray-600">
-            <span className="text-red-500">*</span> Champs obligatoires
+            <span className="text-accent-500">*</span> Champs obligatoires
           </p>
 
           <div className="flex gap-3">
@@ -127,21 +123,20 @@ export default function UpdateWorkoutForm({
               type="button"
               close
               onClick={() => router.back()}
-              disabled={isPending}
+              loadingText="Annulation en cours"
+              label="Annuler"
             >
               Annuler
             </Button>
 
-            <Button disabled={isPending} type="submit">
-              {isPending ? (
-                <span className="flex items-center gap-2">
-                  <ClipLoader size={15} color="#e8e3ff" />
-                  Modification en cours...
-                </span>
-              ) : (
-                "Enregistrer les modifications"
-              )}
-            </Button>
+            <LoaderButton
+              isLoading={isUpdating}
+              loadingText="Modification en cours"
+              type="submit"
+              label="Enregistrer les modifications"
+            >
+              Enregistrer les modifications
+            </LoaderButton>
           </div>
         </div>
       </form>
@@ -154,7 +149,7 @@ export default function UpdateWorkoutForm({
           isAdmin={isAdmin}
           onSelectExercise={selectExercise}
           allExercises={allExercises}
-          favorites={favorites}
+          favoritesExercises={favoritesExercises}
         />
       )}
 

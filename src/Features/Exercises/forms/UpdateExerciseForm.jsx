@@ -20,7 +20,7 @@ export default function UpdateExerciseForm({ exerciseToUpdate }) {
   const [equipment, setEquipment] = useState(exerciseToUpdate.equipment);
   const [error, setError] = useState("");
 
-  const { mutate: updateExercise, isPending } = useUpdateExercise(
+  const { mutate: updateExercise, isPending: isUpdating } = useUpdateExercise(
     userId,
     isAdmin,
   );
@@ -71,7 +71,7 @@ export default function UpdateExerciseForm({ exerciseToUpdate }) {
       description={description}
       equipment={equipment}
       error={error}
-      isPending={isPending}
+      isPending={isUpdating}
       onNameChange={(e) => setName(e.target.value)}
       onMuscleChange={(e) => setMuscle(e.target.value)}
       onDescriptionChange={(e) => setDescription(e.target.value)}

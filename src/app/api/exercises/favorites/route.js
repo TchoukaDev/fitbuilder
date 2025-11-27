@@ -5,6 +5,7 @@ import { ObjectId } from "mongodb";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
+import { ApiError, ApiSuccess } from "@/libs/apiResponse";
 
 // PATCH - Ajouter ou retirer un exercice des favoris
 export async function PATCH(req) {
@@ -12,7 +13,7 @@ export async function PATCH(req) {
   const userId = session?.user?.id;
 
   if (!userId) {
-    return NextResponse.json({ error: "Accès refusé" }, { status: 401 });
+    return NextResponse.json(ApiError.UNAUTHORIZED, { status: 401 });
   }
 
   try {
@@ -57,18 +58,12 @@ export async function PATCH(req) {
       );
 
     return NextResponse.json(
-      {
-        success: true,
-        favorites: user.favoritesExercises || [],
-      },
+      { favoritesExercises: user.favoritesExercises || [] },
       { status: 200 },
     );
   } catch (error) {
-    console.error("Erreur PATCH favorites:", error);
-    return NextResponse.json(
-      { error: "Erreur lors de la modification" },
-      { status: 500 },
-    );
+    console.error("Erreur PATCH favoritesExercises:", error);
+    return NextResponse.json(ApiError.SERVER_ERROR, { status: 500 });
   }
 }
 
@@ -78,7 +73,7 @@ export async function GET() {
   const userId = session?.user?.id;
 
   if (!userId) {
-    return NextResponse.json({ error: "Accès refusé" }, { status: 401 });
+    return NextResponse.json(ApiError.UNAUTHORIZED, { status: 401 });
   }
 
   try {
@@ -95,14 +90,11 @@ export async function GET() {
       );
     }
 
-    const favorites = user.favoritesExercises || [];
+    const favoritesExercises = user.favoritesExercises || [];
 
-    return NextResponse.json({ favorites }, { status: 200 });
+    return NextResponse.json({ favoritesExercises }, { status: 200 });
   } catch (error) {
-    console.error("Erreur GET favorites:", error);
-    return NextResponse.json(
-      { error: "Erreur lors de la récupération des favoris" },
-      { status: 500 },
-    );
+    console.error("Erreur GET favoritesExercises:", error);
+    return NextResponse.json(ApiError.SERVER_ERROR, { status: 500 });
   }
 }

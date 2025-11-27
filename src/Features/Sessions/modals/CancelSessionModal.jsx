@@ -35,12 +35,7 @@ export default function CancelSessionModal({ onConfirm, isLoading }) {
           Continuer la séance
         </Button>
 
-        <Button
-          onClick={onConfirm}
-          disabled={isLoading}
-          close
-          className="flex-1 bg-red-600 hover:bg-red-700"
-        >
+        <Button onClick={onConfirm} disabled={isLoading} close>
           {isLoading ? "Annulation..." : "Annuler la séance"}
         </Button>
       </div>

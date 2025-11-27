@@ -1,2 +1,2 @@
-export { default as Button } from "./Button";
-export { ShowPassword, Label } from "./FormsComponents";
+export * from "./Buttons";
+export * from "./FormsComponents";

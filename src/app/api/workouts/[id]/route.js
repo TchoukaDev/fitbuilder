@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 import connectDB from "@/libs/mongodb";
 import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
+import { ApiError, ApiSuccess } from "@/libs/apiResponse";
 
 // DELETE - Supprimer un plan d'entraînement
 export async function DELETE(req, { params }) {
@@ -12,7 +13,7 @@ export async function DELETE(req, { params }) {
   const userId = session?.user?.id;
 
   if (!userId) {
-    return NextResponse.json({ error: "Accès refusé" }, { status: 401 });
+    return NextResponse.json(ApiError.UNAUTHORIZED, { status: 401 });
   }
 
   const resolvedParams = await params;
@@ -29,25 +30,21 @@ export async function DELETE(req, { params }) {
       );
 
     if (result.matchedCount === 0) {
-      return NextResponse.json(
-        { error: "Plan d'entraînement non trouvé" },
-        { status: 404 },
-      );
+      return NextResponse.json(ApiError.NOT_FOUND("Plan d'entraînement"), {
+        status: 404,
+      });
     }
 
     revalidatePath("/workouts");
     revalidatePath("/dashboard");
     revalidatePath("/admin");
 
-    return NextResponse.json(
-      { success: true, message: "Plan d'entraînement supprimé avec succès" },
-      { status: 200 },
-    );
+    return NextResponse.json(ApiSuccess.DELETED("Plan d'entraînement"), {
+      status: 200,
+    });
   } catch (error) {
-    return NextResponse.json(
-      { error: "Erreur lors de la suppression de l'entraînement" },
-      { status: 500 },
-    );
+    console.error("Erreur suppression workout:", error);
+    return NextResponse.json(ApiError.SERVER_ERROR, { status: 500 });
   }
 }
 
@@ -57,7 +54,7 @@ export async function PATCH(req, { params }) {
   const userId = session?.user?.id;
 
   if (!userId) {
-    return NextResponse.json({ error: "Accès refusé" }, { status: 401 });
+    return NextResponse.json(ApiError.UNAUTHORIZED, { status: 401 });
   }
 
   const resolvedParams = await params;
@@ -74,10 +71,9 @@ export async function PATCH(req, { params }) {
     exercises.length === 0
   ) {
     return NextResponse.json(
-      {
-        error:
-          "Le modèle d'entraînement doit comporter au moins un nom, une catégorie, une durée et un exercice",
-      },
+      ApiError.INVALID_DATA(
+        "Le plan doit comporter un nom, une catégorie, une durée et au moins un exercice",
+      ),
       { status: 400 },
     );
   }
@@ -90,15 +86,14 @@ export async function PATCH(req, { params }) {
       .collection("users")
       .findOne({ _id: new ObjectId(userId) });
 
-    const nameExists = user?.workouts?.some(
-      (w) => w.name.toLowerCase() === name.toLowerCase(),
-    );
+    const nameExists = user?.workouts
+      ?.filter((w) => w._id.toString() !== workoutId)
+      .some((w) => w.name.toLowerCase() === name.toLowerCase());
 
     if (nameExists) {
-      return NextResponse.json(
-        { error: "Un plan avec ce nom existe déjà" },
-        { status: 409 },
-      );
+      return NextResponse.json(ApiError.DUPLICATE("Un plan avec ce nom"), {
+        status: 409,
+      });
     }
 
     // Mise à jour du plan
@@ -117,26 +112,19 @@ export async function PATCH(req, { params }) {
     );
 
     if (result.matchedCount === 0) {
-      return NextResponse.json(
-        { error: "Plan d'entraînement non trouvé" },
-        { status: 404 },
-      );
+      return NextResponse.json(ApiError.NOT_FOUND("Plan d'entraînement"), {
+        status: 404,
+      });
     }
 
     revalidatePath("/workouts");
     revalidatePath(`/workouts/${workoutId}`);
 
-    return NextResponse.json(
-      { success: true, message: "Entraînement modifié avec succès" },
-      { status: 200 },
-    );
+    return NextResponse.json(ApiSuccess.UPDATED("Plan d'entraînement"), {
+      status: 200,
+    });
   } catch (error) {
-    return NextResponse.json(
-      {
-        error:
-          "Une erreur est survenue lors de la modification de l'entraînement",
-      },
-      { status: 500 },
-    );
+    console.error("Erreur modification workout:", error);
+    return NextResponse.json(ApiError.SERVER_ERROR, { status: 500 });
   }
 }

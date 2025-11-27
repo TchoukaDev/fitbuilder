@@ -75,7 +75,7 @@ function ExerciseItem({
             <button
               type="button"
               onClick={() => onRemoveClick(index)}
-              className="p-1 text-red-600 hover:bg-red-50 rounded transition cursor-pointer"
+              className="p-1 text-accent-500 hover:bg-accent-100 rounded transition cursor-pointer"
               title="Retirer l'exercice"
             >
               <SquareX size={20} />

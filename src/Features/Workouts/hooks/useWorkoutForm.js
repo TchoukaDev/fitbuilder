@@ -17,6 +17,7 @@ export function useWorkoutForm({ workout = null, newForm = false }) {
   const [error, setError] = useState("");
   const [hasLoaded, setHasLoaded] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [isClearingStorage, setIsClearingStorage] = useState(false);
 
   // Modal
   const { getModalData, closeModal } = useModals();
@@ -125,7 +126,9 @@ export function useWorkoutForm({ workout = null, newForm = false }) {
    */
   const clearStorage = () => {
     if (newForm) {
+      setIsClearingStorage(true);
       localStorage.removeItem("exercises");
+      setIsClearingStorage(false);
     }
   };
 
@@ -138,6 +141,7 @@ export function useWorkoutForm({ workout = null, newForm = false }) {
     updateExercise,
     moveExercise,
     clearStorage,
+    isClearingStorage,
     formData,
   };
 }

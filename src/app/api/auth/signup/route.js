@@ -3,12 +3,10 @@ import connectDB from "@/libs/mongodb";
 import bcrypt from "bcryptjs";
 import { signUpSchema } from "@/Features/Auth/utils";
 import { NextResponse } from "next/server";
+import { ApiError, ApiSuccess } from "@/libs/apiResponse";
 
 // POST - Créer un nouveau compte utilisateur
 export async function POST(req) {
-  const standardError =
-    "Une erreur est survenue côté serveur. Merci de réessayer plus tard.";
-
   try {
     // Extraction et validation des données
     const body = await req.json();
@@ -23,7 +21,7 @@ export async function POST(req) {
       return NextResponse.json(
         {
           success: false,
-          error: standardError,
+          error: ApiError.VALIDATION_ERROR.message,
           fieldErrors: fieldErrors,
         },
         { status: 400 },
@@ -44,7 +42,7 @@ export async function POST(req) {
       return NextResponse.json(
         {
           success: false,
-          error: standardError,
+          error: ApiError.ALREADY_EXISTS("Email").message,
           fieldErrors: { email: "Cet email est déjà utilisé" },
         },
         { status: 409 },
@@ -60,7 +58,7 @@ export async function POST(req) {
       return NextResponse.json(
         {
           success: false,
-          error: standardError,
+          error: ApiError.ALREADY_EXISTS("Nom d'utilisateur").message,
           fieldErrors: { username: "Ce nom d'utilisateur est déjà pris" },
         },
         { status: 409 },
@@ -85,8 +83,7 @@ export async function POST(req) {
 
     return NextResponse.json(
       {
-        success: true,
-        message: "Compte créé avec succès !",
+        ...ApiSuccess.CREATED("Compte"),
         user: {
           id: result.insertedId.toString(),
           username: validatedData.username,
@@ -101,7 +98,7 @@ export async function POST(req) {
     return NextResponse.json(
       {
         success: false,
-        error: standardError,
+        error: ApiError.SERVER_ERROR.message,
       },
       { status: 500 },
     );

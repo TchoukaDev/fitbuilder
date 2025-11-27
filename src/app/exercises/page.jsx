@@ -18,8 +18,8 @@ export default async function ExercisesPage() {
   // Récupération des exercices et favoris
   const exercises = (await getAllExercises(userId)) || [];
   const serializedExercises = JSON.parse(JSON.stringify(exercises));
-  const favorites = (await getFavoritesExercises(userId)) || [];
-  const serializedFavorites = JSON.parse(JSON.stringify(favorites));
+  const favoritesExercises = (await getFavoritesExercises(userId)) || [];
+  const serializedFavorites = JSON.parse(JSON.stringify(favoritesExercises));
 
   return (
     <>

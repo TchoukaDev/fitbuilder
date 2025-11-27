@@ -147,7 +147,7 @@ export default function ExerciseConfiguration({
         </Button>
       </div>{" "}
       <p className="text-xs text-gray-500 text-center">
-        <span className="text-red-500">*</span> Champs obligatoires
+        <span className="text-accent-500">*</span> Champs obligatoires
       </p>
     </div>
   );

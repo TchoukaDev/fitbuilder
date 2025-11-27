@@ -3,8 +3,7 @@
 // Formulaire d'inscription avec validation Zod et gestion d'erreurs client/serveur
 import { useForm } from "react-hook-form";
 import { useEffect, useRef, useState } from "react";
-import { Button, Label, ShowPassword } from "@/Global/components";
-import { ClipLoader } from "react-spinners";
+import { Label, ShowPassword, LoaderButton } from "@/Global/components";
 import { signUpSchema } from "../utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSignUp } from "@/Global/hooks";
@@ -51,9 +50,7 @@ export default function SignUpForm() {
     >
       {/* Erreur globale serveur */}
       {globalError && Object.keys(serverErrors).length === 0 && (
-        <div className="w-full p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-          {globalError}
-        </div>
+        <div className="formError">{globalError}</div>
       )}
 
       {/* Champ nom d'utilisateur */}
@@ -167,16 +164,15 @@ export default function SignUpForm() {
       )}
 
       {/* Bouton de soumission */}
-      <Button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? (
-          <>
-            <span>Inscription en cours</span>
-            <ClipLoader size={15} color="#e8e3ff" />
-          </>
-        ) : (
-          "S'inscrire"
-        )}
-      </Button>
+      <LoaderButton
+        isLoading={isSubmitting}
+        loadingText="Inscription en cours"
+        type="submit"
+        disabled={isSubmitting}
+        label="S'inscrire"
+      >
+        S'inscrire
+      </LoaderButton>
     </form>
   );
 }

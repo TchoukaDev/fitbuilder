@@ -20,7 +20,7 @@ export default function NewExerciseForm() {
   const [error, setError] = useState("");
 
   const { closeModal } = useModals();
-  const { mutate: createExercice, isPending } = useCreateExercise(
+  const { mutate: createExercice, isPending: isCreating } = useCreateExercise(
     userId,
     isAdmin,
   );
@@ -62,7 +62,7 @@ export default function NewExerciseForm() {
       description={description}
       equipment={equipment}
       error={error}
-      isPending={isPending}
+      isPending={isCreating}
       onNameChange={(e) => setName(e.target.value)}
       onMuscleChange={(e) => setMuscle(e.target.value)}
       onDescriptionChange={(e) => setDescription(e.target.value)}

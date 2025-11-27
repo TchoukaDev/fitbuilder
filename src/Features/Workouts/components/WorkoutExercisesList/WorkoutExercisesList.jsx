@@ -24,14 +24,14 @@ export default function WorkoutExercisesList({
   const [selectedExerciseId, setSelectedExerciseId] = useState(null); //id de l'exercice en cours de sélection
 
   // Récupérer exercices
-  const { data: cachedExercises = [], isLoading } = useExercises(
+  const { data: cachedExercises = [] } = useExercises(
     userId,
     isAdmin,
     initialExercises,
   );
 
   // Récupérer favoris
-  const { data: favorites = [], isLoading: loadingFavorites } = useFavorites(
+  const { data: favoritesExercises = [] } = useFavorites(
     userId,
     initialFavorites,
   );
@@ -52,7 +52,7 @@ export default function WorkoutExercisesList({
     favoriteExerciseMuscles,
   } = useExerciseFilters({
     exercises: cachedExercises,
-    favorites,
+    favoritesExercises,
     isAdmin,
   });
 

@@ -1,7 +1,7 @@
 "use client";
 
 // Carte d'affichage d'un exercice avec ses actions (favoris, modifier, supprimer)
-import { Button } from "@/Global/components";
+import { Button, LoaderButton } from "@/Global/components";
 import { useToggleFavorite } from "@/Features/Exercises/hooks/useExercises";
 import { FaRegStar, FaStar } from "react-icons/fa";
 
@@ -29,7 +29,7 @@ export default function ExerciseCard({
         </div>
 
         {/* Actions */}
-        <div className="flex gap-2.5 ml-4">
+        <div className="flex self-center gap-2.5 ml-4">
           {/* Bouton favoris (onglets "Tous" et "Mes exercices") */}
           {(activeTab === "all" || activeTab === "mine") && (
             <button
@@ -46,14 +46,19 @@ export default function ExerciseCard({
 
           {/* Retirer des favoris (onglet "Favoris") */}
           {activeTab === "favorites" && (
-            <Button
+            <LoaderButton
               close
+              isLoading={isToggling}
+              loadingText="Retrait en cours"
+              type="button"
+              disabled={isToggling}
               onClick={() =>
                 toggleFavorite({ exerciseId: exercise._id, isFavorite })
               }
+              label="Retirer des favoris"
             >
               Retirer des favoris
-            </Button>
+            </LoaderButton>
           )}
 
           {/* Modifier/Supprimer (onglet "Mes exercices") */}

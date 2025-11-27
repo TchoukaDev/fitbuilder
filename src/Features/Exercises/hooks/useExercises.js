@@ -83,7 +83,7 @@ export function useCreateExercise(userId, isAdmin) {
       return { previousExercices };
     },
     onSuccess: () => {
-      toast.success("Votre exercice a été créé.");
+      toast.success("Exercice créé avec succès");
     },
 
     onError: (err, newExercice, context) => {
@@ -147,7 +147,7 @@ export function useUpdateExercise(userId, isAdmin) {
       queryClient.setQueryData(key, context?.previousExercices);
     },
     onSuccess: () => {
-      toast.success("Votre exercice a été modifié.");
+      toast.success("Exercice modifié avec succès");
     },
     // ✅ Sync avec serveur après succès/erreur
     onSettled: () => {
@@ -188,7 +188,7 @@ export function useDeleteExercise(userId, isAdmin) {
       return { previousExercices };
     },
     onSuccess: () => {
-      toast.success("Votre exercice a été supprimé.");
+      toast.success("Exercice supprimé avec succès");
     },
     onError: (err, id, context) =>
       queryClient.setQueryData(key, context?.previousExercices),
@@ -214,7 +214,8 @@ export function useFavorites(userId, initialData) {
       }
 
       const data = await response.json();
-      return data.favorites || []; // ✅ Retourne le tableau directement
+      console.log(data);
+      return data.favoritesExercises || []; // ✅ Retourne le tableau directement
     },
     initialData: initialData,
     staleTime: 1000 * 60 * 5,
@@ -249,7 +250,8 @@ export function useToggleFavorite(userId) {
       }
 
       const data = await response.json();
-      return data.favorites || [];
+      console.log(data);
+      return data.favoritesExercises || [];
     },
 
     // ✅ onMutate reçoit le même objet

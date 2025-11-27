@@ -13,8 +13,13 @@ export default function WorkoutMuscleFilters({
   }
 
   return (
-    <div>
-      <p className="text-center my-3">Filtrer par muscle</p>
+    <div className="flex flex-col text-center gap-2 mt-3">
+      <label
+        htmlFor="muscleFilter"
+        className="text-sm text-primary-500 font-semibold"
+      >
+        Filtrer par muscle:
+      </label>
       <select
         className="input pt-2"
         onChange={(e) => onMuscleChange(e.target.value)}
