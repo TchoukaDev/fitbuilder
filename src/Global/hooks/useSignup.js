@@ -31,16 +31,8 @@ export function useSignUp() {
       if (!response.ok || !result.success) {
         if (result.fieldErrors) {
           setServerErrors(result.fieldErrors);
+          return { success: false };
         }
-        if (result.error) {
-          // L'API retourne { error: "string", message: "string" }
-          const errorMessage =
-            typeof result.error === "string"
-              ? result.error
-              : result.error.message || result.error.error;
-          toast.error(errorMessage);
-        }
-        return { success: false };
       }
 
       toast.success(result.message || "Compte créé avec succès !");

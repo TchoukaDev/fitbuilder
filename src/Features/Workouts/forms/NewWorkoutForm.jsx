@@ -12,7 +12,6 @@ import {
 } from "../modals";
 import { WorkoutFormFields, WorkoutFormExercisesList } from "./formsComponents";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { workoutSchema } from "../utils/workoutSchema";
 
 export default function NewWorkoutForm({
   allExercises,
@@ -59,7 +58,6 @@ export default function NewWorkoutForm({
       category: "",
       estimatedDuration: "",
     },
-    resolver: zodResolver(workoutSchema),
     mode: "onChange",
     reValidateMode: "onChange",
   });

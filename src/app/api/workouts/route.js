@@ -5,7 +5,6 @@ import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
 import { ApiError, ApiSuccess } from "@/libs/apiResponse";
 import { requireAuth } from "@/libs/authMiddleware";
-import { workoutSchema } from "@/Features/Workouts/utils/workoutSchema";
 
 // POST - Créer un nouveau plan d'entraînement
 export async function POST(req) {
@@ -19,21 +18,16 @@ export async function POST(req) {
     await req.json();
 
   // Validation des champs obligatoires
-  const result = workoutSchema.safeParse({
-    name,
-    description,
-    category,
-    estimatedDuration,
-    exercises,
-  });
-  if (!result.success) {
+  if (
+    !name.trim() ||
+    !category.trim() ||
+    !estimatedDuration ||
+    exercises.length === 0
+  ) {
     return NextResponse.json(
-      ApiError.MISSING_FIELDS([
-        "nom",
-        "catégorie",
-        "durée estimée",
-        "exercices",
-      ]),
+      ApiError.INVALID_DATA(
+        "Le plan doit comporter un nom, une catégorie, une durée et au moins un exercice",
+      ),
       { status: 400 },
     );
   }
