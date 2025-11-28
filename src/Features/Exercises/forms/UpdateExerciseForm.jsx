@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import { useModals } from "@/Providers/Modals";
 import { useUpdateExercise } from "../hooks";
 import ExerciseFormFields from "./ExerciseFormFields";
+import { exerciseSchema } from "../utils/ExerciseSchema";
 
 export default function UpdateExerciseForm({ exerciseToUpdate }) {
   const { closeModal } = useModals();
@@ -30,12 +31,16 @@ export default function UpdateExerciseForm({ exerciseToUpdate }) {
     setError("");
 
     // Validation des champs obligatoires
-    if (!name.trim() || !muscle.trim() || !equipment) {
+    const result = exerciseSchema.safeParse({
+      name,
+      muscle,
+      description,
+      equipment,
+    });
+    if (!result.success) {
       setError("Veuillez compléter tous les champs obligatoires");
       return;
     }
-
-    // Mutation de mise à jour
     updateExercise(
       {
         id: exerciseToUpdate._id,

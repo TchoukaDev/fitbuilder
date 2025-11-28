@@ -98,7 +98,10 @@ export function useCreateSession(userId) {
       });
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error);
+        // L'API retourne { error: "string", message: "string" }
+        throw new Error(
+          errorData.message || errorData.error || "Erreur inconnue",
+        );
       }
       const data = await response.json();
       return data;
@@ -132,8 +135,11 @@ export function useDeleteSession(userId) {
       });
       if (!response.ok) {
         const errorData = await response.json();
+        // L'API retourne { error: "string", message: "string" }
         throw new Error(
-          errorData.error || "Erreur suppression de la session d'entraînement",
+          errorData.message ||
+            errorData.error ||
+            "Erreur suppression de la session d'entraînement",
         );
       }
       const data = response.json();

@@ -5,6 +5,7 @@ import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
 import { ApiError, ApiSuccess } from "@/libs/apiResponse";
 import { requireAuth } from "@/libs/authMiddleware";
+import { exerciseSchema } from "@/Features/Exercises/utils/ExerciseSchema";
 
 // PATCH - Modifier un exercice (public si admin, privé si utilisateur)
 export async function PATCH(request, { params }) {
@@ -18,11 +19,15 @@ export async function PATCH(request, { params }) {
   const { name, muscle, equipment, description } = await request.json();
 
   // Validation des champs obligatoires
-  if (!name || !muscle || !equipment) {
+  const result = exerciseSchema.safeParse({
+    name,
+    muscle,
+    equipment,
+    description,
+  });
+  if (!result.success) {
     return NextResponse.json(
-      {
-        error: "L'intitulé', le groupe musculaire et l'équipement sont requis",
-      },
+      ApiError.MISSING_FIELDS(["nom", "muscle", "matériel nécessaire"]),
       { status: 400 },
     );
   }

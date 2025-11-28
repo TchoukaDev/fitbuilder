@@ -38,7 +38,7 @@ export default function SignUpForm() {
     try {
       await signUp(data);
     } catch (error) {
-      toast.error(error.error.message || "Erreur lors de l'inscription");
+      toast.error(error?.message || "Erreur lors de l'inscription");
     }
   };
 

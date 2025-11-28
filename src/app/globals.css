@@ -158,7 +158,7 @@ input[data-autocompleted] {
 }
 
 /* À partir de md: → on désactive le background */
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
   .heroBg::before {
     background-image: none;
   }

@@ -23,7 +23,10 @@ export function useExercises(userId, isAdmin, initialData) {
       const response = await fetch("/api/exercises");
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error);
+        // L'API retourne { error: "string", message: "string" }
+        throw new Error(
+          errorData.message || errorData.error || "Erreur inconnue",
+        );
       }
 
       const data = await response.json();
@@ -57,7 +60,10 @@ export function useCreateExercise(userId, isAdmin) {
       });
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error);
+        // L'API retourne { error: "string", message: "string" }
+        throw new Error(
+          errorData.message || errorData.error || "Erreur inconnue",
+        );
       }
 
       return response.json();
@@ -117,7 +123,10 @@ export function useUpdateExercise(userId, isAdmin) {
       });
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error);
+        // L'API retourne { error: "string", message: "string" }
+        throw new Error(
+          errorData.message || errorData.error || "Erreur inconnue",
+        );
       }
 
       return response.json();
@@ -173,7 +182,10 @@ export function useDeleteExercise(userId, isAdmin) {
       });
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error);
+        // L'API retourne { error: "string", message: "string" }
+        throw new Error(
+          errorData.message || errorData.error || "Erreur inconnue",
+        );
       }
 
       return response.json();
@@ -210,7 +222,10 @@ export function useFavorites(userId, initialData) {
       const response = await fetch("/api/exercises/favorites");
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error);
+        // L'API retourne { error: "string", message: "string" }
+        throw new Error(
+          errorData.message || errorData.error || "Erreur inconnue",
+        );
       }
 
       const data = await response.json();
@@ -246,7 +261,10 @@ export function useToggleFavorite(userId) {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error);
+        // L'API retourne { error: "string", message: "string" }
+        throw new Error(
+          errorData.message || errorData.error || "Erreur inconnue",
+        );
       }
 
       const data = await response.json();

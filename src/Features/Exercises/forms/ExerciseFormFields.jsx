@@ -60,61 +60,69 @@ export default function ExerciseFormFields({
       </div>
 
       {/* Matériel nécessaire */}
-      <select
-        className="input py-5 peer"
-        id="equipment"
-        name="equipment"
-        value={equipment}
-        onChange={onEquipmentChange}
-        aria-label="Matériel nécessaire"
-        disabled={isPending}
-      >
-        <option value="" className="font-semibold">
-          -- Matériel nécessaire <span className="text-accent-500">*</span> --
-        </option>
-        <option value="Poids du corps">Poids du corps</option>
-        <option value="Haltères">Haltères</option>
-        <option value="Barre">Barre</option>
-        <option value="Machine">Machine</option>
-        <option value="Élastique">Élastique</option>
-      </select>
-
-      {/* Description */}
-      <div className="relative">
-        <textarea
-          className="input peer"
-          placeholder=""
-          id="description"
-          name="description"
-          rows="3"
-          value={description}
-          onChange={onDescriptionChange}
+      <div className="flex flex-col gap-2 items-center">
+        <label
+          htmlFor="equipment"
+          className="text-sm text-center text-primary-500 font-semibold"
+        >
+          Matériel nécessaire: <span className="text-accent-500">*</span>
+        </label>
+        <select
+          className="input py-2 peer"
+          id="equipment"
+          name="equipment"
+          value={equipment}
+          onChange={onEquipmentChange}
+          aria-label="Matériel nécessaire"
           disabled={isPending}
-        />
-        <Label htmlFor="description" value={description}>
-          Description
-        </Label>
-      </div>
+        >
+          <option value="" className="font-semibold">
+            -- Sélectionner un équipement --
+          </option>
+          <option value="Poids du corps">Poids du corps</option>
+          <option value="Haltères">Haltères</option>
+          <option value="Barre">Barre</option>
+          <option value="Machine">Machine</option>
+          <option value="Élastique">Élastique</option>
+        </select>
 
-      {/* Actions */}
-      <div className="space-y-2">
-        <div className="flex gap-4">
-          <Button close onClick={onClose} type="button" disabled={isPending}>
-            Fermer
-          </Button>
-          <LoaderButton
-            isLoading={isPending}
-            loadingText={loadingLabel}
-            type="submit"
+        {/* Description */}
+        <div className="relative">
+          <textarea
+            className="input peer"
+            placeholder=""
+            id="description"
+            name="description"
+            rows="3"
+            value={description}
+            onChange={onDescriptionChange}
             disabled={isPending}
-            label={submitLabel}
-          >
-            {submitLabel}
-          </LoaderButton>
+          />
+          <Label htmlFor="description" value={description}>
+            Description
+          </Label>
         </div>
-        <p className="text-xs text-gray-500 text-center">
-          <span className="text-accent-500">*</span> Champs obligatoires
-        </p>
+
+        {/* Actions */}
+        <div className="space-y-2">
+          <div className="flex gap-4">
+            <Button close onClick={onClose} type="button" disabled={isPending}>
+              Fermer
+            </Button>
+            <LoaderButton
+              isLoading={isPending}
+              loadingText={loadingLabel}
+              type="submit"
+              disabled={isPending}
+              label={submitLabel}
+            >
+              {submitLabel}
+            </LoaderButton>
+          </div>
+          <p className="text-xs text-gray-500 text-center">
+            <span className="text-accent-500">*</span> Champs obligatoires
+          </p>
+        </div>
       </div>
     </form>
   );

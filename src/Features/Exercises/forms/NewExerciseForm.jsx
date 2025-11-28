@@ -6,6 +6,7 @@ import { useCreateExercise } from "../hooks";
 import { useSession } from "next-auth/react";
 import { useModals } from "@/Providers/Modals";
 import ExerciseFormFields from "./ExerciseFormFields";
+import { exerciseSchema } from "../utils/ExerciseSchema";
 
 export default function NewExerciseForm() {
   const { data: session } = useSession();
@@ -30,7 +31,13 @@ export default function NewExerciseForm() {
     setError("");
 
     // Validation des champs obligatoires
-    if (!name.trim() || !muscle.trim() || !equipment) {
+    const result = exerciseSchema.safeParse({
+      name,
+      muscle,
+      description,
+      equipment,
+    });
+    if (!result.success) {
       setError("Veuillez compléter tous les champs obligatoires");
       return;
     }
@@ -48,7 +55,7 @@ export default function NewExerciseForm() {
         },
         onError: (err) => {
           setError(
-            err.message || "Une erreur est survenue lors de la création",
+            err?.message || "Une erreur est survenue lors de la création",
           );
         },
       },

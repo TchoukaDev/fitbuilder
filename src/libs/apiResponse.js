@@ -33,7 +33,9 @@ export const ApiError = {
 
   MISSING_FIELDS: (fields) => ({
     error: "Champs manquants",
-    message: `Les champs suivants sont requis : ${fields.join(", ")}`,
+    message: `Veuillez compléter tous les champs obligatoires (${fields.join(
+      ", ",
+    )})`,
   }),
 
   INVALID_DATA: (detail) => ({

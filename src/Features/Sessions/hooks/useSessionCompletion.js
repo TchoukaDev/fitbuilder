@@ -97,7 +97,8 @@ export function useSessionCompletion(
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error);
+        // L'API retourne { error: "string", message: "string" }
+        throw new Error(error.message || error.error || "Erreur inconnue");
       }
 
       clearBackup();

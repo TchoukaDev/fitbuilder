@@ -5,6 +5,7 @@ import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
 import { ApiError, ApiSuccess } from "@/libs/apiResponse";
 import { requireAuth } from "@/libs/authMiddleware";
+import { exerciseSchema } from "@/Features/Exercises/utils/ExerciseSchema";
 
 // POST - Créer un exercice (public si admin, privé sinon)
 export async function POST(req) {
@@ -17,9 +18,15 @@ export async function POST(req) {
   const { name, muscle, equipment, description } = await req.json();
 
   // Validation des champs obligatoires
-  if (!name || !muscle || !equipment) {
+  const result = exerciseSchema.safeParse({
+    name,
+    muscle,
+    equipment,
+    description,
+  });
+  if (!result.success) {
     return NextResponse.json(
-      ApiError.MISSING_FIELDS(["nom", "groupe musculaire", "équipement"]),
+      ApiError.MISSING_FIELDS(["nom", "muscle", "matériel nécessaire"]),
       { status: 400 },
     );
   }

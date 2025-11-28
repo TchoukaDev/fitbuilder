@@ -19,7 +19,10 @@ export function useWorkouts(initialData, userId) {
       const response = await fetch("/api/workouts");
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error);
+        // L'API retourne { error: "string", message: "string" }
+        throw new Error(
+          errorData.message || errorData.error || "Erreur inconnue",
+        );
       }
 
       const data = await response.json();
@@ -53,7 +56,10 @@ export function useCreateWorkout(userId) {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error.message);
+        // L'API retourne { error: "string", message: "string" }
+        throw new Error(
+          errorData.message || errorData.error || "Erreur inconnue",
+        );
       }
 
       return response.json();
@@ -110,7 +116,10 @@ export function useUpdateWorkout(userId) {
       });
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error.message);
+        // L'API retourne { error: "string", message: "string" }
+        throw new Error(
+          errorData.message || errorData.error || "Erreur inconnue",
+        );
       }
 
       const data = await response.json();
@@ -164,7 +173,10 @@ export function useDeleteWorkout(userId) {
       });
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error.message);
+        // L'API retourne { error: "string", message: "string" }
+        throw new Error(
+          errorData.message || errorData.error || "Erreur inconnue",
+        );
       }
     },
     onMutate: async (id) => {

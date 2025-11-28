@@ -11,6 +11,8 @@ import {
   WorkoutSelectExerciseModal,
 } from "../modals";
 import { WorkoutFormFields, WorkoutFormExercisesList } from "./formsComponents";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { workoutSchema } from "../utils/workoutSchema";
 
 export default function NewWorkoutForm({
   allExercises,
@@ -57,6 +59,7 @@ export default function NewWorkoutForm({
       category: "",
       estimatedDuration: "",
     },
+    resolver: zodResolver(workoutSchema),
     mode: "onChange",
     reValidateMode: "onChange",
   });
@@ -66,8 +69,14 @@ export default function NewWorkoutForm({
   // Soumission du formulaire (validation + création côté API)
   const onSubmit = async (data) => {
     setError("");
-    if (formData.exercises.length === 0) {
-      setError("Veuillez ajouter au moins un exercice");
+    const result = workoutSchema.safeParse({
+      ...data,
+      exercises: formData.exercises,
+    });
+    if (!result.success) {
+      // Zod error - obtenir le premier message d'erreur
+      const errorMessage = result.error.errors?.[0]?.message || "Validation échouée";
+      setError(errorMessage);
       return;
     }
     createWorkout(
@@ -79,8 +88,7 @@ export default function NewWorkoutForm({
           router.push("/workouts");
         },
         onError: (err) => {
-          console.log("erreur", err);
-          setError(err.message || "Une erreur est survenue");
+          setError(err?.message || "Une erreur est survenue");
         },
       },
     );
@@ -90,14 +98,14 @@ export default function NewWorkoutForm({
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        {/* ✅ Composant réutilisable */}
+        {/* Informations générales */}
         <WorkoutFormFields
           register={register}
           errors={errors}
           watchedFields={watchedFields}
         />
 
-        {/* ✅ Composant réutilisable */}
+        {/* Liste d'exercices */}
         <WorkoutFormExercisesList
           exercises={formData.exercises}
           isMounted={isMounted}

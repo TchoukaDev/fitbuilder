@@ -72,7 +72,7 @@ export default function LoginForm() {
       }
     } catch (error) {
       console.error("Erreur de connexion:", error);
-      toast.error(error.error || "Erreur lors de la connexion");
+      toast.error(error?.message || "Erreur lors de la connexion");
     } finally {
       reset();
     }

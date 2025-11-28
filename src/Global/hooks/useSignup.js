@@ -33,7 +33,12 @@ export function useSignUp() {
           setServerErrors(result.fieldErrors);
         }
         if (result.error) {
-          toast.error(result.error.message || result.error.error);
+          // L'API retourne { error: "string", message: "string" }
+          const errorMessage =
+            typeof result.error === "string"
+              ? result.error
+              : result.error.message || result.error.error;
+          toast.error(errorMessage);
         }
         return { success: false };
       }
@@ -43,7 +48,7 @@ export function useSignUp() {
       return { success: true };
     } catch (error) {
       console.error("Erreur signup:", error);
-      toast.error(error.error.message || "Erreur lors de l'inscription");
+      toast.error(error?.message || "Erreur lors de l'inscription");
       return { success: false };
     }
   };

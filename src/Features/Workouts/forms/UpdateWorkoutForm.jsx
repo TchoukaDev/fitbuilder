@@ -11,6 +11,8 @@ import {
   WorkoutSelectExerciseModal,
 } from "../modals";
 import { WorkoutFormFields, WorkoutFormExercisesList } from "./formsComponents";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { workoutSchema } from "../utils/workoutSchema";
 
 export default function UpdateWorkoutForm({
   workout,
@@ -55,6 +57,7 @@ export default function UpdateWorkoutForm({
       category: workout.category || "",
       estimatedDuration: workout.estimatedDuration || "",
     },
+    resolver: zodResolver(workoutSchema),
     mode: "onChange",
     reValidateMode: "onChange",
   });
@@ -64,7 +67,11 @@ export default function UpdateWorkoutForm({
   // Soumission du formulaire (validation + appel API)
   const onSubmit = async (data) => {
     setError("");
-    if (formData.exercises.length === 0) {
+    const result = workoutSchema.safeParse({
+      ...data,
+      exercises: formData.exercises,
+    });
+    if (!result.success) {
       setError("Veuillez ajouter au moins un exercice");
       return;
     }
