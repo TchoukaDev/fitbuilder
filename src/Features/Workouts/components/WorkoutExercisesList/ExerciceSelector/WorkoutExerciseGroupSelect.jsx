@@ -2,7 +2,6 @@
 export default function WorkoutExerciseGroupSelect({
   onSelectExerciseId,
   grouped,
-  error,
 }) {
   return (
     <div className="flex flex-col gap-2 mt-3">
@@ -34,7 +33,6 @@ export default function WorkoutExerciseGroupSelect({
           )),
         )}
       </select>
-      {error && <p className="formError my-3">{error}</p>}
     </div>
   );
 }

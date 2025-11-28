@@ -23,7 +23,7 @@ export default function ExerciseFormFields({
       className="flex flex-col gap-5 items-center justify-center"
     >
       {/* Message d'erreur */}
-      {error && <div className="formError">{error}</div>}
+      {error && <div className="formError">{error?.message || error}</div>}
 
       {/* Nom de l'exercice */}
       <div className="relative">

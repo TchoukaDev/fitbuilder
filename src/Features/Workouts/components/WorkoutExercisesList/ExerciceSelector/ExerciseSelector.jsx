@@ -77,16 +77,18 @@ export default function ExerciseSelector({
         <WorkoutMuscleFilters
           muscles={favoriteExerciseMuscles}
           onMuscleChange={setSelectedMuscle}
+          muscleCounts={muscleCounts}
         />
       )}
 
       {/*  sélecteur d'exercices par muscle */}
       <WorkoutExerciseGroupSelect
         onSelectExerciseId={setSelectedExerciseId}
-        error={error}
         grouped={grouped}
         exercisesAdded={exercisesAdded}
       />
+      {/* Erreur formulaire */}
+      {error && <p className="formError my-3">{error}</p>}
 
       {/* Actions */}
       <div className="flex items-center gap-3 my-5">

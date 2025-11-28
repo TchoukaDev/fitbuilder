@@ -8,7 +8,7 @@ import {
 } from "@/Features/Exercises/hooks";
 
 import ExerciseConfiguration from "./ExerciseConfiguration";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import ExerciseSelector from "./ExerciceSelector/ExerciseSelector";
 export default function WorkoutExercisesList({
   userId,
@@ -20,6 +20,7 @@ export default function WorkoutExercisesList({
   onSetTitle,
 }) {
   // State (étapes)
+
   const [step, setStep] = useState(1);
   const [selectedExerciseId, setSelectedExerciseId] = useState(null); //id de l'exercice en cours de sélection
 
@@ -57,9 +58,10 @@ export default function WorkoutExercisesList({
   });
 
   // Réupérer l'exercice sélectionné au complet
-  const exerciseToConfigure = cachedExercises.filter(
-    (ex) => ex._id === selectedExerciseId,
-  )[0];
+  const exerciseToConfigure = useMemo(
+    () => cachedExercises.filter((ex) => ex._id === selectedExerciseId)[0],
+    [cachedExercises, selectedExerciseId],
+  );
 
   let exerciseSelected;
   if (exerciseToConfigure) {

@@ -21,14 +21,14 @@ export default function WorkoutEditExerciseModal({ exercise, onSave }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
+    setError("");
     // Validation
     if (
       formData.sets === "" ||
       formData.reps === "" ||
       formData.restTime === ""
     ) {
-      setError(true);
+      setError("Veuillez compléter tous les champs obligatoires");
       return;
     }
 
@@ -157,11 +157,7 @@ export default function WorkoutEditExerciseModal({ exercise, onSave }) {
         </div>
 
         {/* Erreur formulaire  */}
-        {error && (
-          <p className="formError my-3">
-            Certains champs obligatoires ne sont pas remplis.
-          </p>
-        )}
+        {error && <p className="formError my-3">{error}</p>}
 
         {/* Boutons */}
         <div className="flex gap-3 pt-4 border-t border-gray-200">

@@ -13,7 +13,7 @@ export default function SignUpForm() {
   const [showPassword2, setShowPassword2] = useState(false);
 
   const usernameRef = useRef(null);
-  const { signUp, serverErrors, globalError, clearServerError } = useSignUp();
+  const { signUp, serverErrors, clearServerError } = useSignUp();
 
   // React Hook Form avec validation Zod
   const {
@@ -35,7 +35,11 @@ export default function SignUpForm() {
   const confirmPassword = watch("confirmPassword");
 
   const onSubmit = async (data) => {
-    await signUp(data);
+    try {
+      await signUp(data);
+    } catch (error) {
+      toast.error(error.error.message || "Erreur lors de l'inscription");
+    }
   };
 
   // Focus automatique sur le champ username
@@ -48,11 +52,6 @@ export default function SignUpForm() {
       className="gap-5 flex flex-col items-center"
       onSubmit={handleSubmit(onSubmit)}
     >
-      {/* Erreur globale serveur */}
-      {globalError && Object.keys(serverErrors).length === 0 && (
-        <div className="formError">{globalError}</div>
-      )}
-
       {/* Champ nom d'utilisateur */}
       <div className="relative ">
         <input

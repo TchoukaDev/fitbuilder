@@ -10,7 +10,6 @@ import { toast } from "react-toastify";
 export function useSignUp() {
   const router = useRouter();
   const [serverErrors, setServerErrors] = useState({});
-  const [globalError, setGlobalError] = useState("");
 
   /**
    * Envoie les données d'inscription à l'API.
@@ -19,7 +18,6 @@ export function useSignUp() {
    */
   const signUp = async (data) => {
     setServerErrors({});
-    setGlobalError("");
 
     try {
       const response = await fetch("/api/auth/signup", {
@@ -35,7 +33,7 @@ export function useSignUp() {
           setServerErrors(result.fieldErrors);
         }
         if (result.error) {
-          setGlobalError(result.error);
+          toast.error(result.error.message || result.error.error);
         }
         return { success: false };
       }
@@ -45,9 +43,7 @@ export function useSignUp() {
       return { success: true };
     } catch (error) {
       console.error("Erreur signup:", error);
-      const errorMsg = "Une erreur est survenue. Veuillez réessayer.";
-      setGlobalError(errorMsg);
-      toast.error(errorMsg);
+      toast.error(error.error.message || "Erreur lors de l'inscription");
       return { success: false };
     }
   };
@@ -70,7 +66,6 @@ export function useSignUp() {
   return {
     signUp,
     serverErrors,
-    globalError,
     clearServerError,
   };
 }

@@ -1,20 +1,18 @@
 // API Route pour les opérations sur un plan d'entraînement spécifique (modification et suppression)
-import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/[...nextauth]/route";
 import { NextResponse } from "next/server";
 import connectDB from "@/libs/mongodb";
 import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
 import { ApiError, ApiSuccess } from "@/libs/apiResponse";
+import { requireAuth } from "@/libs/authMiddleware";
 
 // DELETE - Supprimer un plan d'entraînement
 export async function DELETE(req, { params }) {
-  const session = await getServerSession(authOptions);
-  const userId = session?.user?.id;
+  // Vérification de l'authentification
+  const auth = await requireAuth(req);
+  if (auth instanceof NextResponse) return auth;
 
-  if (!userId) {
-    return NextResponse.json(ApiError.UNAUTHORIZED, { status: 401 });
-  }
+  const { userId } = auth;
 
   const resolvedParams = await params;
   const workoutId = resolvedParams.id;
@@ -50,12 +48,11 @@ export async function DELETE(req, { params }) {
 
 // PATCH - Modifier un plan d'entraînement
 export async function PATCH(req, { params }) {
-  const session = await getServerSession(authOptions);
-  const userId = session?.user?.id;
+  // Vérification de l'authentification
+  const auth = await requireAuth(req);
+  if (auth instanceof NextResponse) return auth;
 
-  if (!userId) {
-    return NextResponse.json(ApiError.UNAUTHORIZED, { status: 401 });
-  }
+  const { userId } = auth;
 
   const resolvedParams = await params;
   const workoutId = resolvedParams.id;

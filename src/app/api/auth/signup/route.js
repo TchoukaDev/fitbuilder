@@ -98,7 +98,7 @@ export async function POST(req) {
     return NextResponse.json(
       {
         success: false,
-        error: ApiError.SERVER_ERROR.message,
+        error: ApiError.SERVER_ERROR,
       },
       { status: 500 },
     );

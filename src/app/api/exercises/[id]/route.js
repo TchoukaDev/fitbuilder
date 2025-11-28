@@ -1,19 +1,18 @@
 // API Route pour les opérations sur un exercice spécifique (modification et suppression)
-import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/[...nextauth]/route";
 import { NextResponse } from "next/server";
 import connectDB from "@/libs/mongodb";
 import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
 import { ApiError, ApiSuccess } from "@/libs/apiResponse";
+import { requireAuth } from "@/libs/authMiddleware";
 
 // PATCH - Modifier un exercice (public si admin, privé si utilisateur)
 export async function PATCH(request, { params }) {
-  const session = await getServerSession(authOptions);
+  // Vérification de l'authentification
+  const auth = await requireAuth(request);
+  if (auth instanceof NextResponse) return auth;
 
-  if (!session?.user?.id) {
-    return NextResponse.json(ApiError.UNAUTHORIZED, { status: 401 });
-  }
+  const { userId, userRole } = auth;
   const resolvedParams = await params;
   const { id } = resolvedParams;
   const { name, muscle, equipment, description } = await request.json();
@@ -38,7 +37,7 @@ export async function PATCH(request, { params }) {
 
     if (publicExercise) {
       // C'est un exercice public → Admin seulement
-      if (session.user.role !== "ADMIN") {
+      if (userRole !== "ADMIN") {
         return NextResponse.json(
           { error: "Seul l'admin peut modifier les exercices publics" },
           { status: 403 },
@@ -61,7 +60,7 @@ export async function PATCH(request, { params }) {
     // Exercice privé: modifier dans le tableau de l'utilisateur
     const result = await db.collection("users").updateOne(
       {
-        _id: new ObjectId(session.user.id),
+        _id: new ObjectId(userId),
         "exercises._id": new ObjectId(id),
       },
       {
@@ -93,11 +92,11 @@ export async function PATCH(request, { params }) {
 
 // DELETE - Supprimer un exercice (public si admin, privé si utilisateur)
 export async function DELETE(request, { params }) {
-  const session = await getServerSession(authOptions);
+  // Vérification de l'authentification
+  const auth = await requireAuth(request);
+  if (auth instanceof NextResponse) return auth;
 
-  if (!session?.user?.id) {
-    return NextResponse.json(ApiError.UNAUTHORIZED, { status: 401 });
-  }
+  const { userId, userRole } = auth;
 
   const resolvedParams = await params;
   const { id } = resolvedParams;
@@ -112,7 +111,7 @@ export async function DELETE(request, { params }) {
 
     if (publicExercise) {
       // C'est un exercice public → Admin seulement
-      if (session.user.role !== "ADMIN") {
+      if (userRole !== "ADMIN") {
         return NextResponse.json(
           { error: "Seul l'admin peut supprimer les exercices publics" },
           { status: 403 },
@@ -132,7 +131,7 @@ export async function DELETE(request, { params }) {
     const result = await db
       .collection("users")
       .updateOne(
-        { _id: new ObjectId(session.user.id) },
+        { _id: new ObjectId(userId) },
         { $pull: { exercises: { _id: new ObjectId(id) } } },
       );
 

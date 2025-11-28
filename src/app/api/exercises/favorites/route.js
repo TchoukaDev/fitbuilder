@@ -1,20 +1,18 @@
 // API Route pour la gestion des exercices favoris (ajout, retrait, récupération)
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import connectDB from "@/libs/mongodb";
 import { ObjectId } from "mongodb";
-import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { ApiError, ApiSuccess } from "@/libs/apiResponse";
+import { requireAuth } from "@/libs/authMiddleware";
 
 // PATCH - Ajouter ou retirer un exercice des favoris
 export async function PATCH(req) {
-  const session = await getServerSession(authOptions);
-  const userId = session?.user?.id;
+  // Vérification de l'authentification
+  const auth = await requireAuth(req);
+  if (auth instanceof NextResponse) return auth;
 
-  if (!userId) {
-    return NextResponse.json(ApiError.UNAUTHORIZED, { status: 401 });
-  }
+  const { userId } = auth;
 
   try {
     const { exerciseId, action } = await req.json();
@@ -68,13 +66,12 @@ export async function PATCH(req) {
 }
 
 // GET - Récupérer la liste des favoris
-export async function GET() {
-  const session = await getServerSession(authOptions);
-  const userId = session?.user?.id;
+export async function GET(req) {
+  // Vérification de l'authentification
+  const auth = await requireAuth(req);
+  if (auth instanceof NextResponse) return auth;
 
-  if (!userId) {
-    return NextResponse.json(ApiError.UNAUTHORIZED, { status: 401 });
-  }
+  const { userId } = auth;
 
   try {
     const db = await connectDB();

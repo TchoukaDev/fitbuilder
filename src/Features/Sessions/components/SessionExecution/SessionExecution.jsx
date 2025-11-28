@@ -3,7 +3,7 @@
 // Page d'exécution d'une session : affiche les exercices, gère le timer, la validation et la sauvegarde.
 import { useCallback } from "react";
 import { Clock } from "lucide-react";
-import { Button } from "@/Global/components";
+import { Button, LoaderButton } from "@/Global/components";
 import { SessionExerciseCard } from "./SessionExerciseCard";
 
 // Hooks
@@ -24,6 +24,7 @@ import {
   FinishSessionModal,
   IncompleteExerciseModal,
   CancelSessionModal,
+  RestTimerModal,
 } from "../../modals";
 
 export default function SessionExecution({ sessionData, sessionId, userId }) {
@@ -223,24 +224,32 @@ export default function SessionExecution({ sessionData, sessionId, userId }) {
               onSetComplete={handleSetComplete}
               onExerciseComplete={handleExerciseComplete}
               onReopenExercise={handleReopenExercise}
+              onRestTimer={() =>
+                openModal("restTimer", { initialTime: exercise.restTime })
+              }
             />
           ))}
         </div>
+        {isOpen("restTimer") && (
+          <RestTimerModal initialTime={getModalData("restTimer").initialTime} />
+        )}
       </div>
 
       {/* FOOTER */}
       <div className="sticky bottom-0 left-0 right-0 bg-primary-100 border-t border-primary-800 p-4 shadow-lg">
         <div className="container mx-auto max-w-4xl flex justify-center gap-3">
-          <Button
+          <LoaderButton
+            isLoading={isSaving}
+            loadingText="Sauvegarde en cours"
+            type="button"
             onClick={handleSaveProgress}
-            disabled={isSaving}
-            className="flex-1"
+            label="Sauvegarder"
           >
-            {isSaving ? "Sauvegarde..." : "💾 Sauvegarder"}
-          </Button>
+            💾 Sauvegarder
+          </LoaderButton>
 
           <Button onClick={handleFinishSession} className="flex-1">
-            🏁 Terminer la séance
+            Terminer la séance
           </Button>
         </div>
       </div>

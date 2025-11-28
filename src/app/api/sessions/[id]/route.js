@@ -1,22 +1,20 @@
 // API Route pour les opérations sur une séance spécifique (récupération, modification, finalisation, suppression)
-import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/[...nextauth]/route";
 import { NextResponse } from "next/server";
 import connectDB from "@/libs/mongodb";
 import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
 import { ApiError, ApiSuccess } from "@/libs/apiResponse";
+import { requireAuth } from "@/libs/authMiddleware";
 
 // GET - Récupérer une séance spécifique
 export async function GET(req, { params }) {
-  const session = await getServerSession(authOptions);
-  const userId = session?.user?.id;
+  // Vérification de l'authentification
+  const auth = await requireAuth(req);
+  if (auth instanceof NextResponse) return auth;
+
+  const { userId } = auth;
   const resolvedParams = await params;
   const sessionId = resolvedParams.id;
-
-  if (!userId) {
-    return NextResponse.json(ApiError.UNAUTHORIZED, { status: 401 });
-  }
 
   try {
     const db = await connectDB();
@@ -37,14 +35,13 @@ export async function GET(req, { params }) {
 
 // PATCH - Mettre à jour les exercices et la durée d'une séance en cours
 export async function PATCH(req, { params }) {
-  const session = await getServerSession(authOptions);
-  const userId = session?.user?.id;
+  // Vérification de l'authentification
+  const auth = await requireAuth(req);
+  if (auth instanceof NextResponse) return auth;
+
+  const { userId } = auth;
   const resolvedParams = await params;
   const sessionId = resolvedParams.id;
-
-  if (!userId) {
-    return NextResponse.json(ApiError.UNAUTHORIZED, { status: 401 });
-  }
 
   const { exercises, duration } = await req.json();
 
@@ -91,12 +88,11 @@ export async function PATCH(req, { params }) {
 
 // PUT - Terminer une séance (changement de statut à "completed")
 export async function PUT(req, { params }) {
-  const session = await getServerSession(authOptions);
-  const userId = session?.user?.id;
+  // Vérification de l'authentification
+  const auth = await requireAuth(req);
+  if (auth instanceof NextResponse) return auth;
 
-  if (!userId) {
-    return NextResponse.json(ApiError.UNAUTHORIZED, { status: 401 });
-  }
+  const { userId } = auth;
 
   const resolvedParams = await params;
   const sessionId = resolvedParams.id;
@@ -163,12 +159,11 @@ export async function PUT(req, { params }) {
 
 // DELETE - Supprimer une séance et mettre à jour les stats du plan d'entraînement
 export async function DELETE(req, { params }) {
-  const session = await getServerSession(authOptions);
-  const userId = session?.user?.id;
+  // Vérification de l'authentification
+  const auth = await requireAuth(req);
+  if (auth instanceof NextResponse) return auth;
 
-  if (!userId) {
-    return NextResponse.json(ApiError.UNAUTHORIZED, { status: 401 });
-  }
+  const { userId } = auth;
 
   const resolvedParams = await params;
   const sessionId = resolvedParams.id;

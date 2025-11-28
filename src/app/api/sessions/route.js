@@ -1,20 +1,18 @@
 // API Route pour la gestion des séances d'entraînement (création et récupération avec filtres/pagination)
-import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]/route";
 import { NextResponse } from "next/server";
 import connectDB from "@/libs/mongodb";
 import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
 import { ApiError, ApiSuccess } from "@/libs/apiResponse";
+import { requireAuth } from "@/libs/authMiddleware";
 
 // POST - Démarrer une nouvelle séance à partir d'un plan d'entraînement
 export async function POST(req) {
-  const session = await getServerSession(authOptions);
-  const userId = session?.user?.id;
+  // Vérification de l'authentification
+  const auth = await requireAuth(req);
+  if (auth instanceof NextResponse) return auth;
 
-  if (!userId) {
-    return NextResponse.json(ApiError.UNAUTHORIZED, { status: 401 });
-  }
+  const { userId } = auth;
 
   const { templateId, templateName, exercises } = await req.json();
 
@@ -109,12 +107,11 @@ export async function POST(req) {
 
 // GET - Récupérer les séances avec filtres (statut, date, template) et pagination
 export async function GET(req) {
-  const session = await getServerSession(authOptions);
-  const userId = session?.user?.id;
+  // Vérification de l'authentification
+  const auth = await requireAuth(req);
+  if (auth instanceof NextResponse) return auth;
 
-  if (!userId) {
-    return NextResponse.json({ error: "Accès refusé" }, { status: 401 });
-  }
+  const { userId } = auth;
 
   // Extraction des paramètres d'URL
   const { searchParams } = new URL(req.url);

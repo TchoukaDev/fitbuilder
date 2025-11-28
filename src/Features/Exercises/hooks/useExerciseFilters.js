@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 /**
  * Gère les filtres (onglets, muscle, recherche) pour la liste d'exercices.
@@ -31,51 +31,69 @@ export function useExerciseFilters({
   // ----------------------------
   // 2. Mes exercices / favoris
   // ----------------------------
-  const myExercises = isAdmin
-    ? searched.filter((ex) => ex.type === "public")
-    : searched.filter((ex) => ex.type === "private");
+  const myExercises = useMemo(
+    () =>
+      isAdmin
+        ? searched.filter((ex) => ex.type === "public")
+        : searched.filter((ex) => ex.type === "private"),
+    [searched, isAdmin],
+  );
 
-  const favoriteExercises = searched.filter((ex) =>
-    safeFavorites.includes(ex._id),
+  const favoriteExercises = useMemo(() =>
+    searched.filter(
+      (ex) => safeFavorites.includes(ex._id),
+      [searched, safeFavorites],
+    ),
   );
 
   // ----------------------------
   // 3. Muscles disponibles
   // ----------------------------
-  const allExerciseMuscles = [
-    ...new Set(searched.map((ex) => ex.muscle)),
-  ].sort();
-  const myExerciseMuscles = [
-    ...new Set(myExercises.map((ex) => ex.muscle)),
-  ].sort();
-  const favoriteExerciseMuscles = [
-    ...new Set(favoriteExercises.map((ex) => ex.muscle)),
-  ].sort();
+  const allExerciseMuscles = useMemo(
+    () => [...new Set(searched.map((ex) => ex.muscle))].sort(),
+    [searched],
+  );
+  const myExerciseMuscles = useMemo(
+    () => [...new Set(myExercises.map((ex) => ex.muscle))].sort(),
+    [myExercises],
+  );
+  const favoriteExerciseMuscles = useMemo(
+    () => [...new Set(favoriteExercises.map((ex) => ex.muscle))].sort(),
+    [favoriteExercises],
+  );
 
   // ----------------------------
   // 4. Exercices affichés selon onglet + muscle
   // ----------------------------
-  let displayed =
-    activeTab === "all"
-      ? searched
-      : activeTab === "mine"
-      ? myExercises
-      : favoriteExercises;
+  let displayed = useMemo(
+    () =>
+      activeTab === "all"
+        ? searched
+        : activeTab === "mine"
+        ? myExercises
+        : favoriteExercises,
+    [activeTab, searched, myExercises, favoriteExercises],
+  );
 
   // Calculer un compteur de muscle stable pour Le selecteur d'exercice dans Workout
-  const displayedWithoutMuscleFilters = displayed;
-  const unfilteredGrouped = displayedWithoutMuscleFilters.reduce((acc, ex) => {
-    if (!acc[ex.muscle]) acc[ex.muscle] = [];
-    acc[ex.muscle].push(ex);
-    return acc;
-  }, {});
+  const displayedWithoutMuscleFilters = useMemo(() => displayed, [displayed]);
+  const unfilteredGrouped = useMemo(
+    () =>
+      displayedWithoutMuscleFilters.reduce((acc, ex) => {
+        if (!acc[ex.muscle]) acc[ex.muscle] = [];
+        acc[ex.muscle].push(ex);
+        return acc;
+      }, {}),
+    [displayedWithoutMuscleFilters],
+  );
 
-  const fixedMuscleCounts = Object.entries(unfilteredGrouped).reduce(
-    (acc, [muscle, exs]) => {
-      acc[muscle] = exs.length;
-      return acc;
-    },
-    {},
+  const fixedMuscleCounts = useMemo(
+    () =>
+      Object.entries(unfilteredGrouped).reduce((acc, [muscle, exs]) => {
+        acc[muscle] = exs.length;
+        return acc;
+      }, {}),
+    [unfilteredGrouped],
   );
 
   // Ensuite filter par muscle
@@ -86,26 +104,37 @@ export function useExerciseFilters({
   // ----------------------------
   // 5. Groupage par muscle
   // ----------------------------
-  const grouped = displayed.reduce((acc, ex) => {
-    if (!acc[ex.muscle]) acc[ex.muscle] = [];
-    acc[ex.muscle].push(ex);
-    return acc;
-  }, {});
+  const grouped = useMemo(
+    () =>
+      displayed.reduce((acc, ex) => {
+        if (!acc[ex.muscle]) acc[ex.muscle] = [];
+        acc[ex.muscle].push(ex);
+        return acc;
+      }, {}),
+    [displayed],
+  );
 
   // ----------------------------
   // 6. Compteurs
   // ----------------------------
-  const counts = {
-    all: searched.length,
-    mine: myExercises.length,
-    favorites: favoriteExercises.length,
-  };
+  const counts = useMemo(
+    () => ({
+      all: searched.length,
+      mine: myExercises.length,
+      favorites: favoriteExercises.length,
+    }),
+    [searched, myExercises, favoriteExercises],
+  );
 
   // Compteur d'exercice par muscle
-  const muscleCounts = Object.entries(grouped).reduce((acc, [muscle, exs]) => {
-    acc[muscle] = exs.length;
-    return acc;
-  }, {});
+  const muscleCounts = useMemo(
+    () =>
+      Object.entries(grouped).reduce((acc, [muscle, exs]) => {
+        acc[muscle] = exs.length;
+        return acc;
+      }, {}),
+    [grouped],
+  );
 
   return {
     activeTab,

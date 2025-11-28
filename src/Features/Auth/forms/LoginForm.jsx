@@ -3,18 +3,19 @@
 // Formulaire de connexion avec validation et gestion d'erreurs
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { Label, ShowPassword, LoaderButton } from "@/Global/components";
+import { loginSchema } from "../utils";
 
 export default function LoginForm() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
-  const [loginError, setLoginError] = useState("");
 
-  // React Hook Form
+  // React Hook Form avec validation Zod
   const {
     register,
     watch,
@@ -22,6 +23,7 @@ export default function LoginForm() {
     reset,
     formState: { errors: clientsErrors, isSubmitting },
   } = useForm({
+    resolver: zodResolver(loginSchema),
     mode: "onSubmit",
     reValidateMode: "onChange",
     defaultValues: { autoLogin: true },
@@ -48,8 +50,6 @@ export default function LoginForm() {
 
   // Soumission du formulaire
   const onSubmit = async (data) => {
-    setLoginError("");
-
     try {
       const result = await signIn("credentials", {
         email: data.email,
@@ -68,11 +68,11 @@ export default function LoginForm() {
 
       // Échec de connexion
       if (result?.error) {
-        setLoginError(result.error);
+        toast.error(result?.error || "Erreur lors de la connexion");
       }
     } catch (error) {
       console.error("Erreur de connexion:", error);
-      setLoginError("Une erreur est survenue. Veuillez réessayer.");
+      toast.error(error.error || "Erreur lors de la connexion");
     } finally {
       reset();
     }
@@ -115,12 +115,7 @@ export default function LoginForm() {
           name="password"
           className="input peer"
           placeholder=""
-          {...register("password", {
-            required: "Veuillez saisir votre mot de passe",
-            validate: (value) =>
-              value.trim() !== "" ||
-              "Le mot de passe ne peut pas contenir uniquement des espaces",
-          })}
+          {...register("password")}
         />
         <Label htmlFor="password" value={password}>
           Mot de passe
@@ -133,9 +128,6 @@ export default function LoginForm() {
       {clientsErrors?.password && (
         <p className="formError">{clientsErrors.password.message}</p>
       )}
-
-      {/* Erreur de connexion */}
-      {loginError && <p className="formError">{loginError}</p>}
 
       <Link href="/forgot-password" className="text-xs -mt-3 link">
         Vous avez oublié votre mot de passe?

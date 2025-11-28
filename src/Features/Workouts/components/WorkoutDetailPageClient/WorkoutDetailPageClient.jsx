@@ -16,7 +16,8 @@ export default function WorkoutDetailPageClient({
   workout,
   workoutId,
 }) {
-  const { mutate: deleteWorkout, isPending } = useDeleteWorkout(userId);
+  const { mutate: deleteWorkout, isPending: isDeleting } =
+    useDeleteWorkout(userId);
   const { isOpen, closeModal } = useModals();
   const router = useRouter();
 
@@ -113,7 +114,7 @@ export default function WorkoutDetailPageClient({
           title={title}
           message={message}
           onConfirm={handleDelete}
-          isLoading={isPending}
+          isLoading={isDeleting}
         />
       )}
 

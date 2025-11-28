@@ -104,11 +104,14 @@ export function useCreateSession(userId) {
       return data;
     },
 
-    onSuccess: (data) => {
+    onSuccess: () => {
       toast.success("L'entraînement a démarré, bon courage! 💪");
-      const sessionId = data.sessionId;
+    },
+    onError: (error) => {
+      toast.error(error.message || "Erreur lors du démarrage de la séance");
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: key });
-      queryClient.invalidateQueries({ queryKey: ["session", sessionId] });
     },
   });
 }
@@ -146,8 +149,13 @@ export function useDeleteSession(userId) {
       return { previousSessions };
     },
 
-    onError: (err, id, context) =>
-      queryClient.setQueryData(key, context?.previousSessions),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: key }),
+    onSuccess: () => {
+      toast.success("Session d'entraînement supprimée avec succès");
+    },
+    onError: (error) => {
+      toast.error(error.message || "Erreur lors de l'annulation de la session");
+      queryClient.setQueryData(key, context?.previousSessions);
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: key }),
   });
 }

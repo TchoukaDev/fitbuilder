@@ -13,18 +13,24 @@ export default function ExerciseConfiguration({
   onSelectExercise,
   onSetTitle,
 }) {
+  // Modifier le titre de la modale
+  useEffect(() => {
+    onSetTitle(`Configurer l'exercice "${exerciseSelected.name}"`);
+  }, []);
+
   const [sets, setSets] = useState("");
   const [reps, setReps] = useState("");
   const [targetWeight, setTargetWeight] = useState("");
   const [restTime, setRestTime] = useState("");
   const [notes, setNotes] = useState("");
-  const [error, setError] = useState(null);
+  const [error, setError] = useState("");
 
   const { closeModal } = useModals();
 
   const handleSubmit = () => {
+    setError("");
     if (sets === "" || reps === "" || targetWeight === "" || restTime === "") {
-      setError(true);
+      setError("Veuillez compléter tous les champs obligatoires");
       return;
     }
     const exerciseToAdd = {
@@ -39,10 +45,6 @@ export default function ExerciseConfiguration({
     onSelectExercise(exerciseToAdd);
     closeModal("workoutSelectExercise");
   };
-
-  useEffect(() =>
-    onSetTitle(`Configurer l'exercice "${exerciseSelected.name}"`),
-  );
 
   return (
     <div className="flex flex-col items-center gap-5">
@@ -123,11 +125,7 @@ export default function ExerciseConfiguration({
         </p>
       </div>{" "}
       {/* Erreur formulaire  */}
-      {error && (
-        <p className="formError my-3">
-          Certains champs obligatoires ne sont pas remplis.
-        </p>
-      )}
+      {error && <p className="formError my-3">{error}</p>}
       {/* Actions */}
       <div className="flex items-center gap-3">
         {/* Bouton retour Etape 1 */}

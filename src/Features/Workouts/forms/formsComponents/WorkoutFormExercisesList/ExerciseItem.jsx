@@ -1,11 +1,10 @@
 "use client";
 
-import { memo } from "react";
 import { motion } from "framer-motion";
 import { SquareArrowDown, SquareArrowUp, SquareX, Edit } from "lucide-react";
 
 // Carte d'exercice avec infos et actions (modifier, supprimer, déplacer).
-function ExerciseItem({
+export default function ExerciseItem({
   exercise,
   index,
   total,
@@ -111,5 +110,3 @@ function ExerciseItem({
     </motion.div>
   );
 }
-
-export default memo(ExerciseItem);

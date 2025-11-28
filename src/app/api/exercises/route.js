@@ -1,21 +1,19 @@
 // API Route pour la gestion des exercices (création et récupération)
-import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]/route";
 import { NextResponse } from "next/server";
 import connectDB from "@/libs/mongodb";
 import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
 import { ApiError, ApiSuccess } from "@/libs/apiResponse";
+import { requireAuth } from "@/libs/authMiddleware";
 
 // POST - Créer un exercice (public si admin, privé sinon)
 export async function POST(req) {
-  const session = await getServerSession(authOptions);
+  // Vérification de l'authentification
+  const auth = await requireAuth(req);
+  if (auth instanceof NextResponse) return auth;
 
-  if (!session?.user?.id) {
-    return NextResponse.json(ApiError.UNAUTHORIZED, { status: 401 });
-  }
-
-  const isAdmin = session?.user?.role === "ADMIN";
+  const { userId, userRole } = auth;
+  const isAdmin = userRole === "ADMIN";
   const { name, muscle, equipment, description } = await req.json();
 
   // Validation des champs obligatoires
@@ -56,7 +54,7 @@ export async function POST(req) {
     const exerciseId = new ObjectId();
 
     await db.collection("users").updateOne(
-      { _id: new ObjectId(session.user.id) },
+      { _id: new ObjectId(userId) },
       {
         $push: {
           exercises: {
@@ -90,11 +88,11 @@ export async function POST(req) {
 
 // GET - Récupérer les exercices (public, privé ou tous selon le paramètre type)
 export async function GET(req) {
-  const session = await getServerSession(authOptions);
+  // Vérification de l'authentification
+  const auth = await requireAuth(req);
+  if (auth instanceof NextResponse) return auth;
 
-  if (!session?.user) {
-    return NextResponse.json({ error: "Accès refusé" }, { status: 401 });
-  }
+  const { userId } = auth;
 
   const { searchParams } = new URL(req.url);
   const type = searchParams.get("type");
@@ -106,7 +104,7 @@ export async function GET(req) {
     if (type === "private") {
       const user = await db
         .collection("users")
-        .findOne({ _id: new ObjectId(session.user.id) });
+        .findOne({ _id: new ObjectId(userId) });
 
       const privateExercises = user?.exercises || [];
 
@@ -130,7 +128,10 @@ export async function GET(req) {
         type: "public",
       }));
 
-      return NextResponse.json({ publicExercises }, { status: 200 });
+      return NextResponse.json(
+        { publicExercises: publicExercisesWithType },
+        { status: 200 },
+      );
     }
 
     // Cas 3: Tous les exercices (par défaut)
@@ -141,7 +142,7 @@ export async function GET(req) {
 
     const user = await db
       .collection("users")
-      .findOne({ _id: new ObjectId(session.user.id) });
+      .findOne({ _id: new ObjectId(userId) });
 
     const privateExercises = user?.exercises || [];
 

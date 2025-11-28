@@ -1,21 +1,18 @@
 // API Route pour la gestion des plans d'entraînement (création et récupération)
-import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]/route";
 import { NextResponse } from "next/server";
 import connectDB from "@/libs/mongodb";
 import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
 import { ApiError, ApiSuccess } from "@/libs/apiResponse";
+import { requireAuth } from "@/libs/authMiddleware";
 
 // POST - Créer un nouveau plan d'entraînement
 export async function POST(req) {
-  const session = await getServerSession(authOptions);
-  const userId = session?.user?.id;
-
   // Vérification de l'authentification
-  if (!userId) {
-    return NextResponse.json(ApiError.UNAUTHORIZED, { status: 401 });
-  }
+  const auth = await requireAuth(req);
+  if (auth instanceof NextResponse) return auth;
+
+  const { userId } = auth;
 
   const { name, description, category, estimatedDuration, exercises } =
     await req.json();
@@ -95,12 +92,11 @@ export async function POST(req) {
 
 // GET - Récupérer tous les plans d'entraînement de l'utilisateur
 export async function GET(req) {
-  const session = await getServerSession(authOptions);
-  const userId = session?.user?.id;
+  // Vérification de l'authentification
+  const auth = await requireAuth(req);
+  if (auth instanceof NextResponse) return auth;
 
-  if (!userId) {
-    return NextResponse.json(ApiError.UNAUTHORIZED, { status: 401 });
-  }
+  const { userId } = auth;
 
   const db = await connectDB();
 

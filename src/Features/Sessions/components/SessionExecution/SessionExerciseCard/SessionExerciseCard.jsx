@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import { SetRow } from ".";
 import { Button } from "@/Global/components";
 import { AnimatePresence, motion } from "framer-motion";
-import { RestTimerModal } from "@/Features/Sessions/modals";
 import { useModals } from "@/Providers/Modals";
 import { handleKeyDown } from "@/Global/utils";
 
@@ -20,11 +19,10 @@ export default function SessionExerciseCard({
   onSetComplete,
   onExerciseComplete,
   onReopenExercise,
+  onRestTimer,
 }) {
   const [isExpanded, setIsExpanded] = useState(isActive); //Pour ouvrir/fermer le formulaire des séries
   const [localEffort, setLocalEffort] = useState(exercise.effort ?? null);
-
-  const { openModal, isOpen } = useModals();
 
   const handleEffortChange = (value) => {
     // Validation : entre 1 et 10, ou null si vide
@@ -35,11 +33,6 @@ export default function SessionExerciseCard({
       onEffortChange(index, numValue);
     }
   };
-
-  // Synchronisation de l'input RPE avec exerciseEffort si existant
-  useEffect(() => {
-    setLocalEffort(exercise.effort ?? null);
-  }, [exercise.effort]);
 
   // Ouvrir le détail de l'exercice actif
   useEffect(() => {
@@ -105,7 +98,7 @@ export default function SessionExerciseCard({
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      openModal("restTimer");
+                      onRestTimer();
                     }}
                     className="text-xs bg-primary-500 hover:bg-primary-600 text-white px-2.5 py-1 rounded-full md:rounded inline-flex items-center gap-1.5 transition shadow-sm hover:shadow-md cursor-pointer"
                     title="Démarrer le timer de repos"
@@ -276,9 +269,6 @@ export default function SessionExerciseCard({
           )}
         </AnimatePresence>
       </div>
-      {isOpen("restTimer") && (
-        <RestTimerModal initialTime={exercise.restTime} />
-      )}
     </>
   );
 }
