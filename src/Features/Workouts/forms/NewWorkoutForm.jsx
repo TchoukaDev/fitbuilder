@@ -69,14 +69,8 @@ export default function NewWorkoutForm({
   // Soumission du formulaire (validation + création côté API)
   const onSubmit = async (data) => {
     setError("");
-    const result = workoutSchema.safeParse({
-      ...data,
-      exercises: formData.exercises,
-    });
-    if (!result.success) {
-      // Zod error - obtenir le premier message d'erreur
-      const errorMessage = result.error.errors?.[0]?.message || "Validation échouée";
-      setError(errorMessage);
+    if (formData.exercises.length === 0) {
+      setError("Veuillez ajouter au moins un exercice");
       return;
     }
     createWorkout(

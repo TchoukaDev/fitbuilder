@@ -67,11 +67,8 @@ export default function UpdateWorkoutForm({
   // Soumission du formulaire (validation + appel API)
   const onSubmit = async (data) => {
     setError("");
-    const result = workoutSchema.safeParse({
-      ...data,
-      exercises: formData.exercises,
-    });
-    if (!result.success) {
+
+    if (formData.exercises.length === 0) {
       setError("Veuillez ajouter au moins un exercice");
       return;
     }
