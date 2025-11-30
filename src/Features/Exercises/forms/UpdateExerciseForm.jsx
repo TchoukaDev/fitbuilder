@@ -9,6 +9,7 @@ import ExerciseFormFields from "./ExerciseFormFields";
 import { exerciseSchema } from "../utils/ExerciseSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useRef } from "react";
+import { toast } from "react-toastify";
 
 export default function UpdateExerciseForm({ exerciseToUpdate }) {
   const { closeModal } = useModals();

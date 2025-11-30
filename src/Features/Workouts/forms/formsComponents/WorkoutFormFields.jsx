@@ -4,7 +4,13 @@
 import { Label } from "@/Global/components";
 import { handleKeyDown } from "@/Global/utils";
 
-export default function WorkoutFormFields({ register, errors, watchedFields }) {
+export default function WorkoutFormFields({
+  register,
+  errors,
+  watchedFields,
+  nameRegister,
+  nameRef,
+}) {
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
       <h2 className="text-2xl font-bold text-primary-900 mb-6">
@@ -17,13 +23,17 @@ export default function WorkoutFormFields({ register, errors, watchedFields }) {
           <input
             className="input peer"
             placeholder=""
-            {...register("name", { required: "Veuillez choisir un nom" })}
+            {...nameRegister}
+            ref={(e) => {
+              nameRegister.ref(e);
+              nameRef.current = e;
+            }}
           />
           <Label htmlFor="name" value={watchedFields.name}>
             Nom du plan <span className="text-accent-500">*</span>
           </Label>
-          {errors.name && (
-            <p className="formError mt-1">{errors.name.message}</p>
+          {errors?.name && (
+            <p className="formError mt-1">{errors?.name?.message}</p>
           )}
         </div>
 
@@ -58,8 +68,10 @@ export default function WorkoutFormFields({ register, errors, watchedFields }) {
           >
             Durée estimée (minutes) <span className="text-accent-500">*</span>
           </Label>
-          {errors.estimatedDuration && (
-            <p className="formError mt-1">{errors.estimatedDuration.message}</p>
+          {errors?.estimatedDuration && (
+            <p className="formError mt-1">
+              {errors?.estimatedDuration?.message}
+            </p>
           )}
         </div>
 
@@ -89,8 +101,8 @@ export default function WorkoutFormFields({ register, errors, watchedFields }) {
             <option value="Cardio">Cardio</option>
             <option value="Autre">Autre</option>
           </select>
-          {errors.category && (
-            <p className="formError mt-1">{errors.category.message}</p>
+          {errors?.category && (
+            <p className="formError mt-1">{errors?.category?.message}</p>
           )}
         </div>
       </div>

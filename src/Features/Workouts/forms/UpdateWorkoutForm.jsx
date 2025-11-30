@@ -2,6 +2,7 @@
 
 // Formulaire client pour modifier un plan d'entraînement existant.
 import { DeleteConfirmModal, LoaderButton, Button } from "@/Global/components";
+import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { useUpdateWorkout, useWorkoutForm } from "../hooks";
@@ -11,6 +12,8 @@ import {
   WorkoutSelectExerciseModal,
 } from "../modals";
 import { WorkoutFormFields, WorkoutFormExercisesList } from "./formsComponents";
+import { toast } from "react-toastify";
+import { workoutExercisesSchema, workoutSchema } from "../utils/workoutSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 export default function UpdateWorkoutForm({
@@ -22,8 +25,8 @@ export default function UpdateWorkoutForm({
 }) {
   // Gestion du formulaire d'exercices via hook dédié
   const {
-    error,
-    setError,
+    errorExercises,
+    setErrorExercises,
     isMounted,
     selectExercise,
     updateExercise,
@@ -33,7 +36,6 @@ export default function UpdateWorkoutForm({
   } = useWorkoutForm({ workout });
   // Modales (sélection / édition / suppression d'exercice)
   const { isOpen, openModal, getModalData } = useModals();
-  console.log(getModalData("workoutEditExercise")?.index);
 
   // Navigation et mutations
   const router = useRouter();
@@ -50,6 +52,7 @@ export default function UpdateWorkoutForm({
     watch,
     formState: { errors },
   } = useForm({
+    resolver: zodResolver(workoutSchema),
     defaultValues: {
       name: workout.name || "",
       description: workout.description || "",
@@ -61,16 +64,31 @@ export default function UpdateWorkoutForm({
   });
 
   const watchedFields = watch();
+  const nameRegister = register("name");
+  const nameRef = useRef(null);
+
+  // Focus automatique sur le champ name
+  useEffect(() => {
+    nameRef?.current?.focus();
+  }, []);
+
+  // Réinitialisation de l'erreur d'exercices si l'utilisateur ajoute un exercice
+  useEffect(() => {
+    if (formData.exercises.length > 0) {
+      setErrorExercises("");
+    }
+  }, [formData.exercises]);
 
   // Soumission du formulaire (validation + appel API)
   const onSubmit = async (data) => {
-    setError("");
-
-    if (formData.exercises.length === 0) {
-      setError("Veuillez ajouter au moins un exercice");
+    setErrorExercises("");
+    const result = workoutExercisesSchema.safeParse({
+      exercises: formData.exercises,
+    });
+    if (!result.success) {
+      setErrorExercises(result.error.issues[0].message);
       return;
     }
-
     updateWorkout(
       {
         id: workout._id,
@@ -82,7 +100,7 @@ export default function UpdateWorkoutForm({
           router.refresh();
         },
         onError: (err) => {
-          setError(err.message || "Une erreur est survenue");
+          toast.error(err?.message || "Une erreur est survenue");
         },
       },
     );
@@ -97,6 +115,9 @@ export default function UpdateWorkoutForm({
           register={register}
           errors={errors}
           watchedFields={watchedFields}
+          errorExercises={errorExercises}
+          nameRegister={nameRegister}
+          nameRef={nameRef}
         />
 
         {/* ✅ Composant réutilisable */}
@@ -111,8 +132,8 @@ export default function UpdateWorkoutForm({
           onMoveClick={moveExercise}
         />
 
-        {/* Message d'erreur global */}
-        {error && <div className="formError">{error}</div>}
+        {/* Message d'erreur exercices */}
+        {errorExercises && <div className="formError">{errorExercises}</div>}
 
         {/* Boutons d'action */}
         <div className="flex justify-between items-center bg-white rounded-lg shadow-md p-6">

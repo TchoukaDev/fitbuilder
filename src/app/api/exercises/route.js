@@ -36,6 +36,14 @@ export async function POST(req) {
   try {
     // Création d'exercice public (admin uniquement)
     if (isAdmin) {
+      // Vérifier si l'exercice existe déjà en public
+      const exerciseExists = await db.collection("exercises").findOne({ name });
+      if (exerciseExists) {
+        return NextResponse.json(ApiError.DUPLICATE("Cet exercice public"), {
+          status: 409,
+        });
+      }
+
       const result = await db.collection("exercises").insertOne({
         name,
         muscle,
@@ -58,8 +66,19 @@ export async function POST(req) {
     }
 
     // Création d'exercice privé (utilisateur normal)
-    const exerciseId = new ObjectId();
 
+    // Vérifier si l'exercice existe déjà pour l'utilisateur
+    const user = await db
+      .collection("users")
+      .findOne({ _id: new ObjectId(userId) });
+    const exerciseExists = user?.exercises?.some((ex) => ex.name === name);
+    if (exerciseExists) {
+      return NextResponse.json(ApiError.DUPLICATE("Cet exercice"), {
+        status: 409,
+      });
+    }
+
+    const exerciseId = new ObjectId();
     await db.collection("users").updateOne(
       { _id: new ObjectId(userId) },
       {

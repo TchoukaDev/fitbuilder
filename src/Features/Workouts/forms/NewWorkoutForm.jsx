@@ -11,7 +11,10 @@ import {
   WorkoutSelectExerciseModal,
 } from "../modals";
 import { WorkoutFormFields, WorkoutFormExercisesList } from "./formsComponents";
+import { useEffect, useRef } from "react";
+import { workoutExercisesSchema, workoutSchema } from "../utils/workoutSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "react-toastify";
 
 export default function NewWorkoutForm({
   allExercises,
@@ -21,8 +24,8 @@ export default function NewWorkoutForm({
 }) {
   // Gestion du formulaire d'exercices avec persistance locale (newForm)
   const {
-    error,
-    setError,
+    errorExercises,
+    setErrorExercises,
     isMounted,
     selectExercise,
     updateExercise,
@@ -52,23 +55,42 @@ export default function NewWorkoutForm({
     watch,
     formState: { errors },
   } = useForm({
+    resolver: zodResolver(workoutSchema),
     defaultValues: {
       name: "",
       description: "",
       category: "",
       estimatedDuration: "",
     },
-    mode: "onChange",
+    mode: "onSubmit",
     reValidateMode: "onChange",
   });
 
   const watchedFields = watch();
 
+  const nameRegister = register("name");
+  const nameRef = useRef(null);
+
+  // Focus automatique sur le champ name
+  useEffect(() => {
+    nameRef?.current?.focus();
+  }, []);
+
+  // Réinitialisation de l'erreur d'exercices si l'utilisateur ajoute un exercice
+  useEffect(() => {
+    if (formData.exercises.length > 0) {
+      setErrorExercises("");
+    }
+  }, [formData.exercises]);
+
   // Soumission du formulaire (validation + création côté API)
   const onSubmit = async (data) => {
-    setError("");
-    if (formData.exercises.length === 0) {
-      setError("Veuillez ajouter au moins un exercice");
+    setErrorExercises("");
+    const result = workoutExercisesSchema.safeParse({
+      exercises: formData.exercises,
+    });
+    if (!result.success) {
+      setErrorExercises(result.error.issues[0].message);
       return;
     }
     createWorkout(
@@ -80,7 +102,7 @@ export default function NewWorkoutForm({
           router.push("/workouts");
         },
         onError: (err) => {
-          setError(err?.message || "Une erreur est survenue");
+          toast.error(err?.message || "Une erreur est survenue");
         },
       },
     );
@@ -93,8 +115,11 @@ export default function NewWorkoutForm({
         {/* Informations générales */}
         <WorkoutFormFields
           register={register}
+          errorExercises={errorExercises}
           errors={errors}
           watchedFields={watchedFields}
+          nameRegister={nameRegister}
+          nameRef={nameRef}
         />
 
         {/* Liste d'exercices */}
@@ -108,9 +133,8 @@ export default function NewWorkoutForm({
           onRemoveClick={(index) => openModal("deleteConfirm", { index })}
           onMoveClick={moveExercise}
         />
-
-        {/* Message d'erreur global */}
-        {error && <div className="formError">{error}</div>}
+        {/* Message d'erreur exercices */}
+        {errorExercises && <div className="formError">{errorExercises}</div>}
 
         {/* Boutons d'action */}
         <div className="flex justify-between items-center bg-white rounded-lg shadow-md p-6">

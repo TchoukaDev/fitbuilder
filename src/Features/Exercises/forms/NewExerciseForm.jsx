@@ -9,6 +9,7 @@ import { useModals } from "@/Providers/Modals";
 import ExerciseFormFields from "./ExerciseFormFields";
 import { exerciseSchema } from "../utils/ExerciseSchema";
 import { useEffect, useRef } from "react";
+import { toast } from "react-toastify";
 
 export default function NewExerciseForm() {
   const { data: session } = useSession();

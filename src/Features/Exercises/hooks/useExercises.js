@@ -229,7 +229,7 @@ export function useFavorites(userId, initialData) {
       }
 
       const data = await response.json();
-      console.log(data);
+
       return data.favoritesExercises || []; // ✅ Retourne le tableau directement
     },
     initialData: initialData,

@@ -14,7 +14,7 @@ export function useWorkoutForm({ workout = null, newForm = false }) {
   const [formData, setFormData] = useState({
     exercises: workout?.exercises || [],
   });
-  const [error, setError] = useState("");
+  const [errorExercises, setErrorExercises] = useState("");
   const [hasLoaded, setHasLoaded] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [isClearingStorage, setIsClearingStorage] = useState(false);
@@ -133,8 +133,8 @@ export function useWorkoutForm({ workout = null, newForm = false }) {
   };
 
   return {
-    error,
-    setError,
+    errorExercises,
+    setErrorExercises,
     isMounted,
     selectExercise,
     removeExercise,
