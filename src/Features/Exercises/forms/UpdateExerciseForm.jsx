@@ -1,12 +1,14 @@
 "use client";
 
 // Formulaire de modification d'un exercice existant
-import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { useSession } from "next-auth/react";
 import { useModals } from "@/Providers/Modals";
 import { useUpdateExercise } from "../hooks";
 import ExerciseFormFields from "./ExerciseFormFields";
 import { exerciseSchema } from "../utils/ExerciseSchema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useRef } from "react";
 
 export default function UpdateExerciseForm({ exerciseToUpdate }) {
   const { closeModal } = useModals();
@@ -14,54 +16,41 @@ export default function UpdateExerciseForm({ exerciseToUpdate }) {
   const isAdmin = session?.user?.role === "ADMIN";
   const userId = session?.user?.id;
 
-  // États du formulaire initialisés avec les valeurs existantes
-  const [name, setName] = useState(exerciseToUpdate.name);
-  const [muscle, setMuscle] = useState(exerciseToUpdate.muscle);
-  const [description, setDescription] = useState(exerciseToUpdate.description);
-  const [equipment, setEquipment] = useState(exerciseToUpdate.equipment);
-  const [error, setError] = useState("");
+  // React Hook Form avec validation Zod
+  const {
+    register,
+    handleSubmit,
+    isSubmitting,
+    watch,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(exerciseSchema),
+  });
+
+  const nameRegister = register("name");
+  const nameRef = useRef(null);
+  const watchedFields = watch();
+  useEffect(() => {
+    nameRef?.current?.focus();
+  }, []);
 
   const { mutate: updateExercise, isPending: isUpdating } = useUpdateExercise(
     userId,
     isAdmin,
   );
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-
-    // Validation des champs obligatoires
-    const result = exerciseSchema.safeParse({
-      name,
-      muscle,
-      description,
-      equipment,
-    });
-    if (!result.success) {
-      setError("Veuillez compléter tous les champs obligatoires");
-      return;
-    }
+  const onSubmit = async (data) => {
     updateExercise(
       {
         id: exerciseToUpdate._id,
-        updatedExercise: {
-          name,
-          muscle,
-          description,
-          equipment,
-          type: exerciseToUpdate.type,
-        },
+        updatedExercise: data,
       },
       {
         onSuccess: () => {
-          setName("");
-          setMuscle("");
-          setDescription("");
-          setEquipment("");
           closeModal("updateExercise");
         },
         onError: (err) => {
-          setError(
+          toast.error(
             err.message || "Une erreur est survenue lors de la modification",
           );
         },
@@ -71,20 +60,17 @@ export default function UpdateExerciseForm({ exerciseToUpdate }) {
 
   return (
     <ExerciseFormFields
-      name={name}
-      muscle={muscle}
-      description={description}
-      equipment={equipment}
-      error={error}
+      register={register}
+      errors={errors}
       isPending={isUpdating}
-      onNameChange={(e) => setName(e.target.value)}
-      onMuscleChange={(e) => setMuscle(e.target.value)}
-      onDescriptionChange={(e) => setDescription(e.target.value)}
-      onEquipmentChange={(e) => setEquipment(e.target.value)}
-      onSubmit={handleSubmit}
+      isSubmitting={isSubmitting}
+      onSubmit={handleSubmit(onSubmit)}
+      watchedFields={watchedFields}
       onClose={() => closeModal("updateExercise")}
       submitLabel="Valider"
       loadingLabel="Mise à jour..."
+      nameRegister={nameRegister}
+      nameRef={nameRef}
     />
   );
 }

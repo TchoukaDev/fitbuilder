@@ -33,13 +33,7 @@ export default function LoginForm() {
   const password = watch("password");
 
   // Configuration du champ email avec validation
-  const emailRegister = register("email", {
-    required: "Veuillez saisir une adresse email valide",
-    pattern: {
-      value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-      message: "Veuillez saisir une adresse email valide",
-    },
-  });
+  const emailRegister = register("email");
 
   const emailRef = useRef(null);
 

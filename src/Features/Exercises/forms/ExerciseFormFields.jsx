@@ -2,28 +2,31 @@
 import { Label, LoaderButton, Button } from "@/Global/components";
 
 export default function ExerciseFormFields({
-  name,
-  muscle,
-  description,
-  equipment,
-  error,
+  register,
+  errors,
   isPending,
-  onNameChange,
-  onMuscleChange,
-  onDescriptionChange,
-  onEquipmentChange,
+  isSubmitting,
   onSubmit,
   onClose,
   submitLabel = "Valider",
   loadingLabel = "Validation en cours...",
+  watchedFields,
+  nameRegister,
+  nameRef,
 }) {
   return (
     <form
       onSubmit={onSubmit}
       className="flex flex-col gap-5 items-center justify-center"
     >
-      {/* Message d'erreur */}
-      {error && <div className="formError">{error?.message || error}</div>}
+      {/* Message d'erreur (formatage multiligne des erreurs Zod) */}
+      {Object?.entries(errors || {})?.length > 0 && (
+        <div className="formError whitespace-pre-line">
+          {Object.values(errors)
+            .map((error) => error.message)
+            .join("\n")}
+        </div>
+      )}
 
       {/* Nom de l'exercice */}
       <div className="relative">
@@ -33,11 +36,14 @@ export default function ExerciseFormFields({
           placeholder=""
           id="name"
           name="name"
-          value={name}
-          onChange={onNameChange}
+          {...nameRegister}
+          ref={(e) => {
+            nameRegister.ref(e);
+            nameRef.current = e;
+          }}
           disabled={isPending}
         />
-        <Label htmlFor="name" value={name}>
+        <Label htmlFor="name" value={watchedFields.name}>
           Intitulé <span className="text-accent-500">*</span>
         </Label>
       </div>
@@ -50,11 +56,10 @@ export default function ExerciseFormFields({
           placeholder=""
           id="muscle"
           name="muscle"
-          value={muscle}
-          onChange={onMuscleChange}
+          {...register("muscle")}
           disabled={isPending}
         />
-        <Label htmlFor="muscle" value={muscle}>
+        <Label htmlFor="muscle" value={watchedFields.muscle}>
           Muscle <span className="text-accent-500">*</span>
         </Label>
       </div>
@@ -71,8 +76,7 @@ export default function ExerciseFormFields({
           className="input py-2 peer"
           id="equipment"
           name="equipment"
-          value={equipment}
-          onChange={onEquipmentChange}
+          {...register("equipment")}
           aria-label="Matériel nécessaire"
           disabled={isPending}
         >
@@ -85,44 +89,47 @@ export default function ExerciseFormFields({
           <option value="Machine">Machine</option>
           <option value="Élastique">Élastique</option>
         </select>
+      </div>
+      {/* Description */}
+      <div className="relative">
+        <textarea
+          className="input peer"
+          placeholder=""
+          id="description"
+          name="description"
+          rows="3"
+          {...register("description")}
+          disabled={isPending}
+        />
+        <Label htmlFor="description" value={watchedFields.description}>
+          Description
+        </Label>
+      </div>
 
-        {/* Description */}
-        <div className="relative">
-          <textarea
-            className="input peer"
-            placeholder=""
-            id="description"
-            name="description"
-            rows="3"
-            value={description}
-            onChange={onDescriptionChange}
-            disabled={isPending}
-          />
-          <Label htmlFor="description" value={description}>
-            Description
-          </Label>
+      {/* Actions */}
+      <div className="space-y-2">
+        <div className="flex gap-4">
+          <Button
+            close
+            onClick={onClose}
+            type="button"
+            disabled={isPending || isSubmitting}
+          >
+            Fermer
+          </Button>
+          <LoaderButton
+            isLoading={isPending || isSubmitting}
+            loadingText={loadingLabel}
+            type="submit"
+            disabled={isPending || isSubmitting}
+            label={submitLabel}
+          >
+            {submitLabel}
+          </LoaderButton>
         </div>
-
-        {/* Actions */}
-        <div className="space-y-2">
-          <div className="flex gap-4">
-            <Button close onClick={onClose} type="button" disabled={isPending}>
-              Fermer
-            </Button>
-            <LoaderButton
-              isLoading={isPending}
-              loadingText={loadingLabel}
-              type="submit"
-              disabled={isPending}
-              label={submitLabel}
-            >
-              {submitLabel}
-            </LoaderButton>
-          </div>
-          <p className="text-xs text-gray-500 text-center">
-            <span className="text-accent-500">*</span> Champs obligatoires
-          </p>
-        </div>
+        <p className="text-xs text-gray-500 text-center">
+          <span className="text-accent-500">*</span> Champs obligatoires
+        </p>
       </div>
     </form>
   );
