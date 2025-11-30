@@ -57,20 +57,35 @@ export async function PATCH(req, { params }) {
   const resolvedParams = await params;
   const workoutId = resolvedParams.id;
 
+  // Validation des champs obligatoires
   const { name, description, category, estimatedDuration, exercises } =
     await req.json();
 
   // Validation des champs obligatoires
-  if (
-    !name.trim() ||
-    !category.trim() ||
-    !estimatedDuration ||
-    exercises.length === 0
-  ) {
+  const result = workoutSchema.safeParse({
+    name,
+    description,
+    category,
+    estimatedDuration,
+  });
+
+  let validationErrors = [];
+  if (!result.success) {
+    validationErrors.push(...result.error.issues.map((issue) => issue.message));
+  }
+
+  const resultExercises = workoutExercisesSchema.safeParse({
+    exercises,
+  });
+  if (!resultExercises.success) {
+    validationErrors.push(
+      ...resultExercises.error.issues.map((issue) => issue.message),
+    );
+  }
+
+  if (validationErrors.length > 0) {
     return NextResponse.json(
-      ApiError.INVALID_DATA(
-        "Le plan doit comporter un nom, une catégorie, une durée et au moins un exercice",
-      ),
+      ApiError.INVALID_DATA(validationErrors.join(". ")),
       { status: 400 },
     );
   }

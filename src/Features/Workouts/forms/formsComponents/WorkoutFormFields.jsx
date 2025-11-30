@@ -57,10 +57,7 @@ export default function WorkoutFormFields({
             onKeyDown={handleKeyDown}
             className="input peer"
             placeholder=""
-            {...register("estimatedDuration", {
-              required: "Veuillez saisir une durée estimée",
-              valueAsNumber: true,
-            })}
+            {...register("estimatedDuration", { valueAsNumber: true })}
           />
           <Label
             htmlFor="estimatedDuration"
@@ -88,9 +85,7 @@ export default function WorkoutFormFields({
           <select
             id="category"
             name="category"
-            {...register("category", {
-              required: "Veuillez sélectionner une catégorie",
-            })}
+            {...register("category")}
             className="input pt-2"
           >
             <option value="">--- Sélectionner une catégorie ---</option>

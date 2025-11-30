@@ -6,6 +6,5 @@ stats
 stats admin
 responsive
 Factoriser composants trop longs
-ExerciseCard supprimer confirm et remplacer par modal
-mettre RHF partout (sauf Workout)
+mettre RHF partout
 Zod partout
