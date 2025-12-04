@@ -1,8 +1,11 @@
+import { useWorkoutFormStore } from "@/Features/Workouts/store";
+
 // Sélecteur d'exercices groupés par muscle avec gestion d'erreur.
-export default function WorkoutExerciseGroupSelect({
-  onSelectExerciseId,
-  grouped,
-}) {
+export default function WorkoutExerciseGroupSelect({ grouped }) {
+  const setSelectedExerciseId = useWorkoutFormStore(
+    (state) => state.setSelectedExerciseId,
+  );
+
   return (
     <div className="flex flex-col gap-2 mt-3">
       <label
@@ -15,7 +18,7 @@ export default function WorkoutExerciseGroupSelect({
       <select
         className="input pt-2"
         onChange={(e) => {
-          onSelectExerciseId(e.target.value);
+          setSelectedExerciseId(e.target.value);
         }}
       >
         <option value="" className="font-semibold">

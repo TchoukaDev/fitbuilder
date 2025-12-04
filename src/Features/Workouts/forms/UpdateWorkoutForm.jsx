@@ -2,19 +2,20 @@
 
 // Formulaire client pour modifier un plan d'entraînement existant.
 import { DeleteConfirmModal, LoaderButton, Button } from "@/Global/components";
-import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import { useUpdateWorkout, useWorkoutForm } from "../hooks";
+import { useUpdateWorkout } from "../hooks";
 import { useModals } from "@/Providers/Modals";
-import {
-  WorkoutEditExerciseModal,
-  WorkoutSelectExerciseModal,
-} from "../modals";
 import { WorkoutFormFields, WorkoutFormExercisesList } from "./formsComponents";
 import { toast } from "react-toastify";
 import { workoutExercisesSchema, workoutSchema } from "../utils/workoutSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
+
+import {
+  WorkoutEditExerciseModal,
+  WorkoutSelectExerciseModal,
+} from "../modals";
+import { useWorkoutForm } from "../hooks/useWorkoutForm";
 
 export default function UpdateWorkoutForm({
   workout,
@@ -23,23 +24,21 @@ export default function UpdateWorkoutForm({
   isAdmin,
   userId,
 }) {
-  // Gestion du formulaire d'exercices via hook dédié
   const {
+    exercises,
     errorExercises,
+    clearAll,
     setErrorExercises,
-    isMounted,
-    selectExercise,
-    updateExercise,
-    removeExercise,
-    moveExercise,
-    formData,
-  } = useWorkoutForm({ workout });
+    setExercises,
+    handleDeleteExercise,
+  } = useWorkoutForm({ initialExercises: workout.exercises });
+
   // Modales (sélection / édition / suppression d'exercice)
   const { isOpen, openModal, getModalData } = useModals();
 
   // Navigation et mutations
   const router = useRouter();
-  const exercisesAdded = formData.exercises;
+  const exercisesAdded = exercises;
   const { mutate: updateWorkout, isPending: isUpdating } =
     useUpdateWorkout(userId);
   const title = "Supprimer l'exercice";
@@ -65,25 +64,12 @@ export default function UpdateWorkoutForm({
 
   const watchedFields = watch();
   const nameRegister = register("name");
-  const nameRef = useRef(null);
-
-  // Focus automatique sur le champ name
-  useEffect(() => {
-    nameRef?.current?.focus();
-  }, []);
-
-  // Réinitialisation de l'erreur d'exercices si l'utilisateur ajoute un exercice
-  useEffect(() => {
-    if (formData.exercises.length > 0) {
-      setErrorExercises("");
-    }
-  }, [formData.exercises]);
 
   // Soumission du formulaire (validation + appel API)
   const onSubmit = async (data) => {
     setErrorExercises("");
     const result = workoutExercisesSchema.safeParse({
-      exercises: formData.exercises,
+      exercises: exercises,
     });
     if (!result.success) {
       setErrorExercises(result.error.issues[0].message);
@@ -92,12 +78,14 @@ export default function UpdateWorkoutForm({
     updateWorkout(
       {
         id: workout._id,
-        updatedWorkout: { ...data, exercises: formData.exercises },
+        updatedWorkout: { ...data, exercises: exercises },
       },
       {
         onSuccess: (result) => {
-          router.back();
+          clearAll();
+          setExercises([]);
           router.refresh();
+          router.back();
         },
         onError: (err) => {
           toast.error(err?.message || "Une erreur est survenue");
@@ -117,19 +105,13 @@ export default function UpdateWorkoutForm({
           watchedFields={watchedFields}
           errorExercises={errorExercises}
           nameRegister={nameRegister}
-          nameRef={nameRef}
         />
 
         {/* ✅ Composant réutilisable */}
         <WorkoutFormExercisesList
-          exercises={formData.exercises}
-          isMounted={isMounted}
           onAddClick={() => openModal("workoutSelectExercise")}
-          onEditClick={(exercise, index) =>
-            openModal("workoutEditExercise", { exercise, index })
-          }
+          onEditClick={(index) => openModal("workoutEditExercise", { index })}
           onRemoveClick={(index) => openModal("deleteConfirm", { index })}
-          onMoveClick={moveExercise}
         />
 
         {/* Message d'erreur exercices */}
@@ -145,8 +127,12 @@ export default function UpdateWorkoutForm({
             <Button
               type="button"
               close
-              onClick={() => router.back()}
-              loadingText="Annulation en cours"
+              onClick={() => {
+                clearAll();
+                setExercises([]);
+                router.refresh();
+                router.back();
+              }}
               label="Annuler"
             >
               Annuler
@@ -170,7 +156,6 @@ export default function UpdateWorkoutForm({
           exercisesAdded={exercisesAdded}
           userId={userId}
           isAdmin={isAdmin}
-          onSelectExercise={selectExercise}
           allExercises={allExercises}
           favoritesExercises={favoritesExercises}
         />
@@ -179,8 +164,7 @@ export default function UpdateWorkoutForm({
       {/* ✅ Modale d'édition d'exercice */}
       {isOpen("workoutEditExercise") && (
         <WorkoutEditExerciseModal
-          exercise={getModalData("workoutEditExercise").exercise}
-          onSave={updateExercise}
+          index={getModalData("workoutEditExercise").index}
         />
       )}
 
@@ -189,7 +173,7 @@ export default function UpdateWorkoutForm({
         <DeleteConfirmModal
           title={title}
           message={message}
-          onConfirm={() => removeExercise(getModalData("deleteConfirm").index)}
+          onConfirm={handleDeleteExercise}
         />
       )}
     </>

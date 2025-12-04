@@ -5,9 +5,23 @@ import { createPortal } from "react-dom";
 import { useModals } from "@/Providers/Modals";
 import { ModalLayout } from "@/Global/components";
 import { handleKeyDown } from "@/Global/utils";
+import { useWorkoutFormStore } from "@/Features/Workouts/store/workoutFormStore";
+import { toast } from "react-toastify";
 
 // Modale de modifier d'un exercice ajouté dans l'entraînement
-export default function WorkoutEditExerciseModal({ exercise, onSave }) {
+export default function WorkoutEditExerciseModal({ index }) {
+  const { closeModal } = useModals();
+  const exercises = useWorkoutFormStore((state) => state.exercises);
+  const updateExercise = useWorkoutFormStore((state) => state.updateExercise);
+
+  // Récupérer l'exercice depuis le store pour éviter les race conditions
+  const exercise = exercises[index];
+
+  // Défaut sûr si l'exercice n'existe pas
+  if (!exercise) {
+    return null;
+  }
+
   const [error, setError] = useState(null);
   const [formData, setFormData] = useState({
     sets: exercise.sets || 3,
@@ -16,9 +30,6 @@ export default function WorkoutEditExerciseModal({ exercise, onSave }) {
     restTime: exercise.restTime || 90,
     notes: exercise.notes || "",
   });
-
-  const { closeModal } = useModals();
-
   const handleSubmit = (e) => {
     e.preventDefault();
     setError("");
@@ -33,10 +44,12 @@ export default function WorkoutEditExerciseModal({ exercise, onSave }) {
     }
 
     // Sauvegarder avec toutes les données de l'exercice
-    onSave({
+    updateExercise(index, {
       ...exercise, // Garde l'ID, le nom, l'ordre, etc.
       ...formData, // Écrase avec les nouvelles valeurs
     });
+    closeModal("workoutEditExercise");
+    toast.success("Exercice modifié");
   };
 
   return createPortal(

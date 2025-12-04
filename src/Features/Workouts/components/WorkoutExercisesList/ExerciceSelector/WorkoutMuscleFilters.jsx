@@ -1,16 +1,16 @@
+import { useWorkoutFormStore } from "@/Features/Workouts/store";
+
 // Filtre par groupe musculaire avec compteurs d'exercices par muscle.
-export default function WorkoutMuscleFilters({
-  muscles,
-  onMuscleChange,
-  muscleCounts = {},
-}) {
+export default function WorkoutMuscleFilters({ muscles, muscleCounts = {} }) {
+  // Store
+  const selectedMuscle = useWorkoutFormStore((state) => state.selectedMuscle);
+  const setSelectedMuscle = useWorkoutFormStore(
+    (state) => state.setSelectedMuscle,
+  );
   // Compteur de tous les exercices
   const totalCount = Object.values(muscleCounts).reduce((acc, mus) => {
     return acc + mus;
   }, 0);
-  if (muscles.length === 0) {
-    return null;
-  }
 
   return (
     <div className="flex flex-col text-center gap-2 mt-3">
@@ -22,7 +22,7 @@ export default function WorkoutMuscleFilters({
       </label>
       <select
         className="input pt-2"
-        onChange={(e) => onMuscleChange(e.target.value)}
+        onChange={(e) => setSelectedMuscle(e.target.value)}
       >
         <option value="all">Tous ({totalCount})</option>
         {muscles.map((muscle, i) => (

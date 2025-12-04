@@ -4,20 +4,19 @@ import { handleKeyDown } from "@/Global/utils";
 import { useModals } from "@/Providers/Modals";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { useWorkoutFormStore } from "@/Features/Workouts/store/workoutFormStore"; // ✅ AJOUT
 
-// Composant pour configurer l'exercise à ajouter dans l'entraînement
-export default function ExerciseConfiguration({
-  exerciseSelected,
-  setStep,
-  setSelectedExerciseId,
-  onSelectExercise,
-  onSetTitle,
-}) {
-  // Modifier le titre de la modale
-  useEffect(() => {
-    onSetTitle(`Configurer l'exercice "${exerciseSelected.name}"`);
-  }, []);
-
+export default function ExerciseConfiguration({ exerciseSelected }) {
+  // ========================================
+  // 🏪 ZUSTAND - Récupérer l'action addExercise
+  // ========================================
+  const addExercise = useWorkoutFormStore((state) => state.addExercise); // ✅ NOUVEAU
+  const setStepAction = useWorkoutFormStore((state) => state.setStep);
+  const clearAll = useWorkoutFormStore((state) => state.clearAll);
+  const setModaleTitle = useWorkoutFormStore((state) => state.setModaleTitle);
+  // ========================================
+  // 📝 STATE LOCAL (configuration de l'exercice)
+  // ========================================
   const [sets, setSets] = useState("");
   const [reps, setReps] = useState("");
   const [targetWeight, setTargetWeight] = useState("");
@@ -27,55 +26,79 @@ export default function ExerciseConfiguration({
 
   const { closeModal } = useModals();
 
+  // ========================================
+  // 🎨 Modifier le titre de la modale
+  // ========================================
+  useEffect(() => {
+    setModaleTitle(`Configurer l'exercice "${exerciseSelected?.name}"`);
+  }, [exerciseSelected?.name, setModaleTitle]);
+
+  // ========================================
+  // ✅ SOUMETTRE L'EXERCICE
+  // ========================================
   const handleSubmit = () => {
     setError("");
+
+    // Validation
     if (sets === "" || reps === "" || targetWeight === "" || restTime === "") {
       setError("Veuillez compléter tous les champs obligatoires");
       return;
     }
+
+    // Créer l'exercice avec la config
     const exerciseToAdd = {
       ...exerciseSelected,
-      sets,
-      reps,
-      targetWeight,
-      restTime,
-      notes,
+      sets: parseInt(sets) || 0,
+      reps: reps,
+      targetWeight: parseFloat(targetWeight) || 0,
+      restTime: parseInt(restTime) || 0,
+      notes: notes,
     };
-    toast.success("Exercice ajouté!");
-    onSelectExercise(exerciseToAdd);
+
+    // ✅ AJOUTER dans le store Zustand
+    addExercise(exerciseToAdd);
+    clearAll();
+    setStepAction(1);
+    toast.success("Exercice ajouté !");
     closeModal("workoutSelectExercise");
   };
 
+  // ========================================
+  // 🎨 RENDER
+  // ========================================
   return (
     <div className="flex flex-col items-center gap-5">
+      {/* Séries */}
       <div className="relative">
-        {/* Séries */}
         <input
           className="input peer"
           type="number"
           onKeyDown={handleKeyDown}
           placeholder=""
-          onChange={(e) =>
-            setSets(e.target.value ? parseInt(e.target.value) : 0)
-          }
+          onChange={(e) => setSets(e.target.value)}
+          value={sets}
           required
         />
         <Label htmlFor="sets" value={sets}>
-          Nombre de séries*
+          Nombre de séries<span className="text-accent-500">*</span>
         </Label>
-      </div>{" "}
+      </div>
+
       {/* Répétitions */}
       <div className="relative">
         <input
           className="input peer"
           placeholder=""
-          onChange={(e) => setReps(e.target.value || 0)}
+          onChange={(e) => setReps(e.target.value)}
+          value={reps}
           required
         />
         <Label htmlFor="reps" value={reps}>
-          Répétitions* (ex: "10" ou "8-12")
+          Répétitions<span className="text-accent-500">*</span> (ex: "10" ou
+          "8-12")
         </Label>
-      </div>{" "}
+      </div>
+
       {/* Charge */}
       <div className="relative">
         <input
@@ -83,15 +106,15 @@ export default function ExerciseConfiguration({
           type="number"
           onKeyDown={handleKeyDown}
           placeholder=""
-          onChange={(e) =>
-            setTargetWeight(e.target.value ? parseFloat(e.target.value) : 0)
-          }
+          onChange={(e) => setTargetWeight(e.target.value)}
+          value={targetWeight}
           required
         />
         <Label htmlFor="weight" value={targetWeight}>
-          Poids prévu (kg)*
+          Poids prévu<span className="text-accent-500">*</span> (kg)
         </Label>
-      </div>{" "}
+      </div>
+
       {/* Repos */}
       <div className="relative">
         <input
@@ -99,23 +122,23 @@ export default function ExerciseConfiguration({
           placeholder=""
           type="number"
           onKeyDown={handleKeyDown}
-          onChange={(e) =>
-            setRestTime(e.target.value ? parseInt(e.target.value) : 0)
-          }
+          onChange={(e) => setRestTime(e.target.value)}
+          value={restTime}
           required
         />
         <Label htmlFor="rest" value={restTime}>
-          Temps de repos (secondes)*
+          Temps de repos<span className="text-accent-500">*</span> (secondes)
         </Label>
-      </div>{" "}
+      </div>
+
       {/* Commentaire (optionnel) */}
       <div className="relative">
         <textarea
           rows={3}
           className="input peer"
           placeholder=""
-          type="text"
           onChange={(e) => setNotes(e.target.value)}
+          value={notes}
         />
         <Label htmlFor="notes" value={notes}>
           Commentaires (Optionnel)
@@ -123,27 +146,31 @@ export default function ExerciseConfiguration({
         <p className="text-xs text-gray-500 mt-1">
           Ex: "Tempo lent", "Prise large", etc.
         </p>
-      </div>{" "}
-      {/* Erreur formulaire  */}
+      </div>
+
+      {/* Erreur */}
       {error && <p className="formError my-3">{error}</p>}
+
       {/* Actions */}
       <div className="flex items-center gap-3">
-        {/* Bouton retour Etape 1 */}
+        {/* Bouton retour */}
         <Button
           type="button"
           close
           onClick={() => {
-            setStep(1);
-            setSelectedExerciseId(null);
+            setStepAction(1);
+            clearAll();
           }}
         >
           Retour
-        </Button>{" "}
+        </Button>
+
         {/* Bouton validation */}
         <Button type="button" onClick={handleSubmit}>
           Ajouter
         </Button>
-      </div>{" "}
+      </div>
+
       <p className="text-xs text-gray-500 text-center">
         <span className="text-accent-500">*</span> Champs obligatoires
       </p>

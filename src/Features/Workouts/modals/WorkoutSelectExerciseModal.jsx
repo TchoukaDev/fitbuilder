@@ -3,29 +3,23 @@
 import WorkoutExercisesList from "../components/WorkoutExercisesList/WorkoutExercisesList";
 import { createPortal } from "react-dom";
 import { ModalLayout } from "@/Global/components";
-import { useState } from "react";
+import { useWorkoutFormStore } from "@/Features/Workouts/store/workoutFormStore";
 
 // Modale de selection d'un exercice à ajouter à l'entraînement
 export default function WorkoutSelectExerciseModal({
-  onSelectExercise,
   favoritesExercises,
   allExercises,
-  exercisesAdded,
   isAdmin,
   userId,
 }) {
-  const [title, setTitle] = useState("Ajouter un exercice");
-
+  const modaleTitle = useWorkoutFormStore((state) => state.modaleTitle);
   return createPortal(
-    <ModalLayout title={title} modalToClose="workoutSelectExercise">
+    <ModalLayout title={modaleTitle} modalToClose="workoutSelectExercise">
       <WorkoutExercisesList
         userId={userId}
         isAdmin={isAdmin}
         initialExercises={allExercises}
         initialFavorites={favoritesExercises}
-        exercisesAdded={exercisesAdded}
-        onSelectExercise={onSelectExercise}
-        onSetTitle={setTitle}
       />
     </ModalLayout>,
     document.getElementById("portal-root"),

@@ -1,21 +1,19 @@
 "use client";
 
-// Formulaire client pour créer un nouveau plan d'entraînement.
-import { DeleteConfirmModal, LoaderButton } from "@/Global/components";
+import { Button, DeleteConfirmModal, LoaderButton } from "@/Global/components";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import { useCreateWorkout, useWorkoutForm } from "../hooks";
+import { useCreateWorkout } from "../hooks";
 import { useModals } from "@/Providers/Modals";
 import {
   WorkoutEditExerciseModal,
   WorkoutSelectExerciseModal,
 } from "../modals";
 import { WorkoutFormFields, WorkoutFormExercisesList } from "./formsComponents";
-import { useEffect, useRef } from "react";
 import { workoutExercisesSchema, workoutSchema } from "../utils/workoutSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-toastify";
-import { useWorkoutFormStore } from "@/Global/store/workoutFormStore";
+import { useWorkoutForm } from "../hooks/useWorkoutForm";
 
 export default function NewWorkoutForm({
   allExercises,
@@ -23,36 +21,23 @@ export default function NewWorkoutForm({
   isAdmin,
   userId,
 }) {
-  // Gestion du formulaire d'exercices avec persistance locale (newForm)
   const {
+    exercises,
     errorExercises,
+    clearAll,
+    setExercises,
     setErrorExercises,
-    isMounted,
-    selectExercise,
-    updateExercise,
-    removeExercise,
-    moveExercise,
     clearStorage,
-    formData,
-    isClearingStorage,
-  } = useWorkoutForm({ newForm: true });
-
-  const exercisesFromStore = useWorkoutFormStore((state) => state.exercises);
-  // 🔍 DEBUG - Afficher dans la console
-  console.log("Exercises from Zustand:", exercisesFromStore);
-  // Navigation et variables UI
+    handleDeleteExercise,
+  } = useWorkoutForm({ loadFromStorage: true });
   const router = useRouter();
-  const exercisesAdded = formData.exercises;
-  const title = "Supprimer l'exercice";
-  const message = "Souhaitez vous retirer cet exercice du plan d'entraînement?";
-
+  const { isOpen, openModal, getModalData } = useModals();
   const { mutate: createWorkout, isPending: isCreating } =
     useCreateWorkout(userId);
 
-  // Modales (sélection / édition / suppression d'exercice)
-  const { isOpen, openModal, getModalData } = useModals();
-
-  // Configuration de React Hook Form
+  // ========================================
+  // 📝 REACT HOOK FORM (champs du workout)
+  // ========================================
   const {
     register,
     handleSubmit,
@@ -71,37 +56,36 @@ export default function NewWorkoutForm({
   });
 
   const watchedFields = watch();
-
   const nameRegister = register("name");
-  const nameRef = useRef(null);
 
-  // Focus automatique sur le champ name
-  useEffect(() => {
-    nameRef?.current?.focus();
-  }, []);
+  // ========================================
+  // ⚡ EFFETS
+  // ========================================
 
-  // Réinitialisation de l'erreur d'exercices si l'utilisateur ajoute un exercice
-  useEffect(() => {
-    if (formData.exercises.length > 0) {
-      setErrorExercises("");
-    }
-  }, [formData.exercises]);
-
-  // Soumission du formulaire (validation + création côté API)
+  // ========================================
+  // 📤 SOUMISSION DU FORMULAIRE
+  // ========================================
   const onSubmit = async (data) => {
+    // Réinitialiser l'erreur
     setErrorExercises("");
-    const result = workoutExercisesSchema.safeParse({
-      exercises: formData.exercises,
-    });
+
+    // Valider les exercices
+    const result = workoutExercisesSchema.safeParse({ exercises });
+
     if (!result.success) {
+      // Afficher la première erreur
       setErrorExercises(result.error.issues[0].message);
       return;
     }
+
+    // Créer le workout
     createWorkout(
-      { ...data, exercises: formData.exercises },
+      { ...data, exercises },
       {
         onSuccess: () => {
+          clearAll();
           clearStorage();
+          setExercises([]);
           router.refresh();
           router.push("/workouts");
         },
@@ -112,60 +96,57 @@ export default function NewWorkoutForm({
     );
   };
 
-  // RENDER
+  // ========================================
+  // 🎨 RENDER
+  // ========================================
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        {/* Informations générales */}
+        {/* 📝 Champs du formulaire (nom, description, etc.) */}
         <WorkoutFormFields
           register={register}
-          errorExercises={errorExercises}
           errors={errors}
           watchedFields={watchedFields}
           nameRegister={nameRegister}
-          nameRef={nameRef}
         />
 
-        {/* Liste d'exercices */}
+        {/* 📋 Liste des exercices */}
         <WorkoutFormExercisesList
-          exercises={formData.exercises}
-          isMounted={isMounted}
           onAddClick={() => openModal("workoutSelectExercise")}
-          onEditClick={(exercise, index) =>
-            openModal("workoutEditExercise", { exercise, index })
-          }
+          onEditClick={(index) => openModal("workoutEditExercise", { index })}
           onRemoveClick={(index) => openModal("deleteConfirm", { index })}
-          onMoveClick={moveExercise}
         />
-        {/* Message d'erreur exercices */}
+
+        {/* ⚠️ Message d'erreur pour les exercices */}
         {errorExercises && <div className="formError">{errorExercises}</div>}
 
-        {/* Boutons d'action */}
+        {/* 🔘 Boutons d'action */}
         <div className="flex justify-between items-center bg-white rounded-lg shadow-md p-6">
           <p className="text-sm text-gray-600">
             <span className="text-accent-500">*</span> Champs obligatoires
           </p>
 
           <div className="flex gap-3">
-            <LoaderButton
+            {/* Bouton Annuler */}
+            <Button
               type="button"
               close
               onClick={() => {
+                clearAll();
                 clearStorage();
+                setExercises([]);
+                router.refresh();
                 router.back();
               }}
-              disabled={isClearingStorage}
-              loadingText="Annulation en cours"
-              label="Annuler"
             >
               Annuler
-            </LoaderButton>
+            </Button>
 
+            {/* Bouton Créer */}
             <LoaderButton
               isLoading={isCreating}
-              loadingText="Création en cours"
+              loadingText="Création en cours..."
               type="submit"
-              label="Créer le plan d'entraînement"
             >
               Créer le plan d'entraînement
             </LoaderButton>
@@ -173,31 +154,33 @@ export default function NewWorkoutForm({
         </div>
       </form>
 
-      {/* Modales */}
+      {/* ========================================
+          🪟 MODALES
+          ======================================== */}
+
+      {/* Modale : Sélectionner un exercice */}
       {isOpen("workoutSelectExercise") && (
         <WorkoutSelectExerciseModal
-          exercisesAdded={exercisesAdded}
           userId={userId}
           isAdmin={isAdmin}
-          onSelectExercise={selectExercise}
           allExercises={allExercises}
           favoritesExercises={favoritesExercises}
         />
       )}
 
+      {/* Modale : Éditer un exercice */}
       {isOpen("workoutEditExercise") && (
         <WorkoutEditExerciseModal
-          exercise={getModalData("workoutEditExercise").exercise}
-          onSave={updateExercise}
+          index={getModalData("workoutEditExercise").index}
         />
       )}
 
-      {/* Modale de suppression d'exercice */}
+      {/* Modale : Confirmer suppression */}
       {isOpen("deleteConfirm") && (
         <DeleteConfirmModal
-          title={title}
-          message={message}
-          onConfirm={() => removeExercise(getModalData("deleteConfirm").index)}
+          title="Supprimer l'exercice"
+          message="Souhaitez-vous retirer cet exercice du plan d'entraînement ?"
+          onConfirm={handleDeleteExercise}
         />
       )}
     </>

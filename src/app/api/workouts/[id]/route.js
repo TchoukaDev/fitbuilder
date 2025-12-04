@@ -5,6 +5,10 @@ import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
 import { ApiError, ApiSuccess } from "@/libs/apiResponse";
 import { requireAuth } from "@/libs/authMiddleware";
+import {
+  workoutExercisesSchema,
+  workoutSchema,
+} from "@/Features/Workouts/utils/workoutSchema";
 
 // DELETE - Supprimer un plan d'entraînement
 export async function DELETE(req, { params }) {

@@ -2,16 +2,18 @@
 
 import { motion } from "framer-motion";
 import { SquareArrowDown, SquareArrowUp, SquareX, Edit } from "lucide-react";
-
+import { useWorkoutFormStore } from "@/Features/Workouts/store/workoutFormStore";
 // Carte d'exercice avec infos et actions (modifier, supprimer, déplacer).
 export default function ExerciseItem({
-  exercise,
   index,
   total,
   onEditClick,
   onRemoveClick,
-  onMoveClick,
 }) {
+  const exercisesStore = useWorkoutFormStore((state) => state.exercises);
+  const exercise = exercisesStore[index];
+  const moveExercise = useWorkoutFormStore((state) => state.moveExercise);
+
   return (
     <motion.div
       layout
@@ -24,35 +26,35 @@ export default function ExerciseItem({
       <div className="flex items-start gap-4">
         {/* Numéro */}
         <div className="shrink-0 w-8 h-8 bg-primary-600 text-white rounded-full flex items-center justify-center font-bold">
-          {exercise.order}
+          {exercise?.order}
         </div>
 
         {/* Infos exercice */}
         <div className="flex-1">
           <h3 className="font-semibold text-lg text-gray-900 mb-2">
-            {exercise.name}
+            {exercise?.name}
           </h3>
 
           <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-2">
             <span className="font-medium">
-              {exercise.sets} séries × {exercise.reps} reps
+              {exercise?.sets} séries × {exercise?.reps} reps
             </span>
 
             <span>
               🏋️{" "}
-              {exercise.targetWeight === 0
+              {exercise?.targetWeight === 0
                 ? "Poids du corps"
-                : `${exercise.targetWeight} kg`}
+                : `${exercise?.targetWeight} kg`}
             </span>
 
-            {exercise.restTime != null && (
-              <span>⏱️ Repos: {exercise.restTime}s</span>
+            {exercise?.restTime != null && (
+              <span>⏱️ Repos: {exercise?.restTime}s</span>
             )}
           </div>
 
-          {exercise.notes && (
+          {exercise?.notes && (
             <p className="text-sm text-gray-500 italic bg-gray-50 p-2 rounded">
-              📝 {exercise.notes}
+              📝 {exercise?.notes}
             </p>
           )}
         </div>
@@ -63,7 +65,7 @@ export default function ExerciseItem({
             {/* Bouton MODIFIER */}
             <button
               type="button"
-              onClick={() => onEditClick(exercise, index)}
+              onClick={() => onEditClick(index)}
               className="p-1 text-blue-600 hover:bg-blue-50 rounded transition cursor-pointer"
               title="Modifier l'exercice"
             >
@@ -86,7 +88,7 @@ export default function ExerciseItem({
             <div className="flex gap-1">
               <button
                 type="button"
-                onClick={() => onMoveClick(index, "up")}
+                onClick={() => moveExercise(index, "up")}
                 disabled={index === 0}
                 className="p-1 text-primary-600 hover:bg-primary-50 rounded disabled:text-gray-300 disabled:hover:bg-transparent transition cursor-pointer"
                 title="Déplacer vers le haut"
@@ -96,7 +98,7 @@ export default function ExerciseItem({
 
               <button
                 type="button"
-                onClick={() => onMoveClick(index, "down")}
+                onClick={() => moveExercise(index, "down")}
                 disabled={index === total - 1}
                 className="p-1 text-primary-600 hover:bg-primary-50 rounded disabled:text-gray-300 disabled:hover:bg-transparent transition cursor-pointer"
                 title="Déplacer vers le bas"

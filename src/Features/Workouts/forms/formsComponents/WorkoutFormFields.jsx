@@ -3,14 +3,15 @@
 // Bloc de formulaire pour les informations générales d'un plan d'entraînement.
 import { Label } from "@/Global/components";
 import { handleKeyDown } from "@/Global/utils";
+import { useWorkoutForm } from "../../hooks/useWorkoutForm";
 
 export default function WorkoutFormFields({
   register,
   errors,
   watchedFields,
   nameRegister,
-  nameRef,
 }) {
+  const { nameRef } = useWorkoutForm({});
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
       <h2 className="text-2xl font-bold text-primary-900 mb-6">

@@ -1,5 +1,6 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useWorkoutFormStore } from "@/Features/Workouts/store";
+import { useMemo } from "react";
 
 /**
  * Gère les filtres (onglets, muscle, recherche) pour la liste d'exercices.
@@ -11,10 +12,9 @@ export function useExerciseFilters({
   favoritesExercises = [],
   isAdmin,
 }) {
-  // --- STATES CONTROLÉS ---
-  const [activeTab, setActiveTab] = useState("all");
-  const [selectedMuscle, setSelectedMuscle] = useState("all");
-  const [search, setSearch] = useState("");
+  const activeTab = useWorkoutFormStore((state) => state.activeTab);
+  const selectedMuscle = useWorkoutFormStore((state) => state.selectedMuscle);
+  const search = useWorkoutFormStore((state) => state.search);
 
   // Sécurise favoritesExercises pour éviter l’erreur includes()
   const safeFavorites = Array.isArray(favoritesExercises)
@@ -24,8 +24,12 @@ export function useExerciseFilters({
   // ----------------------------
   // 1. Filtre Search
   // ----------------------------
-  const searched = exercises.filter((ex) =>
-    ex.name.toLowerCase().includes(search.toLowerCase()),
+  const searched = useMemo(
+    () =>
+      exercises.filter((ex) =>
+        ex.name.toLowerCase().includes(search.toLowerCase()),
+      ),
+    [exercises, search],
   );
 
   // ----------------------------
@@ -137,12 +141,6 @@ export function useExerciseFilters({
   );
 
   return {
-    activeTab,
-    setActiveTab,
-    selectedMuscle,
-    setSelectedMuscle,
-    search,
-    setSearch,
     grouped,
     counts,
     muscleCounts,

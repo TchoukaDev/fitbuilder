@@ -1,147 +1,99 @@
-"use client";
-
+import { useEffect, useRef } from "react";
+import { useWorkoutFormStore } from "@/Features/Workouts/store/workoutFormStore";
 import { useModals } from "@/Providers/Modals";
-import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
 
 /**
- * Hook pour gérer le formulaire de workout (liste d'exercices + localStorage).
- *
- * @param {{ workout?: { exercises?: any[] } | null, newForm?: boolean }} params
+ * Hook custom pour gérer la logique commune des formulaires de workout
+ * @param {Object} options
+ * @param {Array} options.initialExercises - Exercices initiaux (pour UpdateForm)
+ * @param {boolean} options.loadFromStorage - Charger depuis localStorage (pour NewForm)
  */
-export function useWorkoutForm({ workout = null, newForm = false }) {
-  // Etat principal du formulaire
-  const [formData, setFormData] = useState({
-    exercises: workout?.exercises || [],
-  });
-  const [errorExercises, setErrorExercises] = useState("");
-  const [hasLoaded, setHasLoaded] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
-  const [isClearingStorage, setIsClearingStorage] = useState(false);
+export function useWorkoutForm({
+  initialExercises = null,
+  loadFromStorage = false,
+}) {
+  const { closeModal, getModalData } = useModals();
+  // ========================================
+  // 🏪 ZUSTAND
+  // ========================================
+  const exercises = useWorkoutFormStore((state) => state.exercises);
+  const setExercises = useWorkoutFormStore((state) => state.setExercises);
+  const setErrorExercises = useWorkoutFormStore(
+    (state) => state.setErrorExercises,
+  );
+  const errorExercises = useWorkoutFormStore((state) => state.errorExercises);
+  const isMounted = useWorkoutFormStore((state) => state.isMounted);
+  const setIsMounted = useWorkoutFormStore((state) => state.setIsMounted);
+  const removeExercise = useWorkoutFormStore((state) => state.removeExercise);
 
-  // Modal
-  const { getModalData, closeModal } = useModals();
+  const loadFromStorageAction = useWorkoutFormStore(
+    (state) => state.loadFromStorage,
+  );
+  const clearAll = useWorkoutFormStore((state) => state.clearAll);
+  const clearStorage = useWorkoutFormStore((state) => state.clearStorage);
 
-  /**
-   * Ajoute un exercice à la fin de la liste.
-   * @param {Object} selectedExercise
-   */
-  const selectExercise = (selectedExercise) => {
-    const orderedExercise = {
-      ...selectedExercise,
-      order: formData.exercises.length + 1,
-    };
-    setFormData((prev) => ({
-      ...prev,
-      exercises: [...prev.exercises, orderedExercise],
-    }));
-  };
+  // ========================================
+  // 📌 REF pour le focus
+  // ========================================
+  const nameRef = useRef(null);
 
-  /**
-   * Met à jour l'exercice en cours d'édition (index récupéré via `getModalData`).
-   * @param {Object} updatedExercise
-   */
-  const updateExercise = (updatedExercise) => {
-    const newExercises = formData.exercises.map((ex, i) =>
-      i === getModalData("workoutEditExercise").index
-        ? { ...updatedExercise, order: ex.order }
-        : ex,
-    );
-
-    setFormData({ ...formData, exercises: newExercises });
-    closeModal("workoutEditExercise");
-    toast.success("Exercice modifié");
-  };
-
-  /**
-   * Supprime un exercice (index provenant du modal `deleteConfirm`) et recalcule `order`.
-   * @param {number} index
-   */
-  const removeExercise = (index) => {
-    const reorderedExercises = formData.exercises
-      .filter((ex, i) => i !== getModalData("deleteConfirm").index)
-      .map((ex, i) => ({ ...ex, order: i + 1 }));
-
-    setFormData({
-      ...formData,
-      exercises: reorderedExercises,
-    });
+  // 🔥 Handler pour la suppression d'exercice
+  const handleDeleteExercise = () => {
+    const index = getModalData("deleteConfirm").index;
+    removeExercise(index);
     closeModal("deleteConfirm");
   };
 
-  /**
-   * Déplace un exercice dans la liste puis recalcule `order`.
-   * @param {number} index
-   * @param {"up"|"down"} direction
-   */
-  const moveExercise = (index, direction) => {
-    const newExercises = [...formData.exercises];
-    if (direction === "up" && index > 0) {
-      [newExercises[index - 1], newExercises[index]] = [
-        newExercises[index],
-        newExercises[index - 1],
-      ];
-    } else if (direction === "down" && index < newExercises.length - 1) {
-      [newExercises[index], newExercises[index + 1]] = [
-        newExercises[index + 1],
-        newExercises[index],
-      ];
-    }
-    const reorderedExercises = newExercises.map((ex, i) => ({
-      ...ex,
-      order: i + 1,
-    }));
-    setFormData({ ...formData, exercises: reorderedExercises });
-  };
-
-  /**
-   * Charge les exercices depuis `localStorage` au montage si `newForm` est vrai.
-   */
+  // ========================================
+  // ⚡ EFFECT 1 : Montage + Démontage
+  // ========================================
   useEffect(() => {
-    if (newForm) {
-      const stored = localStorage.getItem("exercises");
-      if (stored) {
-        setFormData((prev) => ({
-          ...prev,
-          exercises: JSON.parse(stored),
-        }));
-      }
+    // Au montage : initialiser
+    if (loadFromStorage) {
+      // Mode Création : charger depuis localStorage
+      loadFromStorageAction();
+    } else if (initialExercises) {
+      // Mode Édition : charger les exercices du workout
+      setExercises(initialExercises);
     }
 
-    setHasLoaded(true);
+    // Focus automatique
+    nameRef?.current?.focus();
+
+    // Marquer le composant comme monté
     setIsMounted(true);
-  }, []);
+    // Au démontage : nettoyer
+    return () => {
+      clearAll();
+      clearStorage();
+    };
+  }, []); // ✅ Dépendances vides = 1 seule exécution
 
-  /**
-   * Sauvegarde `formData.exercises` dans `localStorage` quand ils changent.
-   */
+  // ========================================
+  // ⚡ EFFECT 2 : Réinitialiser l'erreur
+  // ========================================
   useEffect(() => {
-    if (hasLoaded && newForm) {
-      localStorage.setItem("exercises", JSON.stringify(formData.exercises));
+    if (exercises.length > 0 && errorExercises) {
+      setErrorExercises("");
     }
-  }, [formData.exercises, hasLoaded, newForm]);
+  }, [exercises.length, errorExercises, setErrorExercises]);
 
-  /**
-   * Supprime la clé `"exercises"` du `localStorage` pour un nouveau formulaire.
-   */
-  const clearStorage = () => {
-    if (newForm) {
-      setIsClearingStorage(true);
-      localStorage.removeItem("exercises");
-      setIsClearingStorage(false);
-    }
-  };
-
+  // ========================================
+  // 📤 RETOUR
+  // ========================================
   return {
+    // État
+    exercises,
     errorExercises,
-    setErrorExercises,
     isMounted,
-    selectExercise,
-    removeExercise,
-    updateExercise,
-    moveExercise,
+
+    // Actions
+    setExercises,
+    setErrorExercises,
+    clearAll,
     clearStorage,
-    isClearingStorage,
-    formData,
+    handleDeleteExercise,
+    // Ref
+    nameRef,
   };
 }
