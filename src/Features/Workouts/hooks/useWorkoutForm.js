@@ -45,7 +45,7 @@ export function useWorkoutForm({
   };
 
   // ========================================
-  // ⚡ EFFECT 1 : Montage + Démontage
+  // ⚡ EFFECT 1 : Montage
   // ========================================
   useEffect(() => {
     // Au montage : initialiser
@@ -57,17 +57,14 @@ export function useWorkoutForm({
       setExercises(initialExercises);
     }
 
-    // Focus automatique
-    nameRef?.current?.focus();
-
     // Marquer le composant comme monté
     setIsMounted(true);
-    // Au démontage : nettoyer
-    return () => {
-      clearAll();
-      clearStorage();
-    };
-  }, []); // ✅ Dépendances vides = 1 seule exécution
+
+    // 🛑 IMPORTANT : Pas de cleanup ici !
+    // Le cleanup destructif (clearAll, clearStorage) doit être appelé explicitement
+    // par le formulaire parent après soumission réussie, pas au démontage.
+    // Cela évite de détruire les données si un composant enfant se démonte prématurément.
+  }, []); // ✅ Dépendances vides = 1 seule exécution au montage
 
   // ========================================
   // ⚡ EFFECT 2 : Réinitialiser l'erreur

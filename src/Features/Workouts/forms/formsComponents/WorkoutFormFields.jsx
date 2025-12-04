@@ -3,7 +3,7 @@
 // Bloc de formulaire pour les informations générales d'un plan d'entraînement.
 import { Label } from "@/Global/components";
 import { handleKeyDown } from "@/Global/utils";
-import { useWorkoutForm } from "../../hooks/useWorkoutForm";
+import { useRef, useEffect } from "react";
 
 export default function WorkoutFormFields({
   register,
@@ -11,7 +11,12 @@ export default function WorkoutFormFields({
   watchedFields,
   nameRegister,
 }) {
-  const { nameRef } = useWorkoutForm({});
+  const nameRef = useRef(null);
+
+  // Focus automatique sur le champ name
+  useEffect(() => {
+    nameRef?.current?.focus();
+  }, []);
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
       <h2 className="text-2xl font-bold text-primary-900 mb-6">
