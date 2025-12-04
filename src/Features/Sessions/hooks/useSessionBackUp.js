@@ -28,7 +28,6 @@ export function useSessionBackup(
           timestamp: Date.now(),
         }),
       );
-      console.log("💾 Backup sauvegardé");
     } catch (error) {
       console.warn("⚠️ Erreur backup:", error);
     }
@@ -52,8 +51,6 @@ export function useSessionBackup(
         sessionData?.updatedAt || sessionData?.createdAt,
       );
 
-      console.log("📦 Backup trouvé:", backupDate.toLocaleString());
-
       if (backupDate > serverDate) {
         setExercises(backupExercises);
       } else {
@@ -62,7 +59,7 @@ export function useSessionBackup(
     } catch (error) {
       console.error("❌ Erreur restauration:", error);
     }
-  }, [sessionId]);
+  }, [sessionId, sessionData, setExercises]);
 
   // ═══════════════════════════════════════════════════════
   // 🧹 Fonction de nettoyage

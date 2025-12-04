@@ -12,7 +12,7 @@ export function validateExercise(exercises, exerciseIndex) {
   // Vérifier chaque série
   exercise.actualSets?.forEach((set, setIndex) => {
     const setNumber = `Série ${setIndex + 1}`;
-    console.log(set.reps);
+
     // Vérifier si la série est complétée (checkbox)
     if (!set.completed) {
       missingFields.incompleteSets.push(setNumber);

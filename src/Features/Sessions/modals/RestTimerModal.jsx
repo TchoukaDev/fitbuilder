@@ -14,17 +14,20 @@ import { handleKeyDown } from "@/Global/utils";
 export default function RestTimerModal({
   initialTime, // Temps de repos en secondes (ex: 90)
 }) {
+  // ✅ Valeur par défaut si initialTime est undefined
+  const safeInitialTime = initialTime || 90;
+  
   // ═══════════════════════════════════════════════════════
   // 📊 STATES
   // ═══════════════════════════════════════════════════════
   // Temps restant en secondes
-  const [remainingTime, setRemainingTime] = useState(initialTime);
+  const [remainingTime, setRemainingTime] = useState(safeInitialTime);
 
   // Timer en cours ou en pause
   const [isRunning, setIsRunning] = useState(false);
 
   // Temps personnalisé (pour modification manuelle)
-  const [customTime, setCustomTime] = useState(initialTime);
+  const [customTime, setCustomTime] = useState(safeInitialTime);
 
   // Hook pour effets de fin de Timer
   const { triggerTimerComplete } = useTimerEffects();
@@ -85,8 +88,8 @@ export default function RestTimerModal({
   // Réinitialiser avec le temps initial
   const handleReset = () => {
     setIsRunning(false);
-    setRemainingTime(initialTime);
-    setCustomTime(initialTime);
+    setRemainingTime(safeInitialTime);
+    setCustomTime(safeInitialTime);
   };
 
   // Appliquer un temps personnalisé
@@ -198,7 +201,7 @@ export default function RestTimerModal({
               type="number"
               onKeyDown={handleKeyDown}
               min={10}
-              value={customTime}
+              value={customTime || ""}
               onChange={(e) => setCustomTime(e.target.value)}
               className="input flex-1 p-2"
             />

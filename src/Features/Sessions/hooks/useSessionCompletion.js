@@ -7,18 +7,22 @@ import { useDeleteSession } from "./useSessions";
 /**
  * Fournit les actions de fin de session (sauvegarder, terminer, annuler).
  *
+ * ✅ OPTIMISATION PERFORMANCE :
+ * formattedTime est maintenant une FONCTION au lieu d'une valeur.
+ * Cela évite que useSessionCompletion se recrée à chaque changement de timer.
+ *
  * @param {string} sessionId - Identifiant de la session.
  * @param {string} userId - Identifiant de l'utilisateur.
  * @param {Function} clearBackup - Fonction pour nettoyer le backup local.
  * @param {Function} setIsSaving - Setter d'état de sauvegarde.
- * @param {string} formattedTime - Durée formatée de la session.
+ * @param {() => string} calculateFormattedTime - Fonction pour calculer le temps formaté à la demande.
  */
 export function useSessionCompletion(
   sessionId,
   userId,
   clearBackup,
   setIsSaving,
-  formattedTime, // ✅ Recevoir formattedTime
+  calculateFormattedTime, // ✅ Fonction au lieu de valeur
 ) {
   const router = useRouter();
   const { mutate: deleteSession } = useDeleteSession(userId);
@@ -38,7 +42,7 @@ export function useSessionCompletion(
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           exercises,
-          duration: formattedTime,
+          duration: calculateFormattedTime(), // ✅ Appeler la fonction
         }),
       });
 
@@ -91,7 +95,7 @@ export function useSessionCompletion(
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           exercises: cleanedExercises,
-          duration: formattedTime,
+          duration: calculateFormattedTime(), // ✅ Appeler la fonction
         }),
       });
 
@@ -120,7 +124,6 @@ export function useSessionCompletion(
 
     deleteSession(sessionId, {
       onSuccess: () => {
-        toast.success("Session annulée");
         clearBackup();
         router.push("/workouts");
         router.refresh();

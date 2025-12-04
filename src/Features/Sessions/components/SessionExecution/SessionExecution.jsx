@@ -2,7 +2,7 @@
 
 // Page d'exécution d'une session : affiche les exercices, gère le timer, la validation et la sauvegarde.
 import { useCallback } from "react";
-import { Clock } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { Button, LoaderButton } from "@/Global/components";
 import { SessionExerciseCard } from "./SessionExerciseCard";
 
@@ -13,11 +13,13 @@ import {
   useSessionBackup,
   useSessionState,
   useSessionCompletion,
+  useSessionHandlers,
 } from "../../hooks";
-
-// Functions
-import { validateExercise, sessionExecutionHandlers } from "../../utils";
 import { useModals } from "@/Providers/Modals";
+
+// Components
+import { SessionHeader } from "./index";
+import { SessionExecutionProvider } from "./SessionExecutionContext";
 
 // Modals
 import {
@@ -28,6 +30,11 @@ import {
 } from "../../modals";
 
 export default function SessionExecution({ sessionData, sessionId, userId }) {
+  // ═══════════════════════════════════════════════════════
+  // 🔧 ROUTER
+  // ═══════════════════════════════════════════════════════
+  const router = useRouter();
+
   // ═══════════════════════════════════════════════════════
   // 📊 STATE
   // ═══════════════════════════════════════════════════════
@@ -49,8 +56,21 @@ export default function SessionExecution({ sessionData, sessionId, userId }) {
   // Modals
   const { isOpen, openModal, closeModal, getModalData } = useModals();
 
-  // Timer
-  const { formattedTime, isMounted } = useSessionTimer(sessionData?.startedAt);
+  // ✅ Fonction pour calculer le temps formaté à la demande (sans state)
+  const calculateFormattedTime = useCallback(() => {
+    if (!sessionData?.startedAt) return "00:00:00";
+
+    const startTime = new Date(sessionData.startedAt).getTime();
+    const now = Date.now();
+    const elapsed = Math.floor((now - startTime) / 1000);
+
+    const h = Math.floor(elapsed / 3600);
+    const m = Math.floor((elapsed % 3600) / 60);
+    const s = elapsed % 60;
+    return `${h.toString().padStart(2, "0")}:${m
+      .toString()
+      .padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+  }, [sessionData?.startedAt]);
 
   // LocalStorage
   const { clearBackup } = useSessionBackup(
@@ -66,7 +86,7 @@ export default function SessionExecution({ sessionData, sessionId, userId }) {
     userId,
     clearBackup,
     setIsSaving,
-    formattedTime, // ✅ Passer formattedTime ici
+    calculateFormattedTime, // ✅ Passer la fonction au lieu de la valeur
   );
 
   // ✅ WRAPPER pour saveProgress (évite les appels directs)
@@ -74,66 +94,41 @@ export default function SessionExecution({ sessionData, sessionId, userId }) {
     saveProgress(exercises);
   }, [exercises, saveProgress]);
 
-  // ✅ Handlers
+  // ✅ Handlers - Noms clairs et explicites
   const {
-    handleSetChange,
-    handleNotesChange,
-    handleEffortChange,
-    handleSetComplete,
-    handleReopenExercise,
-  } = sessionExecutionHandlers(
+    updateExerciseSet,
+    updateExerciseNotes,
+    updateExerciseEffort,
+    toggleExerciseSetComplete,
+    reopenExercise,
+    completeExercise,
+    markExerciseAsComplete, // ✅ Pour "Terminer quand même"
+    startRestTimer,
+  } = useSessionHandlers(
     exercises,
     setExercises,
     setCurrentExerciseIndex,
-    handleSaveProgress, // ✅ Passer la fonction, pas l'appel
+    handleSaveProgress,
   );
 
   // Auto-save (30 secondes)
   useAutoSave(exercises, handleSaveProgress, 30000);
 
-  // Validation pour terminer un exercice
-  const handleExerciseComplete = (exerciseIndex) => {
-    const validation = validateExercise(exercises, exerciseIndex);
-
-    // Si validation échoue, ouvrir modale
-    if (!validation.isComplete) {
-      openModal("incompleteExercise", { validation, exerciseIndex });
-    } else {
-      completeExercise(exerciseIndex);
-    }
-  };
-
-  // ✅ TERMINER L'EXERCICE (logique finale)
-  const completeExercise = (exerciseIndex) => {
-    setExercises((prev) =>
-      prev.map((ex, i) =>
-        i === exerciseIndex ? { ...ex, completed: true } : ex,
-      ),
-    );
-
-    closeModal("incompleteExercise");
-
-    // Passer au suivant
-    if (exerciseIndex < exercises.length - 1) {
-      setCurrentExerciseIndex(exerciseIndex + 1);
-    }
-
-    // Sauvegarder
-    handleSaveProgress();
-  };
-
   // ═══════════════════════════════════════════════════════
-  // 🎬 HANDLERS POUR MODALS
+  // 🎬 HANDLERS POUR MODALS (Sans useCallback - modales pas memo)
   // ═══════════════════════════════════════════════════════
 
+  // Confirmer la validation d'exercice incomplet ("Terminer quand même")
   const handleModalConfirm = () => {
-    completeExercise(getModalData("incompleteExercise").exerciseIndex);
+    markExerciseAsComplete(getModalData("incompleteExercise").exerciseIndex);
   };
 
+  // Annuler la validation d'exercice incomplet
   const handleModalCancel = () => {
     closeModal("incompleteExercise");
   };
 
+  // Demander la confirmation de la fin de séance
   const handleFinishSession = () => {
     const hasCompletedExercises = exercises.some((ex) => ex.completed);
 
@@ -145,13 +140,36 @@ export default function SessionExecution({ sessionData, sessionId, userId }) {
     openModal("finishSession");
   };
 
+  // Confirmer la fin de séance
   const handleConfirmFinish = () => {
     finishSession(exercises);
   };
 
+  // Confirmer l'abandon de séance (suppression de la session)
   const handleConfirmCancel = () => {
     closeModal("cancelSession");
     cancelSession();
+  };
+
+  // ✅ Handler pour abandonner (Mémorisé)
+  const handleCancelSession = useCallback(() => {
+    openModal("cancelSession");
+  }, [openModal]);
+
+  // ═══════════════════════════════════════════════════════
+  // 📦 HANDLERS POUR LE CONTEXT
+  // ═══════════════════════════════════════════════════════
+  const sessionHandlers = {
+    // ✅ Handlers des exercices avec noms clairs
+    updateExerciseSet,
+    updateExerciseNotes,
+    updateExerciseEffort,
+    toggleExerciseSetComplete,
+    completeExercise,
+    reopenExercise,
+    startRestTimer,
+    // État utile
+    currentExerciseIndex,
   };
 
   // ═══════════════════════════════════════════════════════
@@ -175,40 +193,16 @@ export default function SessionExecution({ sessionData, sessionId, userId }) {
   // 🎨 RENDER
   // ═══════════════════════════════════════════════════════
   return (
-    <>
+    <SessionExecutionProvider handlers={sessionHandlers}>
       <div className="container mx-auto p-6 max-w-4xl">
-        {/* HEADER */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h1 className="text-3xl font-bold text-primary-900 mb-2">
-            {sessionData.templateName}
-          </h1>
-
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-2 text-lg">
-              <Clock size={20} />
-              <span>{isMounted ? formattedTime : "--:--:--"}</span>
-            </div>
-
-            <div className="text-sm text-gray-600">
-              {completedCount} / {totalExercises} exercices
-            </div>
-          </div>
-
-          <button
-            onClick={() => openModal("cancelSession")}
-            className="bg-accent-500 hover:bg-accent-600 text-accent-50 disabled:bg-accent-300 rounded p-2 text-xs my-1 cursor-pointer"
-          >
-            Abandonner
-          </button>
-
-          {/* Barre de progression */}
-          <div className="w-full bg-gray-200 rounded-full h-2 mt-3">
-            <div
-              className="bg-primary-600 h-2 rounded-full transition-all"
-              style={{ width: `${(completedCount / totalExercises) * 100}%` }}
-            />
-          </div>
-        </div>
+        {/* HEADER - */}
+        <SessionHeader
+          sessionName={sessionData.templateName}
+          startedAt={sessionData?.startedAt}
+          completedCount={completedCount}
+          totalExercises={totalExercises}
+          onCancel={handleCancelSession}
+        />
 
         {/* LISTE DES EXERCICES */}
         <div className="space-y-4">
@@ -218,20 +212,13 @@ export default function SessionExecution({ sessionData, sessionId, userId }) {
               exercise={exercise}
               index={index}
               isActive={index === currentExerciseIndex}
-              onSetChange={handleSetChange}
-              onNotesChange={handleNotesChange}
-              onEffortChange={handleEffortChange}
-              onSetComplete={handleSetComplete}
-              onExerciseComplete={handleExerciseComplete}
-              onReopenExercise={handleReopenExercise}
-              onRestTimer={() =>
-                openModal("restTimer", { initialTime: exercise.restTime })
-              }
+              // ✅ Plus besoin de passer tous les handlers !
             />
           ))}
         </div>
+        {/* Modal du timer de repos */}
         {isOpen("restTimer") && (
-          <RestTimerModal initialTime={getModalData("restTimer").initialTime} />
+          <RestTimerModal initialTime={getModalData("restTimer").restTime} />
         )}
       </div>
 
@@ -254,7 +241,7 @@ export default function SessionExecution({ sessionData, sessionId, userId }) {
         </div>
       </div>
 
-      {/* MODALS */}
+      {/* Modal de validation d'exercice incomplet */}
       {isOpen("incompleteExercise") && (
         <IncompleteExerciseModal
           missingFields={
@@ -265,23 +252,25 @@ export default function SessionExecution({ sessionData, sessionId, userId }) {
         />
       )}
 
+      {/* Modal de validation de fin de séance */}
       {isOpen("finishSession") && (
         <FinishSessionModal
           onConfirm={handleConfirmFinish}
           sessionName={sessionData.templateName}
           completedCount={completedCount}
           totalExercises={totalExercises}
-          duration={formattedTime}
+          duration={calculateFormattedTime()} // ✅ Appeler la fonction
           isLoading={isSaving}
         />
       )}
 
+      {/* Modal de validation d'abandon de séance */}
       {isOpen("cancelSession") && (
         <CancelSessionModal
           onConfirm={handleConfirmCancel}
           isLoading={isSaving}
         />
       )}
-    </>
+    </SessionExecutionProvider>
   );
 }

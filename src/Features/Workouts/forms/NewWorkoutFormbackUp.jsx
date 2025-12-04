@@ -15,7 +15,6 @@ import { useEffect, useRef } from "react";
 import { workoutExercisesSchema, workoutSchema } from "../utils/workoutSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-toastify";
-import { useWorkoutFormStore } from "@/Global/store/workoutFormStore";
 
 export default function NewWorkoutForm({
   allExercises,
@@ -37,9 +36,6 @@ export default function NewWorkoutForm({
     isClearingStorage,
   } = useWorkoutForm({ newForm: true });
 
-  const exercisesFromStore = useWorkoutFormStore((state) => state.exercises);
-  // 🔍 DEBUG - Afficher dans la console
-  console.log("Exercises from Zustand:", exercisesFromStore);
   // Navigation et variables UI
   const router = useRouter();
   const exercisesAdded = formData.exercises;

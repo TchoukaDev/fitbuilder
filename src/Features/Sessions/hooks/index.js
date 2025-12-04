@@ -6,3 +6,4 @@ export { useSessionTimer } from "./useSessionTimer";
 export * from "./useSessions";
 export { useSessionsList } from "./useSessionsList";
 export { useTimerEffects } from "./useTimerEffects";
+export { useSessionHandlers } from "./useSessionHandlers";
