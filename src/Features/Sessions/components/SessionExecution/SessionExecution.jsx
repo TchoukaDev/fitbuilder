@@ -85,14 +85,6 @@ export default function SessionExecution({ sessionData, sessionId, userId }) {
     saveProgress(exercises);
   }, [exercises, saveProgress]);
 
-  // ✅ Actions utilisées dans ce composant
-  const reopenExercise = useSessionStore((state) => state.reopenExercise);
-
-  const startRestTimer = useCallback(
-    (restTime) => openModal("restTimer", { restTime }),
-    [openModal],
-  );
-
   // Auto-save (30 secondes)
   useAutoSave(exercises, handleSaveProgress, 30000);
 

@@ -41,7 +41,9 @@ export default function RestTimerModal({
   // ═══════════════════════════════════════════════════════
   // 🎨 CALCUL DU POURCENTAGE (pour la barre de progression)
   // ═══════════════════════════════════════════════════════
-  const percentage = ((customTime - remainingTime) / customTime) * 100;
+  // ✅ Sûr : evite NaN/Infinity si customTime est 0 ou invalide
+  const percentage =
+    customTime > 0 ? ((customTime - remainingTime) / customTime) * 100 : 0;
 
   // ═══════════════════════════════════════════════════════
   // 🎨 RENDER
@@ -123,7 +125,7 @@ export default function RestTimerModal({
               onKeyDown={handleKeyDown}
               min={10}
               value={customTime || ""}
-              onChange={(e) => setCustomTime(e.target.value)}
+              onChange={(e) => setCustomTime(parseInt(e.target.value) || 0)}
               className="input flex-1 p-2"
             />
             <Button onClick={handleApplyCustomTime}>Appliquer</Button>
