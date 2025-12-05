@@ -6,27 +6,18 @@ import { useSessionTimer } from "../../hooks";
 /**
  * En-tête de la session d'exécution
  * Affiche : titre, timer, progression, bouton d'abandon
- * 
- * ✅ OPTIMISATION PERFORMANCE :
- * Le timer est géré ICI pour éviter que SessionExecution se rerender toutes les secondes.
- * Avant, useSessionTimer était dans SessionExecution, ce qui causait des rerendus 
- * inutiles de tous les SessionExerciseCard malgré memo.
- * 
- * Maintenant :
- * - SessionHeader se remet à jour toutes les secondes (normal pour le timer)
- * - SessionExecution ne se remet plus à jour inutilement
- * - SessionExerciseCard reste stable grâce à memo ✅
+
  */
 export default function SessionHeader({
   sessionName,
-  startedAt,        // ✅ Nouvelle prop : date de début de session
+  startedAt,
   completedCount,
   totalExercises,
   onCancel,
 }) {
-  // ✅ Timer géré directement ici (déplacé depuis SessionExecution)
+  // ✅ Timer
   const { formattedTime, isMounted } = useSessionTimer(startedAt);
-  
+
   // Calcul de la progression
   const progressPercentage = (completedCount / totalExercises) * 100;
 
@@ -37,13 +28,13 @@ export default function SessionHeader({
         {sessionName}
       </h1>
 
-        {/* Timer et Progression */}
-        <div className="flex justify-between items-center mb-4">
-          {/* Timer - Se met à jour toutes les secondes */}
-          <div className="flex items-center gap-2 text-lg">
-            <Clock size={20} />
-            <span>{isMounted ? formattedTime : "--:--:--"}</span>
-          </div>
+      {/* Timer et Progression */}
+      <div className="flex justify-between items-center mb-4">
+        {/* Timer - Se met à jour toutes les secondes */}
+        <div className="flex items-center gap-2 text-lg">
+          <Clock size={20} />
+          <span>{isMounted ? formattedTime : "--:--:--"}</span>
+        </div>
 
         {/* Exercices complétés */}
         <div className="text-sm text-gray-600">

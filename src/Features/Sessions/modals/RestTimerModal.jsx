@@ -9,6 +9,7 @@ import { createPortal } from "react-dom";
 import { useModals } from "@/Providers/Modals";
 import { ModalLayout } from "@/Global/components";
 import { handleKeyDown } from "@/Global/utils";
+import { useRestTimer } from "../hooks/useRestTimer";
 
 // Modal du timer
 export default function RestTimerModal({
@@ -16,98 +17,18 @@ export default function RestTimerModal({
 }) {
   // ✅ Valeur par défaut si initialTime est undefined
   const safeInitialTime = initialTime || 90;
-  
-  // ═══════════════════════════════════════════════════════
-  // 📊 STATES
-  // ═══════════════════════════════════════════════════════
-  // Temps restant en secondes
-  const [remainingTime, setRemainingTime] = useState(safeInitialTime);
 
-  // Timer en cours ou en pause
-  const [isRunning, setIsRunning] = useState(false);
-
-  // Temps personnalisé (pour modification manuelle)
-  const [customTime, setCustomTime] = useState(safeInitialTime);
-
-  // Hook pour effets de fin de Timer
-  const { triggerTimerComplete } = useTimerEffects();
-
-  const { closeModal } = useModals();
-
-  useBlockScroll();
-  // ═══════════════════════════════════════════════════════
-  // ⏱️ EFFET : Décompte du timer
-  // ═══════════════════════════════════════════════════════
-  useEffect(() => {
-    // Si le timer n'est pas en cours, ne rien faire
-    if (!isRunning) return;
-
-    // Si le temps est écoulé, arrêter
-    if (remainingTime <= 0) {
-      setIsRunning(false);
-      triggerTimerComplete();
-      return;
-    }
-
-    // ⏰ Décrémenter chaque seconde
-    const interval = setInterval(() => {
-      setRemainingTime((prev) => {
-        if (prev <= 1) {
-          setIsRunning(false); // Arrêter automatiquement à 0
-          triggerTimerComplete();
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    // 🧹 Cleanup : supprimer l'interval quand le composant se démonte ou isRunning change
-    return () => clearInterval(interval);
-  }, [isRunning, remainingTime]);
-
-  // ═══════════════════════════════════════════════════════
-  // 🎬 HANDLERS
-  // ═══════════════════════════════════════════════════════
-
-  // Démarrer/Reprendre le timer
-  const handleStart = () => {
-    setIsRunning(true);
-  };
-
-  // Mettre en pause
-  const handlePause = () => {
-    setIsRunning(false);
-  };
-
-  // Passer le repos (skip)
-  const handleSkip = () => {
-    setIsRunning(false);
-    closeModal("restTimer"); // Fermer la modale
-  };
-
-  // Réinitialiser avec le temps initial
-  const handleReset = () => {
-    setIsRunning(false);
-    setRemainingTime(safeInitialTime);
-    setCustomTime(safeInitialTime);
-  };
-
-  // Appliquer un temps personnalisé
-  const handleApplyCustomTime = (option) => {
-    let newTime = customTime;
-
-    if (isNaN(option)) {
-      newTime = parseInt(customTime);
-    } else {
-      newTime = option;
-      setCustomTime(newTime);
-    }
-    if (newTime > 0) {
-      setRemainingTime(newTime);
-      setIsRunning(false); // Arrêter le timer pour laisser l'utilisateur démarrer manuellement
-    }
-  };
-
+  const {
+    remainingTime,
+    setCustomTime,
+    isRunning,
+    customTime,
+    handleStart,
+    handlePause,
+    handleSkip,
+    handleReset,
+    handleApplyCustomTime,
+  } = useRestTimer(safeInitialTime);
   // ═══════════════════════════════════════════════════════
   // 🎨 FORMATAGE DU TEMPS (MM:SS)
   // ═══════════════════════════════════════════════════════

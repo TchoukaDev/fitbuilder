@@ -139,6 +139,7 @@ export function useExerciseFilters({
   return {
     activeTab,
     setActiveTab,
+    selectedMuscle,
     setSelectedMuscle,
     search,
     setSearch,
