@@ -2,7 +2,7 @@
 
 import { useCallback } from "react";
 import { Button } from "@/Global/components";
-import { useSessionExecutionContext } from "../SessionExecutionContext";
+import { useSessionStore } from "@/Features/Sessions/store";
 
 /**
  * Carte de résumé d'un exercice complété
@@ -12,10 +12,9 @@ import { useSessionExecutionContext } from "../SessionExecutionContext";
 export default function CompleteExerciseCard({
   exercise,
   index,
-  // ✅ Plus besoin de onReopenExercise en prop !
 }) {
-  // ✅ Récupérer le handler depuis le Context avec le NOUVEAU nom clair
-  const { reopenExercise } = useSessionExecutionContext();
+  // ✅ Appeler directement l'action du store
+  const reopenExercise = useSessionStore((state) => state.reopenExercise);
 
   // ✅ Mémoriser le callback
   const handleReopenClick = useCallback(() => {

@@ -19,7 +19,7 @@ export default function SessionDetailClient({ session, userId }) {
   const router = useRouter();
 
   // Modals
-  const { isOpen, openModal } = useModals();
+  const { isOpen, openModal, closeModal } = useModals();
 
   const { mutate: deleteSessionMutation, isPending: isDeleting } =
     useDeleteSession(userId);
@@ -53,6 +53,7 @@ export default function SessionDetailClient({ session, userId }) {
   const handleDelete = () => {
     deleteSessionMutation(session._id, {
       onSuccess: () => {
+        closeModal("deleteConfirm");
         router.push("/sessions");
       },
     });

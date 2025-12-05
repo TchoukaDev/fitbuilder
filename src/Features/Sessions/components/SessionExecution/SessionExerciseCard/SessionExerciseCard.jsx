@@ -6,15 +6,21 @@ import {
   CompleteExerciseCard,
   CurrentExerciseCard,
 } from ".";
-import { useSessionExecutionContext } from "../SessionExecutionContext";
+import { useSessionStore } from "@/Features/Sessions/store";
 
 // Carte d'un exercice pendant l'exécution de la session
 const SessionExerciseCard = memo(function SessionExerciseCard({
   exercise,
   index,
   isActive,
+  onOpenRestTimer,
+  onCompleteExercise,
 }) {
-  const { startRestTimer } = useSessionExecutionContext();
+  // ✅ Appeler directement depuis le store si besoin
+  const openModal = useCallback(
+    (modalName, data) => onOpenRestTimer(modalName, data),
+    [onOpenRestTimer]
+  );
   const [isExpanded, setIsExpanded] = useState(isActive); //Pour ouvrir/fermer le formulaire des séries
   // console.log("RERENDER", index);
   // Ouvrir le détail de l'exercice actif
@@ -28,8 +34,8 @@ const SessionExerciseCard = memo(function SessionExerciseCard({
   }, []);
 
   const handleRestTimerClick = useCallback(() => {
-    startRestTimer(exercise.restTime);
-  }, [startRestTimer, exercise.restTime]);
+    onOpenRestTimer("restTimer", { restTime: exercise.restTime });
+  }, [onOpenRestTimer, exercise.restTime]);
 
   /*------------------
   RENDER
@@ -63,7 +69,11 @@ const SessionExerciseCard = memo(function SessionExerciseCard({
 
         {/* Détail des séries (déplié) */}
         {isExpanded && !exercise.completed && (
-          <CurrentExerciseCard exercise={exercise} index={index} />
+          <CurrentExerciseCard 
+            exercise={exercise} 
+            index={index} 
+            onCompleteExercise={onCompleteExercise}
+          />
         )}
       </div>
     </>

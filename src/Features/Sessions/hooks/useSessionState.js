@@ -1,28 +1,49 @@
-import { useState } from "react";
+import { useEffect, useMemo } from "react";
+import { useSessionStore } from "../store";
 
 /**
- * Gère l'état global d'exécution d'une session (exercices, index courant, sauvegarde).
+ * Initialise et gère l'état global d'exécution d'une session via Zustand.
+ *
+ * Ce hook :
+ * - Initialise le store au montage avec les données de la session
+ * - Retourne les sélecteurs pour accéder à l'état
+ * - Calcule les valeurs dérivées (compteurs)
  *
  * @param {{ exercises: any[] }} sessionData - Données initiales de la session.
  */
 export function useSessionState(sessionData) {
-  const [exercises, setExercises] = useState(sessionData.exercises); //Exercises de la session
-  const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0); //Exercice en cours d'exécution
+  // Sélecteurs Zustand
+  const exercises = useSessionStore((state) => state.exercises);
+  const currentExerciseIndex = useSessionStore(
+    (state) => state.currentExerciseIndex,
+  );
+  const isSaving = useSessionStore((state) => state.isSaving);
+  const setExercises = useSessionStore((state) => state.setExercises);
+  const setCurrentExerciseIndex = useSessionStore(
+    (state) => state.setCurrentExerciseIndex,
+  );
 
-  const [isSaving, setIsSaving] = useState(false); //Etat de sauvegarde de la session
+  // Initialisation au montage du composant
+  useEffect(() => {
+    if (sessionData?.exercises?.length) {
+      setExercises(sessionData.exercises);
+      setCurrentExerciseIndex(0);
+    }
+  }, [sessionData?.exercises, setExercises, setCurrentExerciseIndex]);
 
-  // Variables
-  const completedCount = exercises.filter((ex) => ex.completed).length;
+  // Variables calculées
+  const completedCount = useMemo(
+    () => exercises.filter((ex) => ex.completed).length,
+    [exercises],
+  );
   const totalExercises = exercises.length;
+
   return {
-    // State
+    // État (depuis le store)
     exercises,
-    setExercises,
     currentExerciseIndex,
-    setCurrentExerciseIndex,
     isSaving,
-    setIsSaving,
-    // Variables
+    // Variables calculées
     completedCount,
     totalExercises,
   };

@@ -1,19 +1,16 @@
 import { useEffect } from "react";
+import { useSessionStore } from "../store";
 
 /**
  * Gère le backup local d'une session dans `localStorage` (sauvegarde + restauration).
+ * Utilise le store Zustand pour accéder et modifier les exercises.
  *
  * @param {string} sessionId - Identifiant de la session.
- * @param {any[]} exercises - Exercices courants.
- * @param {(exs: any[]) => void} setExercises - Setter pour les exercices.
  * @param {Object} sessionData - Données serveur de la session (pour comparer les dates).
  */
-export function useSessionBackup(
-  sessionId,
-  exercises,
-  setExercises,
-  sessionData,
-) {
+export function useSessionBackup(sessionId, sessionData) {
+  const exercises = useSessionStore((state) => state.exercises);
+  const setExercises = useSessionStore((state) => state.setExercises);
   // ═══════════════════════════════════════════════════════
   // 💾 Sauvegarder automatiquement
   // ═══════════════════════════════════════════════════════

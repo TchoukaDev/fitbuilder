@@ -3,9 +3,12 @@
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { useDeleteSession } from "./useSessions";
+import { useSessionStore } from "../store";
+import { useModals } from "@/Providers/Modals";
 
 /**
  * Fournit les actions de fin de session (sauvegarder, terminer, annuler).
+ * Utilise le store Zustand pour gérer l'état de sauvegarde et les exercises.
  *
  * ✅ OPTIMISATION PERFORMANCE :
  * formattedTime est maintenant une FONCTION au lieu d'une valeur.
@@ -14,26 +17,30 @@ import { useDeleteSession } from "./useSessions";
  * @param {string} sessionId - Identifiant de la session.
  * @param {string} userId - Identifiant de l'utilisateur.
  * @param {Function} clearBackup - Fonction pour nettoyer le backup local.
- * @param {Function} setIsSaving - Setter d'état de sauvegarde.
  * @param {() => string} calculateFormattedTime - Fonction pour calculer le temps formaté à la demande.
  */
 export function useSessionCompletion(
   sessionId,
   userId,
   clearBackup,
-  setIsSaving,
   calculateFormattedTime, // ✅ Fonction au lieu de valeur
 ) {
+  const { closeAllModals } = useModals();
   const router = useRouter();
   const { mutate: deleteSession } = useDeleteSession(userId);
+
+  // Store
+  const exercises = useSessionStore((state) => state.exercises);
+  const setIsSaving = useSessionStore((state) => state.setIsSaving);
+  const resetSession = useSessionStore((state) => state.resetSession);
 
   // ✅ useCallback pour éviter de recréer la fonction à chaque render
   /**
    * Sauvegarde la progression courante de la session (PATCH partiel).
    *
-   * @param {any[]} exercises - Liste des exercices à sauvegarder.
+   * @param {any[]} exercisesToSave - Liste des exercices à sauvegarder (optionnel, utilise le store par défaut).
    */
-  const saveProgress = async (exercises) => {
+  const saveProgress = async (exercisesToSave = exercises) => {
     setIsSaving(true);
 
     try {
@@ -41,7 +48,7 @@ export function useSessionCompletion(
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          exercises,
+          exercises: exercisesToSave,
           duration: calculateFormattedTime(), // ✅ Appeler la fonction
         }),
       });
@@ -60,11 +67,11 @@ export function useSessionCompletion(
   /**
    * Nettoie / normalise les données des exercices avant envoi au backend.
    *
-   * @param {any[]} exercises - Exercices bruts.
+   * @param {any[]} exercisesToClean - Exercices bruts.
    * @returns {any[]} Exercices nettoyés.
    */
-  const cleanExercisesData = (exercises) => {
-    return exercises.map((ex) => ({
+  const cleanExercisesData = (exercisesToClean) => {
+    return exercisesToClean.map((ex) => ({
       ...ex,
       actualSets:
         ex.actualSets?.map((set) => ({
@@ -82,13 +89,13 @@ export function useSessionCompletion(
   /**
    * Finalise la session : envoie toutes les données et redirige l'utilisateur.
    *
-   * @param {any[]} exercises - Exercices de la session.
+   * @param {any[]} exercisesToFinish - Exercices de la session (optionnel, utilise le store par défaut).
    */
-  const finishSession = async (exercises) => {
+  const finishSession = async (exercisesToFinish = exercises) => {
     setIsSaving(true);
 
     try {
-      const cleanedExercises = cleanExercisesData(exercises);
+      const cleanedExercises = cleanExercisesData(exercisesToFinish);
 
       const response = await fetch(`/api/sessions/${sessionId}`, {
         method: "PUT",
@@ -106,12 +113,15 @@ export function useSessionCompletion(
       }
 
       clearBackup();
+      closeAllModals();
       toast.success("🎉 Séance terminée !");
+      setTimeout(() => resetSession(sessionId), 1000);
       router.push("/sessions");
       router.refresh();
     } catch (error) {
       toast.error(error.message || "Erreur finalisation");
       setIsSaving(false);
+      // ⚠️ Ne pas nettoyer le state en cas d'erreur pour permettre une nouvelle tentative
     }
   };
 
@@ -124,7 +134,9 @@ export function useSessionCompletion(
 
     deleteSession(sessionId, {
       onSuccess: () => {
+        closeAllModals();
         clearBackup();
+        setTimeout(() => resetSession(sessionId), 1000);
         router.push("/workouts");
         router.refresh();
       },

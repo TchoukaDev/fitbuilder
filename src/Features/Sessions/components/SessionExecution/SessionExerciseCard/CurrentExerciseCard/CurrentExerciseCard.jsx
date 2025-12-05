@@ -5,21 +5,28 @@ import { SetRow } from "..";
 import { Button } from "@/Global/components";
 import { AnimatePresence, motion } from "framer-motion";
 import { handleKeyDown } from "@/Global/utils";
-import { useSessionExecutionContext } from "../../SessionExecutionContext";
+import { useSessionStore } from "@/Features/Sessions/store";
 
 /**
  * Formulaire de l'exercice en cours
  * Affiche : séries, effort/RPE, notes et bouton pour terminer
  */
-export default function CurrentExerciseCard({ exercise, index }) {
-  // ✅ Récupérer les handlers depuis le Context avec les NOUVEAUX noms clairs
-  const {
-    updateExerciseSet,
-    toggleExerciseSetComplete,
-    updateExerciseNotes,
-    updateExerciseEffort,
-    completeExercise,
-  } = useSessionExecutionContext();
+export default function CurrentExerciseCard({
+  exercise,
+  index,
+  onCompleteExercise,
+}) {
+  // ✅ Appeler directement les actions du store
+  const updateExerciseSet = useSessionStore((state) => state.updateExerciseSet);
+  const toggleExerciseSetComplete = useSessionStore(
+    (state) => state.toggleExerciseSetComplete,
+  );
+  const updateExerciseNotes = useSessionStore(
+    (state) => state.updateExerciseNotes,
+  );
+  const updateExerciseEffort = useSessionStore(
+    (state) => state.updateExerciseEffort,
+  );
 
   // ✅ State local pour l'effort (RPE)
   const [localEffort, setLocalEffort] = useState(exercise.effort ?? null);
@@ -124,7 +131,7 @@ export default function CurrentExerciseCard({ exercise, index }) {
         </div>
 
         {/* BOUTON TERMINER */}
-        <Button full onClick={() => completeExercise(index)}>
+        <Button full onClick={() => onCompleteExercise(index)}>
           Exercice terminé
         </Button>
       </motion.div>

@@ -23,9 +23,14 @@ export default function ModalProvider({ children }) {
   const isOpen = (name) => !!modals[name];
   const getModalData = (name) => modalData[name];
 
+  const closeAllModals = () => {
+    setModals({});
+    setModalData({});
+  };
+
   return (
     <ModalContext.Provider
-      value={{ openModal, closeModal, isOpen, getModalData }}
+      value={{ openModal, closeModal, isOpen, getModalData, closeAllModals }}
     >
       {children}
     </ModalContext.Provider>
