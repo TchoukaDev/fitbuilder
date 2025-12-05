@@ -1,8 +1,8 @@
-import { useWorkoutFormStore } from "@/Features/Workouts/store";
+import { useWorkoutStore } from "@/Features/Workouts/store";
 
 // Sélecteur d'exercices groupés par muscle avec gestion d'erreur.
 export default function WorkoutExerciseGroupSelect({ grouped }) {
-  const setSelectedExerciseId = useWorkoutFormStore(
+  const setSelectedExerciseId = useWorkoutStore(
     (state) => state.setSelectedExerciseId,
   );
 

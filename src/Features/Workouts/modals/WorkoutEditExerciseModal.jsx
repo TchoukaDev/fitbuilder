@@ -5,14 +5,14 @@ import { createPortal } from "react-dom";
 import { useModals } from "@/Providers/Modals";
 import { ModalLayout } from "@/Global/components";
 import { handleKeyDown } from "@/Global/utils";
-import { useWorkoutFormStore } from "@/Features/Workouts/store/workoutFormStore";
+import { useWorkoutStore } from "@/Features/Workouts/store";
 import { toast } from "react-toastify";
 
 // Modale de modifier d'un exercice ajouté dans l'entraînement
 export default function WorkoutEditExerciseModal({ index }) {
   const { closeModal } = useModals();
-  const exercises = useWorkoutFormStore((state) => state.exercises);
-  const updateExercise = useWorkoutFormStore((state) => state.updateExercise);
+  const exercises = useWorkoutStore((state) => state.exercises);
+  const updateExercise = useWorkoutStore((state) => state.updateExercise);
 
   // Récupérer l'exercice depuis le store pour éviter les race conditions
   const exercise = exercises[index];

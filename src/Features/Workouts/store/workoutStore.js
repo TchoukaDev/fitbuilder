@@ -2,7 +2,7 @@ import { create } from "zustand";
 
 const STORAGE_KEY = "exercises";
 
-export const useWorkoutFormStore = create((set, get) => ({
+export const useWorkoutStore = create((set, get) => ({
   // ============================================================
   // 📦 ÉTAT - State Management
   // ============================================================
@@ -14,11 +14,6 @@ export const useWorkoutFormStore = create((set, get) => ({
 
   // État de la sélection
   selectedExerciseId: null,
-
-  // État des filtres
-  activeTab: "all",
-  selectedMuscle: "all",
-  search: "",
 
   // État des erreurs
   errorExercises: null,
@@ -42,16 +37,6 @@ export const useWorkoutFormStore = create((set, get) => ({
   setErrorExercises: (error) => set({ errorExercises: error }),
 
   setModaleTitle: (title) => set({ modaleTitle: title }),
-
-  // ============================================================
-  // 🎯 FILTRES - Actions sur les Filtres
-  // ============================================================
-
-  setActiveTab: (activeTab) => set({ activeTab }),
-
-  setSelectedMuscle: (selectedMuscle) => set({ selectedMuscle }),
-
-  setSearch: (search) => set({ search }),
 
   // ============================================================
   // 💪 EXERCICES - Actions sur les Exercices
@@ -156,9 +141,6 @@ export const useWorkoutFormStore = create((set, get) => ({
       errorSelectedExerciseId: null,
       selectedExerciseId: null,
       step: 1,
-      activeTab: "all",
-      selectedMuscle: "all",
-      search: "",
     });
   },
 }));

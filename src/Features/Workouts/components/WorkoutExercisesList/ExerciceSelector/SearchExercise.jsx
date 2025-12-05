@@ -1,11 +1,7 @@
 // Champ de recherche pour filtrer les exercices par nom.
 import { Label } from "@/Global/components";
-import { useWorkoutFormStore } from "@/Features/Workouts/store";
 
-export default function SearchExercise() {
-  // Store
-  const search = useWorkoutFormStore((state) => state.search);
-  const setSearch = useWorkoutFormStore((state) => state.setSearch);
+export default function SearchExercise({ search, setSearch }) {
   return (
     <div className="relative">
       {/* Recherche */}

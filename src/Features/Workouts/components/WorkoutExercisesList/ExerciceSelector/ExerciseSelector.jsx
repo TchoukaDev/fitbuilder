@@ -8,30 +8,47 @@ import WorkoutExerciseTabs from "./WorkoutExerciseTab";
 import WorkoutMuscleFilters from "./WorkoutMuscleFilters";
 import WorkoutExerciseGroupSelect from "./WorkoutExerciseGroupSelect";
 import SearchExercise from "./SearchExercise";
-import { useWorkoutFormStore } from "@/Features/Workouts/store/workoutFormStore";
+import { useWorkoutStore } from "@/Features/Workouts/store";
+import { useExerciseFilters } from "@/Features/Exercises/hooks";
+
 export default function ExerciseSelector({
-  counts,
-  muscleCounts,
-  allExerciseMuscles,
-  myExerciseMuscles,
-  favoriteExerciseMuscles,
-  grouped,
+  exercises,
+  favoritesExercises,
+  isAdmin,
 }) {
   // Store
-  const exercisesAdded = useWorkoutFormStore((state) => state.exercises);
-  const selectedExerciseId = useWorkoutFormStore(
+  const exercisesAdded = useWorkoutStore((state) => state.exercises);
+  const selectedExerciseId = useWorkoutStore(
     (state) => state.selectedExerciseId,
   );
-  const setStepAction = useWorkoutFormStore((state) => state.setStep);
-  const clearAll = useWorkoutFormStore((state) => state.clearAll);
-  const errorSelectedExerciseId = useWorkoutFormStore(
+  const setStepAction = useWorkoutStore((state) => state.setStep);
+  const errorSelectedExerciseId = useWorkoutStore(
     (state) => state.errorSelectedExerciseId,
   );
-  const setErrorSelectedExerciseId = useWorkoutFormStore(
+  const setErrorSelectedExerciseId = useWorkoutStore(
     (state) => state.setErrorSelectedExerciseId,
   );
-  const activeTab = useWorkoutFormStore((state) => state.activeTab);
-  const setModaleTitle = useWorkoutFormStore((state) => state.setModaleTitle);
+
+  // Filtres
+  const {
+    grouped,
+    counts,
+    fixedMuscleCounts: muscleCounts,
+    allExerciseMuscles,
+    myExerciseMuscles,
+    favoriteExerciseMuscles,
+    activeTab,
+    setActiveTab,
+    setSelectedMuscle,
+    search,
+    setSearch,
+  } = useExerciseFilters({
+    exercises,
+    favoritesExercises,
+    isAdmin,
+  });
+
+  const setModaleTitle = useWorkoutStore((state) => state.setModaleTitle);
   const { closeModal } = useModals();
 
   // Vérifier si un exercice est sélectionner avant de passer à l'étape 2
@@ -57,26 +74,33 @@ export default function ExerciseSelector({
   return (
     <div className="flex flex-col items-center gap-3">
       {/* Barre de recherche d'exercices */}
-      <SearchExercise />
+      <SearchExercise search={search} setSearch={setSearch} />
 
       {/* Sélecteur des exercices par type */}
-      <WorkoutExerciseTabs counts={counts} />
+      <WorkoutExerciseTabs
+        counts={counts}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+      />
 
       {/* Filtres par muscle*/}
       {activeTab === "all" && (
         <WorkoutMuscleFilters
+          onMuscleChange={setSelectedMuscle}
           muscles={allExerciseMuscles}
           muscleCounts={muscleCounts}
         />
       )}
       {activeTab === "mine" && (
         <WorkoutMuscleFilters
+          onMuscleChange={setSelectedMuscle}
           muscles={myExerciseMuscles}
           muscleCounts={muscleCounts}
         />
       )}
       {activeTab === "favorites" && (
         <WorkoutMuscleFilters
+          onMuscleChange={setSelectedMuscle}
           muscles={favoriteExerciseMuscles}
           muscleCounts={muscleCounts}
         />

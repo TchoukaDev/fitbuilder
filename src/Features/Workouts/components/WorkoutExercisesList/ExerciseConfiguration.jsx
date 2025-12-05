@@ -4,16 +4,16 @@ import { handleKeyDown } from "@/Global/utils";
 import { useModals } from "@/Providers/Modals";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { useWorkoutFormStore } from "@/Features/Workouts/store/workoutFormStore"; // ✅ AJOUT
+import { useWorkoutStore } from "@/Features/Workouts/store"; // ✅ AJOUT
 
 export default function ExerciseConfiguration({ exerciseSelected }) {
   // ========================================
   // 🏪 ZUSTAND - Récupérer l'action addExercise
   // ========================================
-  const addExercise = useWorkoutFormStore((state) => state.addExercise); // ✅ NOUVEAU
-  const setStepAction = useWorkoutFormStore((state) => state.setStep);
-  const clearAll = useWorkoutFormStore((state) => state.clearAll);
-  const setModaleTitle = useWorkoutFormStore((state) => state.setModaleTitle);
+  const addExercise = useWorkoutStore((state) => state.addExercise); // ✅ NOUVEAU
+  const setStepAction = useWorkoutStore((state) => state.setStep);
+  const clearAll = useWorkoutStore((state) => state.clearAll);
+  const setModaleTitle = useWorkoutStore((state) => state.setModaleTitle);
   // ========================================
   // 📝 STATE LOCAL (configuration de l'exercice)
   // ========================================

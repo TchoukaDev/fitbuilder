@@ -7,15 +7,15 @@ import { Plus } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
 import { BeatLoader } from "react-spinners";
 import ExerciseItem from "./ExerciseItem";
-import { useWorkoutFormStore } from "@/Features/Workouts/store/workoutFormStore";
+import { useWorkoutStore } from "@/Features/Workouts/store";
 
 export default function WorkoutFormExercisesList({
   onAddClick,
   onEditClick,
   onRemoveClick,
 }) {
-  const exercisesStore = useWorkoutFormStore((state) => state.exercises);
-  const isMounted = useWorkoutFormStore((state) => state.isMounted);
+  const exercisesStore = useWorkoutStore((state) => state.exercises);
+  const isMounted = useWorkoutStore((state) => state.isMounted);
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
       <div className="flex justify-between items-center mb-6">

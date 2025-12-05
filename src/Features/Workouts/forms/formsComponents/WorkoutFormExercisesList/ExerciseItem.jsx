@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { SquareArrowDown, SquareArrowUp, SquareX, Edit } from "lucide-react";
-import { useWorkoutFormStore } from "@/Features/Workouts/store/workoutFormStore";
+import { useWorkoutStore } from "@/Features/Workouts/store";
 // Carte d'exercice avec infos et actions (modifier, supprimer, déplacer).
 export default function ExerciseItem({
   index,
@@ -10,9 +10,9 @@ export default function ExerciseItem({
   onEditClick,
   onRemoveClick,
 }) {
-  const exercisesStore = useWorkoutFormStore((state) => state.exercises);
+  const exercisesStore = useWorkoutStore((state) => state.exercises);
   const exercise = exercisesStore[index];
-  const moveExercise = useWorkoutFormStore((state) => state.moveExercise);
+  const moveExercise = useWorkoutStore((state) => state.moveExercise);
 
   return (
     <motion.div

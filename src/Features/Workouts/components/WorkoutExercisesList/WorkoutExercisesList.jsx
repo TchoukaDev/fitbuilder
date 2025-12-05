@@ -1,16 +1,11 @@
 "use client";
 
 // Liste et configuration des exercices à ajouter dans l'entraînement (flux en 2 étapes).
-import {
-  useExerciseFilters,
-  useExercises,
-  useFavorites,
-} from "@/Features/Exercises/hooks";
-
+import { useExercises, useFavorites } from "@/Features/Exercises/hooks";
 import ExerciseConfiguration from "./ExerciseConfiguration";
 import { useMemo } from "react";
 import ExerciseSelector from "./ExerciceSelector/ExerciseSelector";
-import { useWorkoutFormStore } from "../../store";
+import { useWorkoutStore } from "../../store";
 
 export default function WorkoutExercisesList({
   userId,
@@ -19,8 +14,8 @@ export default function WorkoutExercisesList({
   initialFavorites,
 }) {
   // Store
-  const step = useWorkoutFormStore((state) => state.step);
-  const selectedExerciseId = useWorkoutFormStore(
+  const step = useWorkoutStore((state) => state.step);
+  const selectedExerciseId = useWorkoutStore(
     (state) => state.selectedExerciseId,
   );
 
@@ -37,20 +32,6 @@ export default function WorkoutExercisesList({
     initialFavorites,
   );
 
-  // Filtres
-  const {
-    grouped,
-    counts,
-    fixedMuscleCounts,
-    allExerciseMuscles,
-    myExerciseMuscles,
-    favoriteExerciseMuscles,
-  } = useExerciseFilters({
-    exercises: cachedExercises,
-    favoritesExercises,
-    isAdmin,
-  });
-
   // Réupérer l'exercice sélectionné au complet
   const exerciseSelected = useMemo(
     () => cachedExercises.filter((ex) => ex._id === selectedExerciseId)[0],
@@ -63,12 +44,9 @@ export default function WorkoutExercisesList({
   if (step === 1) {
     return (
       <ExerciseSelector
-        counts={counts}
-        muscleCounts={fixedMuscleCounts}
-        allExerciseMuscles={allExerciseMuscles}
-        favoriteExerciseMuscles={favoriteExerciseMuscles}
-        myExerciseMuscles={myExerciseMuscles}
-        grouped={grouped}
+        exercises={cachedExercises}
+        favoritesExercises={favoritesExercises}
+        isAdmin={isAdmin}
       />
     );
   }

@@ -1,9 +1,9 @@
 // Sélecteur d'onglets pour filtrer les exercices (Tous / Mes exercices / Favoris).
-import { useWorkoutFormStore } from "@/Features/Workouts/store";
-export default function WorkoutExerciseTabs({ counts }) {
-  // Store
-  const activeTab = useWorkoutFormStore((state) => state.activeTab);
-  const setActiveTab = useWorkoutFormStore((state) => state.setActiveTab);
+export default function WorkoutExerciseTabs({
+  counts,
+  activeTab,
+  onTabChange,
+}) {
   // Filtres
   const tabs = [
     { id: "all", label: "Tous", count: counts.all },
@@ -29,7 +29,7 @@ export default function WorkoutExerciseTabs({ counts }) {
       </label>
       <select
         className="input pt-2"
-        onChange={(e) => setActiveTab(e.target.value)}
+        onChange={(e) => onTabChange(e.target.value)}
         value={activeTab}
       >
         {" "}

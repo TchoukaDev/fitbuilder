@@ -1,1 +1,1 @@
-export { useWorkoutFormStore } from "./workoutFormStore";
+export { useWorkoutStore } from "./workoutStore";

@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { useWorkoutFormStore } from "@/Features/Workouts/store/workoutFormStore";
+import { useWorkoutStore } from "@/Features/Workouts/store";
 import { useModals } from "@/Providers/Modals";
 
 /**
@@ -16,21 +16,19 @@ export function useWorkoutForm({
   // ========================================
   // 🏪 ZUSTAND
   // ========================================
-  const exercises = useWorkoutFormStore((state) => state.exercises);
-  const setExercises = useWorkoutFormStore((state) => state.setExercises);
-  const setErrorExercises = useWorkoutFormStore(
-    (state) => state.setErrorExercises,
-  );
-  const errorExercises = useWorkoutFormStore((state) => state.errorExercises);
-  const isMounted = useWorkoutFormStore((state) => state.isMounted);
-  const setIsMounted = useWorkoutFormStore((state) => state.setIsMounted);
-  const removeExercise = useWorkoutFormStore((state) => state.removeExercise);
+  const exercises = useWorkoutStore((state) => state.exercises);
+  const setExercises = useWorkoutStore((state) => state.setExercises);
+  const setErrorExercises = useWorkoutStore((state) => state.setErrorExercises);
+  const errorExercises = useWorkoutStore((state) => state.errorExercises);
+  const isMounted = useWorkoutStore((state) => state.isMounted);
+  const setIsMounted = useWorkoutStore((state) => state.setIsMounted);
+  const removeExercise = useWorkoutStore((state) => state.removeExercise);
 
-  const loadFromStorageAction = useWorkoutFormStore(
+  const loadFromStorageAction = useWorkoutStore(
     (state) => state.loadFromStorage,
   );
-  const clearAll = useWorkoutFormStore((state) => state.clearAll);
-  const clearStorage = useWorkoutFormStore((state) => state.clearStorage);
+  const clearAll = useWorkoutStore((state) => state.clearAll);
+  const clearStorage = useWorkoutStore((state) => state.clearStorage);
 
   // ========================================
   // 📌 REF pour le focus
