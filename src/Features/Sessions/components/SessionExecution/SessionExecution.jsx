@@ -32,11 +32,8 @@ import {
 } from "../../modals";
 
 export default function SessionExecution({ sessionData, sessionId, userId }) {
-  // ═══════════════════════════════════════════════════════
-  // 🔧 ROUTER
-  // ═══════════════════════════════════════════════════════
   const router = useRouter();
-
+  const isPlanned = sessionData.isPlanned;
   // ═══════════════════════════════════════════════════════
   // 📊 STATE (depuis le store Zustand)
   // ═══════════════════════════════════════════════════════
@@ -75,6 +72,7 @@ export default function SessionExecution({ sessionData, sessionId, userId }) {
   // Sauvegarder, terminer et annuler session
   const { saveProgress, finishSession, cancelSession } = useSessionCompletion(
     sessionId,
+    sessionData,
     userId,
     clearBackup,
     calculateFormattedTime,
@@ -176,7 +174,7 @@ export default function SessionExecution({ sessionData, sessionId, userId }) {
       <div className="container mx-auto p-6 max-w-4xl">
         {/* HEADER */}
         <SessionHeader
-          sessionName={sessionData.templateName}
+          sessionName={sessionData.workoutName}
           startedAt={sessionData?.startedAt}
           completedCount={completedCount}
           totalExercises={totalExercises}
@@ -237,7 +235,7 @@ export default function SessionExecution({ sessionData, sessionId, userId }) {
       {isOpen("finishSession") && (
         <FinishSessionModal
           onConfirm={handleConfirmFinish}
-          sessionName={sessionData.templateName}
+          sessionName={sessionData.workoutName}
           completedCount={completedCount}
           totalExercises={totalExercises}
           duration={calculateFormattedTime()}
@@ -248,6 +246,7 @@ export default function SessionExecution({ sessionData, sessionId, userId }) {
       {/* Modal de validation d'abandon de séance */}
       {isOpen("cancelSession") && (
         <CancelSessionModal
+          isPlanned={isPlanned}
           onConfirm={handleConfirmCancel}
           isLoading={isSaving}
         />

@@ -13,7 +13,7 @@ export default async function SessionsPage({ searchParams }) {
   // Extraction des filtres depuis l'URL
   const status = resolvedSearchParams?.status || "all";
   const dateFilter = resolvedSearchParams?.dateFilter || "all";
-  const templateFilter = resolvedSearchParams?.templateFilter || "all";
+  const workoutFilter = resolvedSearchParams?.workoutFilter || "all";
   const page = parseInt(resolvedSearchParams?.page) || 1;
   const limit = 5;
 
@@ -30,7 +30,7 @@ export default async function SessionsPage({ searchParams }) {
         initialFilters={{
           status,
           dateFilter,
-          templateFilter,
+          workoutFilter,
           page,
           limit,
         }}
@@ -47,7 +47,7 @@ export async function generateMetadata({ searchParams }) {
   const resolvedSearchParams = await searchParams;
   const status = resolvedSearchParams?.status;
   const dateFilter = resolvedSearchParams?.dateFilter;
-  const templateFilter = resolvedSearchParams?.templateFilter;
+  const workoutFilter = resolvedSearchParams?.workoutFilter;
 
   let title = "Historique des séances";
 
@@ -70,19 +70,19 @@ export async function generateMetadata({ searchParams }) {
     title += ` - ${periodLabels[dateFilter]}`;
   }
 
-  if (templateFilter && templateFilter !== "all") {
-    const templateSet = new Set();
-    data?.sessions.forEach((s) => templateSet.add(s.templateName));
+  if (workoutFilter && workoutFilter !== "all") {
+    const workoutSet = new Set();
+    data?.sessions.forEach((s) => workoutSet.add(s.workoutName));
 
-    const templateLabels = {
-      ...[...templateSet].map(
+    const workoutLabels = {
+      ...[...workoutSet].map(
         (s) =>
           ({
-            templateFilter,
+            workoutFilter,
           } || {}),
       ),
     };
-    title += ` - ${templateLabels[templateFilter]}`;
+    title += ` - ${workoutLabels[workoutFilter]}`;
   }
 
   return {

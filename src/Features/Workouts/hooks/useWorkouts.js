@@ -12,11 +12,12 @@ import { toast } from "react-toastify";
  * @param {any[]} initialData - Données initiales optionnelles pour hydrater le cache.
  * @param {string} userId - Identifiant de l'utilisateur.
  */
-export function useWorkouts(initialData, userId) {
+export function useWorkouts(initialData, userId, options = {}) {
   return useQuery({
     queryKey: ["workouts", userId],
     queryFn: async () => {
       const response = await fetch("/api/workouts");
+
       if (!response.ok) {
         const errorData = await response.json();
         // L'API retourne { error: "string", message: "string" }
@@ -26,13 +27,15 @@ export function useWorkouts(initialData, userId) {
       }
 
       const data = await response.json();
-      return data;
+
+      return data || [];
     },
     initialData: initialData,
     placeholderData: keepPreviousData,
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 30,
     enabled: !!userId,
+    ...options,
   });
 }
 

@@ -1,6 +1,6 @@
 "use client";
 
-// Liste des séances avec filtres (statut, date, template), pagination et stats.
+// Liste des séances avec filtres (statut, date, workout), pagination et stats.
 import { Calendar } from "lucide-react";
 import { useSessionsList } from "../../hooks";
 import {
@@ -18,7 +18,7 @@ export default function SessionsList({
   const {
     statusFilter,
     dateFilter,
-    templateFilter,
+    workoutFilter,
     sessions,
     pagination,
     stats,
@@ -26,7 +26,7 @@ export default function SessionsList({
     isFetching,
     handleStatusChange,
     handleDateFilterChange,
-    handleTemplateFilterChange,
+    handleWorkoutFilterChange,
     handlePageChange,
     handleResetFilters,
   } = useSessionsList(initialSessions, userId, initialFilters);
@@ -84,10 +84,10 @@ export default function SessionsList({
       <SessionsFilters
         statusFilter={statusFilter}
         dateFilter={dateFilter}
-        templateFilter={templateFilter}
+        workoutFilter={workoutFilter}
         onStatusChange={handleStatusChange}
         onDateFilterChange={handleDateFilterChange}
-        onTemplateFilterChange={handleTemplateFilterChange}
+        onWorkoutFilterChange={handleWorkoutFilterChange}
         sessions={initialSessions.sessions}
         isFetching={isFetching}
       />
@@ -117,7 +117,11 @@ export default function SessionsList({
         <>
           <div className="space-y-3 mb-6">
             {sessions.map((session) => (
-              <SessionCard key={session._id} session={session} />
+              <SessionCard
+                key={session._id}
+                session={session}
+                userId={userId}
+              />
             ))}
           </div>
 

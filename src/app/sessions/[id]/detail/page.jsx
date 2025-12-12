@@ -58,9 +58,9 @@ export async function generateMetadata({ params }) {
   }
 
   return {
-    title: `${sessionData.templateName} - Détail de la séance`,
+    title: `${sessionData.workoutName} - Détail de la séance`,
     description: `Récapitulatif de la séance ${
-      sessionData.templateName
+      sessionData.workoutName
     } du ${new Date(sessionData.completedDate).toLocaleDateString("fr-FR")}`,
   };
 }

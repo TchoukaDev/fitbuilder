@@ -1,5 +1,6 @@
 export default function Button({
   onClick,
+  onMouseEnter,
   type,
   disabled,
   children,
@@ -15,6 +16,7 @@ export default function Button({
       type={type}
       title={title}
       disabled={disabled}
+      onMouseEnter={onMouseEnter}
       onClick={onClick}
       aria-label={label}
       className={`flex items-center justify-center ${

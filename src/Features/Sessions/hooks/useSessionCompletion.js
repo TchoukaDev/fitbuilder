@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import { useDeleteSession } from "./useSessions";
+import { useCancelPlannedSession, useDeleteSession } from "./useSessions";
 import { useSessionStore } from "../store";
 import { useModals } from "@/Providers/Modals";
 
@@ -21,13 +21,16 @@ import { useModals } from "@/Providers/Modals";
  */
 export function useSessionCompletion(
   sessionId,
+  sessionData,
   userId,
   clearBackup,
   calculateFormattedTime, // ✅ Fonction au lieu de valeur
 ) {
+  const isPlanned = sessionData.isPlanned;
   const { closeAllModals } = useModals();
   const router = useRouter();
   const { mutate: deleteSession } = useDeleteSession(userId);
+  const { mutate: cancelPlannedSession } = useCancelPlannedSession(userId);
 
   // Store
   const exercises = useSessionStore((state) => state.exercises);
@@ -48,12 +51,14 @@ export function useSessionCompletion(
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          action: "save",
           exercises: exercisesToSave,
           duration: calculateFormattedTime(), // ✅ Appeler la fonction
         }),
       });
 
       if (!response.ok) throw new Error("Erreur sauvegarde");
+      toast.success("Progression sauvegardée");
 
       clearBackup();
     } catch (error) {
@@ -132,19 +137,36 @@ export function useSessionCompletion(
   const cancelSession = () => {
     setIsSaving(true);
 
-    deleteSession(sessionId, {
-      onSuccess: () => {
-        closeAllModals();
-        clearBackup();
-        setTimeout(() => resetSession(sessionId), 1000);
-        router.push("/workouts");
-        router.refresh();
-      },
-      onError: () => {
-        toast.error("Erreur annulation");
-        setIsSaving(false);
-      },
-    });
+    if (isPlanned) {
+      cancelPlannedSession(sessionId, {
+        onSuccess: () => {
+          closeAllModals();
+          clearBackup();
+          setTimeout(() => resetSession(sessionId), 1000);
+          router.push("/sessions");
+          router.refresh();
+        },
+        onError: () => {
+          toast.error("Erreur lors de l'annulation de la session");
+          setIsSaving(false);
+        },
+      });
+    } else {
+      deleteSession(sessionId, {
+        onSuccess: () => {
+          toast.success("Session d'entraînement annulée");
+          closeAllModals();
+          clearBackup();
+          setTimeout(() => resetSession(sessionId), 1000);
+          router.push("/workouts");
+          router.refresh();
+        },
+        onError: () => {
+          toast.error("Erreur lors de l'annulation de la session");
+          setIsSaving(false);
+        },
+      });
+    }
   };
 
   return {

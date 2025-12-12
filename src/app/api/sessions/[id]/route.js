@@ -42,44 +42,177 @@ export async function PATCH(req, { params }) {
   const { userId } = auth;
   const resolvedParams = await params;
   const sessionId = resolvedParams.id;
+  const { action, exercises, duration } = await req.json();
+  const db = await connectDB();
 
-  const { exercises, duration } = await req.json();
-
-  if (!exercises || !Array.isArray(exercises)) {
-    return NextResponse.json(
-      ApiError.INVALID_DATA("Les exercices fournis ne sont pas valides"),
-      { status: 400 },
-    );
-  }
   try {
-    const db = await connectDB();
-    const result = await db.collection("users").updateOne(
-      {
-        _id: new ObjectId(userId),
-        "sessions._id": new ObjectId(sessionId),
-      },
-      {
-        $set: {
-          "sessions.$.exercises": exercises,
-          "sessions.$.duration": duration,
-          "sessions.$.updatedAt": new Date(),
-        },
-      },
-    );
+    // 1. Récupérer la session
+    const user = await db
+      .collection("users")
+      .findOne(
+        { _id: new ObjectId(userId) },
+        { projection: { sessions: true, workouts: true } },
+      );
 
-    if (result.matchedCount === 0) {
-      return NextResponse.json(ApiError.NOT_FOUND("Session"), { status: 404 });
+    if (!user) {
+      return NextResponse.json(ApiError.NOT_FOUND("Utilisateur"), {
+        status: 404,
+      });
     }
 
-    revalidatePath("/sessions");
-    revalidatePath(`/sessions/${sessionId}`);
-    revalidatePath("/dashboard");
-    revalidatePath("/admin");
+    const session = user?.sessions?.find((s) => s._id.toString() === sessionId);
+    if (!session) {
+      return NextResponse.json(ApiError.NOT_FOUND("Session"), {
+        status: 404,
+      });
+    }
 
-    return NextResponse.json(
-      ApiSuccess.OPERATION_SUCCESS("Sauvegarde de la progression"),
-      { status: 200 },
-    );
+    switch (action) {
+      // CAS 1: Démarrer une session planifiée
+      case "start":
+        // 2. Démarrer + incrémenter timesUsed
+        const startResult = await db.collection("users").updateOne(
+          { _id: new ObjectId(userId) },
+          {
+            $set: {
+              "sessions.$[session].startedAt": new Date(),
+              "sessions.$[session].status": "in-progress",
+              "sessions.$[session].updatedAt": new Date(),
+              "workouts.$[workout].lastUsedAt": new Date(),
+            },
+            $inc: {
+              "workouts.$[workout].timesUsed": 1,
+            },
+          },
+          {
+            arrayFilters: [
+              { "session._id": new ObjectId(sessionId) },
+              { "workout._id": new ObjectId(session.workoutId) },
+            ],
+          },
+        );
+
+        if (startResult.matchedCount === 0) {
+          return NextResponse.json(ApiError.NOT_FOUND("Session"), {
+            status: 404,
+          });
+        }
+
+        revalidatePath("/sessions");
+        revalidatePath(`/sessions/${sessionId}`);
+        revalidatePath("/calendar");
+
+        return NextResponse.json(
+          ApiSuccess.OPERATION_SUCCESS("Séance démarrée"),
+          { status: 200 },
+        );
+
+      // CAS 2: Sauvegarder la progression d'une session en cours
+      case "save":
+        if (!exercises || !Array.isArray(exercises)) {
+          return NextResponse.json(
+            ApiError.INVALID_DATA("Les exercices fournis ne sont pas valides"),
+            { status: 400 },
+          );
+        }
+
+        const saveResult = await db.collection("users").updateOne(
+          {
+            _id: new ObjectId(userId),
+            "sessions._id": new ObjectId(sessionId),
+          },
+          {
+            $set: {
+              "sessions.$.exercises": exercises,
+              "sessions.$.duration": duration,
+              "sessions.$.updatedAt": new Date(),
+            },
+          },
+        );
+
+        if (saveResult.matchedCount === 0) {
+          return NextResponse.json(ApiError.NOT_FOUND("Session"), {
+            status: 404,
+          });
+        }
+
+        revalidatePath("/sessions");
+        revalidatePath(`/sessions/${sessionId}`);
+        revalidatePath("/dashboard");
+        revalidatePath("/admin");
+
+        return NextResponse.json(
+          ApiSuccess.OPERATION_SUCCESS("Sauvegarde de la progression"),
+          { status: 200 },
+        );
+
+      // CAS 3: Annuler une session planifiée
+      case "cancel":
+        // Vérifier que la session est en cours
+        if (session.status !== "in-progress") {
+          return NextResponse.json(
+            ApiError.INVALID_DATA(
+              "Seules les sessions en cours peuvent être annulées",
+            ),
+            { status: 400 },
+          );
+        }
+
+        const workoutId = session.workoutId;
+        const otherSessions =
+          user.sessions?.filter(
+            (s) =>
+              s.workoutId.toString() === workoutId.toString() &&
+              s.status === "completed", // Seulement les séances terminées
+          ) || [];
+
+        // Calculer la nouvelle date de dernière utilisation
+        let newLastUsedAt = null;
+        if (otherSessions.length > 0) {
+          otherSessions.sort(
+            (a, b) =>
+              new Date(b.completedDate).getTime() -
+              new Date(a.completedDate).getTime(),
+          );
+          newLastUsedAt = otherSessions[0].completedDate;
+        }
+        // 2. Annuler + décrémenter timesUsed
+        const cancelResult = await db.collection("users").updateOne(
+          { _id: new ObjectId(userId) },
+          {
+            $set: {
+              "sessions.$[session].startedAt": null,
+              "sessions.$[session].status": "planned",
+              "sessions.$[session].updatedAt": new Date(),
+              "workouts.$[workout].lastUsedAt": newLastUsedAt,
+            },
+            $inc: {
+              "workouts.$[workout].timesUsed": -1,
+            },
+          },
+          {
+            arrayFilters: [
+              { "session._id": new ObjectId(sessionId) },
+              { "workout._id": new ObjectId(workoutId) },
+            ],
+          },
+        );
+
+        if (cancelResult.matchedCount === 0) {
+          return NextResponse.json(ApiError.NOT_FOUND("Session"), {
+            status: 404,
+          });
+        }
+
+        revalidatePath("/sessions");
+        revalidatePath(`/sessions/${sessionId}`);
+        revalidatePath("/calendar");
+
+        return NextResponse.json(
+          ApiSuccess.OPERATION_SUCCESS("Séance annulée"),
+          { status: 200 },
+        );
+    }
   } catch (error) {
     console.error("Erreur PATCH session:", error);
     return NextResponse.json(ApiError.SERVER_ERROR, { status: 500 });
@@ -191,7 +324,7 @@ export async function DELETE(req, { params }) {
       return NextResponse.json(ApiError.NOT_FOUND("Session"), { status: 404 });
     }
 
-    const templateId = sessionToDelete.templateId;
+    const workoutId = sessionToDelete.workoutId;
 
     // Supprimer la séance
     await db.collection("users").updateOne(
@@ -211,7 +344,7 @@ export async function DELETE(req, { params }) {
     const otherSessions =
       updatedUser.sessions?.filter(
         (s) =>
-          s.templateId.toString() === templateId.toString() &&
+          s.workoutId.toString() === workoutId.toString() &&
           s.status === "completed", // Seulement les séances terminées
       ) || [];
 
@@ -230,7 +363,7 @@ export async function DELETE(req, { params }) {
     await db.collection("users").updateOne(
       {
         _id: new ObjectId(userId),
-        "workouts._id": new ObjectId(templateId),
+        "workouts._id": new ObjectId(workoutId),
       },
       {
         $inc: { "workouts.$.timesUsed": -1 },

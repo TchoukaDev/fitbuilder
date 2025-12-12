@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Navbar from "./Navbar";
+import { NavbarServer } from "./Navbar";
 
 export default async function Header() {
   return (
@@ -16,7 +16,7 @@ export default async function Header() {
 
       {/* Navbar */}
       <div className="absolute lg:static left-1/2 -translate-x-1/2 lg:translate-0">
-        <Navbar />
+        <NavbarServer />
       </div>
     </div>
   );

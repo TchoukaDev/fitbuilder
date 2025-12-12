@@ -14,8 +14,8 @@ export function useSessionsList(initialSessions, userId, initialFilters) {
   const [dateFilter, setDateFilter] = useState(
     searchParams.get("dateFilter") || "all",
   );
-  const [templateFilter, setTemplateFilter] = useState(
-    searchParams.get("templateFilter") || "all",
+  const [workoutFilter, setWorkoutFilter] = useState(
+    searchParams.get("workoutFilter") || "all",
   );
   const [page, setPage] = useState(parseInt(searchParams.get("page")) || 1);
 
@@ -23,18 +23,18 @@ export function useSessionsList(initialSessions, userId, initialFilters) {
   useEffect(() => {
     const urlStatus = searchParams.get("status") || "all";
     const urlDateFilter = searchParams.get("dateFilter") || "all";
-    const urlTemplateFilter = searchParams.get("templateFilter") || "all";
+    const urlWorkoutFilter = searchParams.get("workoutFilter") || "all";
     const urlPage = parseInt(searchParams.get("page")) || 1;
 
     if (
       urlStatus !== statusFilter ||
       urlDateFilter !== dateFilter ||
-      urlTemplateFilter !== templateFilter ||
+      urlWorkoutFilter !== workoutFilter ||
       urlPage !== page
     ) {
       setStatusFilter(urlStatus);
       setDateFilter(urlDateFilter);
-      setTemplateFilter(urlTemplateFilter);
+      setWorkoutFilter(urlWorkoutFilter);
       setPage(urlPage);
     }
   }, [searchParams]);
@@ -60,8 +60,8 @@ export function useSessionsList(initialSessions, userId, initialFilters) {
     if (newFilters.dateFilter && newFilters.dateFilter !== "all") {
       params.set("dateFilter", newFilters.dateFilter);
     }
-    if (newFilters.templateFilter && newFilters.templateFilter !== "all") {
-      params.set("templateFilter", newFilters.templateFilter);
+    if (newFilters.workoutFilter && newFilters.workoutFilter !== "all") {
+      params.set("workoutFilter", newFilters.workoutFilter);
     }
     if (newFilters.page && newFilters.page !== 1) {
       params.set("page", newFilters.page);
@@ -81,7 +81,7 @@ export function useSessionsList(initialSessions, userId, initialFilters) {
     updateURL({
       status: newStatus,
       dateFilter,
-      templateFilter,
+      workoutFilter,
       page: 1,
     });
   };
@@ -92,18 +92,18 @@ export function useSessionsList(initialSessions, userId, initialFilters) {
     updateURL({
       status: statusFilter,
       dateFilter: newDateFilter,
-      templateFilter,
+      workoutFilter,
       page: 1,
     });
   };
 
-  const handleTemplateFilterChange = (newTemplateFilter) => {
-    setTemplateFilter(newTemplateFilter);
+  const handleWorkoutFilterChange = (newWorkoutFilter) => {
+    setWorkoutFilter(newWorkoutFilter);
     setPage(1);
     updateURL({
       status: statusFilter,
       dateFilter,
-      templateFilter: newTemplateFilter,
+      workoutFilter: newWorkoutFilter,
       page: 1,
     });
   };
@@ -113,7 +113,7 @@ export function useSessionsList(initialSessions, userId, initialFilters) {
     updateURL({
       status: statusFilter,
       dateFilter,
-      templateFilter,
+      workoutFilter,
       page: newPage,
     });
     window.scrollTo({ top: 150, behavior: "smooth" });
@@ -122,7 +122,7 @@ export function useSessionsList(initialSessions, userId, initialFilters) {
   const handleResetFilters = () => {
     setStatusFilter("all");
     setDateFilter("all");
-    setTemplateFilter("all");
+    setWorkoutFilter("all");
     setPage(1);
     router.push("/sessions");
     window.scrollTo({ top: 150, behavior: "smooth" });
@@ -132,7 +132,7 @@ export function useSessionsList(initialSessions, userId, initialFilters) {
     // État
     statusFilter,
     dateFilter,
-    templateFilter,
+    workoutFilter,
     page,
     // Données
     sessions,
@@ -143,9 +143,8 @@ export function useSessionsList(initialSessions, userId, initialFilters) {
     // Handlers
     handleStatusChange,
     handleDateFilterChange,
-    handleTemplateFilterChange,
+    handleWorkoutFilterChange,
     handlePageChange,
     handleResetFilters,
   };
 }
-

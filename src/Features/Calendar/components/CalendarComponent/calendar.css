@@ -1,0 +1,684 @@
+/* ========================================
+   📦 CONTENEUR PRINCIPAL & STRUCTURE DE BASE
+   ======================================== */
+
+/* Conteneur principal du calendrier */
+.calendar-container {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+/* Titre au-dessus du calendrier */
+.calendar-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+}
+
+/* Wrapper qui entoure le composant react-big-calendar */
+.calendar-wrapper {
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  height: 600px;
+}
+
+/* Curseur pointer sur toutes les cellules du calendrier (toutes vues) */
+.rbc-day-bg,
+.rbc-date-cell,
+.rbc-time-slot,
+.rbc-timeslot-group,
+.rbc-day-slot,
+.rbc-agenda-view td,
+.rbc-agenda-view th,
+.rbc-row {
+  cursor: pointer !important;
+}
+.rbc-day-bg:hover,
+.rbc-date-cell:hover,
+.rbc-time-slot:hover,
+.rbc-timeslot-group:hover,
+.rbc-day-slot:hover,
+.rbc-agenda-view td:hover,
+.rbc-agenda-view th:hover {
+  background-color: var(--color-primary-100) !important;
+}
+
+/* ========================================
+   🎨 BARRE D'OUTILS (TOOLBAR)
+   ======================================== */
+
+/* Boutons de la toolbar (Aujourd'hui, Précédent, Suivant, Mois, Semaine, Jour, Agenda) */
+.rbc-toolbar button {
+  color: var(--color-primary-600);
+  border: 1px solid var(--color-primary-200);
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-weight: 500;
+  transition: all 0.2s;
+  background-color: white;
+}
+
+/* État hover des boutons de la toolbar */
+.rbc-toolbar button:hover {
+  background-color: var(--color-primary-100);
+  border-color: var(--color-primary-600);
+}
+
+/* Bouton actif/sélectionné dans la toolbar */
+.rbc-toolbar button.rbc-active {
+  background-color: var(--color-primary-600) !important;
+  color: white !important;
+  border-color: var(--color-primary-600) !important;
+}
+
+/* Label du titre dans la toolbar (affichage du mois et année) */
+.rbc-toolbar-label {
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--color-primary-800);
+}
+
+/* ========================================
+   📅 VUE MOIS - EN-TÊTES & CELLULES
+   ======================================== */
+
+/* En-tête du calendrier (ligne des jours de la semaine) */
+.rbc-header {
+  padding: 12px 3px;
+  font-weight: 600;
+  color: var(--color-primary-800);
+  border-bottom: 2px solid var(--color-primary-200);
+  background-color: var(--color-primary-50);
+}
+
+/* Cellule contenant le numéro du jour */
+.rbc-date-cell {
+  padding: 5px;
+}
+
+/* Mise en évidence du jour actuel */
+.rbc-today {
+  background-color: var(--color-primary-100) !important;
+}
+
+/* Cellule de jour hors du mois en cours (dates grises) */
+.rbc-off-range-bg {
+  background-color: var(--color-gray-100);
+}
+
+/* Effet hover sur les cellules de jour (vue mois) */
+.rbc-day-bg:hover {
+  background-color: var(--color-primary-50) !important;
+  cursor: pointer;
+}
+
+.rbc-row,
+.rbc-row-segment,
+.rbc-row-content {
+  pointer-events: none !important;
+}
+
+/* ✅ CORRECTION : Réactiver les événements de souris sur les événements eux-mêmes */
+.rbc-event {
+  pointer-events: auto !important;
+}
+
+/* ========================================
+   🎯 ÉVÉNEMENTS (APPARENCE GÉNÉRALE)
+   ======================================== */
+
+/* Style de base d'un événement */
+.rbc-event {
+  background-color: var(--event-color, var(--color-primary-600)) !important;
+  border: none !important;
+  color: white !important;
+  border-radius: 4px !important;
+  padding: 2px 5px !important;
+  font-size: 13px !important;
+}
+
+/* Événement sélectionné/cliqué */
+.rbc-event.rbc-selected {
+  background-color: var(
+    --event-color-hover,
+    var(--color-primary-400)
+  ) !important;
+  box-shadow: 0 0 0 2px var(--event-color-hover, var(--color-primary-400)) !important;
+}
+
+/* Événement au survol */
+.rbc-event:hover {
+  background-color: var(
+    --event-color-hover,
+    var(--color-primary-500)
+  ) !important;
+  opacity: 1.2 !important;
+  cursor: pointer;
+}
+
+/* ========================================
+   🕐 VUE SEMAINE / JOUR - STRUCTURE
+   ======================================== */
+
+/* Stabiliser toute la vue temporelle (semaine/jour) */
+.rbc-time-view {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  contain: layout;
+}
+
+/* En-tête de la vue temporelle */
+.rbc-time-header {
+  flex-shrink: 0;
+}
+
+/* Désactiver le comportement overflow qui déclenche le recalcul */
+.rbc-time-header.rbc-overflowing {
+  margin-right: 0 !important;
+  border-right: none !important;
+}
+
+/* Contenu temporel (zone scrollable avec les heures) */
+.rbc-time-content {
+  position: relative;
+  border-top: 2px solid var(--color-primary-200);
+  flex-shrink: 0;
+  overflow-y: scroll !important;
+  overflow-x: hidden !important;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+  transition: none !important;
+  will-change: auto;
+}
+
+/* Masquer la scrollbar (Chrome/Safari) */
+.rbc-time-content::-webkit-scrollbar {
+  display: none;
+}
+
+/* Indicateur visuel de scroll (barre gradient optionnelle) */
+.rbc-time-content::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    var(--color-primary-300) 0%,
+    transparent 100%
+  );
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+/* Afficher l'indicateur au hover */
+.rbc-time-content:hover::after {
+  opacity: 1;
+}
+
+/* Conteneur de l'en-tête temporel (colonnes des jours) */
+.rbc-time-header-content {
+  border-left: 1px solid #e5e7eb;
+  padding-right: 0;
+}
+
+/* Groupe de créneaux horaires */
+.rbc-timeslot-group {
+  border-bottom: 1px solid #e5e7eb;
+  min-height: 40px;
+}
+
+/* Créneau horaire individuel */
+.rbc-time-slot {
+  border-top: 1px solid #f3f4f6;
+}
+
+/* Colonne de gauche avec les labels d'heure */
+.rbc-label {
+  padding-right: 8px;
+  text-align: right;
+}
+
+/* En-tête de colonne dans la vue semaine/jour */
+.rbc-header {
+  border-bottom: 1px solid var(--color-primary-200);
+  padding: 10px 5px;
+}
+
+/* Synchroniser les largeurs des colonnes (en-tête et contenu) */
+.rbc-time-header .rbc-header,
+.rbc-time-content .rbc-day-slot {
+  flex: 1 1 0%;
+  min-width: 0;
+}
+
+/* ========================================
+   🕐 VUE SEMAINE / JOUR - ÉVÉNEMENTS
+   ======================================== */
+
+/* Colonne de jour contenant les événements */
+.rbc-day-slot .rbc-event {
+  border: none;
+  border-radius: 4px;
+}
+
+/* Contenu textuel de l'événement dans la vue temporelle */
+.rbc-day-slot .rbc-event-content {
+  padding: 2px 4px;
+}
+
+/* Indicateur de l'heure actuelle (ligne horizontale rouge) */
+.rbc-current-time-indicator {
+  background-color: var(--color-primary-600) !important;
+  height: 2px !important;
+}
+
+/* ========================================
+   ALIGNEMENT - GUTTER (COLONNE HEURES)
+   ======================================== */
+
+/* Forcer une largeur fixe pour la colonne vide en haut à gauche (éviter le ressaut) */
+.rbc-time-header-gutter {
+  width: 60px !important;
+  min-width: 60px !important;
+  max-width: 60px !important;
+  flex: 0 0 60px !important;
+}
+
+/* Colonne de gauche avec les heures (zone scrollable) */
+.rbc-time-gutter {
+  width: 60px !important;
+  min-width: 60px !important;
+  max-width: 60px !important;
+  flex: 0 0 60px !important;
+}
+
+/* ========================================
+   📋 VUE AGENDA - TABLEAU
+   ======================================== */
+
+/* En-tête du tableau agenda (thead) */
+.rbc-agenda-table thead {
+  background-color: #faf5ff;
+}
+
+/* Cellules d'en-tête (th) du tableau agenda */
+.rbc-agenda-table th {
+  padding: 12px 8px;
+  font-weight: 600;
+  color: #5b21b6;
+  border-bottom: 2px solid #e9d5ff;
+  text-align: center;
+}
+
+/* Lignes du corps du tableau (tbody tr) */
+.rbc-agenda-table tbody tr {
+  border-bottom: 1px solid var(--color-primary-200);
+}
+
+/* Effet hover sur les lignes du tableau */
+.rbc-agenda-table tbody tr:hover {
+  background-color: #faf5ff;
+}
+
+/* Cellule contenant la date dans l'agenda */
+.rbc-agenda-date-cell {
+  padding: 16px 12px;
+  color: var(--color-primary-600);
+  font-weight: 600;
+  vertical-align: middle;
+  min-width: 100px;
+  text-align: center;
+}
+
+/* Cellule contenant l'heure dans l'agenda */
+.rbc-agenda-time-cell {
+  padding: 16px 12px;
+  color: var(--color-primary-600);
+  font-size: 14px;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+/* Cellule contenant le nom de l'événement dans l'agenda */
+.rbc-agenda-event-cell {
+  padding: 16px 12px;
+  vertical-align: middle;
+}
+
+/* Lien cliquable du nom de l'événement dans l'agenda */
+.rbc-agenda-event-cell a {
+  color: #1f2937 !important;
+  font-weight: 600;
+  text-decoration: none;
+  display: block;
+  padding: 4px 0;
+}
+
+/* Effet hover sur le lien de l'événement */
+.rbc-agenda-event-cell a:hover {
+  color: var(--color-primary-600) !important;
+}
+
+/* Message affiché quand aucun événement n'existe dans l'agenda */
+.rbc-agenda-empty {
+  padding: 60px 20px;
+  text-align: center;
+  color: #9ca3af;
+  font-style: italic;
+  background-color: #fafafa;
+}
+
+/* ========================================
+   🖥️ RESPONSIVE - TABLETTE (769px - 1024px)
+   ======================================== */
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  /* Réduire le padding du conteneur principal */
+  .calendar-container {
+    padding: 1.25rem;
+  }
+
+  /* Ajuster la hauteur du calendrier */
+  .calendar-wrapper {
+    height: 550px;
+  }
+
+  /* Réduire la taille du titre de la toolbar */
+  .rbc-toolbar-label {
+    font-size: 17px;
+  }
+
+  /* Réduire le padding et la taille des boutons */
+  .rbc-toolbar button {
+    padding: 7px 14px;
+    font-size: 13px;
+  }
+}
+
+/* ========================================
+   📱 RESPONSIVE - MOBILE (max 768px)
+   ======================================== */
+
+@media (max-width: 768px) {
+  /* ===== CONTENEUR PRINCIPAL ===== */
+
+  /* Réduire le padding du conteneur */
+  .calendar-container {
+    padding: 0.75rem;
+  }
+
+  /* Réduire la taille du titre */
+  .calendar-title {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  /* Ajuster la hauteur du calendrier selon la hauteur de l'écran */
+  .calendar-wrapper {
+    padding: 0.5rem;
+    height: calc(100vh - 200px);
+    min-height: 500px;
+  }
+
+  /* ===== TOOLBAR ===== */
+
+  /* Réorganiser la toolbar en colonne */
+  .rbc-toolbar {
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  /* Déplacer le label en haut et réduire sa taille */
+  .rbc-toolbar-label {
+    font-size: 16px;
+    order: -1;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Groupes de boutons en ligne */
+  .rbc-btn-group {
+    display: flex;
+    gap: 0.25rem;
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Réduire les boutons et les rendre flexibles */
+  .rbc-toolbar button {
+    padding: 6px 10px;
+    font-size: 12px;
+    flex: 1;
+    white-space: nowrap;
+  }
+
+  /* ===== EN-TÊTES ===== */
+
+  /* Réduire la taille des en-têtes de jours */
+  .rbc-header {
+    padding: 8px 2px;
+    font-size: 11px;
+  }
+
+  /* ===== VUE MOIS ===== */
+
+  /* Réduire la taille de police globale */
+  .rbc-month-view {
+    font-size: 12px;
+  }
+
+  /* Réduire le padding et la taille des cellules de date */
+  .rbc-date-cell {
+    padding: 3px;
+    font-size: 12px;
+  }
+
+  /* Réduire la taille des événements */
+  .rbc-event {
+    font-size: 11px !important;
+    padding: 1px 3px !important;
+  }
+
+  /* Réduire la taille du contenu de l'événement */
+  .rbc-event-content {
+    font-size: 11px;
+  }
+
+  /* ===== VUE SEMAINE / JOUR ===== */
+
+  /* Retirer la bordure gauche de l'en-tête */
+  .rbc-time-header-content {
+    border-left: none;
+  }
+
+  /* Retirer la bordure supérieure du contenu */
+  .rbc-time-content {
+    border-top: none;
+  }
+
+  /* Augmenter la hauteur minimale des créneaux */
+  .rbc-timeslot-group {
+    min-height: 50px;
+  }
+
+  /* Réduire la taille des créneaux horaires */
+  .rbc-time-slot {
+    font-size: 11px;
+  }
+
+  /* Réduire la taille et le padding des labels d'heure */
+  .rbc-label {
+    font-size: 11px;
+    padding: 0 4px;
+  }
+
+  /* Réduire la largeur du gutter (colonne heures) */
+  .rbc-time-header-gutter {
+    width: 50px !important;
+    min-width: 50px !important;
+    max-width: 50px !important;
+    flex: 0 0 50px !important;
+  }
+
+  /* Réduire la largeur de la colonne des heures */
+  .rbc-time-gutter {
+    width: 50px !important;
+    min-width: 50px !important;
+    max-width: 50px !important;
+    flex: 0 0 50px !important;
+  }
+
+  /* ===== VUE AGENDA ===== */
+
+  /* Réduire la taille de police globale de l'agenda */
+  .rbc-agenda-view {
+    font-size: 12px;
+  }
+
+  /* Forcer la disposition du tableau */
+  .rbc-agenda-table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+  }
+
+  /* Ajuster l'en-tête du tableau */
+  .rbc-agenda-table thead {
+    background-color: var(--color-primary-50);
+  }
+
+  /* Réduire la taille et le padding des cellules d'en-tête */
+  .rbc-agenda-table th {
+    padding: 8px 4px;
+    font-weight: 600;
+    color: var(--color-primary-700);
+    font-size: 11px;
+    text-align: center !important;
+  }
+
+  /* Ajuster la hauteur et l'alignement des lignes */
+  .rbc-agenda-table tbody tr {
+    border-bottom: 1px solid var(--color-primary-200);
+    height: auto;
+    text-align: center !important;
+  }
+
+  /* Ajuster la couleur de fond au hover */
+  .rbc-agenda-table tbody tr:hover {
+    background-color: var(--color-primary-50) !important;
+  }
+
+  /* Cellule date : largeur fixe réduite */
+  .rbc-agenda-date-cell {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--color-primary-700);
+    padding: 10px 4px !important;
+    width: 50px;
+    white-space: nowrap;
+    text-align: center;
+  }
+
+  /* Cellule heure : affichage complet */
+  .rbc-agenda-time-cell {
+    font-size: 10px;
+    color: var(--color-primary-700) !important;
+    padding: 10px 4px !important;
+    width: 85px;
+    white-space: nowrap;
+  }
+
+  /* Cellule événement : largeur flexible */
+  .rbc-agenda-event-cell {
+    padding: 10px 4px !important;
+    flex-grow: 1;
+  }
+
+  /* Ajuster le lien de l'événement */
+  .rbc-agenda-event-cell a {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-primary-900) !important;
+    text-decoration: none;
+    display: block;
+    word-break: break-word;
+    padding: 0;
+  }
+
+  /* Ajuster la couleur au hover */
+  .rbc-agenda-event-cell a:hover {
+    color: var(--color-primary-700) !important;
+  }
+}
+/* Retirer le background des cellules Date et Heure */
+.rbc-agenda-date-cell,
+.rbc-agenda-time-cell {
+  background-color: white !important;
+}
+
+/* Bande de couleur à gauche de l'événement */
+.rbc-agenda-event-cell {
+  position: relative;
+  background-color: white !important;
+}
+
+.rbc-agenda-event-cell::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 70%;
+  width: 4px;
+  border-radius: 2px;
+  background-color: var(--event-color, var(--color-primary-600));
+}
+
+/* ========================================
+   📱 RESPONSIVE - TRÈS PETITS ÉCRANS (max 480px)
+   ======================================== */
+
+@media (max-width: 480px) {
+  /* Réduire encore plus les en-têtes */
+  .rbc-header {
+    font-size: 10px;
+  }
+
+  /* Réduire les boutons de la toolbar */
+  .rbc-toolbar button {
+    padding: 5px 8px;
+    font-size: 11px;
+  }
+
+  /* Réduire les événements */
+  .rbc-event {
+    font-size: 10px !important;
+    padding: 1px 2px !important;
+  }
+
+  /* Ajuster la cellule date de l'agenda */
+  .rbc-agenda-date-cell {
+    min-width: 60px;
+    font-size: 12px;
+  }
+
+  /* Ajuster la cellule heure de l'agenda */
+  .rbc-agenda-time-cell {
+    font-size: 11px;
+  }
+
+  /* Réduire le titre principal */
+  .calendar-title {
+    font-size: 1.25rem;
+  }
+}

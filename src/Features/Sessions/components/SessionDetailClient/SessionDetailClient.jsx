@@ -14,6 +14,7 @@ import {
 import { Button, DeleteConfirmModal } from "@/Global/components";
 import { useModals } from "@/Providers/Modals";
 import { ExerciseDetailCard } from ".";
+import { toast } from "react-toastify";
 
 export default function SessionDetailClient({ session, userId }) {
   const router = useRouter();
@@ -53,8 +54,12 @@ export default function SessionDetailClient({ session, userId }) {
   const handleDelete = () => {
     deleteSessionMutation(session._id, {
       onSuccess: () => {
+        toast.success("Session d'entraînement supprimée avec succès");
         closeModal("deleteConfirm");
         router.push("/sessions");
+      },
+      onError: () => {
+        toast.error("Erreur lors de la suppression de la session");
       },
     });
   };
@@ -79,7 +84,7 @@ export default function SessionDetailClient({ session, userId }) {
         <div className="flex justify-between items-start mb-4">
           <div>
             <h1 className="text-3xl font-bold text-primary-900 mb-2">
-              {session.templateName}
+              {session.workoutName}
             </h1>
             <div className="flex items-center gap-4 text-sm text-gray-600">
               <span className="flex items-center gap-1">

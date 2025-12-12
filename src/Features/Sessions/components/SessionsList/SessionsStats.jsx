@@ -22,18 +22,19 @@ export default function SessionStats({ stats }) {
     {
       label: "En cours",
       value: stats.inProgress,
-      bgColor: "bg-primary-100",
-      borderColor: "border-primary-300",
-      textColor: "text-primary-700",
-      valueColor: "text-primary-900",
-    },
-    {
-      label: "Planifiées",
-      value: stats.planned,
       bgColor: "bg-accent-100",
       borderColor: "border-accent-300",
       textColor: "text-accent-700",
       valueColor: "text-accent-900",
+    },
+    ,
+    {
+      label: "Planifiées",
+      value: stats.planned,
+      bgColor: "bg-primay-100",
+      borderColor: "border-primary-300",
+      textColor: "text-primary-700",
+      valueColor: "text-primary-900",
     },
   ];
 

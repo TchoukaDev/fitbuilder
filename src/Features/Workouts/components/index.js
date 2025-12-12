@@ -1,4 +1,4 @@
 export * from "./WorkoutExercisesList";
-export * from "./WorkoutTemplatesList";
+export * from "./WorkoutList";
 export * from "./Buttons";
 export * from "./WorkoutDetailPageClient";

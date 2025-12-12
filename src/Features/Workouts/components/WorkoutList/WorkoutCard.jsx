@@ -8,7 +8,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { WorkoutDeleteButton } from "../Buttons";
 
-export default function WorkoutTemplateCard({ workout, userId }) {
+export default function WorkoutCard({ workout, userId }) {
   const router = useRouter();
   const date = new Date(workout.createdAt);
   const workoutDate = date.toLocaleDateString("fr-FR", {

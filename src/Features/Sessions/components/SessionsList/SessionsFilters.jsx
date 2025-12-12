@@ -1,11 +1,11 @@
-// Filtres pour les séances : période, statut (complétées/en cours/planifiées), template.
+// Filtres pour les séances : période, statut (complétées/en cours/planifiées), workout.
 import { Calendar, Filter } from "lucide-react";
 
 export default function SessionFilters({
   statusFilter,
   dateFilter,
-  templateFilter,
-  onTemplateFilterChange,
+  workoutFilter,
+  onWorkoutFilterChange,
   sessions,
   onStatusChange,
   onDateFilterChange,
@@ -27,23 +27,22 @@ export default function SessionFilters({
   ];
 
   // Retirer les doublons d'entrainement
-  const templateSet = new Set();
-  sessions.forEach((s) => templateSet.add(s.templateName));
+  const workoutSet = new Set();
+  sessions.forEach((s) => workoutSet.add(s.workoutName));
 
-  const templateFilters = [
+  const workoutFilters = [
     {
       value: "all",
       label: "Tous",
     },
 
-    ...[...templateSet].map(
+    ...[...workoutSet].map(
       (s) =>
         ({
           value: s,
           label: s,
         } || {}),
     ),
-    ,
   ];
   return (
     <>
@@ -93,7 +92,7 @@ export default function SessionFilters({
         </div>
       </div>
 
-      {/* FILTRE PAR TEMPLATE */}
+      {/* FILTRE PAR ENTRAÎNEMENT */}
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-3">
           <Filter size={18} className="text-gray-600" />
@@ -103,12 +102,12 @@ export default function SessionFilters({
         </div>
 
         <div className="flex gap-2 overflow-x-auto pb-2">
-          {templateFilters.map((filter, index) => (
+          {workoutFilters.map((filter, index) => (
             <FilterButton
               key={index}
               label={filter.label}
-              isActive={templateFilter === filter.value}
-              onClick={() => onTemplateFilterChange(filter.value)}
+              isActive={workoutFilter === filter.value}
+              onClick={() => onWorkoutFilterChange(filter.value)}
               disabled={isFetching}
               activeColor={filter.color}
             />

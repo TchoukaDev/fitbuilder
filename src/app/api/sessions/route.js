@@ -3,8 +3,9 @@ import { NextResponse } from "next/server";
 import connectDB from "@/libs/mongodb";
 import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
-import { ApiError, ApiSuccess } from "@/libs/apiResponse";
+import { ApiError } from "@/libs/apiResponse";
 import { requireAuth } from "@/libs/authMiddleware";
+import { is } from "zod/v4/locales";
 
 // POST - Démarrer une nouvelle séance à partir d'un plan d'entraînement
 export async function POST(req) {
@@ -14,13 +15,20 @@ export async function POST(req) {
 
   const { userId } = auth;
 
-  const { templateId, templateName, exercises } = await req.json();
+  const {
+    workoutId,
+    workoutName,
+    exercises,
+    scheduledDate,
+    estimatedDuration,
+    isPlanning,
+  } = await req.json();
 
   // Validation
-  if (!templateId || !templateName || exercises.length === 0) {
+  if (!workoutId || !workoutName || exercises.length === 0) {
     return NextResponse.json(
       ApiError.INVALID_DATA(
-        "La session doit être liée à un plan et contenir au moins un exercice",
+        "La session doit être liée à un entraînement et contenir au moins un exercice",
       ),
       { status: 400 },
     );
@@ -54,45 +62,52 @@ export async function POST(req) {
     const newSession = {
       _id: sessionId,
       userId: new ObjectId(userId),
-      templateId: new ObjectId(templateId),
-      templateName: templateName,
-      scheduledDate: new Date(),
-      status: "in-progress",
-      startedAt: new Date(),
+      workoutId: new ObjectId(workoutId),
+      workoutName: workoutName,
+      scheduledDate: scheduledDate ? new Date(scheduledDate) : new Date(),
+      status: isPlanning ? "planned" : "in-progress",
+      isPlanned: isPlanning,
+      startedAt: isPlanning ? null : new Date(),
       completedDate: null,
-      duration: 0,
+      estimatedDuration: estimatedDuration || 60,
       exercises: sessionExercises,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
 
-    // Ajouter la séance et mettre à jour les stats du plan d'entraînement
+    // ✅ MODIFICATION : Incrémenter timesUsed SEULEMENT si démarrage immédiat
+    const updateQuery = isPlanning
+      ? {
+          $push: { sessions: newSession }, // Planification : juste ajouter
+        }
+      : {
+          $inc: { "workouts.$[workout].timesUsed": 1 }, // Démarrage : incrémenter
+          $set: { "workouts.$[workout].lastUsedAt": new Date() },
+          $push: { sessions: newSession },
+        };
+
     await db.collection("users").updateOne(
       { _id: new ObjectId(userId) },
-      {
-        $inc: { "workouts.$[workout].timesUsed": 1 }, // Incrémenter le compteur d'utilisation
-        $set: { "workouts.$[workout].lastUsedAt": new Date() }, // Mettre à jour la dernière utilisation
-        $push: { sessions: newSession }, // Ajouter la nouvelle séance
-      },
-      {
-        arrayFilters: [
-          // ↓ Définit ce que signifie "$[workout]" utilisé ci-dessus
-          { "workout._id": new ObjectId(templateId) },
-          // ↑ "$[workout]" = l'élément du tableau workouts[]
-          //    dont le _id correspond à templateId
-        ],
-      },
+      updateQuery,
+      isPlanning
+        ? {} // Pas d'arrayFilters pour planification
+        : {
+            arrayFilters: [{ "workout._id": new ObjectId(workoutId) }],
+          },
     );
 
     revalidatePath("/sessions");
     revalidatePath(`/sessions/${sessionId}`);
+    revalidatePath("/calendar");
     revalidatePath("/dashboard");
     revalidatePath("/admin");
     return NextResponse.json(
       {
         success: true,
         sessionId: sessionId.toString(),
-        message: "Séance démarrée",
+        message: isPlanning
+          ? "Séance planifiée avec succès"
+          : "Séance démarrée avec succès",
       },
       { status: 201 },
     );
@@ -105,7 +120,7 @@ export async function POST(req) {
   }
 }
 
-// GET - Récupérer les séances avec filtres (statut, date, template) et pagination
+// GET - Récupérer les séances avec filtres (statut, date, workout) et pagination
 export async function GET(req) {
   // Vérification de l'authentification
   const auth = await requireAuth(req);
@@ -119,7 +134,7 @@ export async function GET(req) {
   const limit = parseInt(searchParams.get("limit")) || 20;
   const status = searchParams.get("status");
   const dateFilter = searchParams.get("dateFilter");
-  const templateFilter = searchParams.get("templateFilter");
+  const workoutFilter = searchParams.get("workoutFilter");
 
   try {
     const db = await connectDB();
@@ -128,10 +143,9 @@ export async function GET(req) {
       .findOne({ _id: new ObjectId(userId) });
 
     if (!user) {
-      return NextResponse.json(
-        { error: "Utilisateur non trouvé" },
-        { status: 404 },
-      );
+      return NextResponse.json(ApiError.NOT_FOUND("Utilisateur"), {
+        status: 404,
+      });
     }
 
     let sessions = user?.sessions || [];
@@ -142,8 +156,8 @@ export async function GET(req) {
     }
 
     // Filtre par plan d'entraînement
-    if (templateFilter && templateFilter !== "all") {
-      sessions = sessions.filter((s) => s.templateName === templateFilter);
+    if (workoutFilter && workoutFilter !== "all") {
+      sessions = sessions.filter((s) => s.workoutName === workoutFilter);
     }
 
     // Filtre par période
@@ -184,7 +198,9 @@ export async function GET(req) {
 
     // Tri par date décroissante
     sessions.sort((a, b) => {
-      const dateA = new Date(a.completedDate || a.startedAt || a.createdAt);
+      const dateA = new Date(
+        a.completedDate || a.scheduledDate || a.startedAt || a.createdAt,
+      );
       const dateB = new Date(b.completedDate || b.startedAt || b.createdAt);
       return dateB - dateA;
     });
@@ -221,7 +237,8 @@ export async function GET(req) {
       ...s,
       _id: s._id.toString(),
       userId: s.userId.toString(),
-      templateId: s.templateId.toString(),
+      workoutName: s.workoutName,
+      workoutId: s.workoutId.toString(),
       createdAt: s.createdAt?.toISOString?.() || s.createdAt,
       updatedAt: s.updatedAt?.toISOString?.() || s.updatedAt,
       startedAt: s.startedAt?.toISOString?.() || s.startedAt,

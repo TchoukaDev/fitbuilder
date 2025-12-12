@@ -3,9 +3,12 @@
 
 import { Clock, Calendar, Dumbbell, CheckCircle, Play } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useStartPlannedSession } from "../../hooks";
+import { toast } from "react-toastify";
 
-export default function SessionCard({ session }) {
+export default function SessionCard({ session, userId }) {
   const router = useRouter();
+  const { mutate: startPlannedSession } = useStartPlannedSession(userId);
 
   // ═══════════════════════════════════════════════════════
   // 🎨 HELPERS
@@ -20,16 +23,16 @@ export default function SessionCard({ session }) {
         label: "Terminé",
       },
       "in-progress": {
-        bg: "bg-primary-100",
-        border: "border-primary-300",
-        text: "text-primary-700",
+        bg: "bg-accent-100",
+        border: "border-accent-300",
+        text: "text-accent-700",
         icon: <Play size={16} />,
         label: "En cours",
       },
       planned: {
-        bg: "bg-accent-100",
-        border: "border-accent-300",
-        text: "text-accent-700",
+        bg: "bg-primary-100",
+        border: "border-primary-300",
+        text: "text-primary-700",
         icon: <Calendar size={16} />,
         label: "Planifié",
       },
@@ -70,7 +73,14 @@ export default function SessionCard({ session }) {
       router.push(`/sessions/${session._id}/detail`);
     } else if (session.status === "planned") {
       // Démarrer la séance planifiée
-      router.push(`/sessions/${session._id}`);
+      startPlannedSession(session._id, {
+        onSuccess: () => {
+          router.push(`/sessions/${session._id}`);
+        },
+        onError: (error) => {
+          toast.error(error.message || "Erreur lors du démarrage de la séance");
+        },
+      });
     }
   };
 
@@ -86,11 +96,14 @@ export default function SessionCard({ session }) {
       <div className="flex justify-between items-start mb-3">
         <div className="flex-1">
           <h3 className="text-lg font-bold text-primary-900">
-            {session.templateName}
+            {session.workoutName}
           </h3>
           <p className="text-sm text-gray-600">
             {formatDate(
-              session.completedDate || session.startedAt || session.createdAt,
+              session.completedDate ||
+                session.scheduledDate ||
+                session.startedAt ||
+                session.createdAt,
             )}
           </p>
         </div>

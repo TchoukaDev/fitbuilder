@@ -6,5 +6,5 @@ stats
 stats admin
 responsive
 Factoriser composants trop longs
-mettre RHF partout
-Zod partout
+SUspense + skeleton
+Harmonisation largeur page

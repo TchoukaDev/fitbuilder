@@ -1,14 +1,18 @@
 "use client";
 
 import { AlertTriangle } from "lucide-react";
-import { Button } from "@/Global/components";
+import { Button, LoaderButton } from "@/Global/components";
 import { useBlockScroll } from "@/Global/hooks";
 import { useModals } from "@/Providers/Modals";
 import { createPortal } from "react-dom";
 import { ModalLayout } from "@/Global/components";
 
 // Modale d'annulation de la session
-export default function CancelSessionModal({ onConfirm, isLoading }) {
+export default function CancelSessionModal({
+  onConfirm,
+  isLoading,
+  isPlanned,
+}) {
   const { closeModal } = useModals();
   useBlockScroll();
 
@@ -22,7 +26,9 @@ export default function CancelSessionModal({ onConfirm, isLoading }) {
         </div>
 
         <p className="text-center">
-          Voulez-vous annuler cette séance ? Elle sera supprimée définitivement.
+          {isPlanned
+            ? "Voulez-vous annuler cette séance ? Elle sera réinitialisée."
+            : "Voulez-vous annuler cette séance ? Elle sera supprimée définitivement."}
         </p>
       </div>
       {/* Footer */}
@@ -35,9 +41,17 @@ export default function CancelSessionModal({ onConfirm, isLoading }) {
           Continuer la séance
         </Button>
 
-        <Button onClick={onConfirm} disabled={isLoading} close>
-          {isLoading ? "Annulation..." : "Annuler la séance"}
-        </Button>
+        <LoaderButton
+          isLoading={isLoading}
+          loadingText="Annulation en cours"
+          type="button"
+          disabled={isLoading}
+          onClick={onConfirm}
+          label="Annuler la séance"
+          close
+        >
+          Annuler la séance
+        </LoaderButton>
       </div>
     </ModalLayout>,
     document.getElementById("portal-root"),

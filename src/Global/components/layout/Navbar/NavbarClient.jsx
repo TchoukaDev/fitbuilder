@@ -3,18 +3,16 @@
 import { LogoutButton } from "@/Features/Auth/components";
 import {
   Activity,
+  Calendar,
   ClipboardPen,
   Dumbbell,
   LayoutDashboard,
   Settings,
-  UserRoundPen,
 } from "lucide-react";
-import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-export default function Navbar() {
-  const { data: session } = useSession();
+export default function NavbarClient({ session }) {
   const isAdmin = session?.user?.role === "ADMIN";
   const links = [
     [
@@ -28,19 +26,19 @@ export default function Navbar() {
       <Dumbbell className="size-6 md:size-10 animatedRotation" />,
     ],
     [
-      "Séances",
+      "Entraînements",
       "/workouts",
       <ClipboardPen className="size-6 md:size-10 animatedRotation" />,
     ],
     [
-      "Suivi",
+      "Séances",
       "/sessions",
       <Activity className="size-6 md:size-10 animatedRotation" />,
     ],
     [
-      "Profil",
-      "/profile",
-      <UserRoundPen className="size-6 md:size-10 animatedRotation" />,
+      "Calendrier",
+      "/calendar",
+      <Calendar className="size-6 md:size-10 animatedRotation" />,
     ],
     [
       "Admin",

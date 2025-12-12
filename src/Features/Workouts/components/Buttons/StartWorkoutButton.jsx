@@ -2,19 +2,19 @@
 
 import { Play } from "lucide-react";
 import { LoaderButton } from "@/Global/components";
-import { useCreateSession } from "@/Features/Sessions/hooks";
+import { useStartNewSession } from "@/Features/Sessions/hooks";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
 export default function StartWorkoutButton({ userId, workout, small }) {
-  const { mutate: createSession, isPending: isCreating } =
-    useCreateSession(userId);
+  const { mutate: startSession, isPending: isStarting } =
+    useStartNewSession(userId);
   const router = useRouter();
   const handleStart = () => {
-    createSession(
+    startSession(
       {
-        templateId: workout._id,
-        templateName: workout.name,
+        workoutId: workout._id,
+        workoutName: workout.name,
         exercises: workout.exercises,
       },
       {
@@ -22,14 +22,14 @@ export default function StartWorkoutButton({ userId, workout, small }) {
           router.push(`/sessions/${data.sessionId}`);
         },
         onError: (error) => {
-          toast.error(error.message || "Une erreur est survenue"); //
+          toast.error(error.message || "Erreur lors du démarrage de la séance");
         },
       },
     );
   };
   return (
     <LoaderButton
-      isLoading={isCreating}
+      isLoading={isStarting}
       loadingText="Démarrage en cours"
       type="button"
       onClick={handleStart}

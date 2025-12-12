@@ -3,7 +3,7 @@ import connectDB from "@/libs/mongodb";
 
 const { ObjectId } = require("mongodb");
 
-// Récupère toutes les sessions d'un utilisateur avec filtres (statut, date, template) et pagination.
+// Récupère toutes les sessions d'un utilisateur avec filtres (statut, date, workout) et pagination.
 // Retourne { sessions: [], pagination: {}, stats: {} }.
 export async function getAllSessions(userId, filters = {}) {
   if (!userId) return { sessions: [], pagination: {}, stats: {} };
@@ -11,7 +11,7 @@ export async function getAllSessions(userId, filters = {}) {
   const {
     status = "all",
     dateFilter = "all",
-    templateFilter = "all",
+    workoutFilter = "all",
     page = 1,
     limit = 20,
   } = filters;
@@ -35,8 +35,8 @@ export async function getAllSessions(userId, filters = {}) {
       sessions = sessions.filter((s) => s.status === status);
     }
 
-    if (templateFilter && templateFilter !== "all") {
-      sessions = sessions.filter((s) => s.templateName === templateFilter);
+    if (workoutFilter && workoutFilter !== "all") {
+      sessions = sessions.filter((s) => s.workoutName === workoutFilter);
     }
 
     // ═══════════════════════════════════════════════════════
@@ -161,12 +161,32 @@ export async function getSessionbyId(userId, sessionId) {
       ...data,
       _id: data._id.toString(),
       userId: data.userId.toString(),
-      templateId: data.templateId.toString(),
+      workoutId: data.workoutId.toString(),
     };
 
     return session;
   } catch (error) {
     console.error("❌ Erreur getSessionbyId:", error);
     return null;
+  }
+}
+
+// Récupère toutes les sessions planifiées
+export async function getPlannedSessions(userId) {
+  if (!userId) return [];
+  try {
+    const db = await connectDB();
+    const user = await db
+      .collection("users")
+      .findOne({ _id: new ObjectId(userId) });
+    if (!user) {
+      console.error("❌ Utilisateur non trouvé:", userId);
+      return [];
+    }
+    const sessions = user.sessions.filter((s) => s.mode === "planned");
+    return sessions;
+  } catch (error) {
+    console.error("❌ Erreur de récupération des sessions planifiées:", error);
+    return [];
   }
 }
