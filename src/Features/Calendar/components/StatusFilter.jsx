@@ -72,7 +72,7 @@ export default function StatusFilter({ selected = [], onChange }) {
                   key={status.value}
                   className={`
                     inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium
-                    ${status.bgColor} ${status.color} ${status.borderColor} border
+                    ${status.bgColor} ${status.color} ${status.borderColor} border pointer-events-auto cursor-pointer
                   `}
                 >
                   <span className="flex items-center">{status.emoji}</span>
@@ -82,14 +82,14 @@ export default function StatusFilter({ selected = [], onChange }) {
                   <span
                     role="button"
                     tabIndex={-1}
-                    onClick={(e) => {
+                    onPointerDown={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
                       handleToggle(status.value);
                     }}
                     className={`
                       ml-1 hover:bg-black/20 rounded-full p-0.5 transition-colors
-                      cursor-pointer pointer-events-auto
+                      cursor-pointer
                       ${status.color}
                     `}
                     aria-label={`Retirer ${status.label}`}

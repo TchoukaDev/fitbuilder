@@ -5,6 +5,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { toast } from "react-toastify";
+import { useCallback } from "react";
 
 /**
  * Récupère la liste des workouts pour un utilisateur via React Query.
@@ -13,7 +14,8 @@ import { toast } from "react-toastify";
  * @param {string} userId - Identifiant de l'utilisateur.
  */
 export function useWorkouts(initialData, userId, options = {}) {
-  return useQuery({
+  const queryClient = useQueryClient();
+  const query = useQuery({
     queryKey: ["workouts", userId],
     queryFn: async () => {
       const response = await fetch("/api/workouts");
@@ -37,6 +39,21 @@ export function useWorkouts(initialData, userId, options = {}) {
     enabled: !!userId,
     ...options,
   });
+
+  // ✅ Prefetch au survol du bouton dans calendrier
+  const prefetchWorkouts = useCallback(() => {
+    queryClient.prefetchQuery({
+      queryKey: ["workouts", userId],
+      queryFn: async () => {
+        const response = await fetch("/api/workouts");
+        const data = await response.json();
+        console.log("Prefetched workouts:", data);
+        return data;
+      },
+      staleTime: 1000 * 60 * 5,
+    });
+  }, [queryClient, userId]);
+  return { ...query, prefetchWorkouts };
 }
 
 // CREATE

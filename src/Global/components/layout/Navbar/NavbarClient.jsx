@@ -16,7 +16,7 @@ export default function NavbarClient({ session }) {
   const isAdmin = session?.user?.role === "ADMIN";
   const links = [
     [
-      "Aperçu",
+      "Dashboard",
       "/dashboard",
       <LayoutDashboard className="size-6 md:size-10 animatedRotation" />,
     ],
