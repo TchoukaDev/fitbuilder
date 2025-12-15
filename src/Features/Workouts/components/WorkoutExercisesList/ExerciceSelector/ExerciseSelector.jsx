@@ -10,6 +10,7 @@ import WorkoutExerciseGroupSelect from "./WorkoutExerciseGroupSelect";
 import SearchExercise from "./SearchExercise";
 import { useWorkoutStore } from "@/Features/Workouts/store";
 import { useExerciseFilters } from "@/Features/Exercises/hooks";
+import RequiredFields from "@/Global/components/ui/FormsComponents/RequiredFields";
 
 export default function ExerciseSelector({
   exercises,
@@ -114,7 +115,7 @@ export default function ExerciseSelector({
       )}
 
       {/* Actions */}
-      <div className="flex items-center gap-3 my-5">
+      <div className="modalFooter">
         <Button
           type="button"
           close
@@ -128,9 +129,7 @@ export default function ExerciseSelector({
           Valider
         </Button>
       </div>
-      <p className="text-xs text-gray-500 text-center">
-        <span className="text-accent-500">*</span> Champs obligatoires
-      </p>
+      <RequiredFields />
     </div>
   );
 }

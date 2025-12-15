@@ -20,7 +20,7 @@ export default function SessionCard({ session, userId }) {
         border: "border-green-300",
         text: "text-green-700",
         icon: <CheckCircle size={16} />,
-        label: "Terminé",
+        label: "Terminée",
       },
       "in-progress": {
         bg: "bg-accent-100",
@@ -34,7 +34,7 @@ export default function SessionCard({ session, userId }) {
         border: "border-primary-300",
         text: "text-primary-700",
         icon: <Calendar size={16} />,
-        label: "Planifié",
+        label: "Planifiée",
       },
     };
     return configs[status] || configs.planned;

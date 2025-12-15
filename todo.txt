@@ -1,10 +1,12 @@
 profil
 not-found
 muscle secondaire
-calendrier
 stats
 stats admin
 responsive
-Factoriser composants trop longs
+Factoriser composants trop longs (calendrier)
 SUspense + skeleton
 Harmonisation largeur page
+FAQ
+Filtres calendrier (StatusFilters)
+Contact

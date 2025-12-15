@@ -1,5 +1,6 @@
 // Champs de formulaire réutilisables pour les exercices
 import { Label, LoaderButton, Button } from "@/Global/components";
+import RequiredFields from "@/Global/components/ui/FormsComponents/RequiredFields";
 
 export default function ExerciseFormFields({
   register,
@@ -108,7 +109,7 @@ export default function ExerciseFormFields({
 
       {/* Actions */}
       <div className="space-y-2">
-        <div className="flex gap-4">
+        <div className="modalFooter">
           <Button
             close
             onClick={onClose}
@@ -127,9 +128,7 @@ export default function ExerciseFormFields({
             {submitLabel}
           </LoaderButton>
         </div>
-        <p className="text-xs text-gray-500 text-center">
-          <span className="text-accent-500">*</span> Champs obligatoires
-        </p>
+        <RequiredFields />
       </div>
     </form>
   );

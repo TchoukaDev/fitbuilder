@@ -5,24 +5,20 @@ import { Button, LoaderButton } from "@/Global/components";
 import { useWorkouts } from "@/Features/Workouts/hooks";
 import { eventSchema } from "../utils/EventSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { usePlanSession } from "@/Features/Sessions/hooks";
+import { useUpdatePlannedSession } from "@/Features/Sessions/hooks";
 import { toast } from "react-toastify";
 import RequiredFields from "@/Global/components/ui/FormsComponents/RequiredFields";
 import EventFormFields from "../forms/formComponents/EventFormFields";
 
-export default function NewEventForm({ userId, selectedDate }) {
-  const { mutate: planSession, isPending } = usePlanSession(userId);
+export default function UpdateEventForm({ userId, event }) {
+  const session = event.resource;
+  const { mutate: updateSession, isPending: isUpdating } =
+    useUpdatePlannedSession(userId, null);
   const { closeModal } = useModals();
-
-  // Formatter la date pour l'input
-  function formatDateToInput(date) {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-
-    return `${year}-${month}-${day}`;
-  }
-
+  const { data: workouts, isLoading } = useWorkouts(null, userId, {
+    staleTime: 0,
+    refetchOnMount: true,
+  });
   const {
     register,
     handleSubmit,
@@ -35,26 +31,33 @@ export default function NewEventForm({ userId, selectedDate }) {
     mode: "onSubmit",
     reValidateMode: "onChange",
     defaultValues: {
-      workout: "",
-      date: selectedDate
-        ? formatDateToInput(selectedDate)
-        : formatDateToInput(new Date()),
-      startTime: selectedDate
-        ? `${String(selectedDate.getHours()).padStart(2, "0")}:${String(
-            selectedDate.getMinutes(),
-          ).padStart(2, "0")}`
+      workout: session.workoutId,
+      date: session.scheduledDate
+        ? new Date(session.scheduledDate).toISOString().split("T")[0]
+        : new Date().toISOString().split("T")[0],
+      startTime: session.scheduledDate
+        ? `${String(new Date(session.scheduledDate).getHours()).padStart(
+            2,
+            "0",
+          )}:${String(new Date(session.scheduledDate).getMinutes()).padStart(
+            2,
+            "0",
+          )}`
         : "",
-      duration: 60,
-      endTime: "",
+      duration: session.estimatedDuration,
+      endTime: session.scheduledDate
+        ? `${String(new Date(session.scheduledDate).getHours()).padStart(
+            2,
+            "0",
+          )}:${String(new Date(session.scheduledDate).getMinutes()).padStart(
+            2,
+            "0",
+          )}`
+        : "",
     },
   });
 
   const workoutRef = useRef(null);
-
-  const { data: workouts, isLoading } = useWorkouts(null, userId, {
-    staleTime: 0,
-    refetchOnMount: true,
-  });
 
   // Observer les champs
   const workoutId = watch("workout");
@@ -134,19 +137,23 @@ export default function NewEventForm({ userId, selectedDate }) {
   const onSubmit = (data) => {
     const workout = workouts.find((w) => w._id === data.workout);
     const scheduledDate = new Date(`${data.date}T${data.startTime}`);
-
-    planSession(
+    const updatedSession = {
+      workoutId: data.workout,
+      workoutName: workout.name,
+      exercises: workout.exercises,
+      scheduledDate: scheduledDate.toISOString(),
+      estimatedDuration: data.duration,
+    };
+    updateSession(
       {
-        workoutId: data.workout,
-        workoutName: workout.name,
-        exercises: workout.exercises,
-        scheduledDate: scheduledDate.toISOString(),
-        estimatedDuration: data.duration,
-        isPlanning: true,
+        sessionId: session._id,
+        updatedSession,
       },
       {
         onSuccess: () => {
-          closeModal("newEvent");
+          toast.success("Événement modifié avec succès");
+          closeModal("editEvent");
+          closeModal("eventDetails");
         },
         onError: (error) => {
           toast.error(error.message || "Erreur");
@@ -163,25 +170,25 @@ export default function NewEventForm({ userId, selectedDate }) {
       <EventFormFields
         register={register}
         errors={errors}
-        isLoading={isLoading}
+        isLoading={isUpdating}
         workoutRef={workoutRef}
         workouts={workouts}
       />
 
       {/* Boutons */}
       <div className="modalFooter">
-        <Button type="button" close onClick={() => closeModal("newEvent")}>
+        <Button type="button" close onClick={() => closeModal("editEvent")}>
           Annuler
         </Button>
         <LoaderButton
-          isLoading={isPending}
-          label="Planifier"
-          loadingText="Planification en cours"
-          disabled={isPending}
+          isLoading={isUpdating}
+          label="Modifier"
+          loadingText="Modification en cours"
+          disabled={isUpdating}
           type="submit"
           onClick={handleSubmit(onSubmit)}
         >
-          Planifier
+          Modifier
         </LoaderButton>
       </div>
       <RequiredFields />

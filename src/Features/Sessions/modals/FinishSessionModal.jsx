@@ -64,12 +64,11 @@ export default function FinishSessionModal({
       </div>
 
       {/* Footer */}
-      <div className="flex justify-center gap-3 p-6 border-t bg-gray-50">
+      <div className="modalFooter">
         <Button
           onClick={() => closeModal("finishSession")}
           disabled={isLoading}
           close
-          className="flex-1"
         >
           Annuler
         </Button>
@@ -77,7 +76,7 @@ export default function FinishSessionModal({
         <Button
           onClick={onConfirm}
           disabled={isLoading}
-          className="flex-1 bg-green-600 hover:bg-green-700"
+          className=" bg-green-600 hover:bg-green-700"
         >
           {isLoading ? "Finalisation..." : "Terminer"}
         </Button>

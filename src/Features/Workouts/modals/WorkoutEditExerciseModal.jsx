@@ -7,6 +7,7 @@ import { ModalLayout } from "@/Global/components";
 import { handleKeyDown } from "@/Global/utils";
 import { useWorkoutStore } from "@/Features/Workouts/store";
 import { toast } from "react-toastify";
+import RequiredFields from "@/Global/components/ui/FormsComponents/RequiredFields";
 
 // Modale de modifier d'un exercice ajouté dans l'entraînement
 export default function WorkoutEditExerciseModal({ index }) {
@@ -173,23 +174,18 @@ export default function WorkoutEditExerciseModal({ index }) {
         {error && <p className="formError my-3">{error}</p>}
 
         {/* Boutons */}
-        <div className="flex gap-3 pt-4 border-t border-gray-200">
+        <div className="modalFooter">
           <Button
             type="button"
             close
             onClick={() => closeModal("workoutEditExercise")}
-            className="flex-1"
           >
             Annuler
           </Button>
-          <Button type="submit" className="flex-1">
-            Enregistrer
-          </Button>
+          <Button type="submit">Enregistrer</Button>
         </div>
 
-        <p className="text-xs text-gray-500 text-center">
-          <span className="text-accent-500">*</span> Champs obligatoires
-        </p>
+        <RequiredFields />
       </form>
     </ModalLayout>,
     document.getElementById("portal-root"),

@@ -10,11 +10,16 @@ import {
   TrendingUp,
   Trash2,
   ChevronLeft,
+  Weight,
+  Repeat,
+  Repeat2,
 } from "lucide-react";
 import { Button, DeleteConfirmModal } from "@/Global/components";
 import { useModals } from "@/Providers/Modals";
 import { ExerciseDetailCard } from ".";
 import { toast } from "react-toastify";
+import StatusBadge from "@/Features/Calendar/components/StatusBadge";
+import StatCard from "./StatCard";
 
 export default function SessionDetailClient({ session, userId }) {
   const router = useRouter();
@@ -117,9 +122,7 @@ export default function SessionDetailClient({ session, userId }) {
         </div>
 
         {/* Badge terminé */}
-        <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">
-          ✓ Séance terminée
-        </span>
+        <StatusBadge status={session.status} />
       </div>
 
       {/* ─────────────────────────────────────────────────── */}
@@ -136,16 +139,16 @@ export default function SessionDetailClient({ session, userId }) {
           icon={<TrendingUp size={24} />}
           label="Séries totales"
           value={totalSets}
-          color="accent"
+          color="primary"
         />
         <StatCard
-          icon={<TrendingUp size={24} />}
+          icon={<Repeat2 size={24} />}
           label="Répétitions"
           value={totalReps}
-          color="green"
+          color="primary"
         />
         <StatCard
-          icon={<Dumbbell size={24} />}
+          icon={<Weight size={24} />}
           label="Volume total"
           value={`${Math.round(totalVolume)} kg`}
           color="primary"
@@ -206,27 +209,6 @@ export default function SessionDetailClient({ session, userId }) {
           isLoading={isDeleting}
         />
       )}
-    </div>
-  );
-}
-
-// ═══════════════════════════════════════════════════════
-// 🎨 COMPOSANT STAT CARD
-// ═══════════════════════════════════════════════════════
-function StatCard({ icon, label, value, color = "primary" }) {
-  const colorClasses = {
-    primary: "bg-primary-100 text-primary-600 border-primary-300",
-    accent: "bg-accent-100 text-accent-600 border-accent-300",
-    green: "bg-green-100 text-green-600 border-green-300",
-  };
-
-  return (
-    <div
-      className={`${colorClasses[color]} border rounded-lg p-4 flex flex-col items-center text-center`}
-    >
-      <div className="mb-2">{icon}</div>
-      <p className="text-xs font-medium mb-1">{label}</p>
-      <p className="text-xl font-bold">{value}</p>
     </div>
   );
 }

@@ -19,7 +19,7 @@ export default function DeleteConfirmModal({
       <p className="text-center text-gray-600 mb-6">{message}</p>
 
       {/* Boutons */}
-      <div className="flex gap-3 justify-center">
+      <div className="modalFooter">
         <Button
           close
           onClick={() => closeModal("deleteConfirm")}

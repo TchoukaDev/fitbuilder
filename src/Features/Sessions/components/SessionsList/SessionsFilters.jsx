@@ -22,8 +22,8 @@ export default function SessionFilters({
   const statusFilters = [
     { value: "all", label: "Toutes", color: "primary" },
     { value: "completed", label: "Terminées", color: "green" },
-    { value: "in-progress", label: "En cours", color: "primary" },
-    { value: "planned", label: "Planifiées", color: "accent" },
+    { value: "in-progress", label: "En cours", color: "accent" },
+    { value: "planned", label: "Planifiées", color: "primary" },
   ];
 
   // Retirer les doublons d'entrainement

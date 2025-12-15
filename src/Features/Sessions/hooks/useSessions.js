@@ -1,3 +1,4 @@
+import { getColorByStatus } from "@/Features/Calendar/utils/getColorByStatus";
 import {
   keepPreviousData,
   useMutation,
@@ -84,11 +85,12 @@ export function useGetSessions(initialData, userId, filters = {}) {
 /**
  * Hook pour récupérer les sessions du calendrier
  * @param {string} userId - ID de l'utilisateur
- * @param {string|null} statusFilter - Filtre par statut ("planned" | "in-progress" | "completed" | "skipped" | null)
+ * @param {string|null} statusFilter - Filtre par statut ("planned" | "in-progress" | "completed" | null)
  */
 export function useGetCalendarSessions(userId, statusFilter = null) {
+  const calendarKey = ["calendar-sessions", userId, statusFilter || null]; // ✅ Cache différent par statut
   return useQuery({
-    queryKey: ["calendar-sessions", userId, statusFilter], // ✅ Cache différent par statut
+    queryKey: calendarKey,
     queryFn: async () => {
       // Construire l'URL avec le filtre si fourni
       const url = statusFilter
@@ -120,26 +122,12 @@ export function useGetCalendarSessions(userId, statusFilter = null) {
     staleTime: 1000 * 60 * 2,
   });
 }
-// Retourne la couleur en fonction du statut
-function getColorByStatus(status) {
-  const colors = {
-    planned: "#5c31e0", // 🔵primary-400
-    "in-progress": "#ffaa66", // 🟠 accent-400
-    completed: "oklch(79.2% 0.209 151.711)", // 🟢 green-400
-  };
 
-  const colorHover = {
-    planned: "#260d87", // 🔵primary-500
-    "in-progress": "#ff6600", // 🟠 accent-500
-    completed: "oklch(72.3% 0.219 149.579)", // 🟢 green-500
-  };
-  return {
-    color: colors[status] || colors.planned,
-    colorHover: colorHover[status] || colorHover.planned,
-  };
-}
-
-// Démarrer une session planifiée
+/**
+ * Démarrer une session planifiée
+ * @param {string} userId - Identifiant de l'utilisateur.
+ * @returns {Object} - Mutation pour démarrer une session planifiée.
+ */
 export function useStartPlannedSession(userId) {
   const queryClient = useQueryClient();
 
@@ -206,10 +194,10 @@ export function useStartNewSession(userId) {
 }
 
 // Planifie une nouvelle session d'entraînement
-export function usePlanSession(userId) {
+export function usePlanSession(userId, statusFilter = null) {
   const queryClient = useQueryClient();
-  const key = ["calendar-sessions", userId];
-  const key2 = ["sessions", userId];
+  const calendarKey = ["calendar-sessions", userId, statusFilter || null];
+  const sessionsKey = ["sessions", userId];
 
   return useMutation({
     mutationFn: async (newSession) => {
@@ -230,9 +218,11 @@ export function usePlanSession(userId) {
     },
 
     onMutate: async (newSession) => {
-      await queryClient.cancelQueries({ queryKey: key });
+      await queryClient.cancelQueries({ queryKey: sessionsKey });
+      await queryClient.cancelQueries({ queryKey: calendarKey });
 
-      const previousSessions = queryClient.getQueryData(key);
+      const previousEvents = queryClient.getQueryData(calendarKey);
+      const previousSessions = queryClient.getQueryData(sessionsKey);
 
       // ✅ Transformer en événement calendrier (UNIQUEMENT pour ce hook)
       const scheduledDate = new Date(newSession.scheduledDate);
@@ -247,29 +237,104 @@ export function usePlanSession(userId) {
           status: "planned",
           _id: `temp-${Date.now()}`,
         },
-        color: "7557ff",
-        colorHover: "5c31e0",
+        color: getColorByStatus("planned").color,
+        colorHover: getColorByStatus("planned").colorHover,
       };
+      // Mise à jour optimiste des événements avec tempEvent
+      queryClient.setQueryData(calendarKey, (old = []) => [...old, tempEvent]);
 
-      queryClient.setQueryData(key, (old = []) => [...old, tempEvent]);
-
-      return { previousSessions };
+      // Mise à jour optimiste des sessions avec newSession
+      queryClient.setQueryData(sessionsKey, (old = []) => [...old, newSession]);
+      return { previousEvents, previousSessions };
     },
 
     onError: (error, newSession, context) => {
-      queryClient.setQueryData(key, context.previousSessions);
+      queryClient.setQueryData(calendarKey, context.previousEvents);
+      queryClient.setQueryData(sessionsKey, context.previousSessions);
       console.error("Erreur planification:", error);
     },
 
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: key });
-      queryClient.invalidateQueries({ queryKey: key2 });
+      queryClient.invalidateQueries({ queryKey: sessionsKey });
+      queryClient.invalidateQueries({ queryKey: calendarKey });
       toast.success("Séance planifiée avec succès");
     },
   });
 }
 
-// Annuler une session planifiée
+/**
+ * Modifier une session planifiée
+ * @param {string} userId - Identifiant de l'utilisateur.
+ * @param {string|null} statusFilter - Filtre par statut ("planned" | "in-progress" | "completed" | null)
+ * @returns {Object} - Mutation pour modifier une session planifiée.
+ */
+export function useUpdatePlannedSession(userId, statusFilter = null) {
+  const queryClient = useQueryClient();
+  const sessionsKey = ["sessions", userId];
+  const calendarKey = ["calendar-sessions", userId, statusFilter || null];
+  return useMutation({
+    mutationFn: async ({ sessionId, updatedSession }) => {
+      const response = await fetch(`/api/sessions/${sessionId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "update", updatedSession }),
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(
+          errorData.message || errorData.error || "Erreur modification",
+        );
+      }
+      return response.json();
+    },
+    onMutate: async ({ sessionId, updatedSession }) => {
+      await queryClient.cancelQueries({ queryKey: sessionsKey });
+      await queryClient.cancelQueries({ queryKey: calendarKey });
+      const previousSessions = queryClient.getQueryData(sessionsKey);
+      const previousEvents = queryClient.getQueryData(calendarKey);
+
+      // Mise à jour optimiste des sessions
+      queryClient.setQueryData(sessionsKey, (old = []) => [
+        ...old.map((s) =>
+          s._id === sessionId ? { ...s, ...updatedSession } : s,
+        ),
+      ]);
+      // Mise à jour optimiste des événements
+      const start = new Date(updatedSession.scheduledDate);
+      const durationMs = (updatedSession.estimatedDuration || 60) * 60 * 1000;
+      const end = new Date(start.getTime() + durationMs);
+      queryClient.setQueryData(calendarKey, (old = []) => [
+        ...old.map((e) =>
+          e.resource._id === sessionId
+            ? {
+                ...e,
+                title: updatedSession.workoutName,
+                start: start,
+                end: end,
+                resource: { ...e.resource, ...updatedSession },
+              }
+            : e,
+        ),
+      ]);
+      return { previousSessions, previousEvents };
+    },
+    onError: (error, { sessionId, updatedSession }, context) => {
+      queryClient.setQueryData(sessionsKey, context.previousSessions);
+      queryClient.setQueryData(calendarKey, context.previousEvents);
+      console.error("Erreur modification:", error);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: sessionsKey });
+      queryClient.invalidateQueries({ queryKey: calendarKey });
+    },
+  });
+}
+
+/**
+ * Annuler une session planifiée
+ * @param {string} userId - Identifiant de l'utilisateur.
+ * @returns {Object} - Mutation pour annuler une session planifiée.
+ */
 export function useCancelPlannedSession(userId) {
   const queryClient = useQueryClient();
   const key = ["sessions", userId];
@@ -304,11 +369,13 @@ export function useCancelPlannedSession(userId) {
  *
  * @param {string} userId - Identifiant de l'utilisateur.
  */
-export function useDeleteSession(userId) {
+export function useDeleteSession(userId, statusFilter = null) {
   const queryClient = useQueryClient();
-  const key = ["sessions", userId];
+  const sessionsKey = ["sessions", userId];
+  const calendarKey = ["calendar-sessions", userId, statusFilter || null];
+
   return useMutation({
-    queryKey: key,
+    queryKey: sessionsKey,
     mutationFn: async (sessionId) => {
       const response = await fetch(`/api/sessions/${sessionId}`, {
         method: "DELETE",
@@ -326,17 +393,28 @@ export function useDeleteSession(userId) {
       return data;
     },
     onMutate: async (id) => {
-      queryClient.cancelQueries({ queryKey: key });
-      const previousSessions = queryClient.getQueryData(key);
-      queryClient.setQueryData(key, (old = []) =>
+      queryClient.cancelQueries({ queryKey: sessionsKey });
+      queryClient.cancelQueries({ queryKey: calendarKey });
+      const previousSessions = queryClient.getQueryData(sessionsKey);
+      const previousEvents = queryClient.getQueryData(calendarKey);
+
+      // Mise à jour optimiste des sessions
+      queryClient.setQueryData(sessionsKey, (old = []) =>
         old.filter((s) => s._id !== id),
       );
-
-      return { previousSessions };
+      // Mise à jour optimiste des événements
+      queryClient.setQueryData(calendarKey, (old = []) =>
+        old.filter((e) => e.resource._id !== id),
+      );
+      return { previousSessions, previousEvents };
     },
-    onError: (error) => {
-      queryClient.setQueryData(key, context?.previousSessions);
+    onError: (error, id, context) => {
+      queryClient.setQueryData(sessionsKey, context?.previousSessions);
+      queryClient.setQueryData(calendarKey, context?.previousEvents);
     },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: key }),
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: sessionsKey });
+      queryClient.invalidateQueries({ queryKey: calendarKey });
+    },
   });
 }

@@ -149,10 +149,7 @@ export async function getSessionbyId(userId, sessionId) {
 
     if (!data) {
       console.error("❌ Session non trouvée:", sessionId);
-      console.log(
-        "📋 Sessions disponibles:",
-        user.sessions.map((s) => s._id.toString()),
-      );
+
       return null;
     }
 

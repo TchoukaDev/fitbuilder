@@ -1,5 +1,5 @@
 import { Header } from "@/Global/components";
-import CalendarComponent from "@/Features/Calendar/components/CalendarComponent/CalendarComponent";
+import CalendarComponent from "@/Features/Calendar/components/CalendarComponent";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth";
 import { getPlannedSessions } from "@/Features/Sessions/utils";

@@ -268,7 +268,7 @@ export function useToggleFavorite(userId) {
       }
 
       const data = await response.json();
-      console.log(data);
+
       return data.favoritesExercises || [];
     },
 

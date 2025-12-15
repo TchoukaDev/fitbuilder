@@ -5,6 +5,7 @@ import { useModals } from "@/Providers/Modals";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useWorkoutStore } from "@/Features/Workouts/store"; // ✅ AJOUT
+import RequiredFields from "@/Global/components/ui/FormsComponents/RequiredFields";
 
 export default function ExerciseConfiguration({ exerciseSelected }) {
   // ========================================
@@ -152,7 +153,7 @@ export default function ExerciseConfiguration({ exerciseSelected }) {
       {error && <p className="formError my-3">{error}</p>}
 
       {/* Actions */}
-      <div className="flex items-center gap-3">
+      <div className="modalFooter">
         {/* Bouton retour */}
         <Button
           type="button"
@@ -171,9 +172,7 @@ export default function ExerciseConfiguration({ exerciseSelected }) {
         </Button>
       </div>
 
-      <p className="text-xs text-gray-500 text-center">
-        <span className="text-accent-500">*</span> Champs obligatoires
-      </p>
+      <RequiredFields />
     </div>
   );
 }

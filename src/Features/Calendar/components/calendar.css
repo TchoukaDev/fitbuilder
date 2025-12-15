@@ -9,13 +9,6 @@
   padding: 1.5rem;
 }
 
-/* Titre au-dessus du calendrier */
-.calendar-title {
-  font-size: 1.875rem;
-  font-weight: 700;
-  margin-bottom: 1.5rem;
-}
-
 /* Wrapper qui entoure le composant react-big-calendar */
 .calendar-wrapper {
   background-color: white;

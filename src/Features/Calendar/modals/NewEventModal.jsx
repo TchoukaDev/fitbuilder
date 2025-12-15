@@ -1,8 +1,8 @@
 import { createPortal } from "react-dom";
 import { ModalLayout } from "@/Global/components";
-import NewEventForm from "../Forms/NewEventForm";
+import NewEventForm from "../forms/NewEventForm";
 
-export default function NewEventModal({ userId, selectedDate }) {
+export default function NewEventModal({ userId, selectedDate = null }) {
   const formattedDate = selectedDate
     ? selectedDate.toLocaleDateString("fr-FR", {
         weekday: "long",

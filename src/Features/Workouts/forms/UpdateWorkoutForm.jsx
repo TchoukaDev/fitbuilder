@@ -16,6 +16,7 @@ import {
   WorkoutSelectExerciseModal,
 } from "../modals";
 import { useWorkoutForm } from "../hooks/useWorkoutForm";
+import RequiredFields from "@/Global/components/ui/FormsComponents/RequiredFields";
 
 export default function UpdateWorkoutForm({
   workout,
@@ -119,9 +120,7 @@ export default function UpdateWorkoutForm({
 
         {/* Boutons d'action */}
         <div className="flex justify-between items-center bg-white rounded-lg shadow-md p-6">
-          <p className="text-sm text-gray-600">
-            <span className="text-accent-500">*</span> Champs obligatoires
-          </p>
+          <RequiredFields />
 
           <div className="flex gap-3">
             <Button

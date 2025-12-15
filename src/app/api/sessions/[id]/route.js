@@ -42,7 +42,7 @@ export async function PATCH(req, { params }) {
   const { userId } = auth;
   const resolvedParams = await params;
   const sessionId = resolvedParams.id;
-  const { action, exercises, duration } = await req.json();
+  const { action, exercises, duration, updatedSession } = await req.json();
   const db = await connectDB();
 
   try {
@@ -210,6 +210,45 @@ export async function PATCH(req, { params }) {
 
         return NextResponse.json(
           ApiSuccess.OPERATION_SUCCESS("Séance annulée"),
+          { status: 200 },
+        );
+
+      // CAS 4: Mettre à jour une session planifiée
+      case "update":
+        if (!updatedSession) {
+          return NextResponse.json(
+            ApiError.INVALID_DATA("Session non trouvée"),
+            {
+              status: 404,
+            },
+          );
+        }
+        const updateResult = await db.collection("users").updateOne(
+          {
+            _id: new ObjectId(userId),
+            "sessions._id": new ObjectId(sessionId),
+          },
+          {
+            $set: {
+              "sessions.$.workoutId": updatedSession.workoutId,
+              "sessions.$.workoutName": updatedSession.workoutName,
+              "sessions.$.exercises": updatedSession.exercises,
+              "sessions.$.scheduledDate": updatedSession.scheduledDate,
+              "sessions.$.estimatedDuration": updatedSession.estimatedDuration,
+              "sessions.$.updatedAt": new Date(),
+            },
+          },
+        );
+        if (updateResult.matchedCount === 0) {
+          return NextResponse.json(ApiError.NOT_FOUND("Session"), {
+            status: 404,
+          });
+        }
+        revalidatePath("/sessions");
+        revalidatePath(`/sessions/${sessionId}`);
+        revalidatePath("/calendar");
+        return NextResponse.json(
+          ApiSuccess.OPERATION_SUCCESS("Session mise à jour"),
           { status: 200 },
         );
     }

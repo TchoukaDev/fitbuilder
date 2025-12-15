@@ -1,7 +1,17 @@
 "use client";
 
 // Carte détaillée d'un exercice terminé : toutes les séries, poids max, volume, RPE, notes.
-import { Dumbbell, TrendingUp, Clock, MessageSquare } from "lucide-react";
+import {
+  Dumbbell,
+  TrendingUp,
+  Clock,
+  MessageSquare,
+  X,
+  CheckCircle,
+  CircleX,
+  Weight,
+  Repeat2,
+} from "lucide-react";
 
 export default function ExerciseDetailCard({ exercise }) {
   // ═══════════════════════════════════════════════════════
@@ -38,15 +48,15 @@ export default function ExerciseDetailCard({ exercise }) {
           </h3>
           <div className="flex gap-3 text-sm text-gray-600 mt-1">
             <span className="flex items-center gap-1">
-              <Dumbbell size={14} />
+              <TrendingUp size={14} />
               {exercise.actualSets?.length || 0} séries
             </span>
             <span className="flex items-center gap-1">
-              <TrendingUp size={14} />
+              <Repeat2 size={14} />
               {totalReps} reps
             </span>
             <span className="flex items-center gap-1">
-              <TrendingUp size={14} />
+              <Weight size={14} />
               {Math.round(totalVolume)} kg
             </span>
           </div>
@@ -54,12 +64,12 @@ export default function ExerciseDetailCard({ exercise }) {
 
         {/* Badge complété */}
         {exercise.completed ? (
-          <span className="px-2 py-1 bg-green-600 text-white text-xs rounded-full">
-            ✓ Terminé
+          <span className="flex items-center gap-1 px-2 py-1 bg-green-600 text-white text-xs rounded-full">
+            <CheckCircle size={16} /> Terminé
           </span>
         ) : (
-          <span className="px-2 py-1 bg-accent-600 text-white text-xs rounded-full">
-            Non terminé
+          <span className="flex items-center gap-1 px-2 py-1 bg-accent-600 text-white text-xs rounded-full">
+            <CircleX size={16} /> Non terminé
           </span>
         )}
       </div>

@@ -14,6 +14,7 @@ import { workoutExercisesSchema, workoutSchema } from "../utils/workoutSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-toastify";
 import { useWorkoutForm } from "../hooks/useWorkoutForm";
+import RequiredFields from "@/Global/components/ui/FormsComponents/RequiredFields";
 
 export default function NewWorkoutForm({
   allExercises,
@@ -122,9 +123,7 @@ export default function NewWorkoutForm({
 
         {/* 🔘 Boutons d'action */}
         <div className="flex justify-between items-center bg-white rounded-lg shadow-md p-6">
-          <p className="text-sm text-gray-600">
-            <span className="text-accent-500">*</span> Champs obligatoires
-          </p>
+          <RequiredFields />
 
           <div className="flex gap-3">
             {/* Bouton Annuler */}

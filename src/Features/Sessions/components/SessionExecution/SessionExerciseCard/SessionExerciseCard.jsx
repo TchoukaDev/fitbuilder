@@ -19,10 +19,10 @@ const SessionExerciseCard = memo(function SessionExerciseCard({
   // ✅ Appeler directement depuis le store si besoin
   const openModal = useCallback(
     (modalName, data) => onOpenRestTimer(modalName, data),
-    [onOpenRestTimer]
+    [onOpenRestTimer],
   );
   const [isExpanded, setIsExpanded] = useState(isActive); //Pour ouvrir/fermer le formulaire des séries
-  // console.log("RERENDER", index);
+
   // Ouvrir le détail de l'exercice actif
   useEffect(() => {
     if (isActive) setIsExpanded(true);
@@ -69,9 +69,9 @@ const SessionExerciseCard = memo(function SessionExerciseCard({
 
         {/* Détail des séries (déplié) */}
         {isExpanded && !exercise.completed && (
-          <CurrentExerciseCard 
-            exercise={exercise} 
-            index={index} 
+          <CurrentExerciseCard
+            exercise={exercise}
+            index={index}
             onCompleteExercise={onCompleteExercise}
           />
         )}

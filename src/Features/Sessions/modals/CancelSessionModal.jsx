@@ -32,11 +32,10 @@ export default function CancelSessionModal({
         </p>
       </div>
       {/* Footer */}
-      <div className="flex justify-center gap-3 p-6 border-t bg-gray-50">
+      <div className="modalFooter">
         <Button
           onClick={() => closeModal("cancelSession")}
           disabled={isLoading}
-          className="flex-1"
         >
           Continuer la séance
         </Button>
