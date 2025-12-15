@@ -13,6 +13,7 @@ export default function EditEventModal({ userId, event = null }) {
         day: "numeric",
       })
     : null;
+
   return createPortal(
     <ModalLayout
       title={`Modifier l'événement ${session.workoutName} du ${

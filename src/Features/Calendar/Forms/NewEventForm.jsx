@@ -1,138 +1,29 @@
-import { useEffect, useRef } from "react";
-import { useForm } from "react-hook-form";
-import { useModals } from "@/Providers/Modals";
 import { Button, LoaderButton } from "@/Global/components";
-import { useWorkouts } from "@/Features/Workouts/hooks";
-import { eventSchema } from "../utils/EventSchema";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { usePlanSession } from "@/Features/Sessions/hooks";
 import { toast } from "react-toastify";
 import RequiredFields from "@/Global/components/ui/FormsComponents/RequiredFields";
 import EventFormFields from "../forms/formComponents/EventFormFields";
+import { useEventForm } from "../hooks";
+import { ClipLoader } from "react-spinners";
 
 export default function NewEventForm({ userId, selectedDate }) {
   const { mutate: planSession, isPending } = usePlanSession(userId);
-  const { closeModal } = useModals();
-
-  // Formatter la date pour l'input
-  function formatDateToInput(date) {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-
-    return `${year}-${month}-${day}`;
-  }
 
   const {
+    workouts,
+    isFetching,
+    workoutRef,
     register,
     handleSubmit,
-    watch,
-    setValue,
-    trigger,
+    closeModal,
     formState: { errors },
-  } = useForm({
-    resolver: zodResolver(eventSchema),
-    mode: "onSubmit",
-    reValidateMode: "onChange",
-    defaultValues: {
-      workout: "",
-      date: selectedDate
-        ? formatDateToInput(selectedDate)
-        : formatDateToInput(new Date()),
-      startTime: selectedDate
-        ? `${String(selectedDate.getHours()).padStart(2, "0")}:${String(
-            selectedDate.getMinutes(),
-          ).padStart(2, "0")}`
-        : "",
-      duration: 60,
-      endTime: "",
-    },
-  });
-
-  const workoutRef = useRef(null);
-
-  const { data: workouts, isLoading } = useWorkouts(null, userId, {
-    staleTime: 0,
-    refetchOnMount: true,
-  });
-
-  // Observer les champs
-  const workoutId = watch("workout");
-  const startTime = watch("startTime");
-  const duration = watch("duration");
-  const endTime = watch("endTime");
-
-  // ========================================
-  // 1️⃣ Workout change → Pré-remplir duration
-  // ========================================
-  useEffect(() => {
-    if (!workoutId || !workouts) return;
-
-    const workout = workouts.find((w) => w._id === workoutId);
-    if (workout?.estimatedDuration) {
-      setValue("duration", workout.estimatedDuration);
-    }
-  }, [workoutId, workouts, setValue]);
-
-  // ========================================
-  // 2️⃣ startTime OU duration change → Calculer endTime
-  // ========================================
-  useEffect(() => {
-    if (!startTime || !duration) return;
-
-    // Créer une date avec l'heure de début
-    const [h, m] = startTime.split(":");
-    const start = new Date();
-    start.setHours(parseInt(h), parseInt(m), 0, 0);
-
-    // Ajouter la durée
-    const end = new Date(start.getTime() + duration * 60 * 1000);
-
-    // Formatter en HH:MM
-    const endFormatted = `${String(end.getHours()).padStart(2, "0")}:${String(
-      end.getMinutes(),
-    ).padStart(2, "0")}`;
-
-    setValue("endTime", endFormatted);
-    trigger("endTime");
-  }, [startTime, duration, setValue, trigger]);
-
-  // ========================================
-  // 3️⃣ endTime change manuellement → Recalculer duration
-  // ========================================
-  useEffect(() => {
-    if (!startTime || !endTime) return;
-
-    // Créer les dates
-    const [sh, sm] = startTime.split(":");
-    const [eh, em] = endTime.split(":");
-
-    const start = new Date();
-    start.setHours(parseInt(sh), parseInt(sm), 0, 0);
-
-    const end = new Date();
-    end.setHours(parseInt(eh), parseInt(em), 0, 0);
-
-    // Calculer la différence en minutes
-    const diff = Math.round((end - start) / (60 * 1000));
-
-    // Mettre à jour duration UNIQUEMENT si positif
-    if (diff > 0 && diff !== duration) {
-      setValue("duration", diff);
-      trigger("duration");
-    }
-  }, [endTime, trigger, setValue]); // ✅ Uniquement quand endTime change
-
-  // Focus au montage
-  useEffect(() => {
-    workoutRef.current?.focus();
-  }, []);
+  } = useEventForm({ newEvent: true, selectedDate, userId });
 
   // ========================================
   // SUBMIT
   // ========================================
   const onSubmit = (data) => {
-    const workout = workouts.find((w) => w._id === data.workout);
+    const workout = workouts?.find((w) => w._id === data.workout);
     const scheduledDate = new Date(`${data.date}T${data.startTime}`);
 
     planSession(
@@ -155,6 +46,14 @@ export default function NewEventForm({ userId, selectedDate }) {
     );
   };
 
+  if (isFetching) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-3 h-[500px] p-12">
+        <ClipLoader size={40} color="#7557ff" />
+        <span className="text-gray-600">Chargement...</span>
+      </div>
+    );
+  }
   return (
     <form
       className="flex flex-col items-center gap-5 p-6"
@@ -163,9 +62,9 @@ export default function NewEventForm({ userId, selectedDate }) {
       <EventFormFields
         register={register}
         errors={errors}
-        isLoading={isLoading}
-        workoutRef={workoutRef}
+        isLoading={isFetching}
         workouts={workouts}
+        workoutRef={workoutRef}
       />
 
       {/* Boutons */}
