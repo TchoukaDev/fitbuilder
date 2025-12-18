@@ -58,7 +58,7 @@ export default function WorkoutDetailPageClient({
             )}
           </div>
 
-          <span className="px-4 py-2 bg-primary-100 text-primary-700 font-semibold rounded-full">
+          <span className="px-4 py-2 bg-primary-100 text-primary-700 font-semibold rounded-full truncate max-w-[150px]">
             {workout.category}
           </span>
         </div>
@@ -92,20 +92,22 @@ export default function WorkoutDetailPageClient({
         </div>
 
         {/* Actions */}
-        <div className="flex gap-3 pt-4 border-t border-gray-200 items-center">
+        <div className="flex gap-3 pt-4 border-t border-gray-200 justify-center md:justify-start items-center">
           {/* Démarrer la session */}
-          <StartWorkoutButton userId={userId} workout={workout} />
+          <div className="md:flex-1">
+            <StartWorkoutButton userId={userId} workout={workout} />
+          </div>
 
           {/* Modifier */}
           <Link href={`/workouts/${workout._id}/edit`}>
             <Button edit>
               <Edit size={18} />
-              Modifier
+              <span className="hidden md:inline">Modifier</span>
             </Button>
           </Link>
 
           {/* Supprimer */}
-          <WorkoutDeleteButton workoutId={workoutId} />
+          <WorkoutDeleteButton sm workoutId={workoutId} />
         </div>
       </div>
       {/* Modale de suppression */}
@@ -119,7 +121,7 @@ export default function WorkoutDetailPageClient({
       )}
 
       {/* Liste des exercices */}
-      <div className="bg-white rounded-lg shadow-md p-6">
+      <div className="bg-white rounded-lg shadow-md p-6 overflow-hidden">
         <h2 className="text-2xl font-bold text-primary-900 mb-4">Exercices</h2>
 
         {workout.exercises?.length === 0 ? (

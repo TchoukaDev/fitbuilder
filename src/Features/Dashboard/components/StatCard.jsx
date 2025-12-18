@@ -5,14 +5,11 @@ export default function StatCard({
   icon,
   trend,
   trendLabel,
-  highlight = false,
 }) {
   return (
     <div
       className={`
-      bg-white rounded-lg shadow-md p-6 border-2 transition-all hover:shadow-lg
-      ${highlight ? "border-orange-400 bg-orange-50" : "border-gray-200"}
-    `}
+      bg-white rounded-lg shadow-md p-6 border-2 transition-all hover:shadow-lg border-gray-200 hover:border-gray-300`}
     >
       {/* Header avec icône */}
       <div className="flex flex-col items-center justify-evenly gap-2 h-full">

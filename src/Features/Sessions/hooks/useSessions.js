@@ -6,6 +6,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { toast } from "react-toastify";
+
 /**
  * Récupère la liste paginée de sessions avec filtres côté serveur.
  *
@@ -404,6 +405,7 @@ export function useFinishSession(userId, sessionId) {
 export function useCancelPlannedSession(userId) {
   const queryClient = useQueryClient();
   const key = ["sessions", userId];
+  const calendarKey = ["calendar-sessions", userId];
   return useMutation({
     mutationFn: async (sessionId) => {
       const response = await fetch(`/api/sessions/${sessionId}`, {
@@ -422,6 +424,7 @@ export function useCancelPlannedSession(userId) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: key });
+      queryClient.invalidateQueries({ queryKey: calendarKey });
       toast.success("Séance annulée avec succès");
     },
     onError: (error) => {

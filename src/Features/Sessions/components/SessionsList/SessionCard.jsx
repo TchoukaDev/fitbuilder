@@ -1,17 +1,9 @@
 // Carte d'affichage d'une séance dans la liste (statut, exercices, durée, progression).
 "use client";
 
-import {
-  Clock,
-  Calendar,
-  Dumbbell,
-  CheckCircle,
-  Play,
-  Trash2,
-} from "lucide-react";
+import { Clock, Calendar, Dumbbell, CheckCircle, Play } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useModals } from "@/Providers/Modals";
-import { Button } from "@/Global/components";
 
 export default function SessionCard({ session, userId }) {
   const router = useRouter();
@@ -113,27 +105,14 @@ export default function SessionCard({ session, userId }) {
             )}
           </p>
         </div>
-        <div className="flex  items-center gap-2">
-          {session.status === "in-progress" ||
-            (session.status === "planned" && (
-              <button
-                onClick={(e) => e.stopPropagation()}
-                label="Annuler la séance"
-                title="Annuler la séance"
-                className="bg-accent-500 hover:bg-accent-600 text-accent-50 disabled:bg-accent-300 p-1 rounded cursor-pointer transition-all duration-200"
-              >
-                <Trash2 size={16} />
-              </button>
-            ))}
 
-          {/* Badge status */}
-          <span
-            className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium ${statusConfig.bg} ${statusConfig.text}`}
-          >
-            {statusConfig.icon}
-            {statusConfig.label}
-          </span>
-        </div>
+        {/* Badge status */}
+        <span
+          className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium ${statusConfig.bg} ${statusConfig.text}`}
+        >
+          {statusConfig.icon}
+          {statusConfig.label}
+        </span>
       </div>
 
       {/* Stats */}

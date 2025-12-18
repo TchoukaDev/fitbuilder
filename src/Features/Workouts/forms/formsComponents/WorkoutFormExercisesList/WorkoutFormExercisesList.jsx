@@ -18,7 +18,7 @@ export default function WorkoutFormExercisesList({
   const isMounted = useWorkoutStore((state) => state.isMounted);
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col md:flex-row justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-primary-900">
           Exercices du plan ({exercisesStore.length})
         </h2>
@@ -36,7 +36,8 @@ export default function WorkoutFormExercisesList({
       ) : exercisesStore.length === 0 ? (
         <div className="text-center py-12 border-2 border-dashed border-gray-300 rounded-lg">
           <p className="text-gray-500 mb-4">
-            Aucun exercice ajouté pour le moment
+            Veuillez ajouter au moins un exercice
+            <span className="text-accent-500">*</span>
           </p>
         </div>
       ) : (

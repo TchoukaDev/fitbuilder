@@ -1,3 +1,3 @@
 export { default as ExerciseConfiguration } from "./ExerciseConfiguration";
-export { default as WorkoutExercisesList } from "./WorkoutExercisesList";
+export { default as WorkoutExerciseConfigurator } from "./WorkoutExerciseConfigurator";
 export * from "./ExerciceSelector";

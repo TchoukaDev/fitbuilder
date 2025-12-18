@@ -7,7 +7,7 @@ import { useMemo } from "react";
 import ExerciseSelector from "./ExerciceSelector/ExerciseSelector";
 import { useWorkoutStore } from "../../store";
 
-export default function WorkoutExercisesList({
+export default function WorkoutExerciseConfigurator({
   userId,
   isAdmin,
   initialExercises,

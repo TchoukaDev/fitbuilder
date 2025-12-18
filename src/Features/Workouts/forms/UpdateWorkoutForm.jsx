@@ -1,7 +1,7 @@
 "use client";
 
 // Formulaire client pour modifier un plan d'entraînement existant.
-import { DeleteConfirmModal, LoaderButton, Button } from "@/Global/components";
+import { DeleteConfirmModal } from "@/Global/components";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { useUpdateWorkout } from "../hooks";
@@ -10,13 +10,13 @@ import { WorkoutFormFields, WorkoutFormExercisesList } from "./formsComponents";
 import { toast } from "react-toastify";
 import { workoutExercisesSchema, workoutSchema } from "../utils/workoutSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
-
+import { WorkoutFormActions } from "./formsComponents";
 import {
   WorkoutEditExerciseModal,
   WorkoutSelectExerciseModal,
 } from "../modals";
 import { useWorkoutForm } from "../hooks/useWorkoutForm";
-import RequiredFields from "@/Global/components/ui/FormsComponents/RequiredFields";
+import { useEffect } from "react";
 
 export default function UpdateWorkoutForm({
   workout,
@@ -95,11 +95,19 @@ export default function UpdateWorkoutForm({
     );
   };
 
+  // Nettoyage des données lors du démontage du composant
+  useEffect(() => {
+    return () => {
+      clearAll();
+      setExercises([]);
+    };
+  }, [clearAll, setExercises]);
+
   // RENDER
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        {/* ✅ Composant réutilisable */}
+        {/* 📝 Champs du formulaire */}
         <WorkoutFormFields
           register={register}
           errors={errors}
@@ -108,45 +116,22 @@ export default function UpdateWorkoutForm({
           nameRegister={nameRegister}
         />
 
-        {/* ✅ Composant réutilisable */}
+        {/* 📝 Liste des exercices */}
         <WorkoutFormExercisesList
           onAddClick={() => openModal("workoutSelectExercise")}
           onEditClick={(index) => openModal("workoutEditExercise", { index })}
           onRemoveClick={(index) => openModal("deleteConfirm", { index })}
         />
 
-        {/* Message d'erreur exercices */}
-        {errorExercises && <div className="formError">{errorExercises}</div>}
-
-        {/* Boutons d'action */}
-        <div className="flex justify-between items-center bg-white rounded-lg shadow-md p-6">
-          <RequiredFields />
-
-          <div className="flex gap-3">
-            <Button
-              type="button"
-              close
-              onClick={() => {
-                clearAll();
-                setExercises([]);
-                router.refresh();
-                router.back();
-              }}
-              label="Annuler"
-            >
-              Annuler
-            </Button>
-
-            <LoaderButton
-              isLoading={isUpdating}
-              loadingText="Modification en cours"
-              type="submit"
-              label="Enregistrer les modifications"
-            >
-              Enregistrer les modifications
-            </LoaderButton>
-          </div>
-        </div>
+        {/* 🔘 Boutons d'action */}
+        <WorkoutFormActions
+          errorExercises={errorExercises}
+          clearAll={clearAll}
+          setExercises={setExercises}
+          isLoading={isUpdating}
+          loadingText="Mise à jour..."
+          submitLabel="Enregistrer les modifications"
+        />
       </form>
 
       {/* Modale de séletion d'exercise */}

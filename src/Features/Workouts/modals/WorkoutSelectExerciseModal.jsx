@@ -1,9 +1,9 @@
 "use client";
 
-import WorkoutExercisesList from "../components/WorkoutExercisesList/WorkoutExercisesList";
 import { createPortal } from "react-dom";
 import { ModalLayout } from "@/Global/components";
 import { useWorkoutStore } from "@/Features/Workouts/store";
+import { WorkoutExerciseConfigurator } from "../components";
 
 // Modale de selection d'un exercice à ajouter à l'entraînement
 export default function WorkoutSelectExerciseModal({
@@ -15,7 +15,7 @@ export default function WorkoutSelectExerciseModal({
   const modaleTitle = useWorkoutStore((state) => state.modaleTitle);
   return createPortal(
     <ModalLayout title={modaleTitle} modalToClose="workoutSelectExercise">
-      <WorkoutExercisesList
+      <WorkoutExerciseConfigurator
         userId={userId}
         isAdmin={isAdmin}
         initialExercises={allExercises}

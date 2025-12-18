@@ -16,5 +16,6 @@ test
 réinitialisation mot de passe + modification
 
 
-Clic sur session planifiée démarre la séance. A revoir
+icone avec h1 sur exercices, workout et dashboard
 Annuler session en cours depuis l'extérieur
+react query sur Dashboard

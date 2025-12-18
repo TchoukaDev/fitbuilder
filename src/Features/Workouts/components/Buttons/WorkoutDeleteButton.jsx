@@ -17,13 +17,10 @@ export default function WorkoutDeleteButton({ workoutId, sm }) {
         title="Supprimer"
         label="Supprimer l'entraînement"
       >
-        {sm ? (
-          <Trash2 size={20} />
-        ) : (
-          <>
-            <Trash2 size={18} /> Supprimer ce plan
-          </>
-        )}
+        <>
+          <Trash2 size={18} />{" "}
+          <span className="hidden md:inline">Supprimer ce plan</span>
+        </>
       </Button>
     </>
   );

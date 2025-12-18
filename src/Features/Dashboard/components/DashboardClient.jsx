@@ -74,7 +74,6 @@ export default function DashboardClient({ userId }) {
           value={`${streak || 0} jour${streak > 1 ? "s" : ""}`}
           subtitle={`consécutif${streak > 1 ? "s" : ""}`}
           icon="🔥"
-          highlight={streak || 0 >= 3}
         />
         <StatCard
           title={`Séance${monthStats?.completed > 1 ? "s" : ""} ce mois`}

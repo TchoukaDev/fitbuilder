@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, DeleteConfirmModal, LoaderButton } from "@/Global/components";
+import { DeleteConfirmModal } from "@/Global/components";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { useCreateWorkout } from "../hooks";
@@ -14,7 +14,8 @@ import { workoutExercisesSchema, workoutSchema } from "../utils/workoutSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-toastify";
 import { useWorkoutForm } from "../hooks/useWorkoutForm";
-import RequiredFields from "@/Global/components/ui/FormsComponents/RequiredFields";
+import { useEffect } from "react";
+import { WorkoutFormActions } from "./formsComponents";
 
 export default function NewWorkoutForm({
   allExercises,
@@ -97,6 +98,14 @@ export default function NewWorkoutForm({
     );
   };
 
+  // Nettoyage des données lors du démontage du composant
+  useEffect(() => {
+    return () => {
+      clearAll();
+      setExercises([]);
+    };
+  }, [clearAll, setExercises]);
+
   // ========================================
   // 🎨 RENDER
   // ========================================
@@ -118,39 +127,16 @@ export default function NewWorkoutForm({
           onRemoveClick={(index) => openModal("deleteConfirm", { index })}
         />
 
-        {/* ⚠️ Message d'erreur pour les exercices */}
-        {errorExercises && <div className="formError">{errorExercises}</div>}
-
         {/* 🔘 Boutons d'action */}
-        <div className="flex justify-between items-center bg-white rounded-lg shadow-md p-6">
-          <RequiredFields />
-
-          <div className="flex gap-3">
-            {/* Bouton Annuler */}
-            <Button
-              type="button"
-              close
-              onClick={() => {
-                clearAll();
-                clearStorage();
-                setExercises([]);
-                router.refresh();
-                router.back();
-              }}
-            >
-              Annuler
-            </Button>
-
-            {/* Bouton Créer */}
-            <LoaderButton
-              isLoading={isCreating}
-              loadingText="Création en cours..."
-              type="submit"
-            >
-              Créer le plan d'entraînement
-            </LoaderButton>
-          </div>
-        </div>
+        <WorkoutFormActions
+          errorExercises={errorExercises}
+          clearAll={clearAll}
+          clearStorage={clearStorage}
+          setExercises={setExercises}
+          isLoading={isCreating}
+          loadingText="Création..."
+          submitLabel="Créer le plan"
+        />
       </form>
 
       {/* ========================================

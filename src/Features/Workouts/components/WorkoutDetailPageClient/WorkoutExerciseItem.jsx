@@ -3,7 +3,7 @@
 // Affiche une carte d'exercice dans le détail d'un plan d'entraînement.
 export default function WorkoutExerciseItem({ exercise }) {
   return (
-    <div className="border border-gray-200 rounded-lg p-4 hover:border-primary-300 transition">
+    <div className="border border-gray-200 rounded-lg p-4 hover:border-primary-300 transition overflow-hidden">
       <div className="flex items-start gap-4">
         {/* Numéro */}
         <div className="shrink-0 w-8 h-8 bg-primary-600 text-white rounded-full flex items-center justify-center font-bold">
@@ -11,7 +11,7 @@ export default function WorkoutExerciseItem({ exercise }) {
         </div>
 
         {/* Infos exercice */}
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
           <h3 className="font-semibold text-lg text-gray-900 mb-2">
             {exercise.name}
           </h3>
@@ -21,9 +21,7 @@ export default function WorkoutExerciseItem({ exercise }) {
               {exercise.sets} séries × {exercise.reps} reps
             </span>
 
-            {exercise.targetWeight && (
-              <span>🏋️ {exercise.targetWeight} kg</span>
-            )}
+            <span>🏋️ {exercise.targetWeight} kg</span>
 
             {exercise.restTime && <span>⏱️ Repos: {exercise.restTime}s</span>}
           </div>

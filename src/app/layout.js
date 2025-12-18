@@ -3,6 +3,7 @@ import "./globals.css";
 import { QueryClientProvider } from "@/Providers/QueryClient";
 import { ModalProvider } from "@/Providers/Modals";
 import { AuthProvider } from "@/Providers/Auth";
+import Footer from "@/Global/components/layout/Footer";
 
 export const metadata = {
   title: "FitBuilder, votre assistant de musculation personnalisé",
@@ -25,6 +26,7 @@ export default function RootLayout({ children }) {
               />
               {children}
               <div id="portal-root"></div>
+              <Footer />
             </ModalProvider>{" "}
           </QueryClientProvider>
         </AuthProvider>
