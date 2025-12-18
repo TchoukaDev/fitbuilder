@@ -47,7 +47,6 @@ export function useWorkouts(initialData, userId, options = {}) {
       queryFn: async () => {
         const response = await fetch("/api/workouts");
         const data = await response.json();
-        console.log("Prefetched workouts:", data);
         return data;
       },
       staleTime: 1000 * 60 * 5,

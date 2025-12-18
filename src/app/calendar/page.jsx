@@ -1,22 +1,26 @@
 import { Header } from "@/Global/components";
-import CalendarComponent from "@/Features/Calendar/components/CalendarComponent";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth";
-import { getPlannedSessions } from "@/Features/Sessions/utils";
+import { getEvents } from "@/Features/Calendar/utils";
+import {
+  CalendarLoader,
+  CalendarComponent,
+} from "@/Features/Calendar/components";
+import { Suspense } from "react";
 
 export default async function CalendarPage() {
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
-  const sessions = await getPlannedSessions(userId);
-  const serializedSessions = JSON.parse(JSON.stringify(sessions));
+  const events = await getEvents(userId);
+  const serializedEvents = JSON.parse(JSON.stringify(events));
   return (
     <>
       <Header />
       <main>
-        <CalendarComponent
-          userId={userId}
-          initialSessions={serializedSessions}
-        />
+        <h1>📅 Planning d'entraînement</h1>
+        <Suspense fallback={<CalendarLoader />}>
+          <CalendarComponent userId={userId} initialEvents={serializedEvents} />
+        </Suspense>
       </main>
     </>
   );

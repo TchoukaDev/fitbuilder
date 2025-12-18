@@ -13,7 +13,7 @@ import {
 } from "../hooks";
 import { NewEventModal, EditEventModal, EventDetailsModal } from "../modals";
 import { useGetCalendarSessions } from "@/Features/Sessions/hooks";
-import { StatusFilter } from "@/Features/Calendar/components";
+import { CalendarLoader, StatusFilter } from "@/Features/Calendar/components";
 import { useWorkouts } from "@/Features/Workouts/hooks";
 import { ClipLoader } from "react-spinners";
 
@@ -23,7 +23,7 @@ moment.locale("fr");
 // Création du localiseur qui permet à react-big-calendar d'utiliser moment pour formater les dates
 const localizer = momentLocalizer(moment);
 
-export default function CalendarComponent({ userId }) {
+export default function CalendarComponent({ userId, initialEvents }) {
   // 📅 STATES
   const {
     isMobile,
@@ -35,9 +35,15 @@ export default function CalendarComponent({ userId }) {
     setCurrentDate,
   } = useCalendarStates();
 
+  // Reformater les dates pour le calendrier
+  const hydratedInitialEvents = initialEvents?.map((event) => ({
+    ...event,
+    start: new Date(event.start),
+    end: new Date(event.end),
+  }));
   // 📅 QUERIES
   const { data: events = [], isLoading: isLoadingEvents } =
-    useGetCalendarSessions(userId, null);
+    useGetCalendarSessions(hydratedInitialEvents, userId, null);
 
   // 📅 PREFETCH
   const { prefetchWorkouts } = useWorkouts(userId);
@@ -61,6 +67,7 @@ export default function CalendarComponent({ userId }) {
     isDeleting,
     getModalData,
     isOpen,
+    openModal,
   } = useCalendarHandlers(userId, setCurrentDate);
 
   return (
@@ -68,7 +75,6 @@ export default function CalendarComponent({ userId }) {
       {" "}
       <div className="calendar-container">
         {" "}
-        <h1>📅 Planning d'entraînement</h1>
         <div className="mb-3 flex items-center justify-between">
           <Button
             onClick={() => openModal("newEvent", { userId })}
@@ -116,9 +122,9 @@ export default function CalendarComponent({ userId }) {
         )}
         <div className="calendar-wrapper">
           {isLoadingEvents ? (
-            <div className="animate-pulse h-full w-full flex items-center justify-center gap-4">
+            <div className="animate-pulse w-full h-full flex items-center justify-center">
               <ClipLoader size={60} color="#7557ff" />
-              <span className="text-2xl">Chargement des événements...</span>
+              <span className="text-2xl">Chargement du calendrier...</span>
             </div>
           ) : (
             <Calendar

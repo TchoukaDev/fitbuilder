@@ -1,24 +1,17 @@
+import { Slot } from "@radix-ui/react-slot";
+
 export default function Button({
-  onClick,
-  onMouseEnter,
-  type,
-  disabled,
-  children,
+  asChild,
+  width,
+  full,
   close,
   edit,
-  full,
-  width,
-  title,
-  label,
+  ...props
 }) {
+  const Comp = asChild ? Slot : "button";
   return (
-    <button
-      type={type}
-      title={title}
-      disabled={disabled}
-      onMouseEnter={onMouseEnter}
-      onClick={onClick}
-      aria-label={label}
+    <Comp
+      {...props}
       className={`flex items-center justify-center ${
         width ? width : "min-w-[150px]"
       } gap-2 ${full && "w-full"} ${
@@ -29,7 +22,7 @@ export default function Button({
           : "bg-primary-500 hover:bg-primary-600 disabled:bg-primary-300 text-primary-50"
       }  p-3 rounded cursor-pointer transition-all duration-200`}
     >
-      {children}
-    </button>
+      {props.children}
+    </Comp>
   );
 }

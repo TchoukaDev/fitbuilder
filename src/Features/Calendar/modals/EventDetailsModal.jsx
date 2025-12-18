@@ -23,7 +23,7 @@ export default function EventDetailsModal({
     month: "long",
     day: "numeric",
   });
-  const { closeModal, openModal } = useModals();
+  const { closeModal } = useModals();
   const router = useRouter();
 
   const startSession = useStartPlannedSession(userId, statusFilter);

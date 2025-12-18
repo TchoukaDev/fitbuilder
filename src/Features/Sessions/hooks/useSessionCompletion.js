@@ -2,7 +2,11 @@
 
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import { useCancelPlannedSession, useDeleteSession } from "./useSessions";
+import {
+  useCancelPlannedSession,
+  useDeleteSession,
+  useFinishSession,
+} from "./useSessions";
 import { useSessionStore } from "../store";
 import { useModals } from "@/Providers/Modals";
 
@@ -31,7 +35,7 @@ export function useSessionCompletion(
   const router = useRouter();
   const { mutate: deleteSession } = useDeleteSession(userId);
   const { mutate: cancelPlannedSession } = useCancelPlannedSession(userId);
-
+  const { mutate: finishSessionMutation } = useFinishSession(userId, sessionId);
   // Store
   const exercises = useSessionStore((state) => state.exercises);
   const setIsSaving = useSessionStore((state) => state.setIsSaving);
@@ -90,7 +94,6 @@ export function useSessionCompletion(
     }));
   };
 
-  // ✅ Finaliser la session
   /**
    * Finalise la session : envoie toutes les données et redirige l'utilisateur.
    *
@@ -99,38 +102,28 @@ export function useSessionCompletion(
   const finishSession = async (exercisesToFinish = exercises) => {
     setIsSaving(true);
 
-    try {
-      const cleanedExercises = cleanExercisesData(exercisesToFinish);
-
-      const response = await fetch(`/api/sessions/${sessionId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          exercises: cleanedExercises,
-          duration: calculateFormattedTime(), // ✅ Appeler la fonction
-        }),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        // L'API retourne { error: "string", message: "string" }
-        throw new Error(error.message || error.error || "Erreur inconnue");
-      }
-
-      clearBackup();
-      closeAllModals();
-      toast.success("🎉 Séance terminée !");
-      setTimeout(() => resetSession(sessionId), 1000);
-      router.push("/sessions");
-      router.refresh();
-    } catch (error) {
-      toast.error(error.message || "Erreur finalisation");
-      setIsSaving(false);
-      // ⚠️ Ne pas nettoyer le state en cas d'erreur pour permettre une nouvelle tentative
-    }
+    const cleanedExercises = cleanExercisesData(exercisesToFinish);
+    const duration = calculateFormattedTime();
+    finishSessionMutation(
+      { exercises: cleanedExercises, duration },
+      {
+        onSuccess: () => {
+          toast.success("🎉 Séance terminée avec succès !");
+          clearBackup();
+          closeAllModals();
+          setTimeout(() => resetSession(sessionId), 1000);
+          router.push("/sessions");
+          router.refresh();
+          setIsSaving(false);
+        },
+        onError: () => {
+          toast.error("Erreur lors de la finalisation de la session");
+          setIsSaving(false);
+        },
+      },
+    );
   };
 
-  // ✅ Annuler la session
   /**
    * Annule la session (suppression côté serveur + nettoyage backup).
    */

@@ -60,5 +60,8 @@ export default function useCalendarHandlers(userId, setCurrentDate) {
     isDeleting,
     getModalData,
     isOpen,
+    openModal,
+    closeModal,
+    getModalData,
   };
 }

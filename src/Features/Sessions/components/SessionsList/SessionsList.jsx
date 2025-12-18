@@ -9,6 +9,8 @@ import {
   SessionsPagination,
   SessionsStats,
 } from ".";
+import { useModals } from "@/Providers/Modals";
+import { StartOrContinueConfirmModal } from "../../modals";
 
 export default function SessionsList({
   initialSessions,
@@ -30,6 +32,8 @@ export default function SessionsList({
     handlePageChange,
     handleResetFilters,
   } = useSessionsList(initialSessions, userId, initialFilters);
+
+  const { isOpen, getModalData } = useModals();
 
   // État de chargement
   if (isLoading) {
@@ -124,6 +128,13 @@ export default function SessionsList({
               />
             ))}
           </div>
+          {isOpen("startOrContinueSession") && (
+            <StartOrContinueConfirmModal
+              action={getModalData("startOrContinueSession").action}
+              session={getModalData("startOrContinueSession").session}
+              userId={userId}
+            />
+          )}
 
           {/* PAGINATION */}
           <SessionsPagination

@@ -32,7 +32,7 @@ export default function SessionsPagination({
           }`}
         >
           <ChevronLeft size={18} />
-          Précédent
+          <span className=" hidden md:block">Précédent</span>
         </button>
 
         {/* Numéros de pages */}
@@ -50,7 +50,7 @@ export default function SessionsPagination({
               : "bg-gray-200 text-gray-400 cursor-not-allowed"
           }`}
         >
-          Suivant
+          <span className=" hidden md:block">Suivant</span>
           <ChevronRight size={18} />
         </button>
       </div>

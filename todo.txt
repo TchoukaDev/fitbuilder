@@ -10,3 +10,11 @@ Harmonisation largeur page
 FAQ
 Filtres calendrier (StatusFilters)
 Contact
+cache//Tag unstable_cache
+créer indexs pour rezuqêtes
+test
+réinitialisation mot de passe + modification
+
+
+Clic sur session planifiée démarre la séance. A revoir
+Annuler session en cours depuis l'extérieur

@@ -111,10 +111,7 @@
   .formError {
     @apply bg-accent-200 text-accent-700 font-semibold border p-2 border-accent-800 rounded text-sm;
   }
-  .LinkButton {
-    @apply flex items-center justify-center min-w-[150px] w-fit gap-2 bg-primary-500 hover:bg-primary-600 disabled:bg-primary-300 text-primary-50
-            p-3 rounded cursor-pointer transition-all duration-200;
-  }
+
   .modalFooter {
     @apply flex justify-center gap-3 pt-6 border-t bg-gray-50 mt-3;
   }

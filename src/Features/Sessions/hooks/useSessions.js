@@ -87,7 +87,11 @@ export function useGetSessions(initialData, userId, filters = {}) {
  * @param {string} userId - ID de l'utilisateur
  * @param {string|null} statusFilter - Filtre par statut ("planned" | "in-progress" | "completed" | null)
  */
-export function useGetCalendarSessions(userId, statusFilter = null) {
+export function useGetCalendarSessions(
+  initialEvents,
+  userId,
+  statusFilter = null,
+) {
   const calendarKey = ["calendar-sessions", userId, statusFilter || null]; // ✅ Cache différent par statut
   return useQuery({
     queryKey: calendarKey,
@@ -118,8 +122,11 @@ export function useGetCalendarSessions(userId, statusFilter = null) {
         };
       });
     },
+    initialData: initialEvents,
+    placeholderData: keepPreviousData,
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 15,
     enabled: !!userId,
-    staleTime: 1000 * 60 * 2,
   });
 }
 
@@ -325,6 +332,65 @@ export function useUpdatePlannedSession(userId, statusFilter = null) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: sessionsKey });
+      queryClient.invalidateQueries({ queryKey: calendarKey });
+    },
+  });
+}
+
+export function useFinishSession(userId, sessionId) {
+  const queryClient = useQueryClient();
+  const key = ["sessions", userId];
+  const calendarKey = ["calendar-sessions", userId];
+  return useMutation({
+    mutationFn: async ({ exercises, duration }) => {
+      const response = await fetch(`/api/sessions/${sessionId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ exercises, duration }),
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(
+          errorData.message || errorData.error || "Erreur finalisation",
+        );
+      }
+      return response.json();
+    },
+    onMutate: async ({ exercises, duration }) => {
+      await queryClient.cancelQueries({ queryKey: key });
+      await queryClient.cancelQueries({ queryKey: calendarKey });
+      const previousSessions = queryClient.getQueryData(key);
+      const previousEvents = queryClient.getQueryData(calendarKey);
+      queryClient.setQueryData(key, (old = []) => [
+        old.map((s) =>
+          s._id === sessionId ? { ...s, exercises, duration } : s,
+        ),
+      ]);
+      queryClient.setQueryData(calendarKey, (old = []) => [
+        old.map((e) =>
+          e.resource._id === sessionId
+            ? {
+                ...e,
+                resource: {
+                  ...e.resource,
+                  exercises,
+                  duration,
+                  status: "completed",
+                  completedDate: new Date(),
+                },
+              }
+            : e,
+        ),
+      ]);
+      return { previousSessions, previousEvents };
+    },
+    onError: (error, { exercises, duration }, context) => {
+      queryClient.setQueryData(key, context.previousSessions);
+      queryClient.setQueryData(calendarKey, context.previousEvents);
+      console.error("Erreur finalisation:", error);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: key });
       queryClient.invalidateQueries({ queryKey: calendarKey });
     },
   });

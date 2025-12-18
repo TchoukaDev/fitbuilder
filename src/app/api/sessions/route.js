@@ -5,7 +5,6 @@ import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
 import { ApiError } from "@/libs/apiResponse";
 import { requireAuth } from "@/libs/authMiddleware";
-import { is } from "zod/v4/locales";
 
 // POST - Démarrer une nouvelle séance à partir d'un plan d'entraînement
 export async function POST(req) {
@@ -101,6 +100,7 @@ export async function POST(req) {
     revalidatePath("/calendar");
     revalidatePath("/dashboard");
     revalidatePath("/admin");
+
     return NextResponse.json(
       {
         success: true,

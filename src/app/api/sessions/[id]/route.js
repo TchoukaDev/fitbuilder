@@ -176,24 +176,38 @@ export async function PATCH(req, { params }) {
           );
           newLastUsedAt = otherSessions[0].completedDate;
         }
-        // 2. Annuler + décrémenter timesUsed
+
+        // Décrémenter le compteur et mettre à jour la date
+        let timesUsed =
+          user.workouts?.find((w) => w._id.toString() === workoutId.toString())
+            ?.timesUsed ?? 0;
+        if (timesUsed > 0) {
+          timesUsed--;
+        }
+
         const cancelResult = await db.collection("users").updateOne(
-          { _id: new ObjectId(userId) },
+          {
+            _id: new ObjectId(userId),
+          },
           {
             $set: {
-              "sessions.$[session].startedAt": null,
-              "sessions.$[session].status": "planned",
-              "sessions.$[session].updatedAt": new Date(),
               "workouts.$[workout].lastUsedAt": newLastUsedAt,
-            },
-            $inc: {
-              "workouts.$[workout].timesUsed": -1,
+              "workouts.$[workout].timesUsed": timesUsed,
+              "sessions.$[session].startedAt": null,
+              "sessions.$[session].completedDate": null,
+              "sessions.$[session].duration": null,
+              "sessions.$[session].updatedAt": new Date(),
+              "sessions.$[session].exercises.$[].actualSets": [],
+              "sessions.$[session].exercises.$[].completed": false,
+              "sessions.$[session].exercises.$[].effort": null,
+              "sessions.$[session].exercises.$[].notes": "",
+              "sessions.$[session].status": "planned",
             },
           },
           {
             arrayFilters: [
-              { "session._id": new ObjectId(sessionId) },
               { "workout._id": new ObjectId(workoutId) },
+              { "session._id": new ObjectId(sessionId) },
             ],
           },
         );
@@ -399,14 +413,24 @@ export async function DELETE(req, { params }) {
     }
 
     // Décrémenter le compteur et mettre à jour la date
+    let timesUsed =
+      updatedUser.workouts?.find(
+        (w) => w._id.toString() === workoutId.toString(),
+      )?.timesUsed ?? 0;
+    if (timesUsed > 0) {
+      timesUsed--;
+    }
+
     await db.collection("users").updateOne(
       {
         _id: new ObjectId(userId),
         "workouts._id": new ObjectId(workoutId),
       },
       {
-        $inc: { "workouts.$.timesUsed": -1 },
-        $set: { "workouts.$.lastUsedAt": newLastUsedAt },
+        $set: {
+          "workouts.$.timesUsed": timesUsed,
+          "workouts.$.lastUsedAt": newLastUsedAt,
+        },
       },
     );
 

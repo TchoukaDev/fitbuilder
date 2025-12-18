@@ -4,7 +4,7 @@
 import Link from "next/link";
 import WorkoutCard from "./WorkoutCard";
 import { useDeleteWorkout, useWorkouts } from "../../hooks";
-import { DeleteConfirmModal } from "@/Global/components";
+import { Button, DeleteConfirmModal } from "@/Global/components";
 import { useModals } from "@/Providers/Modals";
 import { useRouter } from "next/navigation";
 
@@ -35,9 +35,11 @@ export default function WorkoutList({ initialWorkouts, userId }) {
       {/* Titre h1 dans composant client pour compteur géré par useQuery */}
       <h1>Mes plans d'entraînement ({count})</h1>
       <div>
-        <Link href="/workouts/create" className="LinkButton mb-10">
-          + Créer un nouvel entraînement
-        </Link>
+        <div className="mb-10">
+          <Button width="w-fit" asChild>
+            <Link href="/workouts/create">+ Créer un nouvel entraînement</Link>
+          </Button>
+        </div>
         {/* Cards */}
         {workouts?.map((workout) => (
           <WorkoutCard key={workout?._id} workout={workout} userId={userId} />
