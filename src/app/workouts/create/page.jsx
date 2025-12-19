@@ -7,7 +7,7 @@ import {
 import { getServerSession } from "next-auth";
 import { Header } from "@/Global/components";
 import { NewWorkoutForm } from "@/Features/Workouts/forms";
-
+import { WorkoutStoreProvider } from "@/Features/Workouts/store";
 export const revalidate = 60;
 
 export default async function CreateWorkoutPage() {
@@ -26,12 +26,14 @@ export default async function CreateWorkoutPage() {
       <Header />
       <main>
         <h1>Créer un nouveau plan d'entraînement</h1>
-        <NewWorkoutForm
-          allExercises={serializedExercises}
-          favoritesExercises={serializedFavorites}
-          isAdmin={isAdmin}
-          userId={userId}
-        />
+        <WorkoutStoreProvider>
+          <NewWorkoutForm
+            allExercises={serializedExercises}
+            favoritesExercises={serializedFavorites}
+            isAdmin={isAdmin}
+            userId={userId}
+          />
+        </WorkoutStoreProvider>
       </main>
     </>
   );

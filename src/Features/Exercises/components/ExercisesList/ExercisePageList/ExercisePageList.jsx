@@ -45,6 +45,7 @@ export default function ExercisePageList({
         activeTab={activeTab}
         onTabChange={setActiveTab}
         counts={counts}
+        setSelectedMuscle={setSelectedMuscle}
       />
 
       {/* Bouton de création (onglet "Mes exercices") */}

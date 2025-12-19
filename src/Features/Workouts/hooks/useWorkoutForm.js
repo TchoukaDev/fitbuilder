@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { useWorkoutStore } from "@/Features/Workouts/store";
+import { useWorkoutStore } from "../store";
 import { useModals } from "@/Providers/Modals";
 
 /**

@@ -7,7 +7,7 @@ import { Plus } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
 import { BeatLoader } from "react-spinners";
 import ExerciseItem from "./ExerciseItem";
-import { useWorkoutStore } from "@/Features/Workouts/store";
+import { useWorkoutStore } from "../../../store";
 
 export default function WorkoutFormExercisesList({
   onAddClick,

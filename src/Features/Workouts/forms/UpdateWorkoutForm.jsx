@@ -16,7 +16,6 @@ import {
   WorkoutSelectExerciseModal,
 } from "../modals";
 import { useWorkoutForm } from "../hooks/useWorkoutForm";
-import { useEffect } from "react";
 
 export default function UpdateWorkoutForm({
   workout,
@@ -94,14 +93,6 @@ export default function UpdateWorkoutForm({
       },
     );
   };
-
-  // Nettoyage des données lors du démontage du composant
-  useEffect(() => {
-    return () => {
-      clearAll();
-      setExercises([]);
-    };
-  }, [clearAll, setExercises]);
 
   // RENDER
   return (

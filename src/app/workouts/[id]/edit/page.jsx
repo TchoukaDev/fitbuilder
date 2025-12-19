@@ -8,6 +8,7 @@ import {
 } from "@/Features/Exercises/utils";
 import { Header } from "@/Global/components";
 import { UpdateWorkoutForm } from "@/Features/Workouts/forms";
+import { WorkoutStoreProvider } from "@/Features/Workouts/store";
 
 export default async function EditWorkout({ params }) {
   const session = await getServerSession(authOptions);
@@ -26,13 +27,15 @@ export default async function EditWorkout({ params }) {
       <Header />
       <main>
         <h1>Modifier le plan d'entraînement "{workout.name}"</h1>
-        <UpdateWorkoutForm
-          workout={workout}
-          isAdmin={isAdmin}
-          userId={userId}
-          allExercises={allExercises}
-          favoritesExercises={favoritesExercises}
-        />
+        <WorkoutStoreProvider>
+          <UpdateWorkoutForm
+            workout={workout}
+            isAdmin={isAdmin}
+            userId={userId}
+            allExercises={allExercises}
+            favoritesExercises={favoritesExercises}
+          />
+        </WorkoutStoreProvider>
       </main>
     </>
   );

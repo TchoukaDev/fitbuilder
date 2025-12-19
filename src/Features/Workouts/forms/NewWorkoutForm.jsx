@@ -14,7 +14,6 @@ import { workoutExercisesSchema, workoutSchema } from "../utils/workoutSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-toastify";
 import { useWorkoutForm } from "../hooks/useWorkoutForm";
-import { useEffect } from "react";
 import { WorkoutFormActions } from "./formsComponents";
 
 export default function NewWorkoutForm({
@@ -61,10 +60,6 @@ export default function NewWorkoutForm({
   const nameRegister = register("name");
 
   // ========================================
-  // ⚡ EFFETS
-  // ========================================
-
-  // ========================================
   // 📤 SOUMISSION DU FORMULAIRE
   // ========================================
   const onSubmit = async (data) => {
@@ -98,17 +93,6 @@ export default function NewWorkoutForm({
     );
   };
 
-  // Nettoyage des données lors du démontage du composant
-  useEffect(() => {
-    return () => {
-      clearAll();
-      setExercises([]);
-    };
-  }, [clearAll, setExercises]);
-
-  // ========================================
-  // 🎨 RENDER
-  // ========================================
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">

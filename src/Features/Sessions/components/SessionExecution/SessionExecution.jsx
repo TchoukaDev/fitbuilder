@@ -147,8 +147,6 @@ export default function SessionExecution({ sessionData, sessionId, userId }) {
     [exercises, openModal, handleSaveProgress],
   );
 
-  // ✅ Plus de Context ! Les composants appelent directement le store
-
   // ═══════════════════════════════════════════════════════
   // 🛡️ GUARD
   // ═══════════════════════════════════════════════════════

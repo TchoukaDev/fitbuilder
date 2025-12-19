@@ -1,5 +1,10 @@
 // Onglets de navigation pour filtrer les exercices (Tous / Mes exercices / Favoris)
-export default function ExerciseTabs({ activeTab, onTabChange, counts }) {
+export default function ExerciseTabs({
+  activeTab,
+  onTabChange,
+  counts,
+  setSelectedMuscle,
+}) {
   const tabs = [
     { id: "all", label: "🏋️ Tous", count: counts.all },
     {
@@ -19,7 +24,10 @@ export default function ExerciseTabs({ activeTab, onTabChange, counts }) {
       {tabs.map((tab) => (
         <button
           key={tab.id}
-          onClick={() => onTabChange(tab.id)}
+          onClick={() => {
+            onTabChange(tab.id);
+            setSelectedMuscle("all");
+          }}
           className={`py-4 px-8 bg-transparent border-b ${
             activeTab === tab.id
               ? "border-b-[3px] border-primary-500 font-bold"
