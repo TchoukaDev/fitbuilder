@@ -1,6 +1,6 @@
 import { createPortal } from "react-dom";
 import { ModalLayout } from "@/Global/components";
-import UpdateEventForm from "../forms/UpdateEventForm";
+import { UpdateEventForm } from "../forms";
 
 export default function EditEventModal({ userId, event = null }) {
   const session = event.resource;

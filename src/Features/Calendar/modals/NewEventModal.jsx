@@ -1,6 +1,6 @@
 import { createPortal } from "react-dom";
 import { ModalLayout } from "@/Global/components";
-import NewEventForm from "../forms/NewEventForm";
+import { NewEventForm } from "../forms";
 
 export default function NewEventModal({ userId, selectedDate = null }) {
   const formattedDate = selectedDate
