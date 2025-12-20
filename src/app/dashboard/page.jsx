@@ -10,10 +10,11 @@ export default async function Dashboard({ searchParams }) {
   const session = await getServerSession(authOptions);
   // Debug - à retirer après
   console.log("SESSION:", JSON.stringify(session));
-
+  const userId = session?.user?.id;
   if (!session || !session.user?.id) {
     redirect("/");
   }
+
   const resolvedSearchParams = await searchParams;
   const error = resolvedSearchParams?.error;
 
