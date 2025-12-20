@@ -1,5 +1,11 @@
-export { default } from "next-auth/middleware";
-// middleware par defaut de next-auth. Gère seul les routes protégées. Suffisant pour protéger uniquement avec utilisateur connecté
+import { withAuth } from "next-auth/middleware";
+
+export default withAuth({
+  pages: {
+    signIn: "/",
+    signOut: "/",
+  },
+});
 
 export const config = {
   matcher: [
