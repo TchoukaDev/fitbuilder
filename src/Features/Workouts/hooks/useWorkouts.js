@@ -64,6 +64,8 @@ export function useWorkouts(initialData, userId, options = {}) {
 export function useCreateWorkout(userId) {
   const queryClient = useQueryClient();
   const key = ["workouts", userId];
+  const calendarKey = ["calendar-workouts", userId];
+  const dashboardKey = ["dashboard", userId];
 
   return useMutation({
     mutationFn: async (newWorkout) => {
@@ -105,14 +107,13 @@ export function useCreateWorkout(userId) {
     },
     onSuccess: () => {
       toast.success("Votre entraînement a été créé avec succès.");
+      queryClient.invalidateQueries({ queryKey: key });
+      queryClient.invalidateQueries({ queryKey: calendarKey });
+      queryClient.invalidateQueries({ queryKey: dashboardKey });
     },
 
     onError: (err, newWorkout, context) => {
       queryClient.setQueryData(key, context.previousWorkouts);
-    },
-
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: key });
     },
   });
 }
@@ -126,6 +127,8 @@ export function useCreateWorkout(userId) {
 export function useUpdateWorkout(userId) {
   const queryClient = useQueryClient();
   const key = ["workouts", userId];
+  const calendarKey = ["calendar-workouts", userId];
+  const dashboardKey = ["dashboard", userId];
   return useMutation({
     mutationFn: async ({ id, updatedWorkout }) => {
       const response = await fetch(`/api/workouts/${id}`, {
@@ -168,10 +171,9 @@ export function useUpdateWorkout(userId) {
     },
     onSuccess: () => {
       toast.success("Votre entraînement a été modifié avec succès.");
-    },
-    // ✅ Sync avec serveur après succès/erreur
-    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: key });
+      queryClient.invalidateQueries({ queryKey: calendarKey });
+      queryClient.invalidateQueries({ queryKey: dashboardKey });
     },
   });
 }
@@ -185,6 +187,8 @@ export function useUpdateWorkout(userId) {
 export function useDeleteWorkout(userId) {
   const queryClient = useQueryClient();
   const key = ["workouts", userId];
+  const calendarKey = ["calendar-workouts", userId];
+  const dashboardKey = ["dashboard", userId];
   return useMutation({
     mutationFn: async (id) => {
       const response = await fetch(`/api/workouts/${id}`, {
@@ -212,7 +216,9 @@ export function useDeleteWorkout(userId) {
       queryClient.setQueryData(key, context?.previousWorkouts),
     onSuccess: () => {
       toast.success("Entraînement supprimé avec succès");
+      queryClient.invalidateQueries({ queryKey: key });
+      queryClient.invalidateQueries({ queryKey: calendarKey });
+      queryClient.invalidateQueries({ queryKey: dashboardKey });
     },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: key }),
   });
 }

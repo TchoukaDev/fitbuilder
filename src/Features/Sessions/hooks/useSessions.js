@@ -138,7 +138,9 @@ export function useGetCalendarSessions(
  */
 export function useStartPlannedSession(userId) {
   const queryClient = useQueryClient();
-
+  const sessionsKey = ["sessions", userId];
+  const calendarKey = ["calendar-sessions", userId];
+  const dashboardKey = ["dashboard", userId];
   return useMutation({
     mutationFn: async (sessionId) => {
       const res = await fetch(`/api/sessions/${sessionId}`, {
@@ -152,7 +154,9 @@ export function useStartPlannedSession(userId) {
     },
 
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["sessions", userId] });
+      queryClient.invalidateQueries({ queryKey: sessionsKey });
+      queryClient.invalidateQueries({ queryKey: calendarKey });
+      queryClient.invalidateQueries({ queryKey: dashboardKey });
       toast.success("Séance démarrée !");
     },
   });
@@ -165,7 +169,9 @@ export function useStartPlannedSession(userId) {
  */
 export function useStartNewSession(userId) {
   const queryClient = useQueryClient();
-  const key = ["sessions", userId];
+  const sessionsKey = ["sessions", userId];
+  const calendarKey = ["calendar-sessions", userId];
+  const dashboardKey = ["dashboard", userId];
   return useMutation({
     mutationFn: async (newSession) => {
       const response = await fetch("/api/sessions", {
@@ -186,17 +192,21 @@ export function useStartNewSession(userId) {
       return data;
     },
     onMutate: async (newSession) => {
-      await queryClient.cancelQueries({ queryKey: key });
-      const previousSessions = queryClient.getQueryData(key);
-      queryClient.setQueryData(key, (old = []) => [...old, newSession]);
+      await queryClient.cancelQueries({ queryKey: sessionsKey });
+      await queryClient.cancelQueries({ queryKey: calendarKey });
+      await queryClient.cancelQueries({ queryKey: dashboardKey });
+      const previousSessions = queryClient.getQueryData(sessionsKey);
+      queryClient.setQueryData(sessionsKey, (old = []) => [...old, newSession]);
       return { previousSessions };
     },
     onError: (error, newSession, context) => {
-      queryClient.setQueryData(key, context.previousSessions);
+      queryClient.setQueryData(sessionsKey, context.previousSessions);
     },
     onSuccess: () => {
       toast.success("L'entraînement a démarré, bon courage! 💪");
-      queryClient.invalidateQueries({ queryKey: key });
+      queryClient.invalidateQueries({ queryKey: sessionsKey });
+      queryClient.invalidateQueries({ queryKey: calendarKey });
+      queryClient.invalidateQueries({ queryKey: dashboardKey });
     },
   });
 }
@@ -206,6 +216,7 @@ export function usePlanSession(userId, statusFilter = null) {
   const queryClient = useQueryClient();
   const calendarKey = ["calendar-sessions", userId, statusFilter || null];
   const sessionsKey = ["sessions", userId];
+  const dashboardKey = ["dashboard", userId];
 
   return useMutation({
     mutationFn: async (newSession) => {
@@ -228,7 +239,7 @@ export function usePlanSession(userId, statusFilter = null) {
     onMutate: async (newSession) => {
       await queryClient.cancelQueries({ queryKey: sessionsKey });
       await queryClient.cancelQueries({ queryKey: calendarKey });
-
+      await queryClient.cancelQueries({ queryKey: dashboardKey });
       const previousEvents = queryClient.getQueryData(calendarKey);
       const previousSessions = queryClient.getQueryData(sessionsKey);
 
@@ -253,6 +264,7 @@ export function usePlanSession(userId, statusFilter = null) {
 
       // Mise à jour optimiste des sessions avec newSession
       queryClient.setQueryData(sessionsKey, (old = []) => [...old, newSession]);
+
       return { previousEvents, previousSessions };
     },
 
@@ -265,6 +277,7 @@ export function usePlanSession(userId, statusFilter = null) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: sessionsKey });
       queryClient.invalidateQueries({ queryKey: calendarKey });
+      queryClient.invalidateQueries({ queryKey: dashboardKey });
       toast.success("Séance planifiée avec succès");
     },
   });
@@ -280,6 +293,7 @@ export function useUpdatePlannedSession(userId, statusFilter = null) {
   const queryClient = useQueryClient();
   const sessionsKey = ["sessions", userId];
   const calendarKey = ["calendar-sessions", userId, statusFilter || null];
+  const dashboardKey = ["dashboard", userId];
   return useMutation({
     mutationFn: async ({ sessionId, updatedSession }) => {
       const response = await fetch(`/api/sessions/${sessionId}`, {
@@ -334,14 +348,16 @@ export function useUpdatePlannedSession(userId, statusFilter = null) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: sessionsKey });
       queryClient.invalidateQueries({ queryKey: calendarKey });
+      queryClient.invalidateQueries({ queryKey: dashboardKey });
     },
   });
 }
 
 export function useFinishSession(userId, sessionId) {
   const queryClient = useQueryClient();
-  const key = ["sessions", userId];
+  const sessionsKey = ["sessions", userId];
   const calendarKey = ["calendar-sessions", userId];
+  const dashboardKey = ["dashboard", userId];
   return useMutation({
     mutationFn: async ({ exercises, duration }) => {
       const response = await fetch(`/api/sessions/${sessionId}`, {
@@ -358,11 +374,11 @@ export function useFinishSession(userId, sessionId) {
       return response.json();
     },
     onMutate: async ({ exercises, duration }) => {
-      await queryClient.cancelQueries({ queryKey: key });
+      await queryClient.cancelQueries({ queryKey: sessionsKey });
       await queryClient.cancelQueries({ queryKey: calendarKey });
-      const previousSessions = queryClient.getQueryData(key);
+      const previousSessions = queryClient.getQueryData(sessionsKey);
       const previousEvents = queryClient.getQueryData(calendarKey);
-      queryClient.setQueryData(key, (old = []) => [
+      queryClient.setQueryData(sessionsKey, (old = []) => [
         old.map((s) =>
           s._id === sessionId ? { ...s, exercises, duration } : s,
         ),
@@ -386,13 +402,14 @@ export function useFinishSession(userId, sessionId) {
       return { previousSessions, previousEvents };
     },
     onError: (error, { exercises, duration }, context) => {
-      queryClient.setQueryData(key, context.previousSessions);
+      queryClient.setQueryData(sessionsKey, context.previousSessions);
       queryClient.setQueryData(calendarKey, context.previousEvents);
       console.error("Erreur finalisation:", error);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: key });
+      queryClient.invalidateQueries({ queryKey: sessionsKey });
       queryClient.invalidateQueries({ queryKey: calendarKey });
+      queryClient.invalidateQueries({ queryKey: dashboardKey });
     },
   });
 }
@@ -404,7 +421,8 @@ export function useFinishSession(userId, sessionId) {
  */
 export function useCancelPlannedSession(userId) {
   const queryClient = useQueryClient();
-  const key = ["sessions", userId];
+  const sessionsKey = ["sessions", userId];
+  const dashboardKey = ["dashboard", userId];
   const calendarKey = ["calendar-sessions", userId];
   return useMutation({
     mutationFn: async (sessionId) => {
@@ -423,7 +441,8 @@ export function useCancelPlannedSession(userId) {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: key });
+      queryClient.invalidateQueries({ queryKey: sessionsKey });
+      queryClient.invalidateQueries({ queryKey: dashboardKey });
       queryClient.invalidateQueries({ queryKey: calendarKey });
       toast.success("Séance annulée avec succès");
     },
@@ -442,7 +461,7 @@ export function useDeleteSession(userId, statusFilter = null) {
   const queryClient = useQueryClient();
   const sessionsKey = ["sessions", userId];
   const calendarKey = ["calendar-sessions", userId, statusFilter || null];
-
+  const dashboardKey = ["dashboard", userId];
   return useMutation({
     queryKey: sessionsKey,
     mutationFn: async (sessionId) => {
@@ -484,6 +503,7 @@ export function useDeleteSession(userId, statusFilter = null) {
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: sessionsKey });
       queryClient.invalidateQueries({ queryKey: calendarKey });
+      queryClient.invalidateQueries({ queryKey: dashboardKey });
     },
   });
 }

@@ -50,7 +50,7 @@ export function useExercises(userId, isAdmin, initialData) {
 export function useCreateExercise(userId, isAdmin) {
   const queryClient = useQueryClient();
   const key = isAdmin ? ["exercises"] : ["exercises", userId];
-
+  const dashboardKey = ["dashboard", userId];
   return useMutation({
     mutationFn: async (newExercice) => {
       const response = await fetch("/api/exercises", {
@@ -90,15 +90,13 @@ export function useCreateExercise(userId, isAdmin) {
     },
     onSuccess: () => {
       toast.success("Exercice créé avec succès");
+      queryClient.invalidateQueries({ queryKey: key });
+      queryClient.invalidateQueries({ queryKey: dashboardKey });
     },
 
     onError: (err, newExercice, context) => {
       queryClient.setQueryData(key, context.previousExercices);
       throw new Error("Erreur:", err);
-    },
-
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: key });
     },
   });
 }
@@ -113,7 +111,7 @@ export function useCreateExercise(userId, isAdmin) {
 export function useUpdateExercise(userId, isAdmin) {
   const queryClient = useQueryClient();
   const key = isAdmin ? ["exercises"] : ["exercises", userId];
-
+  const dashboardKey = ["dashboard", userId];
   return useMutation({
     mutationFn: async ({ id, updatedExercise }) => {
       const response = await fetch(`/api/exercises/${id}`, {
@@ -157,10 +155,8 @@ export function useUpdateExercise(userId, isAdmin) {
     },
     onSuccess: () => {
       toast.success("Exercice modifié avec succès");
-    },
-    // ✅ Sync avec serveur après succès/erreur
-    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: key });
+      queryClient.invalidateQueries({ queryKey: dashboardKey });
     },
   });
 }
@@ -175,6 +171,7 @@ export function useUpdateExercise(userId, isAdmin) {
 export function useDeleteExercise(userId, isAdmin) {
   const queryClient = useQueryClient();
   const key = isAdmin ? ["exercises"] : ["exercises", userId];
+  const dashboardKey = ["dashboard", userId];
   return useMutation({
     mutationFn: async (id) => {
       const response = await fetch(`/api/exercises/${id}`, {
@@ -201,10 +198,11 @@ export function useDeleteExercise(userId, isAdmin) {
     },
     onSuccess: () => {
       toast.success("Exercice supprimé avec succès");
+      queryClient.invalidateQueries({ queryKey: key });
+      queryClient.invalidateQueries({ queryKey: dashboardKey });
     },
     onError: (err, id, context) =>
       queryClient.setQueryData(key, context?.previousExercices),
-    onSettled: () => queryClient.invalidateQueries({ queryKey: key }),
   });
 }
 
@@ -247,6 +245,8 @@ export function useFavorites(userId, initialData) {
  */
 export function useToggleFavorite(userId) {
   const queryClient = useQueryClient();
+  const favoritesKey = ["favorites", userId];
+
   return useMutation({
     // ✅ mutationFn reçoit UN SEUL objet
     mutationFn: async ({ exerciseId, isFavorite }) => {
@@ -274,12 +274,12 @@ export function useToggleFavorite(userId) {
 
     // ✅ onMutate reçoit le même objet
     onMutate: async ({ exerciseId, isFavorite }) => {
-      await queryClient.cancelQueries({ queryKey: ["favorites", userId] });
+      await queryClient.cancelQueries({ queryKey: favoritesKey });
 
-      const previousFavorites = queryClient.getQueryData(["favorites", userId]);
+      const previousFavorites = queryClient.getQueryData(favoritesKey);
 
       // Mise à jour optimiste
-      queryClient.setQueryData(["favorites", userId], (old = []) => {
+      queryClient.setQueryData(favoritesKey, (old = []) => {
         if (isFavorite) {
           // Retirer
           return old.filter((id) => id !== exerciseId);
@@ -294,14 +294,11 @@ export function useToggleFavorite(userId) {
 
     onError: (err, variables, context) => {
       // Rollback en cas d'erreur
-      queryClient.setQueryData(
-        ["favorites", userId],
-        context?.previousFavorites,
-      );
+      queryClient.setQueryData(favoritesKey, context?.previousFavorites);
       throw new Error("Erreur toggle favori:", err);
     },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["favorites", userId] });
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: favoritesKey });
     },
   });
 }
