@@ -119,7 +119,7 @@ export default function NewWorkoutForm({
           setExercises={setExercises}
           isLoading={isCreating}
           loadingText="Création..."
-          submitLabel="Créer le plan"
+          submitLabel="Créer"
         />
       </form>
 

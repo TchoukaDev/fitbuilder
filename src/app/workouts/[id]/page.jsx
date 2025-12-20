@@ -22,11 +22,13 @@ export default async function WorkoutDetailPage({ params }) {
   return (
     <>
       <Header />
-      <WorkoutDetailPageClient
-        workout={serializedWorkout}
-        workoutId={workoutId}
-        userId={userId}
-      />
+      <main>
+        <WorkoutDetailPageClient
+          workout={serializedWorkout}
+          workoutId={workoutId}
+          userId={userId}
+        />
+      </main>
     </>
   );
 }

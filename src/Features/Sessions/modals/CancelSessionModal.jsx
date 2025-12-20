@@ -27,8 +27,8 @@ export default function CancelSessionModal({
 
         <p className="text-center">
           {isPlanned
-            ? "Voulez-vous annuler cette séance ? Elle sera réinitialisée."
-            : "Voulez-vous annuler cette séance ? Elle sera supprimée définitivement."}
+            ? "Voulez-vous annuler cette séance? Elle sera réinitialisée."
+            : "Voulez-vous annuler cette séance? Elle sera supprimée définitivement."}
         </p>
       </div>
       {/* Footer */}

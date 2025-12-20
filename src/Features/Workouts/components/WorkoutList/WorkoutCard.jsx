@@ -5,11 +5,9 @@ import { Button } from "@/Global/components";
 import StartWorkoutButton from "../Buttons/StartWorkoutButton";
 import { Calendar, Clock, Dumbbell, Edit, Search, Trash2 } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { WorkoutDeleteButton } from "../Buttons";
 
 export default function WorkoutCard({ workout, userId }) {
-  const router = useRouter();
   const date = new Date(workout.createdAt);
   const workoutDate = date.toLocaleDateString("fr-FR", {
     day: "numeric",
@@ -18,7 +16,7 @@ export default function WorkoutCard({ workout, userId }) {
   });
 
   return (
-    <div className="border border-gray-300 rounded-lg p-5 bg-white shadow-sm hover:shadow-md transition-all overflow-hidden">
+    <div className="border border-gray-300 rounded-lg p-4 md:p-6 bg-white shadow-sm hover:shadow-md transition-all overflow-hidden">
       {/* Header */}
       <div className="flex justify-between items-start mb-3">
         <div className="flex-1 min-w-0">
@@ -37,7 +35,7 @@ export default function WorkoutCard({ workout, userId }) {
         {/* Badge catégorie */}
         <div className="flex gap-3 items-center text-gray-600 shrink-0">
           <span className="hidden md:block text-sm">Créé le {workoutDate}</span>
-          <span className="px-3 py-1 bg-primary-100 text-primary-700 text-xs font-semibold rounded-full ml-3 truncate max-w-[150px]">
+          <span className="px-3 py-1 bg-primary-100 text-primary-700 text-xs font-semibold rounded-full ml-3 truncate max-w-[150px] shrink-0">
             {workout.category}
           </span>
         </div>
@@ -69,25 +67,23 @@ export default function WorkoutCard({ workout, userId }) {
       <div className="flex gap-2 pt-3 border-t flex-wrap justify-center md:justify-start  border-gray-200">
         <div className="md:flex-1">
           <Button
+            asChild
             title="Voir les détails"
             label="Voir les détails de l'entraînement"
-            width="w-12 md:w-auto"
-            onClick={() => router.push(`/workouts/${workout._id}`)}
+            width="w-12 md:w-fit"
           >
-            <Search />
-            <span className="hidden md:inline">Voir les détails</span>
+            <Link href={`/workouts/${workout._id}`}>
+              <Search />
+              <span className="hidden md:inline">Voir les détails</span>
+            </Link>
           </Button>
         </div>
         <StartWorkoutButton userId={userId} workout={workout} />
-        <Button
-          edit
-          onClick={() => router.push(`/workouts/${workout._id}/edit`)}
-          title="Modifier"
-          label="Modifier l'entraînement"
-          width="w-12 md:w-auto"
-        >
-          <Edit size={20} />
-          <span className="hidden md:inline">Modifier</span>
+        <Button width="w-12 md:w-auto" asChild edit>
+          <Link href={`/workouts/${workout._id}/edit`}>
+            <Edit size={18} />
+            <span className="hidden md:inline">Modifier</span>
+          </Link>
         </Button>
 
         <WorkoutDeleteButton workoutId={workout._id} sm />

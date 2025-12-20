@@ -75,7 +75,7 @@ export default function CalendarComponent({ userId, initialEvents }) {
       {" "}
       <div className="calendar-container">
         {" "}
-        <div className="mb-3 flex items-center justify-between">
+        <div className="mb-3 flex flex-col sm:flex-row items-center gap-8 justify-between">
           <Button
             onClick={() => openModal("newEvent", { userId })}
             onMouseEnter={prefetchWorkouts}

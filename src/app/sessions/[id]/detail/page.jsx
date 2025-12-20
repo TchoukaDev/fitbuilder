@@ -30,7 +30,9 @@ export default async function SessionDetailPage({ params }) {
   return (
     <>
       <Header />
-      <SessionDetailClient session={serializedSession} userId={userId} />
+      <main>
+        <SessionDetailClient session={serializedSession} userId={userId} />
+      </main>
     </>
   );
 }

@@ -19,7 +19,7 @@ export default function renderPageNumbers(
           pageNumber={i}
           isActive={currentPage === i}
           onClick={() => onPageChange(i)}
-          disabled={isFetching}
+          disabled={isFetching || currentPage === i}
         />,
       );
     }
@@ -33,7 +33,7 @@ export default function renderPageNumbers(
       pageNumber={1}
       isActive={currentPage === 1}
       onClick={() => onPageChange(1)}
-      disabled={isFetching}
+      disabled={isFetching || currentPage === 1}
     />,
   );
 
@@ -60,7 +60,7 @@ export default function renderPageNumbers(
         pageNumber={i}
         isActive={currentPage === i}
         onClick={() => onPageChange(i)}
-        disabled={isFetching}
+        disabled={isFetching || currentPage === i}
       />,
     );
   }
@@ -90,4 +90,3 @@ export default function renderPageNumbers(
 
   return pages;
 }
-

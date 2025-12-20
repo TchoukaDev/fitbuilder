@@ -1,5 +1,10 @@
 // Bouton de numéro de page
-export default function PageButton({ pageNumber, isActive, onClick, disabled }) {
+export default function PageButton({
+  pageNumber,
+  isActive,
+  onClick,
+  disabled,
+}) {
   return (
     <button
       onClick={onClick}
@@ -14,4 +19,3 @@ export default function PageButton({ pageNumber, isActive, onClick, disabled }) 
     </button>
   );
 }
-

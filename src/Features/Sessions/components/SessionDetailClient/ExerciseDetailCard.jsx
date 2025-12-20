@@ -12,36 +12,45 @@ import {
   Weight,
   Repeat2,
 } from "lucide-react";
+import { useMemo } from "react";
 
 export default function ExerciseDetailCard({ exercise }) {
   // ═══════════════════════════════════════════════════════
   // 📊 CALCULS
   // ═══════════════════════════════════════════════════════
-  const totalReps = exercise.actualSets?.reduce(
-    (sum, set) => sum + (set.reps || 0),
-    0,
+  const totalReps = useMemo(
+    () => exercise.actualSets?.reduce((sum, set) => sum + (set.reps || 0), 0),
+    [exercise.actualSets],
   );
-  const totalVolume = exercise.actualSets?.reduce(
-    (sum, set) => sum + (set.reps || 0) * (set.weight || 0),
-    0,
+  const totalVolume = useMemo(
+    () =>
+      exercise.actualSets?.reduce(
+        (sum, set) => sum + (set.reps || 0) * (set.weight || 0),
+        0,
+      ),
+    [exercise.actualSets],
   );
-  const maxWeight = exercise.actualSets?.length
-    ? Math.max(...exercise.actualSets.map((set) => set.weight || 0))
-    : 0;
+  const maxWeight = useMemo(
+    () =>
+      exercise.actualSets?.length
+        ? Math.max(...exercise.actualSets.map((set) => set.weight || 0))
+        : 0,
+    [exercise.actualSets],
+  );
 
   // ═══════════════════════════════════════════════════════
   // 🎨 RENDER
   // ═══════════════════════════════════════════════════════
   return (
     <div
-      className={`bg-white rounded-lg border-2 p-4 ${
+      className={`bg-white rounded-lg border-2  ${
         exercise.completed
           ? "border-green-300 bg-green-50/30"
           : "border-accent-300 bg-accent-50/30"
       }`}
     >
       {/* Header */}
-      <div className="flex justify-between items-start mb-4">
+      <div className="flex justify-between items-start p-4 mb-4">
         <div>
           <h3 className="text-lg font-bold text-primary-900">
             {exercise.exerciseName}
@@ -64,18 +73,18 @@ export default function ExerciseDetailCard({ exercise }) {
 
         {/* Badge complété */}
         {exercise.completed ? (
-          <span className="flex items-center gap-1 px-2 py-1 bg-green-600 text-white text-xs rounded-full">
+          <span className="flex items-center gap-1 px-2 py-1 bg-green-600 text-white text-xs rounded-full shrink-0">
             <CheckCircle size={16} /> Terminé
           </span>
         ) : (
-          <span className="flex items-center gap-1 px-2 py-1 bg-accent-600 text-white text-xs rounded-full">
+          <span className="flex items-center gap-1 px-2 py-1 bg-accent-600 text-white text-xs rounded-full shrink-0">
             <CircleX size={16} /> Non terminé
           </span>
         )}
       </div>
 
       {/* Stats rapides */}
-      <div className="grid grid-cols-3 gap-3 mb-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4 p-4">
         <div className="bg-white rounded p-2 border border-gray-200 text-center">
           <p className="text-xs text-gray-600">Poids max</p>
           <p className="text-lg font-bold text-primary-900">{maxWeight} kg</p>
@@ -85,6 +94,10 @@ export default function ExerciseDetailCard({ exercise }) {
           <p className="text-lg font-bold text-primary-900">
             {Math.round(totalVolume)} kg
           </p>
+        </div>
+        <div className="bg-white rounded p-2 border border-gray-200 text-center">
+          <p className="text-xs text-gray-600">Répétitions</p>
+          <p className="text-lg font-bold text-primary-900">{totalReps} reps</p>
         </div>
         {exercise.effort && (
           <div className="bg-white rounded p-2 border border-gray-200 text-center">
@@ -97,7 +110,7 @@ export default function ExerciseDetailCard({ exercise }) {
       </div>
 
       {/* Tableau des séries */}
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto md:p-4">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-gray-200">
@@ -159,7 +172,7 @@ export default function ExerciseDetailCard({ exercise }) {
 
       {/* Temps de repos */}
       {exercise.restTime && (
-        <div className="mt-2 flex items-center gap-2 text-xs text-gray-600">
+        <div className="mt-2 flex items-center gap-2 text-xs text-gray-600 p-3">
           <Clock size={14} />
           Repos : {exercise.restTime}s
         </div>

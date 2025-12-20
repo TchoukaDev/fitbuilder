@@ -38,13 +38,11 @@ export default function SessionsList({
   // État de chargement
   if (isLoading) {
     return (
-      <div className="container mx-auto p-6 max-w-4xl">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-200 rounded w-1/3"></div>
-          <div className="h-24 bg-gray-200 rounded"></div>
-          <div className="h-24 bg-gray-200 rounded"></div>
-          <div className="h-24 bg-gray-200 rounded"></div>
-        </div>
+      <div className="animate-pulse space-y-4">
+        <div className="h-8 bg-gray-200 rounded w-1/3"></div>
+        <div className="h-24 bg-gray-200 rounded"></div>
+        <div className="h-24 bg-gray-200 rounded"></div>
+        <div className="h-24 bg-gray-200 rounded"></div>
       </div>
     );
   }
@@ -52,11 +50,7 @@ export default function SessionsList({
   // Aucune séance
   if (stats.total === 0) {
     return (
-      <div className="container mx-auto p-6 max-w-4xl">
-        <h1 className="text-3xl font-bold text-primary-900 mb-6">
-          📜 Historique des séances
-        </h1>
-
+      <>
         <div className="text-center py-12 bg-gray-50 rounded-lg">
           <Calendar size={64} className="mx-auto text-gray-300 mb-4" />
           <p className="text-gray-500 text-lg mb-2">Aucune séance trouvée</p>
@@ -65,17 +59,14 @@ export default function SessionsList({
             apparaître ici !
           </p>
         </div>
-      </div>
+      </>
     );
   }
 
   return (
-    <div className="container mx-auto p-6 max-w-4xl">
+    <>
       {/* HEADER */}
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-primary-900 mb-2">
-          📈 Suivi des séances
-        </h1>
         <p className="text-gray-600">
           {stats.total} séance{stats.total > 1 ? "s" : ""} au total
         </p>
@@ -119,7 +110,7 @@ export default function SessionsList({
         </div>
       ) : (
         <>
-          <div className="space-y-3 mb-6">
+          <div className="space-y-3 mb-6 overflow-hidden">
             {sessions.map((session) => (
               <SessionCard
                 key={session._id}
@@ -146,6 +137,6 @@ export default function SessionsList({
           />
         </>
       )}
-    </div>
+    </>
   );
 }

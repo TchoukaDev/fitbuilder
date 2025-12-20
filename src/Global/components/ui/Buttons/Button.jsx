@@ -12,7 +12,7 @@ export default function Button({
   return (
     <Comp
       {...props}
-      className={`flex items-center justify-center shadow ${
+      className={`flex items-center justify-center text-center shadow ${
         width ? width : "min-w-[150px]"
       } gap-2 ${full && "w-full"} ${
         close

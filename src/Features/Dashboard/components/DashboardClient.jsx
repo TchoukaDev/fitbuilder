@@ -49,12 +49,10 @@ export default function DashboardClient({ userId }) {
   const formattedDuration = `${parseInt(hours)}h ${parseInt(minutes)}m`;
 
   return (
-    <>
+    <div className="p-6">
       {/* Header */}
       <div className="mb-8">
-        <p className="text-gray-600">
-          📊 Suivez vos progrès et planifiez vos entraînements
-        </p>
+        <p>Suivez vos progrès et planifiez vos entraînements</p>
       </div>
       {/* Grille 2 colonnes */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
@@ -133,6 +131,6 @@ export default function DashboardClient({ userId }) {
           <FavoriteWorkoutCard workout={favoriteWorkout || null} />
         </div>
       </div>
-    </>
+    </div>
   );
 }

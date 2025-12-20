@@ -22,7 +22,7 @@ export default async function Dashboard({ searchParams }) {
         {error === "access-denied" && (
           <p className="formError">Accès refusé. Page strictement réservée</p>
         )}
-        <h1>Tableau de bord</h1>
+        <h1>📊 Dashboard</h1>
         <DashboardClient userId={userId} />
       </main>
     </>

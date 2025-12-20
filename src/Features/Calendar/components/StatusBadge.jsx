@@ -24,7 +24,7 @@ export default function StatusBadge({ status }) {
 
   return (
     <span
-      className={`flex items-center gap-2 px-3 py-1 w-fit rounded-full text-sm font-medium ${color}`}
+      className={`flex items-center gap-2 px-3 py-1 w-fit rounded-full text-sm font-medium shrink-0 ${color}`}
     >
       {icon} Séance {label}
     </span>

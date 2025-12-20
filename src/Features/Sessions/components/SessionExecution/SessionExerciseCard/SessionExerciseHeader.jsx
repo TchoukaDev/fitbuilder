@@ -45,15 +45,15 @@ const SessionExerciseHeader = memo(function SessionExerciseHeader({
           <div className="flex items-center gap-2 mt-1">
             {/* Badge de statut */}
             {exercise.completed ? (
-              <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded inline-block">
+              <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded inline-block shrink-0">
                 ✅ Terminé
               </span>
             ) : isActive ? (
-              <span className="text-xs bg-accent-100 text-accent-500 px-2 py-1 rounded inline-block">
+              <span className="text-xs bg-accent-100 text-accent-500 px-2 py-1 rounded inline-block shrink-0">
                 ⌛ En cours
               </span>
             ) : (
-              <span className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded inline-block">
+              <span className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded inline-block shrink-0">
                 ❌ En attente
               </span>
             )}

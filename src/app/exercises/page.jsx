@@ -25,7 +25,7 @@ export default async function ExercisesPage() {
     <>
       <Header />
       <main>
-        <h1>Mes exercices</h1>
+        <h1>📝 Mes exercices</h1>
         <ExercisesList
           initialExercises={serializedExercises}
           initialFavorites={serializedFavorites}

@@ -4,7 +4,7 @@ import { Button } from "@/Global/components";
 export default function TodaySessionsList({ sessions }) {
   if (!sessions || sessions.length === 0) {
     return (
-      <div className="bg-white rounded-lg shadow-md p-6 border-2 border-gray-200">
+      <div className="bg-white rounded-lg shadow-md p-4 md:p-6 border-2 border-gray-200">
         <h2 className="text-xl font-bold text-gray-900 mb-4">
           ⚠️ Séances du jour
         </h2>

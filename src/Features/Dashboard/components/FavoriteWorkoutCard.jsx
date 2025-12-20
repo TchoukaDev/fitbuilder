@@ -29,7 +29,7 @@ export default function FavoriteWorkoutCard({ workout }) {
       </h2>
 
       <div className="bg-white rounded-lg p-4 border border-purple-200">
-        <div className="flex items-start justify-between mb-3">
+        <div className="flex items-start justify-between gap-2 mb-3">
           <div>
             <h3 className="text-lg font-bold text-gray-900">{workout.name}</h3>
             {workout.description && (
@@ -38,7 +38,7 @@ export default function FavoriteWorkoutCard({ workout }) {
               </p>
             )}
           </div>
-          <span className="px-3 py-1 bg-purple-100 text-purple-700 text-xs font-semibold rounded-full">
+          <span className="px-3 py-1 bg-purple-100 text-purple-700 text-xs font-semibold rounded-full shrink-0">
             {workout.category}
           </span>
         </div>
@@ -63,8 +63,8 @@ export default function FavoriteWorkoutCard({ workout }) {
             <p className="text-xs text-gray-600">minutes</p>
           </div>
         </div>
-        <div className="flex justify-center">
-          <Button width="w-fit" asChild>
+        <div className="flex justify-center items-center">
+          <Button asChild>
             <Link href={`/workouts/${workout._id}`}>Voir le plan</Link>
           </Button>
         </div>

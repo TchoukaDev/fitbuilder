@@ -25,14 +25,16 @@ export default async function CreateWorkoutPage() {
     <>
       <Header />
       <main>
-        <h1>Créer un nouveau plan d'entraînement</h1>
+        <h1>📋 Créer un nouveau plan d'entraînement</h1>
         <WorkoutStoreProvider>
-          <NewWorkoutForm
-            allExercises={serializedExercises}
-            favoritesExercises={serializedFavorites}
-            isAdmin={isAdmin}
-            userId={userId}
-          />
+          <div className="p-6">
+            <NewWorkoutForm
+              allExercises={serializedExercises}
+              favoritesExercises={serializedFavorites}
+              isAdmin={isAdmin}
+              userId={userId}
+            />
+          </div>
         </WorkoutStoreProvider>
       </main>
     </>

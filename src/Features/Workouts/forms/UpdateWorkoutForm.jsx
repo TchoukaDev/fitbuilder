@@ -121,7 +121,7 @@ export default function UpdateWorkoutForm({
           setExercises={setExercises}
           isLoading={isUpdating}
           loadingText="Mise à jour..."
-          submitLabel="Enregistrer les modifications"
+          submitLabel="Enregistrer"
         />
       </form>
 

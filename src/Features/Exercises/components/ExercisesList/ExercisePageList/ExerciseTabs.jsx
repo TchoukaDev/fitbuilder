@@ -6,10 +6,10 @@ export default function ExerciseTabs({
   setSelectedMuscle,
 }) {
   const tabs = [
-    { id: "all", label: "🏋️ Tous", count: counts.all },
+    { id: "all", label: "Tous", count: counts.all },
     {
       id: "mine",
-      label: "🗒️ Mes exercices personnalisés",
+      label: "Mes exercices personnalisés",
       count: counts.mine,
     },
     {
@@ -28,7 +28,7 @@ export default function ExerciseTabs({
             onTabChange(tab.id);
             setSelectedMuscle("all");
           }}
-          className={`py-4 px-8 bg-transparent border-b ${
+          className={`py-2 md:py-4 px-4 md:px-8 bg-transparent border-b ${
             activeTab === tab.id
               ? "border-b-[3px] border-primary-500 font-bold"
               : "font-normal border-transparent"

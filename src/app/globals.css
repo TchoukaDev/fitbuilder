@@ -90,23 +90,51 @@
   background-image: var(--gradient-accent);
 }
 
+@layer base {
+  * {
+    @apply border-border outline-ring/50  min-w-0;
+  }
+  body {
+    @apply bg-background text-foreground  overflow-x-hidden;
+  }
+}
+main {
+  @apply w-full md:w-9/10 mx-auto px-5 py-10;
+}
+/* Eviter les débordements des titres et des paragraphes */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+  line-clamp: 3;
+}
+
+h1 {
+  @apply font-display font-bold text-2xl md:text-3xl mt-5 mb-10;
+}
+h2 {
+  @apply text-center font-display font-semibold mb-5 text-2xl;
+}
+p {
+  @apply line-clamp-3 md:line-clamp-none wrap-break-word;
+}
+
+a {
+  @apply wrap-break-word;
+}
+
 /* Composants personnalisés */
 @layer components {
-  main {
-    @apply w-full md:w-9/10 mx-auto p-5;
-  }
   .input {
-    @apply w-[300px] border text-primary-500 border-primary-300 rounded font-semibold px-4 pt-7 pb-2 text-sm placeholder-transparent outline-none focus:border-2 focus:border-accent-500;
+    @apply w-[250px] md:w-[300px] border text-primary-500 border-primary-300 rounded font-semibold px-4 pt-7 pb-2 text-sm placeholder-transparent outline-none focus:border-2 focus:border-accent-500;
   }
   .link {
     @apply hover:text-primary-300 hover:underline  transition duration-200;
   }
-  h1 {
-    @apply font-display font-bold text-2xl md:text-3xl mt-5 mb-10;
-  }
-  h2 {
-    @apply text-center font-display font-semibold mb-5 text-xl;
-  }
+
   .formError {
     @apply bg-accent-200 text-accent-700 font-semibold border p-2 border-accent-800 rounded text-sm;
   }
@@ -169,7 +197,7 @@ input[data-autocompleted] {
 .animatedRotation {
   transition: all 0.2s;
 }
-
+.group:hover .animatedRotation,
 :hover.animatedRotation {
   animation: animatedRotation 0.3s ease-in-out infinite alternate;
   scale: 1.5;
@@ -183,6 +211,8 @@ input[data-autocompleted] {
     transform: rotate(10deg);
   }
 }
+
+/* Classes shadcn/ui */
 
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
@@ -292,29 +322,4 @@ input[data-autocompleted] {
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
-}
-
-@layer base {
-  * {
-    @apply border-border outline-ring/50  min-w-0;
-  }
-  body {
-    @apply bg-background text-foreground  overflow-x-hidden;
-  }
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  overflow-wrap: break-word;
-  line-clamp: 3;
-}
-
-p,
-span,
-a {
-  overflow-wrap: break-word;
 }

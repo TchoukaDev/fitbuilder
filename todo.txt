@@ -4,7 +4,7 @@ muscle secondaire
 stats
 stats admin
 responsive
-Factoriser composants trop longs (calendrier)
+
 SUspense + skeleton
 Harmonisation largeur page
 FAQ
@@ -14,8 +14,10 @@ cache//Tag unstable_cache
 créer indexs pour rezuqêtes
 test
 réinitialisation mot de passe + modification
+drag and drop calendrier
+replanififer session précédente depsuis session/[id]/détail
 
 
-icone avec h1 sur exercices, workout et dashboard
 Annuler session en cours depuis l'extérieur
 react query sur Dashboard
+callback url + safeRedirect pour user non connecté + message d'erreur dans /

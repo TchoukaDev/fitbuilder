@@ -26,11 +26,9 @@ export default function NextSessionCard({ sessions }) {
         <h2 className="text-xl font-bold text-gray-900">
           📆 Prochaines séances
         </h2>
-        <Link href="/calendar">
-          <Button variant="outline" size="sm">
-            Voir le calendrier
-          </Button>
-        </Link>
+        <Button asChild>
+          <Link href="/calendar">Voir le calendrier</Link>
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -49,12 +47,12 @@ export default function NextSessionCard({ sessions }) {
           return (
             <div
               key={session._id}
-              className="p-4 bg-gray-50 rounded-lg border border-gray-200 hover:border-primary-400 transition-colors"
+              className="p-4 bg-gray-50 rounded-lg border border-gray-200 hover:border-primary-400 space-y-4  transition-colors"
             >
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-2xl">
-                  {index === 0 ? "1." : index === 1 ? "2." : "3."}
-                </span>
+              <div className="flex justify-center  items-center gap-5">
+                <div className="w-8 h-8 bg-primary-600 text-white rounded-full flex items-center justify-center font-bold shrink-0">
+                  {index === 0 ? "1" : index === 1 ? "2" : "3"}
+                </div>
                 <div className="flex-1">
                   <p className="text-xs font-semibold text-gray-500 uppercase">
                     {dateFormatted}
@@ -62,13 +60,14 @@ export default function NextSessionCard({ sessions }) {
                   <p className="text-sm text-gray-600">{time}</p>
                 </div>
               </div>
-
-              <h3 className="font-semibold text-gray-900 mb-1">
-                {session.workoutName}
-              </h3>
-              <p className="text-sm text-gray-600 mb-3">
-                ⏱️ {session.estimatedDuration} min
-              </p>
+              <div className="text-center">
+                <h3 className="font-semibold text-gray-900 mb-1 ">
+                  {session.workoutName}
+                </h3>
+                <p className="text-sm text-gray-600 mb-3 ">
+                  ⏱️ {session.estimatedDuration} min
+                </p>
+              </div>
               <div className="flex justify-center">
                 <Button asChild>
                   <Link href={`/sessions/${session._id}`}>Voir</Link>

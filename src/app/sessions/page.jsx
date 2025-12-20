@@ -15,7 +15,7 @@ export default async function SessionsPage({ searchParams }) {
   const dateFilter = resolvedSearchParams?.dateFilter || "all";
   const workoutFilter = resolvedSearchParams?.workoutFilter || "all";
   const page = parseInt(resolvedSearchParams?.page) || 1;
-  const limit = 5;
+  const limit = 7;
 
   // Récupération des données initiales
   const initialData = await getAllSessions(userId, {});
@@ -24,17 +24,22 @@ export default async function SessionsPage({ searchParams }) {
   return (
     <>
       <Header />
-      <SessionsList
-        initialSessions={serializedData}
-        userId={userId}
-        initialFilters={{
-          status,
-          dateFilter,
-          workoutFilter,
-          page,
-          limit,
-        }}
-      />
+      <main>
+        <h1>📈 Suivi des séances</h1>
+        <div className="p-6">
+          <SessionsList
+            initialSessions={serializedData}
+            userId={userId}
+            initialFilters={{
+              status,
+              dateFilter,
+              workoutFilter,
+              page,
+              limit,
+            }}
+          />
+        </div>
+      </main>
     </>
   );
 }

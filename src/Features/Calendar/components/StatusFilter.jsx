@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/Global/components/ui/shadcn/dropdown-menu";
 import { Calendar, ChevronDown, Clock, CheckCircle2, X } from "lucide-react";
+import { DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
 
 export default function StatusFilter({ selected = [], onChange }) {
   const statuses = [
@@ -59,9 +60,9 @@ export default function StatusFilter({ selected = [], onChange }) {
       <DropdownMenuTrigger asChild>
         <Button
           variant="outline"
-          className="w-full md:w-auto justify-between min-h-10 h-auto cursor-pointer"
+          className="w-full sm:w-auto  max-w-[300px] justify-between gap-1 min-h-10 h-auto cursor-pointer"
         >
-          <div className="flex gap-2 flex-wrap items-center flex-1">
+          <div className="flex gap-1 md:gap-2 flex-wrap items-center flex-1">
             {selectedStatuses.length === statuses.length ? (
               <span className="text-primary-500">Toutes les séances</span>
             ) : selectedStatuses.length === 0 ? (
@@ -78,7 +79,6 @@ export default function StatusFilter({ selected = [], onChange }) {
                   <span className="flex items-center">{status.emoji}</span>
                   <span>{status.label}</span>
 
-                  {/* ✅ L'ASTUCE : pointer-events-auto sur la croix */}
                   <span
                     role="button"
                     tabIndex={-1}
@@ -105,7 +105,7 @@ export default function StatusFilter({ selected = [], onChange }) {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent className="w-56 text-primary-500">
-        <DropdownMenuLabel>Filtrer les séances</DropdownMenuLabel>
+        <DropdownMenuLabel>Afficher les séances:</DropdownMenuLabel>
         <DropdownMenuSeparator />
 
         {statuses.map((status) => (
@@ -124,25 +124,29 @@ export default function StatusFilter({ selected = [], onChange }) {
         ))}
 
         <DropdownMenuSeparator />
-        {selected.length < statuses.length && (
-          <Button
-            variant="ghost"
-            size="sm"
-            className="w-full cursor-pointer"
-            onClick={() => onChange(["all"])}
-          >
-            Sélectionner tout
-          </Button>
-        )}
+        <DropdownMenuItem asChild>
+          {selected.length < statuses.length && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full cursor-pointer"
+              onClick={() => onChange(["all"])}
+            >
+              Sélectionner tout
+            </Button>
+          )}
+        </DropdownMenuItem>
         {selected.length > 0 && (
-          <Button
-            variant="ghost"
-            size="sm"
-            className="w-full cursor-pointer"
-            onClick={() => onChange([])}
-          >
-            Réinitialiser les filtres
-          </Button>
+          <DropdownMenuItem asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full cursor-pointer"
+              onClick={() => onChange([])}
+            >
+              Désélectionner tout
+            </Button>
+          </DropdownMenuItem>
         )}
       </DropdownMenuContent>
     </DropdownMenu>

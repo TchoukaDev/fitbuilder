@@ -9,10 +9,9 @@ import {
   Dumbbell,
   TrendingUp,
   Trash2,
-  ChevronLeft,
   Weight,
-  Repeat,
   Repeat2,
+  ArrowLeft,
 } from "lucide-react";
 import { Button, DeleteConfirmModal } from "@/Global/components";
 import { useModals } from "@/Providers/Modals";
@@ -20,6 +19,8 @@ import { ExerciseDetailCard } from ".";
 import { toast } from "react-toastify";
 import StatusBadge from "@/Features/Calendar/components/StatusBadge";
 import StatCard from "./StatCard";
+import { useMemo } from "react";
+import Link from "next/link";
 
 export default function SessionDetailClient({ session, userId }) {
   const router = useRouter();
@@ -33,24 +34,40 @@ export default function SessionDetailClient({ session, userId }) {
   // ═══════════════════════════════════════════════════════
   // 📊 CALCULS
   // ═══════════════════════════════════════════════════════
-  const completedExercises = session.exercises.filter((ex) => ex.completed);
-  const totalSets = completedExercises.reduce(
-    (sum, ex) => sum + (ex.actualSets?.length || 0),
-    0,
+  const completedExercises = useMemo(
+    () => session?.exercises?.filter((ex) => ex.completed),
+    [session?.exercises],
   );
-  const totalReps = completedExercises.reduce(
-    (sum, ex) =>
-      sum + (ex.actualSets?.reduce((s, set) => s + (set.reps || 0), 0) || 0),
-    0,
-  );
-  const totalVolume = completedExercises.reduce(
-    (sum, ex) =>
-      sum +
-      (ex.actualSets?.reduce(
-        (s, set) => s + (set.reps || 0) * (set.weight || 0),
+  const totalSets = useMemo(
+    () =>
+      completedExercises?.reduce(
+        (sum, ex) => sum + (ex.actualSets?.length || 0),
         0,
-      ) || 0),
-    0,
+      ),
+    [completedExercises],
+  );
+  const totalReps = useMemo(
+    () =>
+      completedExercises?.reduce(
+        (sum, ex) =>
+          sum +
+          (ex.actualSets?.reduce((s, set) => s + (set.reps || 0), 0) || 0),
+        0,
+      ),
+    [completedExercises],
+  );
+  const totalVolume = useMemo(
+    () =>
+      completedExercises?.reduce(
+        (sum, ex) =>
+          sum +
+          (ex.actualSets?.reduce(
+            (s, set) => s + (set.reps || 0) * (set.weight || 0),
+            0,
+          ) || 0),
+        0,
+      ),
+    [completedExercises],
   );
 
   // ═══════════════════════════════════════════════════════
@@ -73,142 +90,143 @@ export default function SessionDetailClient({ session, userId }) {
   // 🎨 RENDER
   // ═══════════════════════════════════════════════════════
   return (
-    <div className="container mx-auto p-6 max-w-4xl">
+    <>
       {/* ─────────────────────────────────────────────────── */}
       {/* HEADER */}
       {/* ─────────────────────────────────────────────────── */}
       <div className="mb-6">
-        <button
-          onClick={() => router.push("/sessions")}
-          className="flex items-center gap-2 text-primary-600 hover:text-primary-700 mb-4 transition"
+        {/* Bouton retour */}
+        <Link
+          href="/sessions"
+          className="inline-flex items-center gap-2  text-primary-700 hover:text-primary-500 mb-6"
         >
-          <ChevronLeft size={20} />
-          Retour à l'historique
-        </button>
+          <ArrowLeft size={20} />
+          <span>Retour aux séances</span>
+        </Link>
 
-        <div className="flex justify-between items-start mb-4">
-          <div>
-            <h1 className="text-3xl font-bold text-primary-900 mb-2">
-              {session.workoutName}
-            </h1>
-            <div className="flex items-center gap-4 text-sm text-gray-600">
-              <span className="flex items-center gap-1">
-                <Calendar size={16} />
-                {new Date(session.completedDate).toLocaleDateString("fr-FR", {
-                  weekday: "long",
-                  day: "numeric",
-                  month: "long",
-                  year: "numeric",
-                })}
-              </span>
-              <span className="flex items-center gap-1">
-                <Clock size={16} />
-                {session.duration}
-              </span>
+        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+          <div className="flex flex-col md:flex-row justify-between items-center mb-4 md:-mb-4">
+            <h1>{session.workoutName}</h1>
+            {/* Badge terminé */}
+            <div className="-mt-6 md:mt-0">
+              <StatusBadge status={session.status} />
             </div>
           </div>
-
-          {/* Actions */}
-          <div className="flex gap-2">
-            <Button
-              onClick={() => openModal("deleteConfirm")}
-              close
-              title="Supprimer"
-              label="Supprimer la séance"
-            >
-              <Trash2 size={20} /> Supprimer la séance
-            </Button>
-          </div>
-        </div>
-
-        {/* Badge terminé */}
-        <StatusBadge status={session.status} />
-      </div>
-
-      {/* ─────────────────────────────────────────────────── */}
-      {/* STATS GLOBALES */}
-      {/* ─────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <StatCard
-          icon={<Dumbbell size={24} />}
-          label="Exercices"
-          value={`${completedExercises.length}/${session.exercises.length}`}
-          color="primary"
-        />
-        <StatCard
-          icon={<TrendingUp size={24} />}
-          label="Séries totales"
-          value={totalSets}
-          color="primary"
-        />
-        <StatCard
-          icon={<Repeat2 size={24} />}
-          label="Répétitions"
-          value={totalReps}
-          color="primary"
-        />
-        <StatCard
-          icon={<Weight size={24} />}
-          label="Volume total"
-          value={`${Math.round(totalVolume)} kg`}
-          color="primary"
-        />
-      </div>
-
-      {/* ─────────────────────────────────────────────────── */}
-      {/* EXERCICES */}
-      {/* ─────────────────────────────────────────────────── */}
-      <div className="space-y-4">
-        <h2 className="text-xl font-bold text-primary-900">
-          Détail des exercices
-        </h2>
-
-        {session.exercises.map((exercise, index) => (
-          <ExerciseDetailCard key={exercise.exerciseId} exercise={exercise} />
-        ))}
-      </div>
-
-      {/* ─────────────────────────────────────────────────── */}
-      {/* NOTES GLOBALES (si présentes) */}
-      {/* ─────────────────────────────────────────────────── */}
-      {session.overallNotes && (
-        <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-          <h3 className="font-semibold text-gray-900 mb-2">Notes de séance</h3>
-          <p className="text-gray-700">{session.overallNotes}</p>
-        </div>
-      )}
-
-      {/* RESSENTI GLOBAL (si présent) */}
-      {session.overallFeeling && (
-        <div className="mt-4 p-4 bg-primary-50 rounded-lg border border-primary-200">
-          <h3 className="font-semibold text-primary-900 mb-2">
-            Ressenti global
-          </h3>
-          <div className="flex items-center gap-2">
-            <div className="flex-1 bg-gray-200 rounded-full h-2">
-              <div
-                className="bg-primary-600 h-2 rounded-full transition-all"
-                style={{ width: `${session.overallFeeling * 10}%` }}
-              />
-            </div>
-            <span className="text-primary-900 font-bold">
-              {session.overallFeeling}/10
+          <div className="flex flex-col items-start gap-4 text-sm text-gray-600 mb-6">
+            <span className="flex items-center gap-1">
+              <Calendar size={16} />
+              {new Date(session.completedDate).toLocaleDateString("fr-FR", {
+                weekday: "long",
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+              })}
+            </span>
+            <span className="flex items-center gap-1">
+              <Clock size={16} />
+              {session.duration}
             </span>
           </div>
+          <div className="flex gap-3 pt-4 border-t border-gray-200 justify-center md:justify-start items-center">
+            {/* Actions */}
+            <div className="flex gap-2 self-center">
+              <Button
+                width="w-12 md:w-auto"
+                onClick={() => openModal("deleteConfirm")}
+                close
+                title="Supprimer"
+                label="Supprimer la séance"
+              >
+                <Trash2 size={20} />{" "}
+                <span className="hidden md:block">Supprimer la séance</span>
+              </Button>
+            </div>
+          </div>
         </div>
-      )}
 
-      {/* ─────────────────────────────────────────────────── */}
-      {/* MODAL DE SUPPRESSION */}
-      {/* ─────────────────────────────────────────────────── */}
-      {isOpen("deleteConfirm") && (
-        <DeleteConfirmModal
-          title="Supprimer cette séance ?"
-          message="Cette action est irréversible. Toutes les données de cette séance seront supprimées."
-          onConfirm={handleDelete}
-          isLoading={isDeleting}
-        />
-      )}
-    </div>
+        {/* ─────────────────────────────────────────────────── */}
+        {/* STATS GLOBALES */}
+        {/* ─────────────────────────────────────────────────── */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <StatCard
+            icon={<Dumbbell size={24} />}
+            label="Exercices"
+            value={`${completedExercises?.length}/${session?.exercises?.length}`}
+          />
+          <StatCard
+            icon={<TrendingUp size={24} />}
+            label="Séries totales"
+            value={totalSets}
+          />
+          <StatCard
+            icon={<Repeat2 size={24} />}
+            label="Répétitions"
+            value={totalReps}
+          />
+          <StatCard
+            icon={<Weight size={24} />}
+            label="Volume total"
+            value={`${Math.round(totalVolume)} kg`}
+          />
+        </div>
+
+        {/* ─────────────────────────────────────────────────── */}
+        {/* EXERCICES */}
+        {/* ─────────────────────────────────────────────────── */}
+        <div className="space-y-4">
+          <h2 className="text-xl font-bold text-primary-900">
+            Détail des exercices
+          </h2>
+
+          {session?.exercises?.map((exercise, index) => (
+            <ExerciseDetailCard key={exercise.exerciseId} exercise={exercise} />
+          ))}
+        </div>
+
+        {/* ─────────────────────────────────────────────────── */}
+        {/* NOTES GLOBALES (si présentes) */}
+        {/* ─────────────────────────────────────────────────── */}
+        {session?.notes && (
+          <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+            <h3 className="font-semibold text-gray-900 mb-2">
+              Notes de séance
+            </h3>
+            <p className="text-gray-700">{session.notes}</p>
+          </div>
+        )}
+
+        {/* RESSENTI GLOBAL (si présent) */}
+        {session?.effort && (
+          <div className="mt-4 p-4 bg-primary-50 rounded-lg border border-primary-200">
+            <h3 className="font-semibold text-primary-900 mb-2">
+              Ressenti global
+            </h3>
+            <div className="flex items-center gap-2">
+              <div className="flex-1 bg-gray-200 rounded-full h-2">
+                <div
+                  className="bg-primary-600 h-2 rounded-full transition-all"
+                  style={{ width: `${session?.effort * 10}%` }}
+                />
+              </div>
+              <span className="text-primary-900 font-bold">
+                {session?.effort}/10
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* ─────────────────────────────────────────────────── */}
+        {/* MODAL DE SUPPRESSION */}
+        {/* ─────────────────────────────────────────────────── */}
+        {isOpen("deleteConfirm") && (
+          <DeleteConfirmModal
+            title="Supprimer cette séance ?"
+            message="Cette action est irréversible. Toutes les données de cette séance seront supprimées."
+            onConfirm={handleDelete}
+            isLoading={isDeleting}
+          />
+        )}
+      </div>
+    </>
   );
 }

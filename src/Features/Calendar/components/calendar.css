@@ -43,6 +43,10 @@
    🎨 BARRE D'OUTILS (TOOLBAR)
    ======================================== */
 
+.rbc-calendar .rbc-toolbar {
+  gap: 10px !important;
+}
+
 /* Boutons de la toolbar (Aujourd'hui, Précédent, Suivant, Mois, Semaine, Jour, Agenda) */
 .rbc-toolbar button {
   color: var(--color-primary-600);
@@ -94,7 +98,7 @@
 
 /* Mise en évidence du jour actuel */
 .rbc-today {
-  background-color: var(--color-primary-100) !important;
+  background-color: var(--color-primary-50) !important;
 }
 
 /* Cellule de jour hors du mois en cours (dates grises) */
@@ -104,7 +108,7 @@
 
 /* Effet hover sur les cellules de jour (vue mois) */
 .rbc-day-bg:hover {
-  background-color: var(--color-primary-50) !important;
+  background-color: var(--color-primary-100) !important;
   cursor: pointer;
 }
 
@@ -421,15 +425,6 @@
     padding: 0.5rem;
     height: calc(100vh - 200px);
     min-height: 500px;
-  }
-
-  /* ===== TOOLBAR ===== */
-
-  /* Réorganiser la toolbar en colonne */
-  .rbc-toolbar {
-    flex-direction: column;
-    gap: 0.5rem;
-    margin-bottom: 0.75rem;
   }
 
   /* Déplacer le label en haut et réduire sa taille */

@@ -33,17 +33,18 @@ export default function WorkoutList({ initialWorkouts, userId }) {
   return (
     <>
       {/* Titre h1 dans composant client pour compteur géré par useQuery */}
-      <h1>Mes plans d'entraînement ({count})</h1>
-
-      <div className="mb-10 flex justify-center md:justify-start">
-        <Button width="w-fit" asChild>
-          <Link href="/workouts/create">+ Créer un nouvel entraînement</Link>
-        </Button>
+      <h1>📋 Mes plans d'entraînement ({count})</h1>
+      <div className="p-6">
+        <div className="mb-10 flex justify-center md:justify-start">
+          <Button width="w-fit" asChild>
+            <Link href="/workouts/create">+ Créer un nouvel entraînement</Link>
+          </Button>
+        </div>
+        {/* Cards */}
+        {workouts?.map((workout) => (
+          <WorkoutCard key={workout?._id} workout={workout} userId={userId} />
+        ))}{" "}
       </div>
-      {/* Cards */}
-      {workouts?.map((workout) => (
-        <WorkoutCard key={workout?._id} workout={workout} userId={userId} />
-      ))}
       {/* Modale de suppression */}
       {isOpen("deleteConfirm") && (
         <DeleteConfirmModal

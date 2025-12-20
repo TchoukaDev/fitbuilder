@@ -108,7 +108,7 @@ export default function SessionCard({ session, userId }) {
 
         {/* Badge status */}
         <span
-          className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium ${statusConfig.bg} ${statusConfig.text}`}
+          className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium shrink-0 ${statusConfig.bg} ${statusConfig.text}`}
         >
           {statusConfig.icon}
           {statusConfig.label}

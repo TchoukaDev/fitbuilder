@@ -6,7 +6,7 @@ import { useStartNewSession } from "@/Features/Sessions/hooks";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
-export default function StartWorkoutButton({ userId, workout, small }) {
+export default function StartWorkoutButton({ userId, workout }) {
   const { mutate: startSession, isPending: isStarting } =
     useStartNewSession(userId);
   const router = useRouter();

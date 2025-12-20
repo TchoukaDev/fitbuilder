@@ -1,5 +1,6 @@
 // Filtres pour les séances : période, statut (complétées/en cours/planifiées), workout.
 import { Calendar, Filter } from "lucide-react";
+import { FilterSelect } from ".";
 
 export default function SessionFilters({
   statusFilter,
@@ -47,7 +48,7 @@ export default function SessionFilters({
   return (
     <>
       {/* FILTRE PAR PÉRIODE */}
-      <div className="mb-4">
+      <div className="mb-4 overflow-hidden">
         <div className="flex items-center gap-2 mb-3">
           <Calendar size={18} className="text-gray-600" />
           <span className="text-sm font-medium text-gray-700">
@@ -55,7 +56,7 @@ export default function SessionFilters({
           </span>
         </div>
 
-        <div className="flex gap-2 overflow-x-auto pb-2">
+        <div className="hidden md:flex gap-2 overflow-x-auto pb-2">
           {dateFilters.map((filter) => (
             <FilterButton
               key={filter.value}
@@ -66,6 +67,14 @@ export default function SessionFilters({
               activeColor="primary"
             />
           ))}
+        </div>
+        <div className="flex md:hidden gap-2 overflow-x-auto pb-2">
+          <FilterSelect
+            filters={dateFilters}
+            onSelectChange={onDateFilterChange}
+            isFetching={isFetching}
+            id="dateFilter"
+          />
         </div>
       </div>
 
@@ -78,7 +87,7 @@ export default function SessionFilters({
           </span>
         </div>
 
-        <div className="flex gap-2 overflow-x-auto pb-2">
+        <div className="hidden md:flex gap-2 overflow-x-auto pb-2">
           {statusFilters.map((filter) => (
             <FilterButton
               key={filter.value}
@@ -89,6 +98,14 @@ export default function SessionFilters({
               activeColor={filter.color}
             />
           ))}
+        </div>
+        <div className="flex md:hidden gap-2 overflow-x-auto pb-2">
+          <FilterSelect
+            filters={statusFilters}
+            onSelectChange={onStatusChange}
+            isFetching={isFetching}
+            id="statusFilter"
+          />
         </div>
       </div>
 
@@ -101,7 +118,7 @@ export default function SessionFilters({
           </span>
         </div>
 
-        <div className="flex gap-2 overflow-x-auto pb-2">
+        <div className="hidden md:flex gap-2 overflow-x-auto pb-2">
           {workoutFilters.map((filter, index) => (
             <FilterButton
               key={index}
@@ -112,6 +129,14 @@ export default function SessionFilters({
               activeColor={filter.color}
             />
           ))}
+        </div>
+        <div className="flex md:hidden gap-2 overflow-x-auto pb-2">
+          <FilterSelect
+            filters={workoutFilters}
+            onSelectChange={onWorkoutFilterChange}
+            isFetching={isFetching}
+            id="workoutFilter"
+          />
         </div>
       </div>
     </>
