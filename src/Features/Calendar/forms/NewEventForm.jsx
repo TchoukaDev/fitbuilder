@@ -1,25 +1,23 @@
 import { Button, LoaderButton } from "@/Global/components";
-import { useUpdatePlannedSession } from "@/Features/Sessions/hooks";
+import { usePlanSession } from "@/Features/Sessions/hooks";
 import { toast } from "react-toastify";
 import RequiredFields from "@/Global/components/ui/FormsComponents/RequiredFields";
-import EventFormFields from "../forms/formComponents/EventFormFields";
+import { EventFormFields } from "../forms";
 import { useEventForm } from "../hooks";
 import { ClipLoader } from "react-spinners";
 
-export default function UpdateEventForm({ userId, event }) {
-  const session = event.resource;
+export default function NewEventForm({ userId, selectedDate }) {
+  const { mutate: planSession, isPending } = usePlanSession(userId);
+
   const {
     workouts,
     isFetching,
     workoutRef,
-    closeModal,
     register,
     handleSubmit,
+    closeModal,
     formState: { errors },
-  } = useEventForm({ event, userId });
-
-  const { mutate: updateSession, isPending: isUpdating } =
-    useUpdatePlannedSession(userId, null);
+  } = useEventForm({ newEvent: true, selectedDate, userId });
 
   // ========================================
   // SUBMIT
@@ -27,23 +25,19 @@ export default function UpdateEventForm({ userId, event }) {
   const onSubmit = (data) => {
     const workout = workouts?.find((w) => w._id === data.workout);
     const scheduledDate = new Date(`${data.date}T${data.startTime}`);
-    const updatedSession = {
-      workoutId: data.workout,
-      workoutName: workout.name,
-      exercises: workout.exercises,
-      scheduledDate: scheduledDate.toISOString(),
-      estimatedDuration: data.duration,
-    };
-    updateSession(
+
+    planSession(
       {
-        sessionId: session._id,
-        updatedSession,
+        workoutId: data.workout,
+        workoutName: workout.name,
+        exercises: workout.exercises,
+        scheduledDate: scheduledDate.toISOString(),
+        estimatedDuration: data.duration,
+        isPlanning: true,
       },
       {
         onSuccess: () => {
-          toast.success("Événement modifié avec succès");
-          closeModal("editEvent");
-          closeModal("eventDetails");
+          closeModal("newEvent");
         },
         onError: (error) => {
           toast.error(error.message || "Erreur");
@@ -60,7 +54,6 @@ export default function UpdateEventForm({ userId, event }) {
       </div>
     );
   }
-
   return (
     <form
       className="flex flex-col items-center gap-5 p-6"
@@ -76,18 +69,18 @@ export default function UpdateEventForm({ userId, event }) {
 
       {/* Boutons */}
       <div className="modalFooter">
-        <Button type="button" close onClick={() => closeModal("editEvent")}>
+        <Button type="button" close onClick={() => closeModal("newEvent")}>
           Annuler
         </Button>
         <LoaderButton
-          isLoading={isUpdating}
-          label="Modifier"
-          loadingText="Modification en cours"
-          disabled={isUpdating}
+          isLoading={isPending}
+          label="Planifier"
+          loadingText="Planification en cours"
+          disabled={isPending}
           type="submit"
           onClick={handleSubmit(onSubmit)}
         >
-          Modifier
+          Planifier
         </LoaderButton>
       </div>
       <RequiredFields />
