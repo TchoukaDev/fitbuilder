@@ -8,8 +8,10 @@ import { redirect } from "next/navigation";
 
 export default async function Dashboard({ searchParams }) {
   const session = await getServerSession(authOptions);
-  const userId = session?.user?.id;
-  if (!userId) {
+  // Debug - à retirer après
+  console.log("SESSION:", JSON.stringify(session));
+
+  if (!session || !session.user?.id) {
     redirect("/");
   }
   const resolvedSearchParams = await searchParams;

@@ -10,8 +10,11 @@ import { WelcomeLayout } from "@/Global/components";
 export default async function Home() {
   const session = await getServerSession(authOptions);
 
-  // Redirection si déjà connecté
-  if (session?.user?.email) {
+  // Debug - à retirer après
+  console.log("HOME SESSION:", JSON.stringify(session));
+
+  // Redirection seulement si session VALIDE
+  if (session && session.user && session.user.id) {
     redirect("/dashboard");
   }
 
