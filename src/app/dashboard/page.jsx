@@ -3,7 +3,7 @@
 import { Header } from "@/Global/components";
 import DashboardClient from "@/Features/Dashboard/components/DashboardClient";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../api/auth/[...nextauth]/route";
+import { authOptions } from "@/libs/auth";
 import { redirect } from "next/navigation";
 
 export default async function Dashboard({ searchParams }) {

@@ -1,6 +1,6 @@
 // Page d'exécution d'une séance d'entraînement en cours
 import { getServerSession } from "next-auth";
-import { authOptions } from "../../api/auth/[...nextauth]/route";
+import { authOptions } from "@/libs/auth";
 import { getSessionbyId } from "@/Features/Sessions/utils";
 import { notFound } from "next/navigation";
 import { SessionExecution } from "@/Features/Sessions/components";

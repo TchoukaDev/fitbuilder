@@ -1,5 +1,5 @@
 // Page de liste des plans d'entraînement
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/libs/auth";
 import { WorkoutList } from "@/Features/Workouts/components";
 import { getWorkouts } from "@/Features/Workouts/utils";
 import { Header } from "@/Global/components";

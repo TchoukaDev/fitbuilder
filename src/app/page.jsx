@@ -3,7 +3,7 @@ import { LoginForm } from "@/Features/Auth/forms";
 import Link from "next/link";
 import { GoogleBtn } from "@/Features/Auth/components";
 import { getServerSession } from "next-auth";
-import { authOptions } from "./api/auth/[...nextauth]/route";
+import { authOptions } from "@/libs/auth";
 import { redirect } from "next/navigation";
 import { WelcomeLayout } from "@/Global/components";
 

@@ -1,5 +1,5 @@
 // Page de création d'un nouveau plan d'entraînement
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/libs/auth";
 import {
   getAllExercises,
   getFavoritesExercises,

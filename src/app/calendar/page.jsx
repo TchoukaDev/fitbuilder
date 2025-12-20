@@ -1,5 +1,5 @@
 import { Header } from "@/Global/components";
-import { authOptions } from "../api/auth/[...nextauth]/route";
+import { authOptions } from "@/libs/auth";
 import { getServerSession } from "next-auth";
 import { getEvents } from "@/Features/Calendar/utils";
 import {

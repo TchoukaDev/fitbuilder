@@ -1,5 +1,5 @@
 // Page de modification d'un plan d'entraînement existant
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/libs/auth";
 import { getWorkoutById } from "@/Features/Workouts/utils";
 import { getServerSession } from "next-auth";
 import {

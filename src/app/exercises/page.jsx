@@ -1,6 +1,6 @@
 // Page de liste de tous les exercices (publics + personnalisés + favoris)
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/libs/auth";
 import { ExercisesList } from "@/Features/Exercises/components";
 import {
   getAllExercises,

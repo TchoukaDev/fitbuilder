@@ -1,6 +1,6 @@
 // Page de liste des séances avec filtres et pagination
 import { getServerSession } from "next-auth";
-import { authOptions } from "../api/auth/[...nextauth]/route";
+import { authOptions } from "@/libs/auth";
 import { SessionsList } from "@/Features/Sessions/components";
 import { Header } from "@/Global/components";
 import { getAllSessions } from "@/Features/Sessions/utils";

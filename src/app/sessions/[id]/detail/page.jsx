@@ -1,6 +1,6 @@
 // Page de détail d'une séance terminée avec récapitulatif
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/libs/auth";
 import { getSessionbyId } from "@/Features/Sessions/utils";
 import { redirect } from "next/navigation";
 import { SessionDetailClient } from "@/Features/Sessions/components";

@@ -1,6 +1,6 @@
 // Page d'administration réservée aux administrateurs
 import { getServerSession } from "next-auth";
-import { authOptions } from "../api/auth/[...nextauth]/route";
+import { authOptions } from "@/libs/auth";
 import { redirect } from "next/navigation";
 import { Header } from "@/Global/components";
 
