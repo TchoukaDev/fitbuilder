@@ -2,15 +2,15 @@ export { default } from "next-auth/middleware";
 // middleware par defaut de next-auth. Gère seul les routes protégées. Suffisant pour protéger uniquement avec utilisateur connecté
 
 export const config = {
-  // matcher: [
-  //   /*
-  //    * Protège toutes les routes sauf :
-  //    * - /signup, / ($ = racine du site -> login) (pages publiques)
-  //    * - /api/auth (routes Next-Auth)
-  //    * - /_next, /favicon.ico (fichiers statiques)
-  //    */
-  //   "/((?!api/auth|signup$|$|_next/static|_next/image|favicon.ico|.*\\.(?:png|jpg|jpeg|gif|svg|webp)$).*)",
-  // ],
+  matcher: [
+    /*
+     * Protège toutes les routes sauf :
+     * - /signup, / ($ = racine du site -> login) (pages publiques)
+     * - /api/auth (routes Next-Auth)
+     * - /_next, /favicon.ico (fichiers statiques)
+     */
+    "/((?!api/auth|signup$|$|_next/static|_next/image|favicon.ico|.*\\.(?:png|jpg|jpeg|gif|svg|webp)$).*)",
+  ],
 };
 
 /*Élément	Signification
