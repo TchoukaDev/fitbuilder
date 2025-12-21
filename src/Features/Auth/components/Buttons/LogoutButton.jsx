@@ -20,7 +20,7 @@ export default function LogoutButton() {
   };
 
   return (
-    <div className="relative group">
+    <div className="relative flex items-center justify-end group">
       <button
         title="Déconnexion"
         onClick={handleLogout}
