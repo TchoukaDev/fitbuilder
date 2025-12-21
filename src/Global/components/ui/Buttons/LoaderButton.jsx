@@ -11,10 +11,10 @@ export default function LoaderButton({
   ...props
 }) {
   return (
-    <Button {...props} disabled={isLoading || disabled} close={close}>
+    <Button {...props} disabled={disabled} close={close}>
       {isLoading ? (
         <span className="flex items-center justify-center gap-2">
-          <ClipLoader size={15} color="#7557ff" />
+          <ClipLoader size={15} color="#fff" />
           <span>{loadingText}</span>
         </span>
       ) : (
