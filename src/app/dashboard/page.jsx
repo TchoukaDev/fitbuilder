@@ -15,13 +15,13 @@ export default async function Dashboard({ searchParams }) {
   }
 
   const resolvedSearchParams = await searchParams;
-  const error = resolvedSearchParams?.error;
+  const authError = resolvedSearchParams?.authError;
 
   return (
     <>
       <Header />
       <main>
-        {error === "access-denied" && (
+        {authError === "forbidden" && (
           <p className="formError">Accès refusé. Page strictement réservée</p>
         )}
         <h1>📊 Dashboard</h1>

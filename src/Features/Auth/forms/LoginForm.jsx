@@ -11,7 +11,7 @@ import { toast } from "react-toastify";
 import { Label, ShowPassword, LoaderButton } from "@/Global/components";
 import { loginSchema } from "../utils";
 
-export default function LoginForm() {
+export default function LoginForm({ callbackUrl }) {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
 
@@ -42,9 +42,40 @@ export default function LoginForm() {
     emailRef?.current?.focus();
   }, []);
 
-  // Soumission du formulaire
+  // // Soumission du formulaire
+  // const onSubmit = async (data) => {
+  //   try {
+  //     const result = await signIn("credentials", {
+  //       email: data.email,
+  //       password: data.password,
+  //       autoLogin: data.autoLogin.toString(),
+  //       redirect: false,
+  //     });
+
+  //     // Connexion réussie
+  //     if (result?.ok && !result?.error) {
+  //       toast.success("Connexion réussie!");
+  //       router.push(callbackUrl || "/dashboard");
+  //       router.refresh();
+  //       return;
+  //     }
+
+  //     // Échec de connexion
+  //     if (result?.error) {
+  //       toast.error(result?.error || "Erreur lors de la connexion");
+  //     }
+  //   } catch (error) {
+  //     console.error("Erreur de connexion:", error);
+  //     toast.error(error?.message || "Erreur lors de la connexion");
+  //   } finally {
+  //     reset();
+  //   }
+  // };
   const onSubmit = async (data) => {
     try {
+      console.log("1. Tentative de connexion...");
+      console.log("callbackUrl reçu:", callbackUrl);
+
       const result = await signIn("credentials", {
         email: data.email,
         password: data.password,
@@ -52,23 +83,30 @@ export default function LoginForm() {
         redirect: false,
       });
 
+      console.log("2. Résultat signIn:", result);
+
       // Connexion réussie
       if (result?.ok && !result?.error) {
         toast.success("Connexion réussie!");
-        router.push("/dashboard");
-        router.refresh();
+
+        const destination = callbackUrl || "/dashboard";
+        console.log("3. Redirection vers:", destination);
+
+        // Petit délai pour laisser le cookie s'établir
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
+        window.location.href = destination;
         return;
       }
 
       // Échec de connexion
       if (result?.error) {
-        toast.error(result?.error || "Erreur lors de la connexion");
+        console.log("4. Erreur reçue:", result.error);
+        toast.error(result.error || "Erreur lors de la connexion");
       }
     } catch (error) {
-      console.error("Erreur de connexion:", error);
+      console.error("5. Exception:", error);
       toast.error(error?.message || "Erreur lors de la connexion");
-    } finally {
-      reset();
     }
   };
 
