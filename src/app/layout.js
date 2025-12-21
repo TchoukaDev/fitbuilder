@@ -4,6 +4,38 @@ import { QueryClientProvider } from "@/Providers/QueryClient";
 import { ModalProvider } from "@/Providers/Modals";
 import { AuthProvider } from "@/Providers/Auth";
 import Footer from "@/Global/components/layout/Footer";
+import localFont from "next/font/local";
+
+const graphik = localFont({
+  src: [
+    {
+      path: "../fonts/Graphik-Regular.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../fonts/Graphik-Semibold.woff2",
+      weight: "600",
+      style: "normal",
+    },
+    {
+      path: "../fonts/Graphik-Bold.woff2",
+      weight: "700",
+      style: "normal",
+    },
+  ],
+  display: "swap",
+  variable: "--font-graphik", // optionnel, utile pour CSS variables
+});
+
+// Inter variable font (poids 100 à 900)
+const inter = localFont({
+  src: "../fonts/Inter-VariableFont.woff2",
+  weight: "100 900",
+  style: "normal",
+  display: "swap",
+  variable: "--font-inter",
+});
 
 export const metadata = {
   title: "FitBuilder, votre assistant de musculation personnalisé",
@@ -12,7 +44,7 @@ export const metadata = {
 };
 export default function RootLayout({ children }) {
   return (
-    <html lang="fr">
+    <html lang="fr" className={`${graphik.variable} ${inter.variable}`}>
       <body className="bg-gradient-light bg-fixed text-primary-900 min-h-screen">
         <AuthProvider>
           <QueryClientProvider>

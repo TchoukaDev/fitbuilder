@@ -4,43 +4,10 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Charger vos fonts Graphik */
-@font-face {
-  font-family: "Graphik";
-  src: url("/fonts/Graphik-Regular.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Graphik";
-  src: url("/fonts/Graphik-Semibold.woff2") format("woff2");
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Graphik";
-  src: url("/fonts/Graphik-Bold.woff2") format("woff2");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Inter";
-  src: url("/fonts/Inter-VariableFont.woff2") format("woff2");
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
-}
-
 @theme {
   /* Fonts */
-  --font-display: "Graphik", sans-serif;
-  --font-sans: "Inter", system-ui, sans-serif;
+  --font-display: var(--font-graphik), sans-serif;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
 
   /* Votre bleu principal (#260d87) */
   --color-primary-50: #e8e3ff;
