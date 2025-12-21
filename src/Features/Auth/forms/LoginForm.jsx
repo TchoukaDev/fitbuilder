@@ -14,7 +14,6 @@ import { loginSchema } from "../utils";
 export default function LoginForm() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   // React Hook Form avec validation Zod
   const {
@@ -22,7 +21,7 @@ export default function LoginForm() {
     watch,
     handleSubmit,
     reset,
-    formState: { errors: clientsErrors },
+    formState: { errors: clientsErrors, isSubmitting },
   } = useForm({
     resolver: zodResolver(loginSchema),
     mode: "onSubmit",
@@ -46,7 +45,6 @@ export default function LoginForm() {
   // Soumission du formulaire
   const onSubmit = async (data) => {
     try {
-      setIsLoggingIn(true);
       const result = await signIn("credentials", {
         email: data.email,
         password: data.password,
@@ -71,7 +69,6 @@ export default function LoginForm() {
       toast.error(error?.message || "Erreur lors de la connexion");
     } finally {
       reset();
-      setIsLoggingIn(false);
     }
   };
 
@@ -133,10 +130,10 @@ export default function LoginForm() {
       {/* Bouton de soumission */}
       <div className="flex flex-col justify-center items-center gap-2">
         <LoaderButton
-          isLoading={isLoggingIn}
+          isLoading={isSubmitting}
           loadingText="Connexion en cours"
           type="submit"
-          disabled={isLoggingIn}
+          disabled={isSubmitting}
           label="Se connecter"
         >
           Se connecter
