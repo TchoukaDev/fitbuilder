@@ -20,12 +20,12 @@ export default function LogoutButton() {
   };
 
   return (
-    <div className="relative flex items-center justify-end group">
+    <div className="relative group">
       <button
         title="Déconnexion"
         onClick={handleLogout}
         disabled={loading}
-        className=" text-primary-300 cursor-pointer  animatedRotation"
+        className=" text-primary-300 cursor-pointer flex items-center justify-endanimatedRotation"
       >
         <HiOutlineLogout className="size-6 md:size-10" />
       </button>
