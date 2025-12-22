@@ -66,7 +66,7 @@
   }
 }
 main {
-  @apply w-full md:w-9/10 mx-auto px-5 py-10;
+  @apply w-full md:w-9/10 mx-auto px-5 py-10 grow;
 }
 /* Eviter les débordements des titres et des paragraphes */
 h1,

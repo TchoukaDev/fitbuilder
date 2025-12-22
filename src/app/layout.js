@@ -45,7 +45,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="fr" className={`${graphik.variable} ${inter.variable}`}>
-      <body className="bg-gradient-light bg-fixed text-primary-900 min-h-screen">
+      <body className="bg-gradient-light bg-fixed text-primary-900 min-h-screen flex flex-col">
         <AuthProvider>
           <QueryClientProvider>
             <ModalProvider>
