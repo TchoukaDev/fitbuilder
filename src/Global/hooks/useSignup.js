@@ -35,7 +35,10 @@ export function useSignUp() {
         }
       }
 
-      toast.success(result.message || "Compte créé avec succès !");
+      toast.success(
+        result.message ||
+          "Compte créé avec succès ! Un email de vérification a été envoyé à votre adresse. Veuillez vérifier votre boîte mail (pensez aux spams).",
+      );
       router.push("/");
       return { success: true };
     } catch (error) {

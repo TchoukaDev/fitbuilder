@@ -62,6 +62,13 @@ export const authOptions = {
             );
           }
 
+          // Vérifier si l'email est vérifié (sauf pour les utilisateurs Google OAuth)
+          if (!user.emailVerified && user.password) {
+            throw new Error(
+              "Veuillez vérifier votre adresse email avant de vous connecter. Consultez votre boîte mail ou redemandez un email de vérification.",
+            );
+          }
+
           // Vérifier le mot de passe
           const isValidPassword =
             user && (await bcrypt.compare(credentials.password, user.password));
@@ -187,17 +194,23 @@ export const authOptions = {
                   googleId: profile.sub,
                   image: profile.picture,
                   username: profile.name,
+                  // Google vérifie déjà les emails, on marque comme vérifié
+                  emailVerified: true,
+                  emailVerifiedAt: new Date(),
                 },
               },
             );
           } else {
-            // Créer un nouvel utilisateur
+            // Créer un nouvel utilisateur Google OAuth
             await users.insertOne({
               email: profile.email,
               username: profile.name,
               image: profile.picture,
               provider: "google",
               googleId: profile.sub,
+              // Google vérifie déjà les emails
+              emailVerified: true,
+              emailVerifiedAt: new Date(),
               createdAt: new Date(),
               blocked: false,
               loginAttempts: 0,

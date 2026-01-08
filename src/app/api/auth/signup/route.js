@@ -4,6 +4,8 @@ import bcrypt from "bcryptjs";
 import { signUpSchema } from "@/Features/Auth/utils";
 import { NextResponse } from "next/server";
 import { ApiError, ApiSuccess } from "@/libs/apiResponse";
+import { createVerificationToken } from "@/libs/emailVerification";
+import { sendVerificationEmail } from "@/libs/emailService";
 
 // POST - Créer un nouveau compte utilisateur
 export async function POST(req) {
@@ -73,6 +75,8 @@ export async function POST(req) {
       username: validatedData.username,
       email: validatedData.email.toLowerCase(),
       password: hashedPassword,
+      emailVerified: false,
+      emailVerifiedAt: null,
       exercises: [],
       favoritesExercises: [],
       workouts: [],
@@ -81,11 +85,51 @@ export async function POST(req) {
       updatedAt: new Date(),
     });
 
+    const userId = result.insertedId.toString();
+
+    // Génération et stockage du token de vérification (24h)
+    const verificationToken = await createVerificationToken(
+      userId,
+      validatedData.email.toLowerCase(),
+    );
+
+    // Envoi de l'email de vérification avec le token
+    try {
+      await sendVerificationEmail(
+        validatedData.email.toLowerCase(),
+        validatedData.username,
+        verificationToken,
+      );
+
+      console.log("✅ Email de vérification envoyé à:", validatedData.email);
+    } catch (emailError) {
+      // L'utilisateur est créé mais l'email n'a pas pu être envoyé
+      console.error("❌ Erreur envoi email:", emailError);
+
+      // On retourne quand même un succès mais avec un message différent
+      return NextResponse.json(
+        {
+          success: true,
+          message:
+            "Compte créé mais l'email de vérification n'a pas pu être envoyé. Veuillez demander un renvoi.",
+          user: {
+            id: userId,
+            username: validatedData.username,
+            email: validatedData.email.toLowerCase(),
+          },
+        },
+        { status: 201 },
+      );
+    }
+
+    // Succès complet : utilisateur créé + email envoyé
     return NextResponse.json(
       {
-        ...ApiSuccess.CREATED("Compte"),
+        success: true,
+        message:
+          "Compte créé avec succès ! Un email de vérification a été envoyé à votre adresse. Veuillez vérifier votre boîte mail (pensez aux spams).",
         user: {
-          id: result.insertedId.toString(),
+          id: userId,
           username: validatedData.username,
           email: validatedData.email.toLowerCase(),
         },
