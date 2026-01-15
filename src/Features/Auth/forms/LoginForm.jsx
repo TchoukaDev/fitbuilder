@@ -1,6 +1,5 @@
 "use client";
 
-// Formulaire de connexion avec validation et gestion d'erreurs
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -11,17 +10,17 @@ import { toast } from "react-toastify";
 import { Label, ShowPassword, LoaderButton } from "@/Global/components";
 import { loginSchema } from "../utils";
 
-export default function LoginForm({ callbackUrl }) {
+export default function LoginForm({ callbackUrl = "/dashboard" }) {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const [emailNotVerified, setEmailNotVerified] = useState(false);
+  const emailRef = useRef(null);
 
-  // React Hook Form avec validation Zod
   const {
     register,
     watch,
     handleSubmit,
-    reset,
-    formState: { errors: clientsErrors, isSubmitting },
+    formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(loginSchema),
     mode: "onSubmit",
@@ -31,51 +30,18 @@ export default function LoginForm({ callbackUrl }) {
 
   const email = watch("email");
   const password = watch("password");
-
-  // Configuration du champ email avec validation
   const emailRegister = register("email");
 
-  const emailRef = useRef(null);
-
-  // Focus automatique sur le champ email
+  // Focus auto sur email au montage
   useEffect(() => {
-    emailRef?.current?.focus();
+    emailRef.current?.focus();
   }, []);
 
-  // // Soumission du formulaire
-  // const onSubmit = async (data) => {
-  //   try {
-  //     const result = await signIn("credentials", {
-  //       email: data.email,
-  //       password: data.password,
-  //       autoLogin: data.autoLogin.toString(),
-  //       redirect: false,
-  //     });
-
-  //     // Connexion réussie
-  //     if (result?.ok && !result?.error) {
-  //       toast.success("Connexion réussie!");
-  //       router.push(callbackUrl || "/dashboard");
-  //       router.refresh();
-  //       return;
-  //     }
-
-  //     // Échec de connexion
-  //     if (result?.error) {
-  //       toast.error(result?.error || "Erreur lors de la connexion");
-  //     }
-  //   } catch (error) {
-  //     console.error("Erreur de connexion:", error);
-  //     toast.error(error?.message || "Erreur lors de la connexion");
-  //   } finally {
-  //     reset();
-  //   }
-  // };
   const onSubmit = async (data) => {
-    try {
-      console.log("1. Tentative de connexion...");
-      console.log("callbackUrl reçu:", callbackUrl);
+    // Reset l'état d'erreur email
+    setEmailNotVerified(false);
 
+    try {
       const result = await signIn("credentials", {
         email: data.email,
         password: data.password,
@@ -83,30 +49,27 @@ export default function LoginForm({ callbackUrl }) {
         redirect: false,
       });
 
-      console.log("2. Résultat signIn:", result);
-
       // Connexion réussie
       if (result?.ok && !result?.error) {
         toast.success("Connexion réussie!");
-
-        const destination = callbackUrl || "/dashboard";
-        console.log("3. Redirection vers:", destination);
-
-        // Petit délai pour laisser le cookie s'établir
-        await new Promise((resolve) => setTimeout(resolve, 500));
-
-        window.location.href = destination;
+        router.push(callbackUrl);
+        router.refresh(); // Force le rafraîchissement de la session
         return;
       }
 
       // Échec de connexion
       if (result?.error) {
-        console.log("4. Erreur reçue:", result.error);
-        toast.error(result.error || "Erreur lors de la connexion");
+        // Détecte si c'est une erreur d'email non vérifié
+        const isEmailError =
+          result.error.toLowerCase().includes("vérifier") &&
+          result.error.toLowerCase().includes("email");
+
+        setEmailNotVerified(isEmailError);
+        toast.error(result.error);
       }
     } catch (error) {
-      console.error("5. Exception:", error);
-      toast.error(error?.message || "Erreur lors de la connexion");
+      console.error("Erreur de connexion:", error);
+      toast.error("Une erreur est survenue lors de la connexion");
     }
   };
 
@@ -121,7 +84,6 @@ export default function LoginForm({ callbackUrl }) {
           autoComplete="email"
           type="email"
           id="email"
-          name="email"
           className="input peer"
           placeholder=""
           {...emailRegister}
@@ -134,9 +96,7 @@ export default function LoginForm({ callbackUrl }) {
           Adresse email
         </Label>
       </div>
-      {clientsErrors?.email && (
-        <p className="formError">{clientsErrors.email.message}</p>
-      )}
+      {errors?.email && <p className="formError">{errors.email.message}</p>}
 
       {/* Champ mot de passe */}
       <div className="relative">
@@ -144,7 +104,6 @@ export default function LoginForm({ callbackUrl }) {
           autoComplete="current-password"
           type={showPassword ? "text" : "password"}
           id="password"
-          name="password"
           className="input peer"
           placeholder=""
           {...register("password")}
@@ -157,13 +116,29 @@ export default function LoginForm({ callbackUrl }) {
           onClick={() => setShowPassword((prev) => !prev)}
         />
       </div>
-      {clientsErrors?.password && (
-        <p className="formError">{clientsErrors.password.message}</p>
+      {errors?.password && (
+        <p className="formError">{errors.password.message}</p>
       )}
 
       <Link href="/forgot-password" className="text-xs -mt-3 link">
         Vous avez oublié votre mot de passe?
       </Link>
+
+      {/* Message email non vérifié */}
+      {emailNotVerified && (
+        <div className="formError text-center">
+          <p className="font-semibold mb-2">Email non vérifié</p>
+          <p className="mb-2">
+            Vous devez vérifier votre adresse email avant de vous connecter.
+          </p>
+          <Link
+            href="/resend-verification"
+            className="text-accent-800 font-semibold underline hover:text-accent-900"
+          >
+            Demander un nouveau lien de vérification
+          </Link>
+        </div>
+      )}
 
       {/* Bouton de soumission */}
       <div className="flex flex-col justify-center items-center gap-2">
@@ -172,7 +147,6 @@ export default function LoginForm({ callbackUrl }) {
           loadingText="Connexion en cours"
           type="submit"
           disabled={isSubmitting}
-          label="Se connecter"
         >
           Se connecter
         </LoaderButton>

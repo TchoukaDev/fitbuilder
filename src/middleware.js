@@ -42,7 +42,12 @@ export async function middleware(req) {
   // ========================================
   // 3. Routes publiques (utilisateur connecté → dashboard)
   // ========================================
-  const publicOnlyRoutes = ["/", "/signup"];
+  const publicOnlyRoutes = [
+    "/",
+    "/signup",
+    "/verify-email",
+    "/resend-verification",
+  ];
 
   const isPublicOnlyRoute = publicOnlyRoutes.includes(pathname);
 
@@ -63,5 +68,7 @@ export const config = {
     "/exercises/:path*",
     "/calendar/:path*",
     "/admin/:path*",
+    "/verify-email/:path*",
+    "/resend-verification/:path*",
   ],
 };

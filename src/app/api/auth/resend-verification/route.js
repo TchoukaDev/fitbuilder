@@ -3,12 +3,27 @@ import { NextResponse } from "next/server";
 import connectDB from "@/libs/mongodb";
 import { createVerificationToken } from "@/libs/emailVerification";
 import { sendResendVerificationEmail } from "@/libs/emailService";
+import { resendVerificationSchema } from "@/Features/Auth/utils";
 
 // POST - Renvoyer un email de vérification
 export async function POST(req) {
   try {
     // Récupère l'email
-    const { email } = await req.json();
+    const body = await req.json();
+
+    const validatedData = resendVerificationSchema.safeParse(body);
+    if (!validatedData.success) {
+      console.log(validatedData.error.issues[0].message);
+      return NextResponse.json(
+        {
+          success: false,
+          error: validatedData.error.issues[0].message,
+        },
+        { status: 400 },
+      );
+    }
+
+    const email = validatedData.data.email.toLowerCase();
 
     // Vérifie que l'email est fourni
     if (!email) {
@@ -27,7 +42,7 @@ export async function POST(req) {
 
     // Cherche l'utilisateur par email
     const user = await usersCollection.findOne({
-      email: email.toLowerCase(),
+      email: email,
     });
 
     // Vérifie que l'utilisateur existe

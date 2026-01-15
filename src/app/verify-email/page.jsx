@@ -1,6 +1,6 @@
 // Page de vérification d'email
 import { WelcomeLayout } from "@/Global/components";
-import VerifyEmailClient from "./VerifyEmailClient";
+import { VerifyEmailClient } from "@/Features/Auth/components";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/libs/auth";
 import { redirect } from "next/navigation";

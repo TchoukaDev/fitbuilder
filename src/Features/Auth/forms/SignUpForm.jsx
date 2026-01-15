@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { Label, ShowPassword, LoaderButton } from "@/Global/components";
 import { signUpSchema } from "../utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useSignUp } from "@/Global/hooks";
+import { useSignUp } from "../hooks";
 
 export default function SignUpForm() {
   const [showPassword, setShowPassword] = useState(false);

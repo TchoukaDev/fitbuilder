@@ -87,8 +87,8 @@ export async function GET(req) {
     return NextResponse.json(
       {
         success: true,
-        message:
-          "Votre email a été vérifié avec succès ! Vous pouvez maintenant vous connecter.",
+        email: tokenData.email,
+        message: "Votre email a été vérifié avec succès ! ",
       },
       { status: 200 },
     );

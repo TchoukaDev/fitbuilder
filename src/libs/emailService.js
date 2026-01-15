@@ -59,10 +59,16 @@ export async function sendVerificationEmail(email, username, token) {
               border-radius: 6px;
               font-weight: bold;
               margin: 20px 0;
+
             }
             .button:hover {
               background-color: #1f0a6d;
             }
+ 
+            .button:visited {
+              color: #d1c7ff !important;
+            }
+        
             .footer {
               text-align: center;
               margin-top: 30px;
@@ -197,10 +203,16 @@ export async function sendResendVerificationEmail(email, username, token) {
               border-radius: 6px;
               font-weight: bold;
               margin: 20px 0;
+              transition: background-color 0.2s;
             }
             .button:hover {
               background-color: #1f0a6d;
             }
+         
+            .button:visited {
+              color: #d1c7ff !important;
+            }
+         
             .footer {
               text-align: center;
               margin-top: 30px;
