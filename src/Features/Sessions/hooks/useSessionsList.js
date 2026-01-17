@@ -1,3 +1,4 @@
+"use client";
 // Hook pour gérer l'état et la logique de la liste des séances
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
