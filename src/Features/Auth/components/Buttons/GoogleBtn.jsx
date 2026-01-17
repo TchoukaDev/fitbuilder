@@ -16,7 +16,7 @@ export default function GoogleBtn({ children, callbackUrl }) {
     try {
       const result = await signIn("google", {
         redirect: false,
-        callbackUrl: callbackUrl || "/dashboard",
+        callbackUrl: callbackUrl ? `${callbackUrl}?authSuccess=true` : "/dashboard?authSuccess=true",
       });
 
       if (result?.error) {
@@ -25,7 +25,6 @@ export default function GoogleBtn({ children, callbackUrl }) {
         return;
       }
 
-      toast.success("Connexion réussie!");
     } catch (error) {
       toast.error("Une erreur inattendue est survenue");
       setLoading(false);

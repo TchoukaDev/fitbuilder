@@ -5,6 +5,7 @@ import { ModalProvider } from "@/Providers/Modals";
 import { AuthProvider } from "@/Providers/Auth";
 import Footer from "@/Global/components/layout/Footer";
 import localFont from "next/font/local";
+import { AuthGoogleToast } from "@/Features/Auth/components";
 
 const graphik = localFont({
   src: [
@@ -56,6 +57,7 @@ export default function RootLayout({ children }) {
                 draggable={true}
                 newestOnTop={true}
               />
+              <AuthGoogleToast />
               {children}
               <div id="portal-root"></div>
               <Footer />
