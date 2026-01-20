@@ -31,31 +31,31 @@ export const ApiError = {
     message: "Certains champs sont incorrects ou manquants",
   },
 
-  MISSING_FIELDS: (fields) => ({
+  MISSING_FIELDS: (fields: string[]) => ({
     error: "Champs manquants",
     message: `Veuillez compléter tous les champs obligatoires (${fields.join(
       ", ",
     )})`,
   }),
 
-  INVALID_DATA: (detail) => ({
+  INVALID_DATA: (detail: string) => ({
     error: "Données invalides",
     message: detail || "Les données fournies ne sont pas valides",
   }),
 
   // Erreurs de ressources (404)
-  NOT_FOUND: (resource) => ({
+  NOT_FOUND: (resource: string) => ({
     error: "Introuvable",
     message: `${resource} introuvable`,
   }),
 
   // Erreurs de conflit (409)
-  ALREADY_EXISTS: (field) => ({
+  ALREADY_EXISTS: (field: string) => ({
     error: "Conflit",
     message: `${field} déjà utilisé`,
   }),
 
-  DUPLICATE: (resource) => ({
+  DUPLICATE: (resource: string) => ({
     error: "Doublon",
     message: `${resource} existe déjà`,
   }),
@@ -78,22 +78,22 @@ export const ApiError = {
 // ═══════════════════════════════════════════════════════
 
 export const ApiSuccess = {
-  CREATED: (resource) => ({
+  CREATED: (resource: string) => ({
     success: true,
     message: `${resource} créé avec succès`,
   }),
 
-  UPDATED: (resource) => ({
+  UPDATED: (resource: string) => ({
     success: true,
     message: `${resource} mis à jour avec succès`,
   }),
 
-  DELETED: (resource) => ({
+  DELETED: (resource: string) => ({
     success: true,
     message: `${resource} supprimé avec succès`,
   }),
 
-  OPERATION_SUCCESS: (action) => ({
+  OPERATION_SUCCESS: (action: string) => ({
     success: true,
     message: `${action} effectué avec succès`,
   }),

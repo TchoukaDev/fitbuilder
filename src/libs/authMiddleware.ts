@@ -5,15 +5,11 @@
 
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/libs/auth";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { ApiError } from "./apiResponse";
 
-/**
- * Vérifie que l'utilisateur est authentifié
- * @param {Request} req - Requête HTTP
- * @returns {Promise<{userId: string, userRole: string} | NextResponse>}
- */
-export async function requireAuth(req) {
+export async function requireAuth(req: NextRequest) {
+  // getServerSession retourne le type Session de NextAuth (défini dans next-auth.d.ts)
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.id) {
@@ -28,10 +24,9 @@ export async function requireAuth(req) {
 
 /**
  * Vérifie que l'utilisateur est authentifié ET administrateur
- * @param {Request} req - Requête HTTP
- * @returns {Promise<{userId: string, userRole: string} | NextResponse>}
+
  */
-export async function requireAdmin(req) {
+export async function requireAdmin(req: NextRequest) {
   const auth = await requireAuth(req);
 
   // Si requireAuth retourne une erreur, la propager

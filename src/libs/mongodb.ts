@@ -1,9 +1,16 @@
-import { MongoClient } from "mongodb";
+import { Db, MongoClient } from "mongodb";
 
-const uri = process.env.MONGODB_URI;
+declare global {
+  var _mongoClientPromise: Promise<MongoClient> | null;
+}
 
-async function getClient() {
+const uri: string | undefined = process.env.MONGODB_URI;
+
+async function getClient(): Promise<MongoClient> {
   if (!global._mongoClientPromise) {
+    if (!uri) {
+      throw new Error("MONGODB_URI is not defined");
+    }
     const client = new MongoClient(uri, {
       tls: true,
       tlsAllowInvalidCertificates: true,
@@ -16,7 +23,7 @@ async function getClient() {
   return global._mongoClientPromise;
 }
 
-export default async function connectDB() {
+export default async function connectDB(): Promise<Db> {
   try {
     const client = await getClient();
 

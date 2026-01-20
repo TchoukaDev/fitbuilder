@@ -10,6 +10,6 @@ export default function UpdateExerciseModal({ exerciseToUpdate = null }) {
       <UpdateExerciseForm exerciseToUpdate={exerciseToUpdate} />
     </ModalLayout>,
 
-    document.getElementById("portal-root"),
+    document.getElementById("portal-root") as HTMLDivElement,
   );
 }

@@ -248,7 +248,7 @@ Le calendrier permet de visualiser et planifier les séances d'entraînement sur
 | **PLANNED** | Bleu | Séance programmée, pas encore commencée |
 | **IN_PROGRESS** | Jaune | Séance en cours d'exécution |
 | **COMPLETED** | Vert | Séance terminée |
-| **CANCELLED** | Gris/Rouge | Séance annulée |
+
 
 ### Création d'une séance via calendrier
 
@@ -328,7 +328,7 @@ Session
 ├── Utilisateur
 ├── Workout lié
 ├── Date prévue
-├── Statut (PLANNED, IN_PROGRESS, COMPLETED, CANCELLED)
+├── Statut (PLANNED, IN_PROGRESS, COMPLETED)
 ├── Exercices[]
 │   ├── Exercice ID
 │   ├── Configuration (séries, reps, poids)

@@ -10,6 +10,6 @@ export default function NewExerciseModal() {
       <NewExerciseForm />
     </ModalLayout>,
 
-    document.getElementById("portal-root"),
+    document.getElementById("portal-root") as HTMLDivElement,
   );
 }

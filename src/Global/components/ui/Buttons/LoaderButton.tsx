@@ -1,6 +1,13 @@
 // Composant pour afficher un bouton avec un loader
 import { Button } from "@/Global/components";
 import { ClipLoader } from "react-spinners";
+import { ButtonProps } from "./Button";
+
+export type LoaderButtonProps = ButtonProps & {
+  isLoading: boolean;
+  loadingText: string;
+
+};
 
 export default function LoaderButton({
   close,
@@ -9,7 +16,7 @@ export default function LoaderButton({
   children,
   disabled,
   ...props
-}) {
+}: LoaderButtonProps) {
   return (
     <Button {...props} disabled={disabled} close={close}>
       {isLoading ? (

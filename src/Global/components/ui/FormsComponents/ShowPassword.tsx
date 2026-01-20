@@ -1,12 +1,16 @@
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
-export default function ShowPassword({ showPassword, onClick }) {
+export type ShowPasswordProps = React.ComponentProps<"button"> & {
+  showPassword: boolean;
+  };
+
+export default function ShowPassword({ showPassword, ...props }: ShowPasswordProps) {
   return (
     /*Bouton d'affichage mot de passe */
 
     <button
       type="button"
-      onClick={onClick}
+      {...props}
       className="absolute right-2 top-1/2 -translate-y-[calc(50%)] text-primary-300 hover:text-gray-700 p-1 rounded focus:outline-none focus:ring-2 focus:ring-primary-500 cursor-pointer"
       aria-label={
         showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"

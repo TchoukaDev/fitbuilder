@@ -15,14 +15,14 @@ export function generateVerificationToken() {
  * Hash le token avec SHA-256
  * SHA-256 suffit car le token a déjà 256 bits d'entropie
  */
-export function hashToken(token) {
+export function hashToken(token: string): string {
   return crypto.createHash("sha256").update(token).digest("hex");
 }
 
 /**
  * Crée et stocke un token de vérification
  */
-export async function createVerificationToken(userId, email) {
+export async function createVerificationToken(userId: string, email: string): Promise<string> {
   const db = await connectDB();
   const tokensCollection = db.collection("emailVerificationTokens");
 
@@ -49,10 +49,14 @@ export async function createVerificationToken(userId, email) {
   return plainToken; // Envoyer par email
 }
 
+type TokenVerifiedData = {
+  userId: string;
+  email: string;
+};
 /**
  * Vérifie un token - RECHERCHE DIRECTE (pas d'itération !)
  */
-export async function verifyToken(plainToken) {
+export async function verifyToken(plainToken: string): Promise<TokenVerifiedData | null> {
   const db = await connectDB();
   const tokensCollection = db.collection("emailVerificationTokens");
 
@@ -78,7 +82,7 @@ export async function verifyToken(plainToken) {
 /**
  * Supprime un token après utilisation
  */
-export async function deleteToken(plainToken) {
+export async function deleteToken(plainToken: string): Promise<void> {
   const db = await connectDB();
   const tokensCollection = db.collection("emailVerificationTokens");
 
@@ -91,7 +95,7 @@ export async function deleteToken(plainToken) {
 /**
  * Nettoie les tokens expirés
  */
-export async function cleanupExpiredTokens() {
+export async function cleanupExpiredTokens(): Promise<number> {
   const db = await connectDB();
   const tokensCollection = db.collection("emailVerificationTokens");
 

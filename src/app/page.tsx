@@ -4,7 +4,7 @@ import Link from "next/link";
 import { GoogleBtn } from "@/Features/Auth/components";
 import { WelcomeLayout } from "@/Global/components";
 
-export default async function Home({ searchParams }) {
+export default async function Home({ searchParams }: { searchParams: Promise<{ authError?: string; callbackUrl?: string }> }) {
   const resolvedSearchParams = await searchParams;
   const authError = resolvedSearchParams?.authError;
   const callbackUrl = resolvedSearchParams?.callbackUrl;

@@ -49,7 +49,7 @@ export default function DashboardClient({ userId }) {
   // Formater la durée
   const [hours, minutes] = totalDuration?.split(":") || ["0", "0"];
   const formattedDuration = `${parseInt(hours)}h ${parseInt(minutes)}m`;
-
+console.log(completionRate);
   return (
     <div className="p-6">
       {/* Header */}

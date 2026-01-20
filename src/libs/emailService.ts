@@ -1,17 +1,69 @@
 import { Resend } from "resend";
 
-// Initialise le client Resend avec la clé API
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Types de retour pour les fonctions d'envoi d'email
+type EmailSuccess = {
+  success: true;
+  messageId: string;
+};
 
-/**
- * Envoie un email de vérification avec le lien contenant le token
- */
-export async function sendVerificationEmail(email, username, token) {
-  // Construction de l'URL de vérification (domaine + token)
+type EmailError = {
+  success: false;
+  error: string;
+};
+
+export type SendEmailResult = EmailSuccess | EmailError;
+
+
+//  ===== LAZY INITIALIZATION =====
+
+let resendClient: Resend | null = null;
+
+
+function getResendClient(): Resend {
+  // ❌ THROW : Erreur de configuration critique (non-récupérable)
+  if (!process.env.RESEND_API_KEY) {
+    throw new Error("RESEND_API_KEY is not defined - check your environment variables");
+  }
+
+  // ✅ Si le client EXISTE DÉJÀ → le retourne directement
+  if (resendClient) {
+    return resendClient;
+  }
+
+  // 🔨 SEULEMENT à la première utilisation : crée le client
+  resendClient = new Resend(process.env.RESEND_API_KEY);
+
+  return resendClient;
+}
+
+
+export async function sendVerificationEmail(
+  email: string,
+  username: string,
+  token: string
+): Promise<SendEmailResult> {
+  // 🔍 ÉTAPE 1 : Vérifier les variables d'environnement critiques
+  // ❌ THROW : Erreurs de configuration (non-récupérables)
+  if (!process.env.NEXT_PUBLIC_APP_URL) {
+    throw new Error("NEXT_PUBLIC_APP_URL is not defined - check your environment variables");
+  }
+
+  if (!process.env.RESEND_FROM_EMAIL) {
+    throw new Error("RESEND_FROM_EMAIL is not defined - check your environment variables");
+  }
+
+  // 🔧 ÉTAPE 2 : Récupérer le client Resend (lazy initialization)
+  // Peut throw si RESEND_API_KEY manquante
+  const resend = getResendClient();
+
+  // ✉️ ÉTAPE 3 : Construire l'URL du lien de vérification
+  // Exemple : https://fitbuilder.com/verify-email?token=abc123xyz
   const verificationUrl = `${process.env.NEXT_PUBLIC_APP_URL}/verify-email?token=${token}`;
 
   try {
-    // Envoi de l'email via Resend
+    // 📤 ÉTAPE 4 : Envoyer l'email via l'API Resend
+    // Retourne { data: {...}, error: null } si succès
+    // Retourne { data: null, error: {...} } si erreur API
     const { data, error } = await resend.emails.send({
       from: process.env.RESEND_FROM_EMAIL,
       to: email, // Destinataire
@@ -130,32 +182,61 @@ Ce lien expire dans 24 heures.
 
 ---
 FitBuilder - ${new Date().getFullYear()}
-  `, // ← Version texte brut
+      `,
     });
 
-    // Gestion des erreurs Resend
-    if (error) {
+    // ✅ ÉTAPE 5 : Gérer la réponse de Resend
+    // Vérifie si erreur API OU si data?.id n'existe pas
+    // Ce sont des ERREURS MÉTIER (spam detected, rate limit, etc.), pas de config
+    if (error || !data?.id) {
       console.error("❌ Erreur envoi email Resend:", error);
-      throw new Error("Échec de l'envoi de l'email de vérification");
+      return { success: false, error: error?.message ?? "Échec de l'envoi de l'email" };
     }
 
-    console.log("✅ Email de vérification envoyé:", data?.id);
-    return { success: true, messageId: data?.id };
-  } catch (error) {
-    console.error("❌ Exception lors de l'envoi d'email:", error);
-    throw error; // Propage l'erreur pour gestion dans la route API
+    // ✅ Email envoyé avec succès
+    console.log("✅ Email de vérification envoyé:", data.id);
+    return { success: true, messageId: data.id };
+  } catch (err) {
+    // 🚨 ÉTAPE 6 : Attraper les exceptions inattendues
+    // (réseau, parsing JSON, timeout, etc.)
+    // Ce sont des erreurs MÉTIER (pas de config), donc on retourne { success: false }
+    console.error("❌ Exception lors de l'envoi d'email:", err);
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : "Erreur inconnue lors de l'envoi",
+    };
   }
 }
 
 /**
  * Envoie un email de renvoi de vérification (template personnalisé)
+ * 
+ * Utilisé quand l'utilisateur demande "renvoyer le lien de vérification"
  */
-export async function sendResendVerificationEmail(email, username, token) {
-  // Construction de l'URL de vérification
+export async function sendResendVerificationEmail(
+  email: string,
+  username: string,
+  token: string
+): Promise<SendEmailResult> {
+  // 🔍 ÉTAPE 1 : Vérifier les variables d'environnement critiques
+  // ❌ THROW : Erreurs de configuration (non-récupérables)
+  if (!process.env.NEXT_PUBLIC_APP_URL) {
+    throw new Error("NEXT_PUBLIC_APP_URL is not defined - check your environment variables");
+  }
+
+  if (!process.env.RESEND_FROM_EMAIL) {
+    throw new Error("RESEND_FROM_EMAIL is not defined - check your environment variables");
+  }
+
+  // 🔧 ÉTAPE 2 : Récupérer le client Resend (lazy initialization)
+  // Peut throw si RESEND_API_KEY manquante
+  const resend = getResendClient();
+
+  // ✉️ ÉTAPE 3 : Construire l'URL du lien de vérification
   const verificationUrl = `${process.env.NEXT_PUBLIC_APP_URL}/verify-email?token=${token}`;
 
   try {
-    // Envoi de l'email via Resend
+    // 📤 ÉTAPE 4 : Envoyer l'email via l'API Resend
     const { data, error } = await resend.emails.send({
       from: process.env.RESEND_FROM_EMAIL,
       to: email,
@@ -293,16 +374,24 @@ FitBuilder - ${new Date().getFullYear()}
       `,
     });
 
-    // Gestion des erreurs Resend
-    if (error) {
+    // ✅ ÉTAPE 5 : Gérer la réponse de Resend
+    // Ce sont des ERREURS MÉTIER (spam detected, rate limit, etc.), pas de config
+    if (error || !data?.id) {
       console.error("❌ Erreur envoi email Resend:", error);
-      throw new Error("Échec du renvoi de l'email de vérification");
+      return { success: false, error: error?.message ?? "Échec du renvoi de l'email" };
     }
 
-    console.log("✅ Email de renvoi envoyé:", data?.id);
-    return { success: true, messageId: data?.id };
-  } catch (error) {
-    console.error("❌ Exception lors du renvoi d'email:", error);
-    throw error;
+    // ✅ Email envoyé avec succès
+    console.log("✅ Email de renvoi envoyé:", data.id);
+    return { success: true, messageId: data.id };
+  } catch (err) {
+    // 🚨 ÉTAPE 6 : Attraper les exceptions inattendues
+    // (réseau, parsing JSON, timeout, etc.)
+    // Ce sont des erreurs MÉTIER (pas de config), donc on retourne { success: false }
+    console.error("❌ Exception lors du renvoi d'email:", err);
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : "Erreur inconnue lors du renvoi",
+    };
   }
 }

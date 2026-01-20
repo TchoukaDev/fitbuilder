@@ -1,6 +1,10 @@
 import Image from "next/image";
 
-export default function WelcomeLayout({ children }) {
+type WelcomeLayoutProps = {
+  children: React.ReactNode;
+};
+
+export default function WelcomeLayout({ children }: WelcomeLayoutProps) {
   return (
     <main className="min-h-screen flex flex-col lg:flex-row  justify-center items-center">
       <div className="flex justify-center items-center flex-1/3 pt-10 md:p-10 ">

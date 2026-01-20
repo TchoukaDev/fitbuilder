@@ -2,15 +2,16 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 import connectDB from "@/libs/mongodb";
+import { AuthOptions } from "next-auth";
 
-export const authOptions = {
+export const authOptions: AuthOptions = {
   providers: [
     // ========================================
     // 🟢 GOOGLE OAUTH
     // ========================================
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
 
       // ✅ AJOUTEZ CECI :
       authorization: {
@@ -179,11 +180,11 @@ export const authOptions = {
     // ------------------------------------
     async signIn({ user, account, profile }) {
       // Google OAuth : créer/lier le compte en DB
-      if (account?.provider === "google") {
+      if (account?.provider === "google" && profile) {
         try {
           const db = await connectDB();
           const users = db.collection("users");
-          const existingUser = await users.findOne({ email: profile.email });
+          const existingUser = await users.findOne({ email: profile?.email });
 
           if (existingUser) {
             // Lier le compte Google à l'utilisateur existant
@@ -233,14 +234,14 @@ export const authOptions = {
       // 1️⃣ Premier login : "user" existe
       if (user) {
         // Google OAuth
-        if (account?.provider === "google") {
+        if (account?.provider === "google" && profile) {
           try {
             const db = await connectDB();
             const users = db.collection("users");
             const dbUser = await users.findOne({ email: profile.email });
 
             token.id = dbUser ? dbUser._id.toString() : user.id;
-            token.email = user.email || profile.email;
+            token.email = user.email || profile?.email || "";
             token.username = user.username || profile.name;
             token.image = user.image || profile.picture;
             token.provider = "google";

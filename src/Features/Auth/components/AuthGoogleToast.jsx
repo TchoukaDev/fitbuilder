@@ -2,12 +2,12 @@
 
 import { useSession } from "next-auth/react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { Suspense, useEffect, useRef } from "react";
 import { toast } from "react-toastify";
 
 
 // Affiche une toast de succès après la connexion Google
-export default function AuthGoogleToast() {
+ function AuthGoogleToastClient() {
   const { data: session } = useSession();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -35,4 +35,8 @@ export default function AuthGoogleToast() {
   }, [session, searchParams, router, pathname]);
 
   return null;
+}
+
+export default function AuthGoogleToast() {
+  return <Suspense><AuthGoogleToastClient /></Suspense>;
 }

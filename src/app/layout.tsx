@@ -6,6 +6,7 @@ import { AuthProvider } from "@/Providers/Auth";
 import Footer from "@/Global/components/layout/Footer";
 import localFont from "next/font/local";
 import { AuthGoogleToast } from "@/Features/Auth/components";
+import type { Metadata } from "next";
 
 const graphik = localFont({
   src: [
@@ -26,7 +27,7 @@ const graphik = localFont({
     },
   ],
   display: "swap",
-  variable: "--font-graphik", // optionnel, utile pour CSS variables
+  variable: "--font-graphik",
 });
 
 // Inter variable font (poids 100 à 900)
@@ -38,12 +39,16 @@ const inter = localFont({
   variable: "--font-inter",
 });
 
-export const metadata = {
+// ✅ Typage correct des métadonnées
+export const metadata: Metadata = {
   title: "FitBuilder, votre assistant de musculation personnalisé",
   description:
-    "Bienvenue sur FitBuilder. Inscrivez  puis connectez-vous pour commencer à créer votre propre programme de musculation personnalisé et adapté à votre objectif.",
+    "Bienvenue sur FitBuilder. Inscrivez-vous puis connectez-vous pour commencer à créer votre propre programme de musculation personnalisé et adapté à votre objectif.",
 };
-export default function RootLayout({ children }) {
+
+
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr" className={`${graphik.variable} ${inter.variable}`}>
       <body className="bg-gradient-light bg-fixed text-primary-900 min-h-screen flex flex-col">
@@ -61,7 +66,7 @@ export default function RootLayout({ children }) {
               {children}
               <div id="portal-root"></div>
               <Footer />
-            </ModalProvider>{" "}
+            </ModalProvider>
           </QueryClientProvider>
         </AuthProvider>
       </body>
