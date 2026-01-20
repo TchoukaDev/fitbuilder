@@ -9,3 +9,6 @@ export const exerciseSchema = z.object({
     .trim()
     .min(1, { message: "Veuillez choisir un équipement" }),
 });
+
+// Type inféré du schema - utilisable partout (front + API)
+export type ExerciseFormData = z.infer<typeof exerciseSchema>;

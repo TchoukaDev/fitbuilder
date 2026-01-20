@@ -7,23 +7,22 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useSession } from "next-auth/react";
 import { useModals } from "@/Providers/Modals";
 import ExerciseFormFields from "./ExerciseFormFields";
-import { exerciseSchema } from "../utils/ExerciseSchema";
+import { ExerciseFormData, exerciseSchema } from "../utils/ExerciseSchema";
 import { useEffect, useRef } from "react";
 import { toast } from "react-toastify";
 
 export default function NewExerciseForm() {
   const { data: session } = useSession();
   const isAdmin = session?.user?.role === "ADMIN";
-  const userId = session?.user?.id;
+  const userId = session?.user?.id || "";
 
   // React Hook Form avec validation Zod
   const {
     register,
-    isSubmitting,
     handleSubmit,
     watch,
-    formState: { errors },
-  } = useForm({
+    formState: { errors, isSubmitting },
+  } = useForm<ExerciseFormData>({
     resolver: zodResolver(exerciseSchema),
     mode: "onSubmit",
     reValidateMode: "onChange",
@@ -31,18 +30,17 @@ export default function NewExerciseForm() {
 
   const watchedFields = watch();
   const nameRegister = register("name");
-  const nameRef = useRef(null);
+  const nameRef = useRef<HTMLInputElement>(null);
 
   const { closeModal } = useModals();
   const { mutate: createExercice, isPending: isCreating } = useCreateExercise(
-    userId,
-    isAdmin,
+    { userId, isAdmin },
   );
   useEffect(() => {
     nameRef?.current?.focus();
   }, []);
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: ExerciseFormData) => {
     // Mutation de création
     createExercice(data, {
       onSuccess: () => {

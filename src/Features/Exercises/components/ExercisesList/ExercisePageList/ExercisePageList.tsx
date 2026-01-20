@@ -8,6 +8,23 @@ import {
 import { useModals } from "@/Providers/Modals";
 import { ExerciseMuscleFilters, ExerciseTabs } from ".";
 import { useDeleteExercise } from "@/Features/Exercises/hooks";
+import { Exercise } from "@/types/exercise";
+
+
+type ExercisePageListProps = {
+  activeTab: string;
+  setActiveTab: (tab: string) => void;
+  counts: { all: number; mine: number; favorites: number };
+  allExerciseMuscles: string[];
+  selectedMuscle: string;
+  setSelectedMuscle: (muscle: string) => void;
+  myExerciseMuscles: string[];
+  favoriteExerciseMuscles: string[];
+  grouped: Record<string, Exercise[]>;
+  favoritesExercises: string[];
+  userId: string;
+  isAdmin: boolean;
+}
 
 export default function ExercisePageList({
   activeTab,
@@ -22,19 +39,18 @@ export default function ExercisePageList({
   favoritesExercises,
   userId,
   isAdmin,
-}) {
+}: ExercisePageListProps) {
   const { isOpen, openModal, getModalData, closeModal } = useModals();
 
   const { mutate: deleteExercise, isPending: isDeleting } = useDeleteExercise(
-    userId,
-    isAdmin,
+    { userId, isAdmin },
   );
 
   const title = "Retirer l'exercice";
   const message = "Souhaitez-vous retirer cet exercice du programme?";
 
   const handleModalConfirm = () => {
-    deleteExercise(getModalData("deleteConfirm").id);
+    deleteExercise(getModalData<{ id: string | undefined }>("deleteConfirm")?.id || "");
     closeModal("deleteConfirm");
   };
 
@@ -61,7 +77,7 @@ export default function ExercisePageList({
       {isOpen("newExercise") && <NewExerciseModal />}
       {isOpen("updateExercise") && (
         <UpdateExerciseModal
-          exerciseToUpdate={getModalData("updateExercise").exercise}
+          exerciseToUpdate={getModalData<{ exercise: Exercise }>("updateExercise")?.exercise}
         />
       )}
       {isOpen("deleteConfirm") && (
@@ -114,7 +130,6 @@ export default function ExercisePageList({
             activeTab={activeTab}
             favoritesExercises={favoritesExercises}
             userId={userId}
-            isAdmin={isAdmin}
           />
         ))
       )}

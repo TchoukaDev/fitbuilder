@@ -1,14 +1,16 @@
 // API Route pour les opérations sur un exercice spécifique (modification et suppression)
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/libs/mongodb";
 import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
 import { ApiError, ApiSuccess } from "@/libs/apiResponse";
 import { requireAuth } from "@/libs/authMiddleware";
 import { exerciseSchema } from "@/Features/Exercises/utils/ExerciseSchema";
+import { ExerciseDB } from "@/types/exercise";
+import { UserDocument } from "@/types/user";
 
 // PATCH - Modifier un exercice (public si admin, privé si utilisateur)
-export async function PATCH(request, { params }) {
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   // Vérification de l'authentification
   const auth = await requireAuth(request);
   if (auth instanceof NextResponse) return auth;
@@ -37,7 +39,7 @@ export async function PATCH(request, { params }) {
 
     // Vérifier si c'est un exercice public
     const publicExercise = await db
-      .collection("exercises")
+      .collection<ExerciseDB>("exercises")
       .findOne({ _id: new ObjectId(id) });
 
     if (publicExercise) {
@@ -50,7 +52,7 @@ export async function PATCH(request, { params }) {
       }
 
       await db
-        .collection("exercises")
+        .collection<ExerciseDB>("exercises")
         .updateOne(
           { _id: new ObjectId(id) },
           { $set: { name, muscle, equipment, description } },
@@ -63,7 +65,7 @@ export async function PATCH(request, { params }) {
     }
 
     // Exercice privé: modifier dans le tableau de l'utilisateur
-    const result = await db.collection("users").updateOne(
+    const result = await db.collection<UserDocument>("users").updateOne(
       {
         _id: new ObjectId(userId),
         "exercises._id": new ObjectId(id),
@@ -96,7 +98,7 @@ export async function PATCH(request, { params }) {
 }
 
 // DELETE - Supprimer un exercice (public si admin, privé si utilisateur)
-export async function DELETE(request, { params }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   // Vérification de l'authentification
   const auth = await requireAuth(request);
   if (auth instanceof NextResponse) return auth;
@@ -111,7 +113,7 @@ export async function DELETE(request, { params }) {
 
     // Vérifier si c'est un exercice public
     const publicExercise = await db
-      .collection("exercises")
+      .collection<ExerciseDB>("exercises")
       .findOne({ _id: new ObjectId(id) });
 
     if (publicExercise) {
@@ -123,7 +125,7 @@ export async function DELETE(request, { params }) {
         );
       }
 
-      await db.collection("exercises").deleteOne({ _id: new ObjectId(id) });
+      await db.collection<ExerciseDB>("exercises").deleteOne({ _id: new ObjectId(id) });
 
       revalidatePath("/exercices");
       revalidatePath("/dashboard");
@@ -134,10 +136,10 @@ export async function DELETE(request, { params }) {
 
     // Exercice privé: retirer du tableau de l'utilisateur
     const result = await db
-      .collection("users")
+      .collection<UserDocument>("users")
       .updateOne(
         { _id: new ObjectId(userId) },
-        { $pull: { exercises: { _id: new ObjectId(id) } } },
+        { $pull: { exercises: { _id: new ObjectId(id) } } } as any,
       );
 
     if (result.matchedCount === 0) {

@@ -1,10 +1,18 @@
 // Onglets de navigation pour filtrer les exercices (Tous / Mes exercices / Favoris)
+
+type ExerciseTabsProps = {
+  activeTab: string;
+  onTabChange: (tab: string) => void;
+  counts: { all: number; mine: number; favorites: number };
+  setSelectedMuscle: (muscle: string) => void;
+}
+
 export default function ExerciseTabs({
   activeTab,
   onTabChange,
   counts,
   setSelectedMuscle,
-}) {
+}: ExerciseTabsProps) {
   const tabs = [
     { id: "all", label: "Tous", count: counts.all },
     {

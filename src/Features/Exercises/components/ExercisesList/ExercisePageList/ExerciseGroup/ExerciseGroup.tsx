@@ -1,15 +1,23 @@
 // Groupe d'exercices affichés sous un titre de muscle
+import { Exercise } from "@/types/exercise";
 import { ExerciseCard } from ".";
 import { useModals } from "@/Providers/Modals";
 
+
+type ExerciseGroupProps = {
+  muscle: string;
+  exercises: Exercise[];
+  activeTab: string;
+  favoritesExercises: string[];
+  userId: string;
+}
 export default function ExerciseGroup({
   muscle,
   exercises,
   activeTab,
   favoritesExercises,
   userId,
-  isAdmin,
-}) {
+}: ExerciseGroupProps) {
   const { openModal } = useModals();
 
   return (
@@ -21,14 +29,13 @@ export default function ExerciseGroup({
       <div className="grid gap-4">
         {exercises.map((ex) => (
           <ExerciseCard
-            key={ex._id}
+            key={ex.id}
             exercise={ex}
             activeTab={activeTab}
-            isFavorite={favoritesExercises.includes(ex._id)}
+            isFavorite={favoritesExercises.includes(ex.id)}
             userId={userId}
-            isAdmin={isAdmin}
             onEdit={() => openModal("updateExercise", { exercise: ex })}
-            onDelete={() => openModal("deleteConfirm", { id: ex._id })}
+            onDelete={() => openModal("deleteConfirm", { id: ex.id })}
           />
         ))}
       </div>

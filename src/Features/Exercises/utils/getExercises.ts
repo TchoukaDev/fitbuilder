@@ -1,45 +1,48 @@
 "use server";
 import connectDB from "@/libs/mongodb";
+import { Exercise, ExerciseDB } from "@/types/exercise";
 import { ObjectId } from "mongodb";
 
+
+
 // Récupère tous les exercices publics triés par muscle puis nom
-export async function getPublicExercises() {
+export async function getPublicExercises(): Promise<Exercise[]> {
   const db = await connectDB();
-  const publicExercises =
+  const publicExercises: ExerciseDB[] =
     (await db
       .collection("exercises")
       .find({ isPublic: true })
       .sort({ muscle: 1, name: 1 })
-      .toArray()) || [];
+      .toArray()) as ExerciseDB[] || [];
 
-  return publicExercises?.map((e) => ({
-    ...e,
-    type: "public",
-    _id: e._id.toString(),
+  // Transformation DB → App (ObjectId → string, _id → id)
+  return publicExercises.map(({ _id, ...exercise }) => ({
+    ...exercise,
+    id: _id.toString(),
   }));
 }
 
 // Récupère les exercices privés d'un utilisateur triés par muscle puis nom
-export async function getPrivateExercises(userId) {
+export async function getPrivateExercises(userId: string): Promise<Exercise[]> {
   const db = await connectDB();
 
   const user = await db
     .collection("users")
     .findOne({ _id: new ObjectId(userId) });
 
-  const privateExercises = (user?.exercises || []).sort((a, b) => {
+  const privateExercises: ExerciseDB[] = (user?.exercises || []).sort((a: ExerciseDB, b: ExerciseDB) => {
     return a.muscle.localeCompare(b.muscle) || a.name.localeCompare(b.name);
   });
 
-  return privateExercises.map((e) => ({
-    ...e,
-    type: "private",
-    _id: e._id.toString(),
+  // Transformation DB → App (ObjectId → string, _id → id)
+  return privateExercises.map(({ _id, ...exercise }) => ({
+    ...exercise,
+    id: _id.toString(),
   }));
 }
 
 // Récupère tous les exercices (publics + privés) en parallèle
-export async function getAllExercises(userId) {
+export async function getAllExercises(userId: string): Promise<Exercise[]> {
   const [publicExercises, privateExercises] = await Promise.all([
     getPublicExercises(),
     getPrivateExercises(userId),
@@ -56,11 +59,11 @@ export async function getAllExercises(userId) {
 }
 
 // Récupère les IDs des exercices favoris d'un utilisateur
-export async function getFavoritesExercises(userId) {
+export async function getFavoritesExercises(userId: string): Promise<string[]> {
   const db = await connectDB();
   const user = await db
     .collection("users")
     .findOne({ _id: new ObjectId(userId) });
-  const favoritesExercises = user?.favoritesExercises || [];
+  const favoritesExercises: string[] = user?.favoritesExercises || [];
   return favoritesExercises;
 }

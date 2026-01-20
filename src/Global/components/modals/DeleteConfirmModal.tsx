@@ -5,13 +5,20 @@ import { ModalLayout } from "../layout";
 import { useModals } from "@/Providers/Modals";
 import { createPortal } from "react-dom";
 
+type DeleteConfirmModalProps = {
+  title?: string;
+  message?: string;
+  onConfirm: () => void;
+  isLoading?: boolean;
+};
+
 // Modale de confirmation de suppression
 export default function DeleteConfirmModal({
   title = "Confirmer la suppression",
   message = "Cette action est irréversible.",
   onConfirm,
   isLoading = false,
-}) {
+}: DeleteConfirmModalProps) {
   const { closeModal } = useModals();
   return createPortal(
     <ModalLayout title={title} modalToClose="deleteConfirm">
@@ -33,7 +40,7 @@ export default function DeleteConfirmModal({
           type="button"
           disabled={isLoading}
           onClick={onConfirm}
-          label="Supprimer"
+          aria-label="Supprimer"
         >
           Supprimer
         </LoaderButton>

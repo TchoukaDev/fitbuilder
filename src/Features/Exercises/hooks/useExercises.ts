@@ -6,15 +6,28 @@ import {
   keepPreviousData,
 } from "@tanstack/react-query";
 import { toast } from "react-toastify";
+import { Exercise } from "@/types/exercise";
+import { ExerciseFormData } from "../forms/ExerciseFormFields";
+
+// ========== Types pour les réponses API ==========
+type ApiError = {
+  message: string;
+  error: string;
+};
+
+type ExercisesApiResponse = Exercise[];
 
 /**
  * Récupère la liste des exercices (globale ou filtrée par utilisateur).
- *
- * @param {string} userId - Identifiant de l'utilisateur.
- * @param {boolean} isAdmin - Indique si l'utilisateur est admin.
- * @param {any[]} initialData - Données initiales pour hydrater le cache.
  */
-export function useExercises(userId, isAdmin, initialData) {
+
+type UseExercisesProps = {
+  userId: string;
+  isAdmin: boolean;
+  initialData: Exercise[];
+};
+
+export function useExercises({ userId, isAdmin, initialData }: UseExercisesProps) {
   const key = isAdmin ? ["exercises"] : ["exercises", userId];
 
   return useQuery({
@@ -22,14 +35,13 @@ export function useExercises(userId, isAdmin, initialData) {
     queryFn: async () => {
       const response = await fetch("/api/exercises");
       if (!response.ok) {
-        const errorData = await response.json();
-        // L'API retourne { error: "string", message: "string" }
+        const errorData: ApiError = await response.json();
         throw new Error(
           errorData.message || errorData.error || "Erreur inconnue",
         );
       }
 
-      const data = await response.json();
+      const data: ExercisesApiResponse = await response.json();
       return data;
     },
     initialData: initialData,
@@ -43,45 +55,47 @@ export function useExercises(userId, isAdmin, initialData) {
 // 2️⃣ Hook pour CRÉER un exercice
 /**
  * Crée un nouvel exercice (mutation React Query).
- *
- * @param {string} userId - Identifiant de l'utilisateur.
- * @param {boolean} isAdmin - Indique si l'utilisateur est admin.
  */
-export function useCreateExercise(userId, isAdmin) {
+
+type UseCreateExerciseProps = {
+  userId: string;
+  isAdmin: boolean;
+};
+
+export function useCreateExercise({ userId, isAdmin }: UseCreateExerciseProps) {
   const queryClient = useQueryClient();
   const key = isAdmin ? ["exercises"] : ["exercises", userId];
   const dashboardKey = ["dashboard", userId];
   return useMutation({
-    mutationFn: async (newExercice) => {
+    mutationFn: async (newExercise: ExerciseFormData) => {
       const response = await fetch("/api/exercises", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newExercice),
+        body: JSON.stringify(newExercise),
       });
       if (!response.ok) {
-        const errorData = await response.json();
-        // L'API retourne { error: "string", message: "string" }
+        const errorData: ApiError = await response.json();
         throw new Error(
           errorData.message || errorData.error || "Erreur inconnue",
         );
       }
 
-      return response.json();
+      return response.json() as Promise<Exercise>;
     },
 
     // 🔥 RENDU OPTIMISTE
-    onMutate: async (newExercice) => {
+    onMutate: async (newExercise: ExerciseFormData) => {
       await queryClient.cancelQueries({ queryKey: key });
 
-      const previousExercices = queryClient.getQueryData(key);
+      const previousExercices = queryClient.getQueryData<Exercise[]>(key);
 
-      queryClient.setQueryData(key, (old) => {
+      queryClient.setQueryData(key, (old: Exercise[] = []) => {
         return [
-          ...(old || []),
+          ...old,
           {
-            ...newExercice,
-            type: isAdmin ? "public" : "private",
-            _id: `temp-${Date.now()}`,
+            ...newExercise,
+            isPublic: isAdmin,
+            id: `temp-${Date.now()}`,
           },
         ];
       });
@@ -94,7 +108,7 @@ export function useCreateExercise(userId, isAdmin) {
       queryClient.invalidateQueries({ queryKey: dashboardKey });
     },
 
-    onError: (err, newExercice, context) => {
+    onError: (err, newExercise, context: { previousExercices?: Exercise[] }) => {
       queryClient.setQueryData(key, context.previousExercices);
       throw new Error("Erreur:", err);
     },
@@ -104,45 +118,51 @@ export function useCreateExercise(userId, isAdmin) {
 // Hook pour MODIFIER un exercice
 /**
  * Met à jour un exercice existant (mutation React Query).
- *
- * @param {string} userId - Identifiant de l'utilisateur.
- * @param {boolean} isAdmin - Indique si l'utilisateur est admin.
  */
-export function useUpdateExercise(userId, isAdmin) {
+
+type UseUpdateExerciseProps = {
+  userId: string;
+  isAdmin: boolean;
+};
+
+type UpdateExercisePayload = {
+  id: string;
+  updatedExercise: ExerciseFormData;
+};
+
+export function useUpdateExercise({ userId, isAdmin }: UseUpdateExerciseProps) {
   const queryClient = useQueryClient();
   const key = isAdmin ? ["exercises"] : ["exercises", userId];
   const dashboardKey = ["dashboard", userId];
   return useMutation({
-    mutationFn: async ({ id, updatedExercise }) => {
+    mutationFn: async ({ id, updatedExercise }: UpdateExercisePayload) => {
       const response = await fetch(`/api/exercises/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedExercise),
       });
       if (!response.ok) {
-        const errorData = await response.json();
-        // L'API retourne { error: "string", message: "string" }
+        const errorData: ApiError = await response.json();
         throw new Error(
           errorData.message || errorData.error || "Erreur inconnue",
         );
       }
 
-      return response.json();
+      return response.json() as Promise<Exercise>;
     },
 
     // 🔥 RENDU OPTIMISTE
-    onMutate: async ({ id, updatedExercise }) => {
+    onMutate: async ({ id, updatedExercise }: UpdateExercisePayload) => {
       // 1. Annule les requêtes en cours
       await queryClient.cancelQueries({ queryKey: key });
 
       // 2. Sauvegarde l'état actuel
-      const previousExercices = queryClient.getQueryData(key);
+      const previousExercices = queryClient.getQueryData<Exercise[]>(key);
 
       // 3. Met à jour IMMÉDIATEMENT le cache
-      queryClient.setQueryData(key, (old) => {
-        if (!old) return old;
+      queryClient.setQueryData(key, (old: Exercise[] = []) => {
         return old.map((ex) =>
-          ex._id === id ? { ...ex, ...updatedExercise } : ex,
+          ex.id === id ? { ...ex, ...updatedExercise } : ex,
         );
       });
 
@@ -150,7 +170,7 @@ export function useUpdateExercise(userId, isAdmin) {
     },
 
     // ❌ Si erreur → ROLLBACK
-    onError: (err, variables, context) => {
+    onError: (err, variables, context: { previousExercices?: Exercise[] }) => {
       queryClient.setQueryData(key, context?.previousExercices);
     },
     onSuccess: () => {
@@ -164,22 +184,24 @@ export function useUpdateExercise(userId, isAdmin) {
 // DELETE
 /**
  * Supprime un exercice (mutation React Query).
- *
- * @param {string} userId - Identifiant de l'utilisateur.
- * @param {boolean} isAdmin - Indique si l'utilisateur est admin.
  */
-export function useDeleteExercise(userId, isAdmin) {
+
+type UseDeleteExerciseProps = {
+  userId: string;
+  isAdmin: boolean;
+};
+
+export function useDeleteExercise({ userId, isAdmin }: UseDeleteExerciseProps) {
   const queryClient = useQueryClient();
   const key = isAdmin ? ["exercises"] : ["exercises", userId];
   const dashboardKey = ["dashboard", userId];
   return useMutation({
-    mutationFn: async (id) => {
+    mutationFn: async (id: string) => {
       const response = await fetch(`/api/exercises/${id}`, {
         method: "DELETE",
       });
       if (!response.ok) {
-        const errorData = await response.json();
-        // L'API retourne { error: "string", message: "string" }
+        const errorData: ApiError = await response.json();
         throw new Error(
           errorData.message || errorData.error || "Erreur inconnue",
         );
@@ -187,11 +209,11 @@ export function useDeleteExercise(userId, isAdmin) {
 
       return response.json();
     },
-    onMutate: async (id) => {
+    onMutate: async (id: string) => {
       queryClient.cancelQueries({ queryKey: key });
-      const previousExercices = queryClient.getQueryData(key);
-      queryClient.setQueryData(key, (old = []) =>
-        old.filter((ex) => ex._id !== id),
+      const previousExercices = queryClient.getQueryData<Exercise[]>(key);
+      queryClient.setQueryData(key, (old: Exercise[] = []) =>
+        old.filter((ex) => ex.id !== id),
       );
 
       return { previousExercices };
@@ -201,7 +223,7 @@ export function useDeleteExercise(userId, isAdmin) {
       queryClient.invalidateQueries({ queryKey: key });
       queryClient.invalidateQueries({ queryKey: dashboardKey });
     },
-    onError: (err, id, context) =>
+    onError: (err, id, context: { previousExercices?: Exercise[] }) =>
       queryClient.setQueryData(key, context?.previousExercices),
   });
 }
@@ -209,26 +231,31 @@ export function useDeleteExercise(userId, isAdmin) {
 // READ - Récupérer les favoris
 /**
  * Récupère les exercices favoris d'un utilisateur.
- *
- * @param {string} userId - Identifiant de l'utilisateur.
- * @param {string[]} initialData - Tableau initial d'identifiants favoris.
  */
-export function useFavorites(userId, initialData) {
+
+type FavoritesApiResponse = {
+  favoritesExercises: string[];
+};
+
+type UseFavoritesProps = {
+  userId: string;
+  initialData: string[];
+};
+
+export function useFavorites({ userId, initialData }: UseFavoritesProps) {
   return useQuery({
     queryKey: ["favorites", userId],
     queryFn: async () => {
       const response = await fetch("/api/exercises/favorites");
       if (!response.ok) {
-        const errorData = await response.json();
-        // L'API retourne { error: "string", message: "string" }
+        const errorData: ApiError = await response.json();
         throw new Error(
           errorData.message || errorData.error || "Erreur inconnue",
         );
       }
 
-      const data = await response.json();
-
-      return data.favoritesExercises || []; // ✅ Retourne le tableau directement
+      const data: FavoritesApiResponse = await response.json();
+      return data.favoritesExercises || [];
     },
     initialData: initialData,
     staleTime: 1000 * 60 * 5,
@@ -243,13 +270,19 @@ export function useFavorites(userId, initialData) {
  *
  * @param {string} userId - Identifiant de l'utilisateur.
  */
-export function useToggleFavorite(userId) {
+
+
+type ToggleFavoritePayload = {
+  exerciseId: string;
+  isFavorite: boolean;
+};
+
+export function useToggleFavorite(userId: string) {
   const queryClient = useQueryClient();
   const favoritesKey = ["favorites", userId];
 
   return useMutation({
-    // ✅ mutationFn reçoit UN SEUL objet
-    mutationFn: async ({ exerciseId, isFavorite }) => {
+    mutationFn: async ({ exerciseId, isFavorite }: ToggleFavoritePayload) => {
       const response = await fetch("/api/exercises/favorites", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -260,26 +293,25 @@ export function useToggleFavorite(userId) {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        // L'API retourne { error: "string", message: "string" }
+        const errorData: ApiError = await response.json();
         throw new Error(
           errorData.message || errorData.error || "Erreur inconnue",
         );
       }
 
-      const data = await response.json();
-
+      const data: FavoritesApiResponse = await response.json();
       return data.favoritesExercises || [];
     },
 
-    // ✅ onMutate reçoit le même objet
-    onMutate: async ({ exerciseId, isFavorite }) => {
+    onMutate: async ({ exerciseId, isFavorite }: ToggleFavoritePayload) => {
       await queryClient.cancelQueries({ queryKey: favoritesKey });
 
-      const previousFavorites = queryClient.getQueryData(favoritesKey);
+      const previousFavorites = queryClient.getQueryData<string[]>(
+        favoritesKey,
+      );
 
       // Mise à jour optimiste
-      queryClient.setQueryData(favoritesKey, (old = []) => {
+      queryClient.setQueryData(favoritesKey, (old: string[] = []) => {
         if (isFavorite) {
           // Retirer
           return old.filter((id) => id !== exerciseId);
@@ -292,7 +324,7 @@ export function useToggleFavorite(userId) {
       return { previousFavorites };
     },
 
-    onError: (err, variables, context) => {
+    onError: (err, variables, context: { previousFavorites?: string[] }) => {
       // Rollback en cas d'erreur
       queryClient.setQueryData(favoritesKey, context?.previousFavorites);
       throw new Error("Erreur toggle favori:", err);

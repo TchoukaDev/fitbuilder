@@ -4,7 +4,16 @@
 import { Button, LoaderButton } from "@/Global/components";
 import { useToggleFavorite } from "@/Features/Exercises/hooks/useExercises";
 import { FaRegStar, FaStar } from "react-icons/fa";
+import { Exercise } from "@/types/exercise";
 
+type ExerciseCardProps = {
+  exercise: Exercise;
+  activeTab: string;
+  isFavorite: boolean;
+  userId: string;
+  onEdit: () => void;
+  onDelete: () => void;
+}
 export default function ExerciseCard({
   exercise,
   activeTab,
@@ -12,7 +21,7 @@ export default function ExerciseCard({
   userId,
   onEdit,
   onDelete,
-}) {
+}: ExerciseCardProps) {
   const { mutate: toggleFavorite, isPending: isToggling } =
     useToggleFavorite(userId);
 
@@ -23,7 +32,7 @@ export default function ExerciseCard({
           {/* Informations de l'exercice */}
           <div className="flex-1">
             <h3 className="text-lg font-bold">
-              {exercise.name} {exercise.type === "private" && "🗒️"}
+              {exercise.name} {exercise.isPublic === false && "🗒️"}
             </h3>
             <p className="text-gray-600 text-sm ml-3"> {exercise.equipment}</p>
             <p className="text-sm mt-2 line-clamp-3 md:line-clamp-none">
@@ -37,7 +46,7 @@ export default function ExerciseCard({
             {(activeTab === "all" || activeTab === "mine") && (
               <button
                 onClick={() =>
-                  toggleFavorite({ exerciseId: exercise._id, isFavorite })
+                  toggleFavorite({ exerciseId: exercise.id, isFavorite })
                 }
                 disabled={isToggling}
                 className="bg-transparent border-none text-2xl cursor-pointer hover:scale-110 transition"
@@ -60,9 +69,9 @@ export default function ExerciseCard({
               type="button"
               disabled={isToggling}
               onClick={() =>
-                toggleFavorite({ exerciseId: exercise._id, isFavorite })
+                toggleFavorite({ exerciseId: exercise.id, isFavorite })
               }
-              label="Retirer des favoris"
+              aria-label="Retirer des favoris"
             >
               Retirer des favoris
             </LoaderButton>

@@ -1,7 +1,23 @@
 // Champs de formulaire réutilisables pour les exercices
 import { Label, LoaderButton, Button } from "@/Global/components";
 import RequiredFields from "@/Global/components/ui/FormsComponents/RequiredFields";
+import { FieldErrors, UseFormRegister, UseFormRegisterReturn } from "react-hook-form";
+import { ExerciseFormData } from "./ExerciseFormFields";
 
+type ExerciseFormFieldsProps = {
+  register: UseFormRegister<ExerciseFormData>;
+  errors: FieldErrors<ExerciseFormData>;
+  isPending: boolean;
+  isSubmitting: boolean;
+  onSubmit: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
+  onClose: () => void;
+  submitLabel: string;
+  loadingLabel: string;
+  watchedFields: Record<string, string>;
+  nameRegister: UseFormRegisterReturn<string>;
+  nameRef: React.RefObject<HTMLInputElement | null>;
+};
+    
 export default function ExerciseFormFields({
   register,
   errors,
@@ -14,7 +30,7 @@ export default function ExerciseFormFields({
   watchedFields,
   nameRegister,
   nameRef,
-}) {
+}: ExerciseFormFieldsProps) {
   return (
     <form
       onSubmit={onSubmit}
@@ -36,7 +52,6 @@ export default function ExerciseFormFields({
           required
           placeholder=""
           id="name"
-          name="name"
           {...nameRegister}
           ref={(e) => {
             nameRegister.ref(e);
@@ -56,7 +71,6 @@ export default function ExerciseFormFields({
           required
           placeholder=""
           id="muscle"
-          name="muscle"
           {...register("muscle")}
           disabled={isPending}
         />
@@ -76,7 +90,6 @@ export default function ExerciseFormFields({
         <select
           className="input py-2 peer"
           id="equipment"
-          name="equipment"
           {...register("equipment")}
           aria-label="Matériel nécessaire"
           disabled={isPending}
@@ -97,8 +110,7 @@ export default function ExerciseFormFields({
           className="input peer"
           placeholder=""
           id="description"
-          name="description"
-          rows="3"
+          rows={3}
           {...register("description")}
           disabled={isPending}
         />
@@ -123,7 +135,7 @@ export default function ExerciseFormFields({
             loadingText={loadingLabel}
             type="submit"
             disabled={isPending || isSubmitting}
-            label={submitLabel}
+            aria-label={submitLabel}
           >
             {submitLabel}
           </LoaderButton>

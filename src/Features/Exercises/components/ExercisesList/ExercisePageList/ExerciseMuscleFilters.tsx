@@ -1,9 +1,15 @@
 // Boutons de filtrage par groupe musculaire
+
+type ExerciseMuscleFiltersProps = {
+  muscles: string[];
+  selectedMuscle: string;
+  onMuscleChange: (muscle: string) => void;
+}
 export default function ExerciseMuscleFilters({
   muscles,
   selectedMuscle,
   onMuscleChange,
-}) {
+}: ExerciseMuscleFiltersProps) {
   if (muscles.length === 0) {
     return null;
   }

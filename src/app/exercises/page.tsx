@@ -7,7 +7,7 @@ import {
   getFavoritesExercises,
 } from "@/Features/Exercises/utils";
 import { Header } from "@/Global/components";
-
+import { redirect } from "next/navigation";
 export const revalidate = 60;
 
 export default async function ExercisesPage() {
@@ -15,11 +15,13 @@ export default async function ExercisesPage() {
   const isAdmin = session?.user?.role === "ADMIN";
   const userId = session?.user?.id;
 
+  if (!userId) {
+    redirect("/");
+  }
+
   // Récupération des exercices et favoris
   const exercises = (await getAllExercises(userId)) || [];
-  const serializedExercises = JSON.parse(JSON.stringify(exercises));
   const favoritesExercises = (await getFavoritesExercises(userId)) || [];
-  const serializedFavorites = JSON.parse(JSON.stringify(favoritesExercises));
 
   return (
     <>
@@ -27,8 +29,8 @@ export default async function ExercisesPage() {
       <main>
         <h1>📝 Mes exercices</h1>
         <ExercisesList
-          initialExercises={serializedExercises}
-          initialFavorites={serializedFavorites}
+          initialExercises={exercises}
+          initialFavorites={favoritesExercises}
           isAdmin={isAdmin}
           userId={userId}
         />
