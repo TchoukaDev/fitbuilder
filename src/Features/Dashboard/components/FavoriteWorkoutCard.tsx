@@ -1,7 +1,10 @@
 import Link from "next/link";
 import { Button } from "@/Global/components";
+import { Workout } from "@/types/workout";
 
-export default function FavoriteWorkoutCard({ workout }) {
+
+
+export default function FavoriteWorkoutCard({ workout } : {workout: Workout | null}) {
   if (!workout) {
     return (
       <div className="bg-white rounded-lg shadow-md p-6 border-2 border-gray-200">

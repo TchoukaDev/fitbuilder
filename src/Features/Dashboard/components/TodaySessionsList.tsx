@@ -1,7 +1,10 @@
 import Link from "next/link";
 import { Button } from "@/Global/components";
+import { WorkoutSession } from "@/types/workoutSession";
 
-export default function TodaySessionsList({ sessions }) {
+
+
+export default function TodaySessionsList({ sessions }: { sessions: WorkoutSession[] }) {
   if (!sessions || sessions.length === 0) {
     return (
       <div className="bg-white rounded-lg shadow-md p-4 md:p-6 border-2 border-gray-200">
@@ -38,7 +41,7 @@ export default function TodaySessionsList({ sessions }) {
           return (
             <div
               key={session.id}
-              className="flex items-center justify-between p-4 bg-blue-50 rounded-lg border border-blue-200"
+              className="flex flex-col md:flex-row gap-2 items-center justify-between p-4 bg-blue-50 rounded-lg border border-blue-200"
             >
               <div>
                 <h3 className="font-semibold text-gray-900">
@@ -49,7 +52,7 @@ export default function TodaySessionsList({ sessions }) {
                 </p>
               </div>
               <Link href={`/sessions/${session.id}`}>
-                <Button size="sm">Démarrer</Button>
+                <Button>Démarrer</Button>
               </Link>
             </div>
           );

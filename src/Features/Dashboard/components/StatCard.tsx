@@ -1,3 +1,12 @@
+type StatCardProps = {
+  title: string;
+  value: string;
+  subtitle: string;
+  icon: React.ReactNode;
+  trend: number | null;
+  trendLabel: string | null;
+}
+
 export default function StatCard({
   title,
   value,
@@ -5,7 +14,7 @@ export default function StatCard({
   icon,
   trend,
   trendLabel,
-}) {
+}: StatCardProps) {
   return (
     <div
       className={`
@@ -24,7 +33,7 @@ export default function StatCard({
         {subtitle && (
           <p className="text-sm text-center text-gray-500">{subtitle}</p>
         )}
-        {trend !== undefined && (
+        {trend && trendLabel && (
           <p
             className={`text-xs text-center font-semibold px-2 py-1 rounded ${
               trend >= 70

@@ -2,7 +2,7 @@
 import { Label, LoaderButton, Button } from "@/Global/components";
 import RequiredFields from "@/Global/components/ui/FormsComponents/RequiredFields";
 import { FieldErrors, UseFormRegister, UseFormRegisterReturn } from "react-hook-form";
-import { ExerciseFormData } from "./ExerciseFormFields";
+import { ExerciseFormData } from "../utils/ExerciseSchema";
 
 type ExerciseFormFieldsProps = {
   register: UseFormRegister<ExerciseFormData>;

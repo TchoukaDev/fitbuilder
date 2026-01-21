@@ -9,7 +9,8 @@ type WorkoutSessionBase = {
     isPlanned: boolean;
     startedAt: string | null;
     completedDate: string | null;
-    duration: number;
+    estimatedDuration: number;
+    duration: string;
     exercises: SessionExercise[];
     createdAt: string;
     updatedAt: string;

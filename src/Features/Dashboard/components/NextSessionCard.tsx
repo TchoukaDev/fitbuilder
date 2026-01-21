@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { Button } from "@/Global/components";
+import { WorkoutSession } from "@/types/workoutSession";
 
-export default function NextSessionCard({ sessions }) {
+export default function NextSessionCard({ sessions }: {sessions: WorkoutSession[]}) {
   if (!sessions || sessions.length === 0) {
     return (
       <div className="bg-white rounded-lg shadow-md p-6 border-2 border-gray-200">

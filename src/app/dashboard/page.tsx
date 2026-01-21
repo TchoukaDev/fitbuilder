@@ -6,11 +6,11 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/libs/auth";
 import { redirect } from "next/navigation";
 
-export default async function Dashboard({ searchParams }) {
+export default async function Dashboard({ searchParams }: { searchParams: { authError: string } }) {
   const session = await getServerSession(authOptions);
 
   const userId = session?.user?.id;
-  if (!session || !session.user?.id) {
+  if (!session || !userId) {
     redirect("/");
   }
 

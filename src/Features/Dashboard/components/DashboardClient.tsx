@@ -1,13 +1,13 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { ClipLoader } from "react-spinners";
 import StatCard from "./StatCard";
 import NextSessionCard from "./NextSessionCard";
 import TodaySessionsList from "./TodaySessionsList";
 import FavoriteWorkoutCard from "./FavoriteWorkoutCard";
+  import DashboardSkeleton from "./DashboardSkeleton";
 
-export default function DashboardClient({ userId }) {
+export default function DashboardClient({ userId }: { userId: string }) {
   const { data, isLoading } = useQuery({
     queryKey: ["dashboard", userId],
     queryFn: async () => {
@@ -24,13 +24,6 @@ export default function DashboardClient({ userId }) {
     refetchOnWindowFocus: false,
   });
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <ClipLoader size={60} color="#7557ff" />
-      </div>
-    );
-  }
 
   const {
     counts,
@@ -49,15 +42,19 @@ export default function DashboardClient({ userId }) {
   // Formater la durée
   const [hours, minutes] = totalDuration?.split(":") || ["0", "0"];
   const formattedDuration = `${parseInt(hours)}h ${parseInt(minutes)}m`;
-console.log(completionRate);
+
   return (
-    <div className="p-6">
+    <div className="p-6 space-y-8">
       {/* Header */}
-      <div className="mb-8">
-        <p>Suivez vos progrès et planifiez vos entraînements</p>
-      </div>
+    
+          <p className="text-lg font-medium text-center" >Suivez vos progrès et planifiez vos entraînements</p>
+       
+
+      {isLoading ? ( 
+        <DashboardSkeleton />
+      ) : (<>
       {/* Grille 2 colonnes */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Séances du jour */}
         <TodaySessionsList sessions={todaySessions || []} />
 
@@ -67,13 +64,15 @@ console.log(completionRate);
         </div>
       </div>
       {/* Stats principales (4 colonnes) */}
-      <div className="grid grid-cols-1  sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1  sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {" "}
         <StatCard
           title="Streak"
           value={`${streak || 0} jour${streak > 1 ? "s" : ""}`}
           subtitle={`consécutif${streak > 1 ? "s" : ""}`}
           icon="🔥"
+          trend={null}
+          trendLabel={null}
         />
         <StatCard
           title={`Séance${monthStats?.completed > 1 ? "s" : ""} ce mois`}
@@ -90,16 +89,20 @@ console.log(completionRate);
           value={counts.exercises}
           subtitle={`créé${counts.exercises > 1 ? "s" : ""}`}
           icon="📝"
+          trend={null}
+          trendLabel={null}
         />
         <StatCard
           title={`Plan${counts.workouts > 1 ? "s" : ""} d'entraînement`}
           value={counts.workouts}
           subtitle={`personnalisé${counts.workouts > 1 ? "s" : ""}`}
           icon="📋"
+          trend={null}
+          trendLabel={null}
         />
       </div>
 
-      <div className="grid grid-cols-1  sm:grid-cols-2 lg:grid-cols-4  gap-4 mb-8">
+      <div className="grid grid-cols-1  sm:grid-cols-2 lg:grid-cols-4  gap-4">
         {" "}
         <StatCard
           title={`Séance${counts.completed > 1 ? "s" : ""} totale${
@@ -108,31 +111,41 @@ console.log(completionRate);
           value={counts.completed}
           subtitle={`terminée${counts.completed > 1 ? "s" : ""}`}
           icon="🏆"
+          trend={null}
+          trendLabel={null}
         />
         <StatCard
           title="Temps total"
           value={formattedDuration || "0h 0m"}
           subtitle="d'entraînement"
           icon="⏱️"
+          trend={null}
+          trendLabel={null}
         />
         <StatCard
           title="Volume total"
           value={totalWeight || 0}
           subtitle="kg"
           icon="🏋️"
+          trend={null}
+          trendLabel={null}
         />
         <StatCard
           title="Séries totales"
           value={totalSets || 0}
           subtitle={`${totalReps || 0} répétitions`}
           icon="💪"
+          trend={null}
+          trendLabel={null}
         />
       </div>
-      <div className="grid grid-cols-1  md:grid-cols-5 gap-4 mb-8">
+      <div className="grid grid-cols-1  md:grid-cols-5 gap-4">
         <div className="col-span-2  md:col-span-3 md:col-end-5 ">
           <FavoriteWorkoutCard workout={favoriteWorkout || null} />
         </div>
       </div>
+      </>
+      )}
     </div>
   );
 }

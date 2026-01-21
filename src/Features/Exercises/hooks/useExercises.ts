@@ -7,7 +7,7 @@ import {
 } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { Exercise } from "@/types/exercise";
-import { ExerciseFormData } from "../forms/ExerciseFormFields";
+import { ExerciseFormData } from "../utils/ExerciseSchema";
 
 // ========== Types pour les réponses API ==========
 type ApiError = {
