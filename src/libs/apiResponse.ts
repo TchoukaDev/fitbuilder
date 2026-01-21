@@ -3,6 +3,17 @@
  * Assure la cohérence des messages d'erreur et de succès dans toute l'application
  */
 
+
+export type ApiError = {
+  error: string;
+  message: string;
+}
+
+export type ApiSuccess = {
+  success: boolean;
+  message: string;
+}
+
 // ═══════════════════════════════════════════════════════
 // 🔴 ERREURS API
 // ═══════════════════════════════════════════════════════
