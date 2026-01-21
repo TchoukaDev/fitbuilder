@@ -5,6 +5,7 @@ import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
 import { ApiError, ApiSuccess } from "@/libs/apiResponse";
 import { requireAuth } from "@/libs/authMiddleware";
+import { getSessionbyId } from "@/Features/Sessions/utils";
 
 // GET - Récupérer une séance spécifique
 export async function GET(req, { params }) {
@@ -17,16 +18,14 @@ export async function GET(req, { params }) {
   const sessionId = resolvedParams.id;
 
   try {
-    const db = await connectDB();
-    const singleSession = await db.collection("users").findOne({
-      _id: new ObjectId(userId),
-      "sessions._id": new ObjectId(sessionId),
-    });
-    if (!singleSession) {
+    // ✅ Utilise le helper qui retourne WorkoutSession avec id (pas _id)
+    const session = await getSessionbyId(userId, sessionId);
+
+    if (!session) {
       return NextResponse.json(ApiError.NOT_FOUND("Session"), { status: 404 });
     }
 
-    return NextResponse.json(singleSession, { status: 200 });
+    return NextResponse.json(session, { status: 200 });
   } catch (error) {
     console.error("Erreur GET session:", error);
     return NextResponse.json(ApiError.SERVER_ERROR, { status: 500 });

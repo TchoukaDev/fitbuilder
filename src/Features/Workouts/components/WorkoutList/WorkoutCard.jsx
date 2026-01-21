@@ -20,7 +20,7 @@ export default function WorkoutCard({ workout, userId }) {
       {/* Header */}
       <div className="flex justify-between items-start mb-3">
         <div className="flex-1 min-w-0">
-          <Link href={`/workouts/${workout._id}`}>
+          <Link href={`/workouts/${workout.id}`}>
             <h3 className="text-xl font-bold text-primary-700 hover:text-primary-500 cursor-pointer">
               {workout.name}
             </h3>
@@ -72,7 +72,7 @@ export default function WorkoutCard({ workout, userId }) {
             label="Voir les détails de l'entraînement"
             width="w-12 md:w-fit"
           >
-            <Link href={`/workouts/${workout._id}`}>
+            <Link href={`/workouts/${workout.id}`}>
               <Search />
               <span className="hidden md:inline">Voir les détails</span>
             </Link>
@@ -80,13 +80,13 @@ export default function WorkoutCard({ workout, userId }) {
         </div>
         <StartWorkoutButton userId={userId} workout={workout} />
         <Button width="w-12 md:w-auto" asChild edit>
-          <Link href={`/workouts/${workout._id}/edit`}>
+          <Link href={`/workouts/${workout.id}/edit`}>
             <Edit size={18} />
             <span className="hidden md:inline">Modifier</span>
           </Link>
         </Button>
 
-        <WorkoutDeleteButton workoutId={workout._id} sm />
+        <WorkoutDeleteButton workoutId={workout.id} sm />
       </div>
     </div>
   );

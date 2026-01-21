@@ -34,7 +34,7 @@ export default function WorkoutExerciseConfigurator({
 
   // Réupérer l'exercice sélectionné au complet
   const exerciseSelected = useMemo(
-    () => cachedExercises.filter((ex) => ex._id === selectedExerciseId)[0],
+    () => cachedExercises.filter((ex) => ex.id === selectedExerciseId)[0],
     [cachedExercises, selectedExerciseId],
   );
 

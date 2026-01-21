@@ -32,7 +32,7 @@ export default function useCalendarHandlers(userId, setCurrentDate) {
   // Ouvrir la modale de suppression d'événement
   const handleDeleteEvent = (event) => {
     openModal("deleteConfirm", {
-      id: event.resource._id,
+      id: event.resource.id,
     });
   };
 

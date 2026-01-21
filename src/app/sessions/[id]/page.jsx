@@ -21,7 +21,7 @@ export default async function SingleSessionPage({ params }) {
 
   return (
     <SessionExecution
-      key={sessionData._id}
+      key={sessionData.id}
       sessionData={serializedSession}
       userId={userId}
       sessionId={sessionId}

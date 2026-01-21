@@ -1,9 +1,7 @@
 import { requireAuth } from "@/libs/authMiddleware";
 import { NextResponse } from "next/server";
-import connectDB from "@/libs/mongodb";
-import { ObjectId } from "mongodb";
 import { ApiError } from "@/libs/apiResponse";
-import { revalidatePath } from "next/cache";
+import { getCalendarSessions } from "@/Features/Sessions/utils";
 
 export async function GET(req) {
   const auth = await requireAuth(req);
@@ -14,28 +12,13 @@ export async function GET(req) {
   const statusFilter = searchParams.get("status"); // ✅ Optionnel
 
   try {
-    const db = await connectDB();
-    const user = await db
-      .collection("users")
-      .findOne({ _id: new ObjectId(userId) }, { projection: { sessions: 1 } });
-
-    if (!user) {
-      return NextResponse.json(ApiError.NOT_FOUND("Utilisateur"), {
-        status: 404,
-      });
-    }
-
-    let sessions = user.sessions || [];
-
-    // ✅ Filtrer par statut si paramètre fourni
-    if (statusFilter) {
-      sessions = sessions.filter((s) => s.status === statusFilter);
-    }
+    // ✅ Utilise le helper qui retourne WorkoutSession[] avec id (pas _id)
+    const sessions = await getCalendarSessions(userId, statusFilter);
 
     return NextResponse.json(
       {
         success: true,
-        sessions: sessions,
+        sessions,
         count: sessions.length,
       },
       { status: 200 },

@@ -59,7 +59,7 @@ export default function ExerciseSelector({
       return;
     }
     // Vérifier si l'exercie a déjà été ajouté
-    if (exercisesAdded.some((ex) => ex._id === selectedExerciseId)) {
+    if (exercisesAdded.some((ex) => ex.id === selectedExerciseId)) {
       setErrorSelectedExerciseId("Cet exercice a déjà été ajouté");
       return;
     }

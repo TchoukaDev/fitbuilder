@@ -167,11 +167,25 @@ export async function GET(req) {
       return date >= startOfMonth && date <= endOfMonth;
     });
 
+        // ========================================
+    // Taux de complétion sur le mois
+    // ========================================
+    const totalPlannedOrCompleted = sessionsThisMonth.filter(
+      (s) => s.status === "completed" || s.status === "planned",
+    ).length;
+
+    const completionRate =
+      totalPlannedOrCompleted > 0
+        ? Math.round((sessionsThisMonth.filter((s) => s.status === "completed").length / totalPlannedOrCompleted) * 100)
+        : 0;
+
+
     const monthStats = {
       total: sessionsThisMonth.length,
       completed: sessionsThisMonth.filter((s) => s.status === "completed")
         .length,
       planned: sessionsThisMonth.filter((s) => s.status === "planned").length,
+      completionRate,
     };
 
     // ========================================
@@ -224,17 +238,21 @@ export async function GET(req) {
       );
     }, 0);
 
-    // ========================================
-    // Taux de complétion
-    // ========================================
-    const totalPlannedOrCompleted = sessions.filter(
-      (s) => s.status === "completed" || s.status === "planned",
-    ).length;
 
-    const completionRate =
-      totalPlannedOrCompleted > 0
-        ? Math.round((completedSessions.length / totalPlannedOrCompleted) * 100)
-        : 0;
+    // ========================================
+    // Transformation _id → id pour les objets retournés
+    // ========================================
+    const transformSession = (s) => ({
+      ...s,
+      id: s._id.toString(),
+      userId: s.userId?.toString(),
+      workoutId: s.workoutId?.toString(),
+    });
+
+    const transformWorkout = (w) => ({
+      ...w,
+      id: w._id.toString(),
+    });
 
     // ========================================
     // Retour
@@ -242,18 +260,16 @@ export async function GET(req) {
     return NextResponse.json(
       {
         data: {
-          nextSessions,
-          todaySessions,
+          nextSessions: nextSessions.map(transformSession),
+          todaySessions: todaySessions.map(transformSession),
           counts,
-          favoriteWorkout,
+          favoriteWorkout: favoriteWorkout ? transformWorkout(favoriteWorkout) : null,
           totalDuration,
           totalReps,
           totalWeight,
           streak,
           monthStats,
           totalSets,
-          totalReps,
-          totalWeight,
           completionRate,
         },
       },

@@ -183,7 +183,7 @@ export default function SessionExecution({ sessionData, sessionId, userId }) {
         <div className="space-y-4">
           {exercises.map((exercise, index) => (
             <SessionExerciseCard
-              key={exercise.exerciseId}
+              key={`${exercise.exerciseId}-${index}`}
               exercise={exercise}
               index={index}
               isActive={index === currentExerciseIndex}

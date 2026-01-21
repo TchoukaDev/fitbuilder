@@ -159,7 +159,7 @@ export function useUpdateWorkout(userId) {
       // 3. Met à jour IMMÉDIATEMENT le cache
       queryClient.setQueryData(key, (old) => {
         if (!old) return old;
-        return old.map((w) => (w._id === id ? { ...w, ...updatedWorkout } : w));
+        return old.map((w) => (w.id === id ? { ...w, ...updatedWorkout } : w));
       });
 
       return { previousWorkouts };
@@ -207,7 +207,7 @@ export function useDeleteWorkout(userId) {
       const previousWorkouts = queryClient.getQueryData(key);
 
       queryClient.setQueryData(key, (old = []) =>
-        old.filter((w) => w._id !== id),
+        old.filter((w) => w.id !== id),
       );
 
       return { previousWorkouts };

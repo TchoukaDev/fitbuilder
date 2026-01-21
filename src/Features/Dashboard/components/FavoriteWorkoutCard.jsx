@@ -65,7 +65,7 @@ export default function FavoriteWorkoutCard({ workout }) {
         </div>
         <div className="flex justify-center items-center">
           <Button asChild>
-            <Link href={`/workouts/${workout._id}`}>Voir le plan</Link>
+            <Link href={`/workouts/${workout.id}`}>Voir le plan</Link>
           </Button>
         </div>
       </div>

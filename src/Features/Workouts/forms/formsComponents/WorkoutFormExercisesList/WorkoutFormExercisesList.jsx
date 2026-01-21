@@ -45,7 +45,7 @@ export default function WorkoutFormExercisesList({
           <AnimatePresence mode="popLayout">
             {exercisesStore.map((exercise, index) => (
               <ExerciseItem
-                key={exercise._id || exercise.id || index}
+                key={exercise.id || index}
                 index={index}
                 total={exercisesStore.length}
                 onEditClick={onEditClick}

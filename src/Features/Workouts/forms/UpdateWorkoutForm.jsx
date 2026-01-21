@@ -77,7 +77,7 @@ export default function UpdateWorkoutForm({
     }
     updateWorkout(
       {
-        id: workout._id,
+        id: workout.id,
         updatedWorkout: { ...data, exercises: exercises },
       },
       {

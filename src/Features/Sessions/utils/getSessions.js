@@ -105,8 +105,16 @@ export async function getAllSessions(userId, filters = {}) {
       planned: allUserSessions.filter((s) => s.status === "planned").length,
     };
 
+    // Convertir _id en id pour l'application
+    const formattedSessions = sessionsForThisPage.map((session) => ({
+      ...session,
+      id: session._id.toString(),
+      userId: session.userId?.toString(),
+      workoutId: session.workoutId?.toString(),
+    }));
+
     return {
-      sessions: sessionsForThisPage,
+      sessions: formattedSessions,
       pagination: {
         page,
         limit,
@@ -153,10 +161,10 @@ export async function getSessionbyId(userId, sessionId) {
       return null;
     }
 
-    // ✅ Convertir les ObjectId en strings
+    // ✅ Convertir les ObjectId en strings et _id en id
     const session = {
       ...data,
-      _id: data._id.toString(),
+      id: data._id.toString(),
       userId: data.userId.toString(),
       workoutId: data.workoutId.toString(),
     };
@@ -181,9 +189,50 @@ export async function getPlannedSessions(userId) {
       return [];
     }
     const sessions = user.sessions.filter((s) => s.mode === "planned");
-    return sessions;
+    // Convertir _id en id pour l'application
+    return sessions.map((session) => ({
+      ...session,
+      id: session._id.toString(),
+      userId: session.userId?.toString(),
+      workoutId: session.workoutId?.toString(),
+    }));
   } catch (error) {
     console.error("❌ Erreur de récupération des sessions planifiées:", error);
+    return [];
+  }
+}
+
+// Récupère les sessions pour le calendrier (toutes ou filtrées par statut)
+export async function getCalendarSessions(userId, statusFilter = null) {
+  if (!userId) return [];
+  
+  try {
+    const db = await connectDB();
+    const user = await db
+      .collection("users")
+      .findOne({ _id: new ObjectId(userId) });
+    
+    if (!user) {
+      console.error("❌ Utilisateur non trouvé:", userId);
+      return [];
+    }
+    
+    let sessions = user?.sessions || [];
+    
+    // Filtrer par statut si fourni
+    if (statusFilter && statusFilter !== "all") {
+      sessions = sessions.filter((s) => s.status === statusFilter);
+    }
+    
+    // Convertir _id en id pour l'application
+    return sessions.map((session) => ({
+      ...session,
+      id: session._id.toString(),
+      userId: session.userId?.toString(),
+      workoutId: session.workoutId?.toString(),
+    }));
+  } catch (error) {
+    console.error("❌ Erreur getCalendarSessions:", error);
     return [];
   }
 }

@@ -85,7 +85,7 @@ export default function useEventForm({
   useEffect(() => {
     if (!workoutId || !workouts) return;
 
-    const workout = workouts.find((w) => w._id === workoutId);
+    const workout = workouts.find((w) => w.id === workoutId);
     if (workout?.estimatedDuration && workout.estimatedDuration !== duration) {
       setValue("duration", workout.estimatedDuration);
     }

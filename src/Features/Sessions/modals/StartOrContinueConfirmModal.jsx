@@ -27,9 +27,9 @@ export default function StartOrContinueConfirmModal({
 
   const handleStartOrContinue = () => {
     if (action === "start") {
-      startPlannedSession(session._id, {
+      startPlannedSession(session.id, {
         onSuccess: () => {
-          router.push(`/sessions/${session._id}`);
+          router.push(`/sessions/${session.id}`);
           closeModal("startOrContinueSession");
         },
         onError: (error) => {
@@ -37,14 +37,14 @@ export default function StartOrContinueConfirmModal({
         },
       });
     } else {
-      router.push(`/sessions/${session._id}`);
+      router.push(`/sessions/${session.id}`);
       closeModal("startOrContinueSession");
     }
   };
 
   const handleDeleteOrCancel = () => {
     if (action === "start") {
-      deleteSession(session._id, {
+      deleteSession(session.id, {
         onSuccess: () => {
           toast.success("Séance supprimée avec succès");
           closeModal("startOrContinueSession");
@@ -56,7 +56,7 @@ export default function StartOrContinueConfirmModal({
         },
       });
     } else {
-      cancelSession(session._id, {
+      cancelSession(session.id, {
         onSuccess: () => {
           closeModal("startOrContinueSession");
         },

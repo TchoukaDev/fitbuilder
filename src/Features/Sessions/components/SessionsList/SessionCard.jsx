@@ -72,7 +72,7 @@ export default function SessionCard({ session, userId }) {
       });
     } else if (session.status === "completed") {
       // ✅ Voir le détail de la séance terminée
-      router.push(`/sessions/${session._id}/detail`);
+      router.push(`/sessions/${session.id}/detail`);
     } else if (session.status === "planned") {
       // Démarrer la séance planifiée
       openModal("startOrContinueSession", {

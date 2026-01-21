@@ -42,7 +42,7 @@ export default function WorkoutList({ initialWorkouts, userId }) {
         </div>
         {/* Cards */}
         {workouts?.map((workout) => (
-          <WorkoutCard key={workout?._id} workout={workout} userId={userId} />
+          <WorkoutCard key={workout?.id} workout={workout} userId={userId} />
         ))}{" "}
       </div>
       {/* Modale de suppression */}

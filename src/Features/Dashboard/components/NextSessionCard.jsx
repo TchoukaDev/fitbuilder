@@ -46,7 +46,7 @@ export default function NextSessionCard({ sessions }) {
 
           return (
             <div
-              key={session._id}
+              key={session.id}
               className="p-4 bg-gray-50 rounded-lg border border-gray-200 hover:border-primary-400 space-y-4  transition-colors"
             >
               <div className="flex justify-center  items-center gap-5">
@@ -70,7 +70,7 @@ export default function NextSessionCard({ sessions }) {
               </div>
               <div className="flex justify-center">
                 <Button asChild>
-                  <Link href={`/sessions/${session._id}`}>Voir</Link>
+                  <Link href={`/sessions/${session.id}`}>Voir</Link>
                 </Button>
               </div>
             </div>

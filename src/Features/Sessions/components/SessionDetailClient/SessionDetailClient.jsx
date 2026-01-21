@@ -74,7 +74,7 @@ export default function SessionDetailClient({ session, userId }) {
   // 🎬 HANDLERS
   // ═══════════════════════════════════════════════════════
   const handleDelete = () => {
-    deleteSessionMutation(session._id, {
+    deleteSessionMutation(session.id, {
       onSuccess: () => {
         toast.success("Session d'entraînement supprimée avec succès");
         closeModal("deleteConfirm");

@@ -35,17 +35,17 @@ export default function EventDetailsModal({
   // ========================================
 
   const handleStart = () => {
-    startSession.mutate(session._id, {
+    startSession.mutate(session.id, {
       onSuccess: () => {
         closeModal("eventDetails");
-        router.push(`/sessions/${session._id}`);
+        router.push(`/sessions/${session.id}`);
       },
     });
   };
 
   const handleView = () => {
     closeModal("eventDetails");
-    router.push(`/sessions/${session._id}/detail`);
+    router.push(`/sessions/${session.id}/detail`);
   };
 
   // ========================================
@@ -86,7 +86,7 @@ export default function EventDetailsModal({
         {/* IN-PROGRESS : Reprendre */}
         {session.status === "in-progress" && (
           <Button
-            onClick={() => router.push(`/sessions/${session._id}`)}
+            onClick={() => router.push(`/sessions/${session.id}`)}
             className="btn-primary"
           >
             <Play size={20} />

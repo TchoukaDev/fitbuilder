@@ -113,7 +113,7 @@ export function useGetCalendarSessions(
         const end = new Date(start.getTime() + durationMs);
 
         return {
-          id: session._id,
+          id: session.id,
           title: session.workoutName,
           start: start,
           end: end,
@@ -318,7 +318,7 @@ export function useUpdatePlannedSession(userId, statusFilter = null) {
       // Mise à jour optimiste des sessions
       queryClient.setQueryData(sessionsKey, (old = []) => [
         ...old.map((s) =>
-          s._id === sessionId ? { ...s, ...updatedSession } : s,
+          s.id === sessionId ? { ...s, ...updatedSession } : s,
         ),
       ]);
       // Mise à jour optimiste des événements
@@ -327,7 +327,7 @@ export function useUpdatePlannedSession(userId, statusFilter = null) {
       const end = new Date(start.getTime() + durationMs);
       queryClient.setQueryData(calendarKey, (old = []) => [
         ...old.map((e) =>
-          e.resource._id === sessionId
+          e.resource.id === sessionId
             ? {
                 ...e,
                 title: updatedSession.workoutName,
@@ -380,12 +380,12 @@ export function useFinishSession(userId, sessionId) {
       const previousEvents = queryClient.getQueryData(calendarKey);
       queryClient.setQueryData(sessionsKey, (old = []) => [
         old.map((s) =>
-          s._id === sessionId ? { ...s, exercises, duration } : s,
+          s.id === sessionId ? { ...s, exercises, duration } : s,
         ),
       ]);
       queryClient.setQueryData(calendarKey, (old = []) => [
         old.map((e) =>
-          e.resource._id === sessionId
+          e.resource.id === sessionId
             ? {
                 ...e,
                 resource: {
@@ -488,11 +488,11 @@ export function useDeleteSession(userId, statusFilter = null) {
 
       // Mise à jour optimiste des sessions
       queryClient.setQueryData(sessionsKey, (old = []) =>
-        old.filter((s) => s._id !== id),
+        old.filter((s) => s.id !== id),
       );
       // Mise à jour optimiste des événements
       queryClient.setQueryData(calendarKey, (old = []) =>
-        old.filter((e) => e.resource._id !== id),
+        old.filter((e) => e.resource.id !== id),
       );
       return { previousSessions, previousEvents };
     },

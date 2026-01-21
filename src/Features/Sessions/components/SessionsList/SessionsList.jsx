@@ -113,7 +113,7 @@ export default function SessionsList({
           <div className="space-y-3 mb-6 overflow-hidden">
             {sessions.map((session) => (
               <SessionCard
-                key={session._id}
+                key={session.id}
                 session={session}
                 userId={userId}
               />

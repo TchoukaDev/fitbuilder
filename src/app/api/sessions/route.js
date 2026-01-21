@@ -5,6 +5,7 @@ import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
 import { ApiError } from "@/libs/apiResponse";
 import { requireAuth } from "@/libs/authMiddleware";
+import { getAllSessions } from "@/Features/Sessions/utils";
 
 // POST - Démarrer une nouvelle séance à partir d'un plan d'entraînement
 export async function POST(req) {
@@ -38,7 +39,7 @@ export async function POST(req) {
   try {
     // Initialiser les exercices pour la nouvelle séance
     const sessionExercises = exercises.map((ex) => ({
-      exerciseId: ex._id,
+      exerciseId: ex.exerciseId, // exerciseId vient de WorkoutExercise
       exerciseName: ex.name,
       order: ex.order,
       targetSets: ex.sets,
@@ -137,140 +138,16 @@ export async function GET(req) {
   const workoutFilter = searchParams.get("workoutFilter");
 
   try {
-    const db = await connectDB();
-    const user = await db
-      .collection("users")
-      .findOne({ _id: new ObjectId(userId) });
-
-    if (!user) {
-      return NextResponse.json(ApiError.NOT_FOUND("Utilisateur"), {
-        status: 404,
-      });
-    }
-
-    let sessions = user?.sessions || [];
-
-    // Filtre par statut
-    if (status && status !== "all") {
-      sessions = sessions.filter((s) => s.status === status);
-    }
-
-    // Filtre par plan d'entraînement
-    if (workoutFilter && workoutFilter !== "all") {
-      sessions = sessions.filter((s) => s.workoutName === workoutFilter);
-    }
-
-    // Filtre par période
-    if (dateFilter) {
-      const now = new Date();
-      let startDate;
-
-      switch (dateFilter) {
-        case "week":
-          startDate = new Date();
-          startDate.setDate(now.getDate() - 7); // Soustraire 7 jours
-          break;
-        case "month":
-          startDate = new Date();
-          startDate.setDate(now.getDate() - 30); // Soustraire 30 jours
-          break;
-        case "quarter":
-          startDate = new Date();
-          startDate.setMonth(now.getMonth() - 3); // Soustraire 3 mois
-          break;
-        case "year":
-          startDate = new Date();
-          startDate.setFullYear(now.getFullYear() - 1); // Soustraire 1 an
-          break;
-      }
-
-      if (startDate) {
-        sessions = sessions.filter((s) => {
-          const sessionDate = new Date(
-            s.completedDate || s.startedAt || s.scheduledDate || s.createdAt,
-          );
-
-          // ✅ Comparaison de 2 objets Date
-          return sessionDate >= startDate;
-        });
-      }
-    }
-
-    // Tri par date décroissante
-    sessions.sort((a, b) => {
-      const dateA = new Date(
-        a.completedDate || a.scheduledDate || a.startedAt || a.createdAt,
-      );
-      const dateB = new Date(b.completedDate || b.startedAt || b.createdAt);
-      return dateB - dateA;
+    // ✅ Utilise le helper qui fait tout : filtres, pagination, stats, transformation ObjectId → string
+    const result = await getAllSessions(userId, {
+      page,
+      limit,
+      status,
+      dateFilter,
+      workoutFilter,
     });
 
-    // Pagination
-    const totalSessions = sessions.length;
-    const startIndex = (page - 1) * limit;
-    // Page 1 : (1-1) * 20 = 0   → Commence à l'index 0
-    // Page 2 : (2-1) * 20 = 20  → Commence à l'index 20
-    // Page 3 : (3-1) * 20 = 40  → Commence à l'index 40
-
-    const endIndex = startIndex + limit;
-    // Page 1 : 0 + 20 = 20   → Termine à l'index 20
-    // Page 2 : 20 + 20 = 40  → Termine à l'index 40
-
-    // ✅ Extraire SEULEMENT les sessions de cette page
-    const sessionsForThisPage = sessions.slice(startIndex, endIndex);
-    // .slice(20, 40) retourne les éléments de l'index 20 à 39 (40 exclus)
-
-    const totalPages = Math.ceil(totalSessions / limit);
-    // 100 sessions / 20 par page = 5 pages
-    // Math.ceil() arrondit au supérieur (si 101 sessions → 6 pages)
-
-    const hasNextPage = page < totalPages;
-    // Page 2 < 5 pages → true (il y a une page 3)
-    // Page 5 < 5 pages → false (c'est la dernière)
-
-    const hasPreviousPage = page > 1;
-    // Page 2 > 1 → true (il y a une page 1 avant)
-    // Page 1 > 1 → false (c'est la première)
-
-    // Sérialisation des données
-    const serializedSessions = sessionsForThisPage.map((s) => ({
-      ...s,
-      _id: s._id.toString(),
-      userId: s.userId.toString(),
-      workoutName: s.workoutName,
-      workoutId: s.workoutId.toString(),
-      createdAt: s.createdAt?.toISOString?.() || s.createdAt,
-      updatedAt: s.updatedAt?.toISOString?.() || s.updatedAt,
-      startedAt: s.startedAt?.toISOString?.() || s.startedAt,
-      completedDate: s.completedDate?.toISOString?.() || s.completedDate,
-      scheduledDate: s.scheduledDate?.toISOString?.() || s.scheduledDate,
-    }));
-
-    // Statistiques globales
-    const allUserSessions = user?.sessions || [];
-    const stats = {
-      total: allUserSessions.length,
-      completed: allUserSessions.filter((s) => s.status === "completed").length,
-      inProgress: allUserSessions.filter((s) => s.status === "in-progress")
-        .length,
-      planned: allUserSessions.filter((s) => s.status === "planned").length,
-    };
-
-    return NextResponse.json(
-      {
-        sessions: serializedSessions,
-        pagination: {
-          page,
-          limit,
-          totalSessions,
-          totalPages,
-          hasNextPage: page < totalPages,
-          hasPreviousPage: page > 1,
-        },
-        stats,
-      },
-      { status: 200 },
-    );
+    return NextResponse.json(result, { status: 200 });
   } catch (error) {
     console.error("Erreur GET sessions:", error);
     return NextResponse.json(

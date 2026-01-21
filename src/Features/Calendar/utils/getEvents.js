@@ -22,11 +22,16 @@ export async function getEvents(userId) {
     const end = new Date(start.getTime() + durationMs);
 
     return {
-      id: session._id,
+      id: session._id.toString(),
       title: session.workoutName,
       start: start,
       end: end,
-      resource: session,
+      resource: {
+        ...session,
+        id: session._id.toString(),
+        userId: session.userId?.toString(),
+        workoutId: session.workoutId?.toString(),
+      },
       color: getColorByStatus(session.status).color,
       colorHover: getColorByStatus(session.status).colorHover,
     };

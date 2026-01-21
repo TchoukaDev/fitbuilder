@@ -119,7 +119,7 @@ export async function PATCH(req, { params }) {
         $set: {
           "workouts.$.name": name,
           "workouts.$.category": category,
-          "workouts.$.estimationDuration": estimatedDuration,
+          "workouts.$.estimatedDuration": estimatedDuration,
           "workouts.$.description": description,
           "workouts.$.exercises": exercises,
           "workouts.$.updatedAt": new Date(),

@@ -37,7 +37,7 @@ export default function TodaySessionsList({ sessions }) {
 
           return (
             <div
-              key={session._id}
+              key={session.id}
               className="flex items-center justify-between p-4 bg-blue-50 rounded-lg border border-blue-200"
             >
               <div>
@@ -48,7 +48,7 @@ export default function TodaySessionsList({ sessions }) {
                   ⏰ {time} • ⏱️ {session.estimatedDuration} min
                 </p>
               </div>
-              <Link href={`/sessions/${session._id}`}>
+              <Link href={`/sessions/${session.id}`}>
                 <Button size="sm">Démarrer</Button>
               </Link>
             </div>

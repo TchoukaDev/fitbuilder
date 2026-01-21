@@ -102,7 +102,7 @@ export default function WorkoutDetailPageClient({
             {/* Modifier */}
 
             <Button asChild width="w-12 md:w-auto" edit>
-              <Link href={`/workouts/${workout._id}/edit`}>
+              <Link href={`/workouts/${workout.id}/edit`}>
                 <Edit size={18} />
                 <span className="hidden md:inline">Modifier</span>
               </Link>
@@ -136,7 +136,7 @@ export default function WorkoutDetailPageClient({
             <div className="space-y-4">
               {workout.exercises?.map((exercise, index) => (
                 <WorkoutExerciseItem
-                  key={exercise._id || exercise.id || index}
+                  key={exercise.id || index}
                   exercise={exercise}
                 />
               ))}

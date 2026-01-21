@@ -13,7 +13,7 @@ export default function StartWorkoutButton({ userId, workout }) {
   const handleStart = () => {
     startSession(
       {
-        workoutId: workout._id,
+        workoutId: workout.id,
         workoutName: workout.name,
         exercises: workout.exercises,
       },
