@@ -16,3 +16,6 @@ export const loginSchema = z.object({
 
   autoLogin: z.boolean().optional().default(true),
 });
+
+export type LoginSchemaTypeInput = z.input<typeof loginSchema>;
+export type LoginSchemaTypeOutput = z.output<typeof loginSchema>;

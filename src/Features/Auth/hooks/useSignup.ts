@@ -3,20 +3,22 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import { SignUpSchemaType } from "../utils";
+
 
 /**
  * Gère l'inscription utilisateur (appel API + gestion des erreurs serveur).
  */
 export function useSignUp() {
   const router = useRouter();
-  const [serverErrors, setServerErrors] = useState({});
+  const [serverErrors, setServerErrors] = useState<Record<string, string>>({});
 
   /**
    * Envoie les données d'inscription à l'API.
    *
    * @param {Object} data - Données du formulaire (email, mot de passe, etc.).
    */
-  const signUp = async (data) => {
+  const signUp = async (data: SignUpSchemaType) => {
     setServerErrors({});
 
     try {
@@ -28,22 +30,36 @@ export function useSignUp() {
 
       const result = await response.json();
 
-      if (!response.ok || !result.success) {
-        if (result.fieldErrors) {
-          setServerErrors(result.fieldErrors);
-          return { success: false };
-        }
+      // ✅ Gestion des erreurs de validation
+      if (result.fieldErrors) {
+        setServerErrors(result.fieldErrors);
+        return { success: false };
       }
 
+      // ✅ Gestion des autres erreurs
+      if (!response.ok || !result.success) {
+        toast.error(result.error || "Erreur lors de l'inscription");
+        return { success: false };
+      }
+
+      // ✅ Succès
       toast.success(
         result.message ||
-          "Compte créé avec succès ! Un email de vérification a été envoyé à votre adresse. Veuillez vérifier votre boîte mail (pensez aux spams).",
+        "Compte créé avec succès ! Un email de vérification a été envoyé à votre adresse. Veuillez vérifier votre boîte mail (pensez aux spams).",
       );
       router.push("/");
       return { success: true };
     } catch (error) {
       console.error("Erreur signup:", error);
-      toast.error(error?.message || "Erreur lors de l'inscription");
+
+      let errorMessage = "Erreur lors de l'inscription";
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === "string") {
+        errorMessage = error;
+      }
+
+      toast.error(errorMessage);
       return { success: false };
     }
   };
@@ -53,7 +69,7 @@ export function useSignUp() {
    *
    * @param {string} fieldName - Nom du champ à nettoyer.
    */
-  const clearServerError = (fieldName) => {
+  const clearServerError = (fieldName: string) => {
     if (serverErrors[fieldName]) {
       setServerErrors((prev) => {
         const newErrors = { ...prev };

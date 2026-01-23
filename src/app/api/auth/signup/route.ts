@@ -2,22 +2,24 @@
 import connectDB from "@/libs/mongodb";
 import bcrypt from "bcryptjs";
 import { signUpSchema } from "@/Features/Auth/utils";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { ApiError, ApiSuccess } from "@/libs/apiResponse";
 import { createVerificationToken } from "@/libs/emailVerification";
 import { sendVerificationEmail } from "@/libs/emailService";
 
 // POST - Créer un nouveau compte utilisateur
-export async function POST(req) {
+export async function POST(req: NextRequest) {
   try {
     // Extraction et validation des données
     const body = await req.json();
     const validationResult = signUpSchema.safeParse(body);
 
     if (!validationResult.success) {
-      const fieldErrors = {};
+      const fieldErrors: Record<string, string> = {};
       validationResult.error.issues.forEach((issue) => {
-        fieldErrors[issue.path[0]] = issue.message;
+        if (issue.path[0] && typeof issue.path[0] === "string") {
+          fieldErrors[issue.path[0]] = issue.message;
+        }
       });
 
       return NextResponse.json(

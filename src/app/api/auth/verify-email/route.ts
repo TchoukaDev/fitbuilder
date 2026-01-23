@@ -1,11 +1,11 @@
 // API Route pour vérifier l'email d'un utilisateur via le token
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import connectDB from "@/libs/mongodb";
 import { verifyToken, deleteToken } from "@/libs/emailVerification";
 import { ObjectId } from "mongodb";
 
 // GET - Vérifier le token et activer le compte
-export async function GET(req) {
+export async function GET(req: NextRequest) {
   try {
     // Récupère le token depuis les query params (?token=xxx)
     const { searchParams } = new URL(req.url);

@@ -5,7 +5,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/libs/auth";
 import { redirect } from "next/navigation";
 
-export default async function VerifyEmailPage({ searchParams }) {
+export default async function VerifyEmailPage({ searchParams }: { searchParams: Promise<{ token?: string }> }) {
   const session = await getServerSession(authOptions);
 
   // Redirection si déjà connecté

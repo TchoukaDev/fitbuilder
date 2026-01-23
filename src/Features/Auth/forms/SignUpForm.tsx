@@ -4,15 +4,16 @@
 import { useForm } from "react-hook-form";
 import { useEffect, useRef, useState } from "react";
 import { Label, ShowPassword, LoaderButton } from "@/Global/components";
-import { signUpSchema } from "../utils";
+import { signUpSchema, SignUpSchemaType } from "../utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSignUp } from "../hooks";
+import { toast } from "react-toastify";
 
 export default function SignUpForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showPassword2, setShowPassword2] = useState(false);
 
-  const usernameRef = useRef(null);
+  const usernameRef = useRef<HTMLInputElement | null>(null);
   const { signUp, serverErrors, clearServerError } = useSignUp();
 
   // React Hook Form avec validation Zod
@@ -21,7 +22,7 @@ export default function SignUpForm() {
     handleSubmit,
     watch,
     formState: { errors: clientErrors, isSubmitting },
-  } = useForm({
+  } = useForm<SignUpSchemaType>({
     resolver: zodResolver(signUpSchema),
     mode: "onSubmit",
     reValidateMode: "onChange",
@@ -34,11 +35,17 @@ export default function SignUpForm() {
   const password = watch("password");
   const confirmPassword = watch("confirmPassword");
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: SignUpSchemaType) => {
     try {
       await signUp(data);
     } catch (error) {
-      toast.error(error?.message || "Erreur lors de l'inscription");
+      let errorMessage = "Erreur lors de l'inscription";
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === "string") {
+        errorMessage = error;
+      }
+      toast.error(errorMessage);
     }
   };
 
@@ -58,7 +65,6 @@ export default function SignUpForm() {
           type="text"
           className="input peer"
           id="username"
-          name="username"
           autoComplete="username"
           placeholder=""
           {...usernameRegister}
@@ -88,7 +94,6 @@ export default function SignUpForm() {
           autoComplete="email"
           type="email"
           id="email"
-          name="email"
           className="input peer"
           placeholder=""
           {...register("email", {
@@ -112,7 +117,6 @@ export default function SignUpForm() {
           autoComplete="new-password"
           type={showPassword ? "text" : "password"}
           id="password"
-          name="password"
           className="input peer"
           placeholder=""
           {...register("password", {
@@ -140,7 +144,6 @@ export default function SignUpForm() {
           autoComplete="new-password"
           type={showPassword2 ? "text" : "password"}
           id="confirmPassword"
-          name="confirmPassword"
           className="input peer"
           placeholder=""
           {...register("confirmPassword", {
@@ -168,7 +171,7 @@ export default function SignUpForm() {
         loadingText="Inscription en cours"
         type="submit"
         disabled={isSubmitting}
-        label="S'inscrire"
+        aria-label="S'inscrire"
       >
         S'inscrire
       </LoaderButton>

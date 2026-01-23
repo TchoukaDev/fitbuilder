@@ -1,12 +1,12 @@
 // API Route pour renvoyer un email de vérification
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import connectDB from "@/libs/mongodb";
 import { createVerificationToken } from "@/libs/emailVerification";
 import { sendResendVerificationEmail } from "@/libs/emailService";
 import { resendVerificationSchema } from "@/Features/Auth/utils";
 
 // POST - Renvoyer un email de vérification
-export async function POST(req) {
+export async function POST(req: NextRequest) {
   try {
     // Récupère l'email
     const body = await req.json();

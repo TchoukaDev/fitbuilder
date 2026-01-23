@@ -7,7 +7,12 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
 
-export default function GoogleBtn({ children, callbackUrl }) {
+interface GoogleBtnProps {
+  children: React.ReactNode;
+  callbackUrl: string;
+}
+
+export default function GoogleBtn({ children, callbackUrl }: GoogleBtnProps) {
   const [loading, setLoading] = useState(false);
 
   const handleGoogleSignIn = async () => {

@@ -25,3 +25,6 @@ export const signUpSchema = z
     message: "Les mots de passe ne correspondent pas",
     path: ["confirmPassword"],
   });
+
+
+export type SignUpSchemaType = z.infer<typeof signUpSchema>;

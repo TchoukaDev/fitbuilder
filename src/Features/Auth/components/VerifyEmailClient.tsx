@@ -4,13 +4,26 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/Global/components";
 
-export default function VerifyEmailClient({ token }) {
-  const [status, setStatus] = useState("loading");
-  const [message, setMessage] = useState("");
-  const [email, setEmail] = useState("");
+
+type Status = "loading" | "success" | "already_verified" | "expired" | "error";
+
+type StatusConfig = {
+  title: string;
+  color: string;
+  showSpinner?: boolean;
+  description?: string;
+  showLoginButton?: boolean;
+  showResendButton?: boolean;
+  showBackButton?: boolean;
+};
+
+export default function VerifyEmailClient({ token }: { token: string | undefined }) {
+  const [status, setStatus] = useState<Status>("loading");
+  const [message, setMessage] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
 
   // Configuration des différents états
-  const STATUS_CONFIG = {
+  const STATUS_CONFIG: Record<Status, StatusConfig> = {
     loading: {
       title: "Vérification en cours...",
       color: "text-gray-600",

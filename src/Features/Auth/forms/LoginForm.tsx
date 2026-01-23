@@ -8,20 +8,20 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { Label, ShowPassword, LoaderButton } from "@/Global/components";
-import { loginSchema } from "../utils";
+import { loginSchema, LoginSchemaTypeInput } from "../utils";
 
 export default function LoginForm({ callbackUrl = "/dashboard" }) {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [emailNotVerified, setEmailNotVerified] = useState(false);
-  const emailRef = useRef(null);
+  const emailRef = useRef<HTMLInputElement | null>(null);
 
   const {
     register,
     watch,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm({
+  } = useForm<LoginSchemaTypeInput>({
     resolver: zodResolver(loginSchema),
     mode: "onSubmit",
     reValidateMode: "onChange",
@@ -37,7 +37,7 @@ export default function LoginForm({ callbackUrl = "/dashboard" }) {
     emailRef.current?.focus();
   }, []);
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: LoginSchemaTypeInput) => {
     // Reset l'état d'erreur email
     setEmailNotVerified(false);
 
@@ -45,7 +45,7 @@ export default function LoginForm({ callbackUrl = "/dashboard" }) {
       const result = await signIn("credentials", {
         email: data.email,
         password: data.password,
-        autoLogin: data.autoLogin.toString(),
+        autoLogin: data.autoLogin ? data.autoLogin.toString() : "true",
         redirect: false,
       });
 
