@@ -11,8 +11,9 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Session } from "next-auth";
 
-export default function NavbarClient({ session }) {
+export default function NavbarClient({ session }: { session: Session }) {
   const isAdmin = session?.user?.role === "ADMIN";
   const links = [
     [
@@ -56,24 +57,22 @@ export default function NavbarClient({ session }) {
           return null;
         }
         return (
-          <div className="relative group" key={link[1]}>
+          <div className="relative group" key={link[1] as string}>
             {" "}
             <Link
-              title={link[0]}
-              aria-label={link[0]}
-              className={`${
-                pathname === link[1] ? "text-primary-500" : "text-primary-300"
-              } animatedRotation`}
-              href={link[1]}
+              title={link[0] as string}
+              aria-label={link[0] as string}
+              className={`${pathname === link[1] ? "text-primary-500" : "text-primary-300"
+                } animatedRotation`}
+              href={link[1] as string}
             >
-              {link[2]}
+              {link[2] as React.ReactNode}
             </Link>
             <div
-              className={`absolute opacity-0 group-hover:opacity-100 transition-opacity duration-300 group-hover:block font-semibold  ${
-                pathname === link[1] ? "text-primary-500 " : "text-primary-300"
-              } text-xs left-1/2 -translate-x-1/2 mt-3`}
+              className={`absolute opacity-0 group-hover:opacity-100 transition-opacity duration-300 group-hover:block font-semibold  ${pathname === link[1] ? "text-primary-500 " : "text-primary-300"
+                } text-xs left-1/2 -translate-x-1/2 mt-3`}
             >
-              {link[0]}
+              {link[0] as string}
             </div>
           </div>
         );

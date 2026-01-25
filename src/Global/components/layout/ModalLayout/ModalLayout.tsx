@@ -2,9 +2,17 @@ import { useModals } from "@/Providers/Modals";
 import { X } from "lucide-react";
 import { useBlockScroll } from "@/Global/hooks";
 import { ModalHeader } from ".";
+import React from "react";
+
+interface ModalLayoutProps {
+  children: React.ReactNode;
+  title: string;
+  modalToClose: string;
+  option?: () => void;
+}
 
 // Layout des modals
-export default function ModalLayout({ children, title, modalToClose }) {
+export default function ModalLayout({ children, title, modalToClose, option }: ModalLayoutProps) {
   useBlockScroll();
   const { closeModal } = useModals();
   return (
@@ -13,7 +21,10 @@ export default function ModalLayout({ children, title, modalToClose }) {
         {/* Fermeture */}
         <button
           className="absolute right-4 top-4 cursor-pointer hover:text-accent-600"
-          onClick={() => closeModal(modalToClose)}
+          onClick={() => {
+            closeModal(modalToClose);
+            option && option();
+          }}
         >
           <X size={24} />
         </button>{" "}
