@@ -9,46 +9,64 @@ import { useWorkoutStore } from "@/Features/Workouts/store";
 import { toast } from "react-toastify";
 import RequiredFields from "@/Global/components/ui/FormsComponents/RequiredFields";
 
-// Modale de modifier d'un exercice ajouté dans l'entraînement
-export default function WorkoutEditExerciseModal({ index }) {
+export default function WorkoutEditExerciseModal({ index }: { index: number }) {
   const { closeModal } = useModals();
   const exercises = useWorkoutStore((state) => state.exercises);
   const updateExercise = useWorkoutStore((state) => state.updateExercise);
-
-  // Récupérer l'exercice depuis le store pour éviter les race conditions
+  const clearAll = useWorkoutStore((state) => state.clearAll);
   const exercise = exercises[index];
 
-  // Défaut sûr si l'exercice n'existe pas
+
+  const [error, setError] = useState<string | null>(null);
+  const [formData, setFormData] = useState({
+    sets: exercise?.sets?.toString() ?? "",
+    reps: exercise?.reps?.toString() ?? "",
+    targetWeight: exercise?.targetWeight?.toString() ?? "",
+    restTime: exercise?.restTime?.toString() ?? "",
+    notes: exercise?.notes ?? "",
+  })
+
+  // ✅ Return conditionnel APRÈS les hooks
   if (!exercise) {
     return null;
   }
 
-  const [error, setError] = useState(null);
-  const [formData, setFormData] = useState({
-    sets: exercise.sets || 3,
-    reps: exercise.reps || "10",
-    targetWeight: exercise.targetWeight || 0,
-    restTime: exercise.restTime || 90,
-    notes: exercise.notes || "",
-  });
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError("");
+    setError(null);
+
+    // Conversion
+    const sets = parseInt(formData.sets);
+    const reps = parseInt(formData.reps);
+    const targetWeight = parseFloat(formData.targetWeight);
+    const restTime = parseInt(formData.restTime);
+
     // Validation
-    if (
-      formData.sets === "" ||
-      formData.reps === "" ||
-      formData.restTime === ""
-    ) {
-      setError("Veuillez compléter tous les champs obligatoires");
+    if (isNaN(sets) || sets <= 0) {
+      setError("Le nombre de séries est invalide");
+      return;
+    }
+    if (isNaN(reps) || reps <= 0) {
+      setError("Le nombre de répétitions est invalide");
+      return;
+    }
+    if (isNaN(restTime) || restTime <= 0) {
+      setError("Le temps de repos est invalide");
       return;
     }
 
-    // Sauvegarder avec toutes les données de l'exercice
+    // targetWeight peut être 0 ou vide (optionnel)
+    const finalWeight = isNaN(targetWeight) ? 0 : targetWeight;
+
     updateExercise(index, {
-      ...exercise, // Garde l'ID, le nom, l'ordre, etc.
-      ...formData, // Écrase avec les nouvelles valeurs
+      ...exercise,
+      sets,
+      reps,
+      targetWeight: finalWeight,
+      restTime,
+      notes: formData.notes.trim(),
     });
+
     closeModal("workoutEditExercise");
     toast.success("Exercice modifié");
   };
@@ -57,8 +75,10 @@ export default function WorkoutEditExerciseModal({ index }) {
     <ModalLayout
       title={`Modifier l'exercice "${exercise.name}"`}
       modalToClose="workoutEditExercise"
+      option={() => {
+        clearAll();
+      }}
     >
-      {/* Formulaire */}
       <form
         onSubmit={handleSubmit}
         className="p-6 flex flex-col items-center gap-5"
@@ -67,18 +87,15 @@ export default function WorkoutEditExerciseModal({ index }) {
         <div className="relative">
           <input
             type="number"
+            min="1"
             onKeyDown={handleKeyDown}
             className="input peer"
             placeholder=""
             id="sets"
             name="sets"
-            required
             value={formData.sets}
             onChange={(e) =>
-              setFormData({
-                ...formData,
-                sets: parseInt(e.target.value) || 0,
-              })
+              setFormData({ ...formData, sets: e.target.value })
             }
           />
           <Label htmlFor="sets" value={formData.sets}>
@@ -89,19 +106,20 @@ export default function WorkoutEditExerciseModal({ index }) {
         {/* Répétitions */}
         <div className="relative">
           <input
+            type="number"
+            min="1"
+            onKeyDown={handleKeyDown}
             className="input peer"
             placeholder=""
             id="reps"
             name="reps"
-            required
             value={formData.reps}
             onChange={(e) =>
-              setFormData({ ...formData, reps: e.target.value || 0 })
+              setFormData({ ...formData, reps: e.target.value })
             }
           />
           <Label htmlFor="reps" value={formData.reps}>
-            Répétitions <span className="text-accent-500">*</span> (ex: "10" ou
-            "8-12")
+            Répétitions <span className="text-accent-500">*</span>
           </Label>
         </div>
 
@@ -109,6 +127,8 @@ export default function WorkoutEditExerciseModal({ index }) {
         <div className="relative">
           <input
             type="number"
+            min="0"
+            step="0.5"
             onKeyDown={handleKeyDown}
             className="input peer"
             placeholder=""
@@ -116,14 +136,11 @@ export default function WorkoutEditExerciseModal({ index }) {
             name="targetWeight"
             value={formData.targetWeight}
             onChange={(e) =>
-              setFormData({
-                ...formData,
-                targetWeight: parseFloat(e.target.value) || 0,
-              })
+              setFormData({ ...formData, targetWeight: e.target.value })
             }
           />
           <Label htmlFor="targetWeight" value={formData.targetWeight}>
-            Poids prévu (kg)
+            Charge cible (kg)
           </Label>
         </div>
 
@@ -131,6 +148,7 @@ export default function WorkoutEditExerciseModal({ index }) {
         <div className="relative">
           <input
             type="number"
+            min="1"
             onKeyDown={handleKeyDown}
             className="input peer"
             placeholder=""
@@ -138,14 +156,11 @@ export default function WorkoutEditExerciseModal({ index }) {
             name="restTime"
             value={formData.restTime}
             onChange={(e) =>
-              setFormData({
-                ...formData,
-                restTime: parseInt(e.target.value) || 0,
-              })
+              setFormData({ ...formData, restTime: e.target.value })
             }
           />
           <Label htmlFor="restTime" value={formData.restTime}>
-            Temps de repos (secondes)
+            Temps de repos (secondes) <span className="text-accent-500">*</span>
           </Label>
         </div>
 
@@ -165,15 +180,10 @@ export default function WorkoutEditExerciseModal({ index }) {
           <Label htmlFor="notes" value={formData.notes}>
             Notes (optionnel)
           </Label>
-          <p className="text-xs text-gray-500 mt-1">
-            Ex: "Tempo lent", "Prise large", etc.
-          </p>
         </div>
 
-        {/* Erreur formulaire  */}
         {error && <p className="formError my-3">{error}</p>}
 
-        {/* Boutons */}
         <div className="modalFooter">
           <Button
             type="button"
@@ -188,6 +198,6 @@ export default function WorkoutEditExerciseModal({ index }) {
         <RequiredFields />
       </form>
     </ModalLayout>,
-    document.getElementById("portal-root"),
+    document.getElementById("portal-root") as HTMLElement
   );
 }
