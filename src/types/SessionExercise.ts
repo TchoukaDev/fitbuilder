@@ -7,7 +7,7 @@ export type sessionExercise = {
     notes?: string
     order: number,
     restTime: number
-    targetReps: string,
+    targetReps: number,
     targetSets: number,
     targetWeight: number
 }

@@ -1,4 +1,3 @@
-import { WorkoutExercise } from "./workoutExercise";
 import { ObjectId } from "mongodb";
 
 // Type de base partagé (champs communs)
@@ -43,7 +42,7 @@ export type SessionExercise = {
     exerciseId: string;
     exerciseName: string;
     targetSets: number;
-    targetReps: number | string;
+    targetReps: number;
     targetWeight: number;
     restTime: number;
     actualSets: SessionExerciseSet[];
