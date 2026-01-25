@@ -23,8 +23,13 @@ export default function WorkoutSelectExerciseModal({
 }: WorkoutSelectExerciseModalProps) {
 
   const modaleTitle = useWorkoutStore((state) => state.modaleTitle);
+  const setStepAction = useWorkoutStore((state) => state.setStep);
+  const clearAll = useWorkoutStore((state) => state.clearAll)
   return createPortal(
-    <ModalLayout title={modaleTitle} modalToClose="workoutSelectExercise">
+    <ModalLayout title={modaleTitle} modalToClose="workoutSelectExercise" option={() => {
+      setStepAction(1);
+      clearAll();
+    }}>
       <WorkoutExerciseConfigurator
         initialExercises={allExercises}
         initialFavorites={favoritesExercises}
