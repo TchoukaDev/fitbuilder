@@ -9,9 +9,9 @@ import {
 import { Header } from "@/Global/components";
 import { UpdateWorkoutForm } from "@/Features/Workouts/forms";
 import { WorkoutStoreProvider } from "@/Features/Workouts/store";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
-export default async function EditWorkout({ params }) {
+export default async function EditWorkout({ params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
 
@@ -22,10 +22,15 @@ export default async function EditWorkout({ params }) {
   const resolvedparams = await params;
   const workoutId = resolvedparams?.id;
 
+
   // Récupération des données
   const allExercises = await getAllExercises(userId);
   const workout = await getWorkoutById(userId, workoutId);
   const favoritesExercises = await getFavoritesExercises(userId);
+
+  if (!workout) {
+    notFound()
+  }
 
   return (
     <>

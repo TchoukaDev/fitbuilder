@@ -8,12 +8,18 @@ import { getServerSession } from "next-auth";
 import { Header } from "@/Global/components";
 import { NewWorkoutForm } from "@/Features/Workouts/forms";
 import { WorkoutStoreProvider } from "@/Features/Workouts/store";
+import { redirect } from "next/navigation";
 export const revalidate = 60;
+
 
 export default async function CreateWorkoutPage() {
   const session = await getServerSession(authOptions);
   const isAdmin = session?.user?.role === "ADMIN";
   const userId = session?.user?.id;
+
+  if (!userId) {
+    redirect("/")
+  }
 
   // Récupération des exercices et favoris
   const exercises = (await getAllExercises(userId)) || [];
