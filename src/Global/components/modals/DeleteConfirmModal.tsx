@@ -46,6 +46,6 @@ export default function DeleteConfirmModal({
         </LoaderButton>
       </div>
     </ModalLayout>,
-    document.getElementById("portal-root"),
+    document.getElementById("portal-root") as HTMLDivElement,
   );
 }

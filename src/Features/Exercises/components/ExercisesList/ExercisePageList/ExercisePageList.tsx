@@ -51,6 +51,9 @@ export default function ExercisePageList({
 
   const handleModalConfirm = () => {
     deleteExercise(getModalData<{ exerciseId: string | undefined }>("deleteConfirm")?.exerciseId || "");
+    if (grouped[selectedMuscle].length === 1) {
+      setSelectedMuscle("all");
+    }
     closeModal("deleteConfirm");
   };
 
