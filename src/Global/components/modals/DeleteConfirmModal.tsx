@@ -10,18 +10,24 @@ type DeleteConfirmModalProps = {
   message?: string;
   onConfirm: () => void;
   isLoading?: boolean;
+  confirmMessage?: string;
+  cancelMessage?: string;
+  modalToClose?: string;
 };
 
 // Modale de confirmation de suppression
 export default function DeleteConfirmModal({
   title = "Confirmer la suppression",
   message = "Cette action est irréversible.",
+  confirmMessage = "Supprimer",
+  cancelMessage = "Annuler",
+  modalToClose = "deleteConfirm",
   onConfirm,
   isLoading = false,
 }: DeleteConfirmModalProps) {
   const { closeModal } = useModals();
   return createPortal(
-    <ModalLayout title={title} modalToClose="deleteConfirm">
+    <ModalLayout title={title} modalToClose={modalToClose}>
       {/* Message */}
       <p className="text-center text-gray-600 mb-6">{message}</p>
 
@@ -29,10 +35,10 @@ export default function DeleteConfirmModal({
       <div className="modalFooter">
         <Button
           close
-          onClick={() => closeModal("deleteConfirm")}
+          onClick={() => closeModal(modalToClose)}
           disabled={isLoading}
         >
-          Annuler
+          {cancelMessage}
         </Button>
         <LoaderButton
           isLoading={isLoading}
@@ -42,7 +48,7 @@ export default function DeleteConfirmModal({
           onClick={onConfirm}
           aria-label="Supprimer"
         >
-          Supprimer
+          {confirmMessage}
         </LoaderButton>
       </div>
     </ModalLayout>,

@@ -2,18 +2,16 @@
 
 import { Button, LoaderButton } from "@/Global/components";
 import RequiredFields from "@/Global/components/ui/FormsComponents/RequiredFields";
-import { useRouter } from "next/navigation";
+import { useModals } from "@/Providers/Modals";
+
 
 export default function WorkoutFormActions({
   errorExercises,
-  clearAll,
-  clearStorage = () => {},
-  setExercises,
   isLoading,
   loadingText,
   submitLabel,
 }) {
-  const router = useRouter();
+  const { openModal } = useModals();
   return (
     <>
       {/* ⚠️ Message d'erreur pour les exercices */}
@@ -28,13 +26,8 @@ export default function WorkoutFormActions({
           <Button
             type="button"
             close
-            onClick={() => {
-              clearAll();
-              clearStorage();
-              setExercises([]);
-              router.refresh();
-              router.back();
-            }}
+            onClick={() => openModal("confirmRouterBack")}
+            aria-label="Annuler"
           >
             Annuler
           </Button>

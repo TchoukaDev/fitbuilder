@@ -15,6 +15,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-toastify";
 import { useWorkoutForm } from "../hooks/useWorkoutForm";
 import { WorkoutFormActions } from "./formsComponents";
+import ConfirmRouterBackModal from "../modals/ConfirmRouterBackModal";
+
 
 export default function NewWorkoutForm({
   allExercises,
@@ -30,9 +32,10 @@ export default function NewWorkoutForm({
     setErrorExercises,
     clearStorage,
     handleDeleteExercise,
+    handleRouterBack,
   } = useWorkoutForm({ loadFromStorage: true });
   const router = useRouter();
-  const { isOpen, openModal, getModalData } = useModals();
+  const { isOpen, openModal, getModalData, closeModal } = useModals();
   const { mutate: createWorkout, isPending: isCreating } =
     useCreateWorkout(userId);
 
@@ -93,6 +96,9 @@ export default function NewWorkoutForm({
     );
   };
 
+
+
+
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -109,17 +115,16 @@ export default function NewWorkoutForm({
           onAddClick={() => openModal("workoutSelectExercise")}
           onEditClick={(index) => openModal("workoutEditExercise", { index })}
           onRemoveClick={(index) => openModal("deleteConfirm", { index })}
+          onClearExercises={() => setExercises([])}
         />
 
         {/* 🔘 Boutons d'action */}
         <WorkoutFormActions
           errorExercises={errorExercises}
-          clearAll={clearAll}
-          clearStorage={clearStorage}
-          setExercises={setExercises}
           isLoading={isCreating}
           loadingText="Création..."
           submitLabel="Créer"
+
         />
       </form>
 
@@ -152,6 +157,11 @@ export default function NewWorkoutForm({
           onConfirm={handleDeleteExercise}
         />
       )}
+
+      {isOpen("confirmRouterBack") && (
+        <ConfirmRouterBackModal onRouterBack={handleRouterBack} />
+      )}
+
     </>
   );
 }

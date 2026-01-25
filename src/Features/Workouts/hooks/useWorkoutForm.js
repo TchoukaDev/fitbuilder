@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useWorkoutStore } from "../store";
 import { useModals } from "@/Providers/Modals";
+import { useRouter } from "next/navigation";
 
 /**
  * Hook custom pour gérer la logique commune des formulaires de workout
@@ -13,6 +14,7 @@ export function useWorkoutForm({
   loadFromStorage = false,
 }) {
   const { closeModal, getModalData } = useModals();
+  const router = useRouter();
   // ========================================
   // 🏪 ZUSTAND
   // ========================================
@@ -73,6 +75,17 @@ export function useWorkoutForm({
     }
   }, [exercises.length, errorExercises, setErrorExercises]);
 
+
+  // Fonction pour quitter l'éditeur et nettoyer les données
+  const handleRouterBack = () => {
+    clearAll();
+    clearStorage();
+    setExercises([]);
+    closeModal("confirmRouterBack");
+    router.refresh();
+    router.back();
+  }
+
   // ========================================
   // 📤 RETOUR
   // ========================================
@@ -88,6 +101,7 @@ export function useWorkoutForm({
     clearAll,
     clearStorage,
     handleDeleteExercise,
+    handleRouterBack,
     // Ref
     nameRef,
   };

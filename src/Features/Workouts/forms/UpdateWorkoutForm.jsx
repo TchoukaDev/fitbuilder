@@ -16,6 +16,7 @@ import {
   WorkoutSelectExerciseModal,
 } from "../modals";
 import { useWorkoutForm } from "../hooks/useWorkoutForm";
+import ConfirmRouterBackModal from "../modals/ConfirmRouterBackModal";
 
 export default function UpdateWorkoutForm({
   workout,
@@ -31,10 +32,11 @@ export default function UpdateWorkoutForm({
     setErrorExercises,
     setExercises,
     handleDeleteExercise,
+    handleRouterBack,
   } = useWorkoutForm({ initialExercises: workout.exercises, loadFromStorage: false });
 
   // Modales (sélection / édition / suppression d'exercice)
-  const { isOpen, openModal, getModalData } = useModals();
+  const { isOpen, openModal, getModalData, closeModal } = useModals();
 
   // Navigation et mutations
   const router = useRouter();
@@ -112,6 +114,7 @@ export default function UpdateWorkoutForm({
           onAddClick={() => openModal("workoutSelectExercise")}
           onEditClick={(index) => openModal("workoutEditExercise", { index })}
           onRemoveClick={(index) => openModal("deleteConfirm", { index })}
+          onClearExercises={() => setExercises([])}
         />
 
         {/* 🔘 Boutons d'action */}
@@ -150,6 +153,10 @@ export default function UpdateWorkoutForm({
           message={message}
           onConfirm={handleDeleteExercise}
         />
+      )}
+      {/* Modale de confirmation de retour */}
+      {isOpen("confirmRouterBack") && (
+        <ConfirmRouterBackModal onRouterBack={handleRouterBack} />
       )}
     </>
   );
