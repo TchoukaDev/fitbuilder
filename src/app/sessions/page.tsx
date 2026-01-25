@@ -4,11 +4,20 @@ import { authOptions } from "@/libs/auth";
 import { SessionsList } from "@/Features/Sessions/components";
 import { Header } from "@/Global/components";
 import { getAllSessions } from "@/Features/Sessions/utils";
+import { redirect } from "next/navigation";
+import { Metadata } from "next";
 
-export default async function SessionsPage({ searchParams }) {
+
+type SearchParamsProps = Record<string, string>;
+
+export default async function SessionsPage({ searchParams }: { searchParams: Promise<SearchParamsProps> }) {
   const resolvedSearchParams = await searchParams;
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
+
+  if (!session || !userId) {
+    redirect("/")
+  }
 
   // Extraction des filtres depuis l'URL
   const status = resolvedSearchParams?.status || "all";
@@ -19,6 +28,7 @@ export default async function SessionsPage({ searchParams }) {
 
   // Récupération des données initiales
   const initialData = await getAllSessions(userId, {});
+
   const serializedData = JSON.parse(JSON.stringify(initialData));
 
   return (
@@ -45,10 +55,17 @@ export default async function SessionsPage({ searchParams }) {
 }
 
 // Metadata dynamique pour SEO
-export async function generateMetadata({ searchParams }) {
+export async function generateMetadata({ searchParams }: { searchParams: Promise<SearchParamsProps> }): Promise<Metadata> {
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
-  const data = await getAllSessions(userId, {});
+
+  if (!userId) {
+    return {
+      title: "Séances",
+      description: "Consulte l'historique complet de tes séances d'entraînement",
+    };
+  }
+
   const resolvedSearchParams = await searchParams;
   const status = resolvedSearchParams?.status;
   const dateFilter = resolvedSearchParams?.dateFilter;
@@ -62,7 +79,7 @@ export async function generateMetadata({ searchParams }) {
       "in-progress": "en cours",
       planned: "planifiées",
     };
-    title = `Séances ${statusLabels[status]} | Historique`;
+    title = `Séances ${statusLabels[status as keyof typeof statusLabels]} | Historique`;
   }
 
   if (dateFilter && dateFilter !== "all") {
@@ -72,23 +89,11 @@ export async function generateMetadata({ searchParams }) {
       quarter: "3 derniers mois",
       year: "dernière année",
     };
-    title += ` - ${periodLabels[dateFilter]}`;
+    title += ` - ${periodLabels[dateFilter as keyof typeof periodLabels]}`;
   }
 
-  if (workoutFilter && workoutFilter !== "all") {
-    const workoutSet = new Set();
-    data?.sessions.forEach((s) => workoutSet.add(s.workoutName));
-
-    const workoutLabels = {
-      ...[...workoutSet].map(
-        (s) =>
-          ({
-            workoutFilter,
-          } || {}),
-      ),
-    };
-    title += ` - ${workoutLabels[workoutFilter]}`;
-  }
+  // Filtre par workout
+  if (workoutFilter && workoutFilter !== "all") title += ` - ${workoutFilter}`;
 
   return {
     title,

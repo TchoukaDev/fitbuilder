@@ -14,7 +14,7 @@ type ModalContextType = {
   openModal: (name: string, data?: unknown) => void;
   closeModal: (name: string) => void;
   isOpen: (name: string) => boolean;
-  getModalData: <T = unknown,>(name: string) => T | null;
+  getModalData: <T = unknown, >(name: string) => T | null;
   closeAllModals: () => void;
 };
 
@@ -22,11 +22,11 @@ const ModalContext = createContext<ModalContextType | null>(null);
 
 export const useModals = (): ModalContextType => {
   const context = useContext(ModalContext);
-  
+
   if (!context) {
     throw new Error("useModals doit être utilisé dans un <ModalProvider>");
   }
-  
+
   return context;
 };
 
@@ -46,8 +46,8 @@ export default function ModalProvider({ children }: { children: React.ReactNode 
 
   const isOpen = (name: string) => !!modals[name];
   const getModalData = <T,>(name: string): T | null => {
-  return modalData[name] as T | null;
-};
+    return modalData[name] as T | null;
+  };
 
   const closeAllModals = () => {
     setModals({});

@@ -9,12 +9,19 @@ import { BeatLoader } from "react-spinners";
 import ExerciseItem from "./ExerciseItem";
 import { useWorkoutStore } from "../../../store";
 
+interface WorkoutFormExercisesListProps {
+  onAddClick: () => void;
+  onEditClick: (index: number) => void;
+  onRemoveClick: (index: number) => void;
+}
+
 export default function WorkoutFormExercisesList({
   onAddClick,
   onEditClick,
   onRemoveClick,
-}) {
+}: WorkoutFormExercisesListProps) {
   const exercisesStore = useWorkoutStore((state) => state.exercises);
+  console.log("exercisesStore", exercisesStore)
   const isMounted = useWorkoutStore((state) => state.isMounted);
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
@@ -42,10 +49,10 @@ export default function WorkoutFormExercisesList({
         </div>
       ) : (
         <div className="space-y-3">
-          <AnimatePresence mode="popLayout">
+          <AnimatePresence mode="popLayout" >
             {exercisesStore.map((exercise, index) => (
               <ExerciseItem
-                key={exercise.id || index}
+                key={exercise?.exerciseId}
                 index={index}
                 total={exercisesStore.length}
                 onEditClick={onEditClick}

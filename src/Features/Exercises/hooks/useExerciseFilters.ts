@@ -50,7 +50,7 @@ export function useExerciseFilters({
   );
 
   const favoriteExercises = useMemo(() =>
-    searched.filter((ex) => favoritesExercises.includes(ex.id)),
+    searched.filter((ex) => favoritesExercises.includes(ex.exerciseId)),
     [searched, favoritesExercises],
   );
 

@@ -2,7 +2,9 @@
   "compilerOptions": {
     "target": "ES2022",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ]
     },
     "lib": [
       "dom",
@@ -30,8 +32,8 @@
     "next-env.d.ts",
     ".next/types/**/*.ts",
     "**/*.ts",
-    "**/*.tsx"
-,  ],
+    "**/*.tsx",
+  ],
   "exclude": [
     "node_modules"
   ]

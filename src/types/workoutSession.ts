@@ -6,6 +6,8 @@ type WorkoutSessionBase = {
     workoutName: string;
     scheduledDate: string;
     status: "planned" | "in-progress" | "completed";
+    notes: string | null;
+    effort: number | null;
     isPlanned: boolean;
     startedAt: string | null;
     completedDate: string | null;
@@ -30,6 +32,12 @@ export type WorkoutSession = WorkoutSessionBase & {
     workoutId: string;
 }
 
+
+export type CompletedSessionType = Omit<WorkoutSession, "completedDate" | "startedAt" | "status"> & {
+    startedAt: string;
+    completedDate: string;
+    status: "completed";
+}
 
 export type SessionExercise = {
     exerciseId: string;

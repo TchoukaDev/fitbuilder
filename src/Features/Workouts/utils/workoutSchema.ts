@@ -23,3 +23,6 @@ export const workoutExercisesSchema = z.object({
     .array(z.any())
     .min(1, { message: "Veuillez ajouter au moins un exercice" }),
 });
+
+export type WorkoutSchemaType = z.infer<typeof workoutSchema>;
+export type WorkoutExercisesSchemaType = z.infer<typeof workoutExercisesSchema>;

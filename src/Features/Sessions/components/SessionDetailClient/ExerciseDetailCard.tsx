@@ -1,12 +1,11 @@
 "use client";
 
+import { SessionExercise } from "@/types/workoutSession";
 // Carte détaillée d'un exercice terminé : toutes les séries, poids max, volume, RPE, notes.
 import {
-  Dumbbell,
   TrendingUp,
   Clock,
   MessageSquare,
-  X,
   CheckCircle,
   CircleX,
   Weight,
@@ -14,7 +13,10 @@ import {
 } from "lucide-react";
 import { useMemo } from "react";
 
-export default function ExerciseDetailCard({ exercise }) {
+
+
+export default function ExerciseDetailCard({ exercise }: { exercise: SessionExercise }) {
+
   // ═══════════════════════════════════════════════════════
   // 📊 CALCULS
   // ═══════════════════════════════════════════════════════
@@ -43,11 +45,10 @@ export default function ExerciseDetailCard({ exercise }) {
   // ═══════════════════════════════════════════════════════
   return (
     <div
-      className={`bg-white rounded-lg border-2  ${
-        exercise.completed
-          ? "border-green-300 bg-green-50/30"
-          : "border-accent-300 bg-accent-50/30"
-      }`}
+      className={`bg-white rounded-lg border-2  ${exercise.completed
+        ? "border-green-300 bg-green-50/30"
+        : "border-accent-300 bg-accent-50/30"
+        }`}
     >
       {/* Header */}
       <div className="flex justify-between items-start p-4 mb-4">

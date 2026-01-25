@@ -97,7 +97,7 @@ export function useCreateWorkout(userId) {
           ...(old || []),
           {
             ...newWorkout,
-            _id: `temp-${Date.now()}`,
+            id: `temp-${Date.now()}`,
             createdAt: new Date(),
           },
         ];

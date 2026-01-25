@@ -50,7 +50,7 @@ export default function ExercisePageList({
   const message = "Souhaitez-vous retirer cet exercice du programme?";
 
   const handleModalConfirm = () => {
-    deleteExercise(getModalData<{ id: string | undefined }>("deleteConfirm")?.id || "");
+    deleteExercise(getModalData<{ exerciseId: string | undefined }>("deleteConfirm")?.exerciseId || "");
     closeModal("deleteConfirm");
   };
 
@@ -118,8 +118,8 @@ export default function ExercisePageList({
           {activeTab === "mine"
             ? "Aucun exercice créé"
             : activeTab === "favorites"
-            ? "Aucun exercice favori"
-            : "Aucun exercice"}
+              ? "Aucun exercice favori"
+              : "Aucun exercice"}
         </p>
       ) : (
         Object.entries(grouped).map(([muscle, exs]) => (

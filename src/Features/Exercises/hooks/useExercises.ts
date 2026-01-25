@@ -95,7 +95,7 @@ export function useCreateExercise({ userId, isAdmin }: UseCreateExerciseProps) {
           {
             ...newExercise,
             isPublic: isAdmin,
-            id: `temp-${Date.now()}`,
+            exerciseId: `temp-${Date.now()}`,
           },
         ];
       });
@@ -108,8 +108,8 @@ export function useCreateExercise({ userId, isAdmin }: UseCreateExerciseProps) {
       queryClient.invalidateQueries({ queryKey: dashboardKey });
     },
 
-    onError: (err, newExercise, context: { previousExercices?: Exercise[] }) => {
-      queryClient.setQueryData(key, context.previousExercices);
+    onError: (err, newExercise, context?: { previousExercices?: Exercise[] }) => {
+      queryClient.setQueryData(key, context?.previousExercices);
       throw new Error("Erreur:", err);
     },
   });
@@ -126,7 +126,7 @@ type UseUpdateExerciseProps = {
 };
 
 type UpdateExercisePayload = {
-  id: string;
+  exerciseId: string;
   updatedExercise: ExerciseFormData;
 };
 
@@ -135,8 +135,8 @@ export function useUpdateExercise({ userId, isAdmin }: UseUpdateExerciseProps) {
   const key = isAdmin ? ["exercises"] : ["exercises", userId];
   const dashboardKey = ["dashboard", userId];
   return useMutation({
-    mutationFn: async ({ id, updatedExercise }: UpdateExercisePayload) => {
-      const response = await fetch(`/api/exercises/${id}`, {
+    mutationFn: async ({ exerciseId, updatedExercise }: UpdateExercisePayload) => {
+      const response = await fetch(`/api/exercises/${exerciseId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedExercise),
@@ -152,7 +152,7 @@ export function useUpdateExercise({ userId, isAdmin }: UseUpdateExerciseProps) {
     },
 
     // 🔥 RENDU OPTIMISTE
-    onMutate: async ({ id, updatedExercise }: UpdateExercisePayload) => {
+    onMutate: async ({ exerciseId, updatedExercise }: UpdateExercisePayload) => {
       // 1. Annule les requêtes en cours
       await queryClient.cancelQueries({ queryKey: key });
 
@@ -162,7 +162,7 @@ export function useUpdateExercise({ userId, isAdmin }: UseUpdateExerciseProps) {
       // 3. Met à jour IMMÉDIATEMENT le cache
       queryClient.setQueryData(key, (old: Exercise[] = []) => {
         return old.map((ex) =>
-          ex.id === id ? { ...ex, ...updatedExercise } : ex,
+          ex.exerciseId === exerciseId ? { ...ex, ...updatedExercise } : ex,
         );
       });
 
@@ -170,7 +170,7 @@ export function useUpdateExercise({ userId, isAdmin }: UseUpdateExerciseProps) {
     },
 
     // ❌ Si erreur → ROLLBACK
-    onError: (err, variables, context: { previousExercices?: Exercise[] }) => {
+    onError: (err: Error, variables: UpdateExercisePayload, context?: { previousExercices?: Exercise[] }) => {
       queryClient.setQueryData(key, context?.previousExercices);
     },
     onSuccess: () => {
@@ -196,8 +196,8 @@ export function useDeleteExercise({ userId, isAdmin }: UseDeleteExerciseProps) {
   const key = isAdmin ? ["exercises"] : ["exercises", userId];
   const dashboardKey = ["dashboard", userId];
   return useMutation({
-    mutationFn: async (id: string) => {
-      const response = await fetch(`/api/exercises/${id}`, {
+    mutationFn: async (exerciseId: string) => {
+      const response = await fetch(`/api/exercises/${exerciseId}`, {
         method: "DELETE",
       });
       if (!response.ok) {
@@ -209,11 +209,11 @@ export function useDeleteExercise({ userId, isAdmin }: UseDeleteExerciseProps) {
 
       return response.json();
     },
-    onMutate: async (id: string) => {
+    onMutate: async (exerciseId: string) => {
       queryClient.cancelQueries({ queryKey: key });
       const previousExercices = queryClient.getQueryData<Exercise[]>(key);
       queryClient.setQueryData(key, (old: Exercise[] = []) =>
-        old.filter((ex) => ex.id !== id),
+        old.filter((ex) => ex.exerciseId !== exerciseId),
       );
 
       return { previousExercices };
@@ -223,7 +223,7 @@ export function useDeleteExercise({ userId, isAdmin }: UseDeleteExerciseProps) {
       queryClient.invalidateQueries({ queryKey: key });
       queryClient.invalidateQueries({ queryKey: dashboardKey });
     },
-    onError: (err, id, context: { previousExercices?: Exercise[] }) =>
+    onError: (err: Error, variables: string, context?: { previousExercices?: Exercise[] }) =>
       queryClient.setQueryData(key, context?.previousExercices),
   });
 }
@@ -324,7 +324,7 @@ export function useToggleFavorite(userId: string) {
       return { previousFavorites };
     },
 
-    onError: (err, variables, context: { previousFavorites?: string[] }) => {
+    onError: (err, variables, context?: { previousFavorites?: string[] }) => {
       // Rollback en cas d'erreur
       queryClient.setQueryData(favoritesKey, context?.previousFavorites);
       throw new Error("Erreur toggle favori:", err);

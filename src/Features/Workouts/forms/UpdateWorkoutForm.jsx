@@ -31,7 +31,7 @@ export default function UpdateWorkoutForm({
     setErrorExercises,
     setExercises,
     handleDeleteExercise,
-  } = useWorkoutForm({ initialExercises: workout.exercises });
+  } = useWorkoutForm({ initialExercises: workout.exercises, loadFromStorage: false });
 
   // Modales (sélection / édition / suppression d'exercice)
   const { isOpen, openModal, getModalData } = useModals();

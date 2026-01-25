@@ -139,7 +139,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
       .collection<UserDocument>("users")
       .updateOne(
         { _id: new ObjectId(userId) },
-        { $pull: { exercises: { _id: new ObjectId(id) } } } as any,
+        { $pull: { exercises: { _id: new ObjectId(id) } } },
       );
 
     if (result.matchedCount === 0) {

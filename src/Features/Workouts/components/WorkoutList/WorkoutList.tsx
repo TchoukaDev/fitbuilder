@@ -7,16 +7,23 @@ import { useDeleteWorkout, useWorkouts } from "../../hooks";
 import { Button, DeleteConfirmModal } from "@/Global/components";
 import { useModals } from "@/Providers/Modals";
 import { useRouter } from "next/navigation";
+import { Workout } from "@/types/workout";
+import { toast } from "react-toastify";
 
-export default function WorkoutList({ initialWorkouts, userId }) {
+interface WorkoutListProps {
+  initialWorkouts: Workout[];
+  userId: string
+}
+
+export default function WorkoutList({ initialWorkouts, userId }: WorkoutListProps) {
   const { data: workouts = [] } = useWorkouts(initialWorkouts, userId);
   const { mutate: deleteWorkout, isPending: isDeleting } =
     useDeleteWorkout(userId);
   const { isOpen, closeModal, getModalData } = useModals();
   const router = useRouter();
 
-  const handleDelete = async (workoutId) => {
-    deleteWorkout(workoutId, {
+  const handleDelete = async (workoutId: string) => {
+    deleteWorkout(workoutId as any, {
       onSuccess: () => {
         router.push("/workouts");
         router.refresh();
@@ -41,7 +48,7 @@ export default function WorkoutList({ initialWorkouts, userId }) {
           </Button>
         </div>
         {/* Cards */}
-        {workouts?.map((workout) => (
+        {workouts?.map((workout: Workout) => (
           <WorkoutCard key={workout?.id} workout={workout} userId={userId} />
         ))}{" "}
       </div>
@@ -51,7 +58,7 @@ export default function WorkoutList({ initialWorkouts, userId }) {
           title={title}
           message={message}
           isLoading={isDeleting}
-          onConfirm={() => handleDelete(getModalData("deleteConfirm").id)}
+          onConfirm={() => { const id = getModalData<{ id: string }>("deleteConfirm")?.id; if (id) handleDelete(id) }}
         />
       )}
     </>

@@ -5,14 +5,18 @@ import { getSessionbyId } from "@/Features/Sessions/utils";
 import { redirect } from "next/navigation";
 import { SessionDetailClient } from "@/Features/Sessions/components";
 import { Header } from "@/Global/components";
+import { CompletedSessionType } from "@/types/workoutSession";
 
-export default async function SessionDetailPage({ params }) {
+export default async function SessionDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
-  const sessionId = resolvedParams.id;
+  const sessionId = resolvedParams?.id;
 
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
 
+  if (!userId || !sessionId) {
+    redirect("/");
+  }
   // Récupération de la séance
   const sessionData = await getSessionbyId(userId, sessionId);
 
@@ -24,7 +28,7 @@ export default async function SessionDetailPage({ params }) {
   if (sessionData.status !== "completed") {
     redirect(`/sessions/${sessionId}`);
   }
-
+  console.log(sessionData)
   const serializedSession = JSON.parse(JSON.stringify(sessionData));
 
   return (
@@ -38,7 +42,7 @@ export default async function SessionDetailPage({ params }) {
 }
 
 // Metadata dynamique pour SEO
-export async function generateMetadata({ params }) {
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
   const sessionId = resolvedParams.id;
 
@@ -51,7 +55,7 @@ export async function generateMetadata({ params }) {
     };
   }
 
-  const sessionData = await getSessionbyId(userId, sessionId);
+  const sessionData = await getSessionbyId(userId, sessionId) as CompletedSessionType | null;
 
   if (!sessionData) {
     return {
@@ -59,10 +63,11 @@ export async function generateMetadata({ params }) {
     };
   }
 
+
+
   return {
     title: `${sessionData.workoutName} - Détail de la séance`,
-    description: `Récapitulatif de la séance ${
-      sessionData.workoutName
-    } du ${new Date(sessionData.completedDate).toLocaleDateString("fr-FR")}`,
+    description: `Récapitulatif de la séance ${sessionData.workoutName
+      } du ${new Date(sessionData.completedDate).toLocaleDateString("fr-FR")}`,
   };
 }

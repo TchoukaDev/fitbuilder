@@ -46,7 +46,7 @@ export default function ExerciseCard({
             {(activeTab === "all" || activeTab === "mine") && (
               <button
                 onClick={() =>
-                  toggleFavorite({ exerciseId: exercise.id, isFavorite })
+                  toggleFavorite({ exerciseId: exercise.exerciseId, isFavorite })
                 }
                 disabled={isToggling}
                 className="bg-transparent border-none text-2xl cursor-pointer hover:scale-110 transition"
@@ -69,7 +69,7 @@ export default function ExerciseCard({
               type="button"
               disabled={isToggling}
               onClick={() =>
-                toggleFavorite({ exerciseId: exercise.id, isFavorite })
+                toggleFavorite({ exerciseId: exercise.exerciseId, isFavorite })
               }
               aria-label="Retirer des favoris"
             >

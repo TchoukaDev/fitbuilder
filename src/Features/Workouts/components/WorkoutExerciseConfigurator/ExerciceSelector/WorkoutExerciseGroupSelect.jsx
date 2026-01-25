@@ -30,7 +30,7 @@ export default function WorkoutExerciseGroupSelect({ grouped }) {
         {/* Options */}
         {Object.entries(grouped).map(([_, exs]) =>
           exs.map((ex) => (
-            <option value={ex.id} key={ex.id}>
+            <option value={ex.exerciseId} key={ex.exerciseId}>
               {ex.name} {ex.type === "private" && "(Perso)"}
             </option>
           )),

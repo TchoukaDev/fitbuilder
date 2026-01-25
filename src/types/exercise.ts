@@ -17,5 +17,5 @@ export type ExerciseDB = ExerciseBase & {
 
 // Type Application (ce que votre app utilise)
 export type Exercise = ExerciseBase & {
-    id: string;
+    exerciseId: string;
 }

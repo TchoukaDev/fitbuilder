@@ -4,12 +4,12 @@
  */
 
 
-export type ApiError = {
+export type ApiErrorType = {
   error: string;
   message: string;
 }
 
-export type ApiSuccess = {
+export type ApiSuccessType = {
   success: boolean;
   message: string;
 }

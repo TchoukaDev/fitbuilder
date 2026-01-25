@@ -13,7 +13,7 @@ export async function getWorkouts(userId: string): Promise<Workout[]> {
   const workouts: WorkoutDB[] = user?.workouts || [];
 
   // Transformation DB → App (ObjectId → string, _id → id)
-  return workouts.map(({ _id, ...workout }) => ({
+  return workouts.map(({ _id, ...workout }: WorkoutDB) => ({
     ...workout,
     id: _id.toString(),
   }));

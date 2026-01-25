@@ -18,7 +18,7 @@ export async function getPublicExercises(): Promise<Exercise[]> {
   // Transformation DB → App (ObjectId → string, _id → id)
   return publicExercises.map(({ _id, ...exercise }) => ({
     ...exercise,
-    id: _id.toString(),
+    exerciseId: _id.toString(),
   }));
 }
 
@@ -37,7 +37,7 @@ export async function getPrivateExercises(userId: string): Promise<Exercise[]> {
   // Transformation DB → App (ObjectId → string, _id → id)
   return privateExercises.map(({ _id, ...exercise }) => ({
     ...exercise,
-    id: _id.toString(),
+    exerciseId: _id.toString(),
   }));
 }
 

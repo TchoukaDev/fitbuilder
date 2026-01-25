@@ -17,16 +17,18 @@ export default async function CreateWorkoutPage() {
 
   // Récupération des exercices et favoris
   const exercises = (await getAllExercises(userId)) || [];
+
   const serializedExercises = JSON.parse(JSON.stringify(exercises));
   const favoritesExercises = (await getFavoritesExercises(userId)) || [];
   const serializedFavorites = JSON.parse(JSON.stringify(favoritesExercises));
+
 
   return (
     <>
       <Header />
       <main>
         <h1>📋 Créer un nouveau plan d'entraînement</h1>
-        <WorkoutStoreProvider>
+        <WorkoutStoreProvider key="createWorkout" autoSave={true}>
           <div className="p-6">
             <NewWorkoutForm
               allExercises={serializedExercises}

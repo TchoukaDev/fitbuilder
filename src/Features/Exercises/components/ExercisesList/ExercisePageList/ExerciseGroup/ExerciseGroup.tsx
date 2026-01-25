@@ -29,13 +29,13 @@ export default function ExerciseGroup({
       <div className="grid gap-4">
         {exercises.map((ex) => (
           <ExerciseCard
-            key={ex.id}
+            key={ex.exerciseId}
             exercise={ex}
             activeTab={activeTab}
-            isFavorite={favoritesExercises.includes(ex.id)}
+            isFavorite={favoritesExercises.includes(ex.exerciseId)}
             userId={userId}
             onEdit={() => openModal("updateExercise", { exercise: ex })}
-            onDelete={() => openModal("deleteConfirm", { id: ex.id })}
+            onDelete={() => openModal("deleteConfirm", { exerciseId: ex.exerciseId })}
           />
         ))}
       </div>

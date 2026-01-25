@@ -32,7 +32,7 @@ export default async function EditWorkout({ params }) {
       <Header />
       <main>
         <h1>📋 Modifier le plan d'entraînement "{workout.name}"</h1>
-        <WorkoutStoreProvider>
+        <WorkoutStoreProvider key="updateWorkout" autoSave={false}>
           <div className="p-6">
             <UpdateWorkoutForm
               workout={workout}

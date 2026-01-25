@@ -4,12 +4,17 @@ import { WorkoutList } from "@/Features/Workouts/components";
 import { getWorkouts } from "@/Features/Workouts/utils";
 import { Header } from "@/Global/components";
 import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
 
 export const revalidate = 60;
 
 export default async function WorkoutsPage() {
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
+
+  if (!userId || !session) {
+    redirect("/")
+  }
 
   // Récupération des plans d'entraînement
   const workouts = (await getWorkouts(userId)) || [];

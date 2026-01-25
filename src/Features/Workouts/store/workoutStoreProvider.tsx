@@ -11,6 +11,38 @@
 import { createContext, useContext, useRef } from "react";
 import { useStore } from "zustand";
 import { create } from "zustand";
+import { WorkoutExercise } from "@/types/workoutExercise";
+
+interface WorkoutStore {
+
+
+  // Données
+  exercises: WorkoutExercise[];
+  autoSave: boolean;
+  step: number;
+  isMounted: boolean;
+  selectedExerciseId: string | null;
+  errorExercises: string | null;
+  errorSelectedExerciseId: string | null;
+  modaleTitle: string;
+
+  // Actions
+  setIsMounted: (isMounted: boolean) => void;
+  setStep: (step: number) => void;
+  setSelectedExerciseId: (exerciseId: string | null) => void;
+  setErrorSelectedExerciseId: (error: string | null) => void;
+  setErrorExercises: (error: string | null) => void;
+  setModaleTitle: (title: string) => void;
+  setExercises: (exercises: WorkoutExercise[]) => void;
+  addExercise: (exercise: WorkoutExercise) => void;
+  updateExercise: (index: number, updatedExercise: WorkoutExercise) => void;
+  removeExercise: (index: number) => void;
+  moveExercise: (index: number, direction: "up" | "down") => void;
+  saveExercisesToStorage: (exercises: WorkoutExercise[], autoSave: boolean) => void;
+  loadFromStorage: () => void;
+  clearStorage: () => void;
+  clearAll: () => void;
+}
 
 // ============================================================
 // 🏭 FACTORY : Fonction qui crée un nouveau store
@@ -20,11 +52,12 @@ import { create } from "zustand";
 // Chaque appel à createWorkoutStore() crée un store INDÉPENDANT.
 //
 const createWorkoutStore = () =>
-  create((set, get) => ({
+  create<WorkoutStore>((set, get) => ({
     // ============================================================
     // 📦 ÉTAT - State Management
     // ============================================================
 
+    autoSave: true,
     // État principal du formulaire
     exercises: [],
     step: 1,
@@ -45,6 +78,7 @@ const createWorkoutStore = () =>
     // ============================================================
 
     setIsMounted: (isMounted) => set({ isMounted }),
+
 
     setStep: (step) => set({ step }),
 
@@ -78,7 +112,7 @@ const createWorkoutStore = () =>
       }));
 
       const { exercises } = get();
-      get().saveExercisesToStorage(exercises);
+      get().saveExercisesToStorage(exercises, get().autoSave);
     },
 
     updateExercise: (index, updatedExercise) => {
@@ -89,7 +123,7 @@ const createWorkoutStore = () =>
       }));
 
       const { exercises } = get();
-      get().saveExercisesToStorage(exercises);
+      get().saveExercisesToStorage(exercises, get().autoSave);
     },
 
     removeExercise: (index) => {
@@ -100,7 +134,7 @@ const createWorkoutStore = () =>
       }));
 
       const { exercises } = get();
-      get().saveExercisesToStorage(exercises);
+      get().saveExercisesToStorage(exercises, get().autoSave);
     },
 
     moveExercise: (index, direction) => {
@@ -127,21 +161,25 @@ const createWorkoutStore = () =>
       });
 
       const { exercises } = get();
-      get().saveExercisesToStorage(exercises);
+      get().saveExercisesToStorage(exercises, get().autoSave);
     },
 
     // ============================================================
     // 💾 STOCKAGE - Actions de Persistance (LocalStorage)
     // ============================================================
 
-    saveExercisesToStorage: (exercises) => {
+    saveExercisesToStorage: (exercises, autoSave) => {
+      if (!autoSave) return;
+
       localStorage.setItem("exercises", JSON.stringify(exercises));
+
     },
 
     loadFromStorage: () => {
       const stored = localStorage.getItem("exercises");
       if (stored) {
         set({ exercises: JSON.parse(stored), isMounted: true });
+
       } else {
         set({ isMounted: true });
       }
@@ -164,7 +202,6 @@ const createWorkoutStore = () =>
       });
     },
   }));
-
 // ============================================================
 // 🌐 CONTEXT : Pour distribuer le store aux enfants
 // ============================================================
@@ -172,7 +209,7 @@ const createWorkoutStore = () =>
 // Le Context ne stocke PAS l'état (donc pas de re-renders).
 // Il stocke juste une RÉFÉRENCE au store Zustand.
 //
-const WorkoutStoreContext = createContext(null);
+const WorkoutStoreContext = createContext<ReturnType<typeof createWorkoutStore> | null>(null);
 
 // ============================================================
 // 🎁 PROVIDER : Crée et fournit un store unique
@@ -180,14 +217,16 @@ const WorkoutStoreContext = createContext(null);
 //
 // Chaque <WorkoutStoreProvider> crée son propre store.
 
-export function WorkoutStoreProvider({ children }) {
+export function WorkoutStoreProvider({ children, autoSave = true }: { children: React.ReactNode, autoSave: boolean }) {
   // useRef pour créer le store UNE SEULE FOIS par Provider
   // (même si le composant parent re-render)
-  const storeRef = useRef();
+  const storeRef = useRef<ReturnType<typeof createWorkoutStore> | null>(null);
+
 
   if (!storeRef.current) {
     // Premier rendu : créer le store
     storeRef.current = createWorkoutStore();
+    storeRef.current.setState({ autoSave }); // applique le flag
   }
 
   return (
@@ -204,14 +243,15 @@ export function WorkoutStoreProvider({ children }) {
 // Remplace ton ancien useWorkoutStore.
 // Fonctionne EXACTEMENT pareil avec les selectors :
 //
-//   const exercises = useWorkoutStore((state) => state.exercises);
-//   const addExercise = useWorkoutStore((state) => state.addExercise);
+// const exercises = useWorkoutStore((state) => state.exercises);
+// const addExercise = useWorkoutStore((state) => state.addExercise);
 //
 // La seule différence : il récupère le store du Context parent
 // au lieu d'utiliser un singleton global.
 //
-export function useWorkoutStore(selector) {
+export function useWorkoutStore<T>(selector: (state: WorkoutStore) => T): T {
   const store = useContext(WorkoutStoreContext);
+
 
   // Erreur explicite si utilisé hors d'un Provider
   if (!store) {

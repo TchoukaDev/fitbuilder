@@ -6,6 +6,8 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { toast } from "react-toastify";
+import { ApiErrorType, ApiSuccessType } from "@/libs/apiResponse";
+import { WorkoutSession } from "@/types/workoutSession";
 
 /**
  * Récupère la liste paginée de sessions avec filtres côté serveur.
@@ -70,10 +72,10 @@ export function useGetSessions(initialData, userId, filters = {}) {
     },
     initialData:
       status === "all" &&
-      dateFilter === "all" &&
-      workoutFilter === "all" &&
-      page === 1 &&
-      limit === 20
+        dateFilter === "all" &&
+        workoutFilter === "all" &&
+        page === 1 &&
+        limit === 20
         ? initialData
         : undefined,
     placeholderData: keepPreviousData, // ✅ Garde les données pendant le fetch
@@ -184,8 +186,8 @@ export function useStartNewSession(userId) {
         // L'API retourne { error: "string", message: "string" }
         throw new Error(
           errorData.message ||
-            errorData.error ||
-            "Erreur lors de la création de la séance",
+          errorData.error ||
+          "Erreur lors de la création de la séance",
         );
       }
       const data = await response.json();
@@ -329,12 +331,12 @@ export function useUpdatePlannedSession(userId, statusFilter = null) {
         ...old.map((e) =>
           e.resource.id === sessionId
             ? {
-                ...e,
-                title: updatedSession.workoutName,
-                start: start,
-                end: end,
-                resource: { ...e.resource, ...updatedSession },
-              }
+              ...e,
+              title: updatedSession.workoutName,
+              start: start,
+              end: end,
+              resource: { ...e.resource, ...updatedSession },
+            }
             : e,
         ),
       ]);
@@ -387,15 +389,15 @@ export function useFinishSession(userId, sessionId) {
         old.map((e) =>
           e.resource.id === sessionId
             ? {
-                ...e,
-                resource: {
-                  ...e.resource,
-                  exercises,
-                  duration,
-                  status: "completed",
-                  completedDate: new Date(),
-                },
-              }
+              ...e,
+              resource: {
+                ...e.resource,
+                exercises,
+                duration,
+                status: "completed",
+                completedDate: new Date(),
+              },
+            }
             : e,
         ),
       ]);
@@ -454,40 +456,39 @@ export function useCancelPlannedSession(userId) {
 
 /**
  * Supprimer une session d'entraînement (mutation React Query).
- *
- * @param {string} userId - Identifiant de l'utilisateur.
  */
-export function useDeleteSession(userId, statusFilter = null) {
+
+type UseDeleteSessionProps = {
+  userId: string;
+  statusFilter: string | null;
+}
+
+export function useDeleteSession({ userId, statusFilter = null }: UseDeleteSessionProps) {
   const queryClient = useQueryClient();
   const sessionsKey = ["sessions", userId];
   const calendarKey = ["calendar-sessions", userId, statusFilter || null];
   const dashboardKey = ["dashboard", userId];
   return useMutation({
-    queryKey: sessionsKey,
-    mutationFn: async (sessionId) => {
+
+    mutationFn: async (sessionId: string) => {
       const response = await fetch(`/api/sessions/${sessionId}`, {
         method: "DELETE",
       });
       if (!response.ok) {
-        const errorData = await response.json();
-        // L'API retourne { error: "string", message: "string" }
-        throw new Error(
-          errorData.message ||
-            errorData.error ||
-            "Erreur suppression de la session d'entraînement",
-        );
+        const errorData: ApiErrorType = await response.json();
+        throw new Error(errorData.message || errorData.error || "Erreur suppression de la session d'entraînement");
       }
-      const data = response.json();
+      const data: ApiSuccessType = await response.json();
       return data;
     },
     onMutate: async (id) => {
       queryClient.cancelQueries({ queryKey: sessionsKey });
       queryClient.cancelQueries({ queryKey: calendarKey });
-      const previousSessions = queryClient.getQueryData(sessionsKey);
+      const previousSessions = queryClient.getQueryData<WorkoutSession[]>(sessionsKey);
       const previousEvents = queryClient.getQueryData(calendarKey);
 
       // Mise à jour optimiste des sessions
-      queryClient.setQueryData(sessionsKey, (old = []) =>
+      queryClient.setQueryData<WorkoutSession[]>(sessionsKey, (old = []) =>
         old.filter((s) => s.id !== id),
       );
       // Mise à jour optimiste des événements

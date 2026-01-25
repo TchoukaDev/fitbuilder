@@ -6,35 +6,43 @@ import ExerciseConfiguration from "./ExerciseConfiguration";
 import { useMemo } from "react";
 import ExerciseSelector from "./ExerciceSelector/ExerciseSelector";
 import { useWorkoutStore } from "../../store";
+import { Exercise } from "@/types/exercise";
+
+interface WorkoutExerciseConfiguratorProps {
+  initialExercises: Exercise[]
+  initialFavorites: string[]
+  isAdmin: boolean
+  userId: string
+}
 
 export default function WorkoutExerciseConfigurator({
-  userId,
-  isAdmin,
   initialExercises,
   initialFavorites,
-}) {
+  isAdmin,
+  userId,
+}: WorkoutExerciseConfiguratorProps) {
   // Store
   const step = useWorkoutStore((state) => state.step);
   const selectedExerciseId = useWorkoutStore(
     (state) => state.selectedExerciseId,
   );
 
+
   // Récupérer exercices
-  const { data: cachedExercises = [] } = useExercises(
+  const { data: cachedExercises = [] } = useExercises({
     userId,
     isAdmin,
-    initialExercises,
-  );
+    initialData: initialExercises,
+  });
 
   // Récupérer favoris
   const { data: favoritesExercises = [] } = useFavorites(
-    userId,
-    initialFavorites,
+    { userId, initialData: initialFavorites },
   );
 
   // Réupérer l'exercice sélectionné au complet
   const exerciseSelected = useMemo(
-    () => cachedExercises.filter((ex) => ex.id === selectedExerciseId)[0],
+    () => cachedExercises.filter((ex) => ex.exerciseId === selectedExerciseId)[0],
     [cachedExercises, selectedExerciseId],
   );
 

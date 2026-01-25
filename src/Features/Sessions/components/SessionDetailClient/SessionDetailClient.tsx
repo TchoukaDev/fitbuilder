@@ -21,21 +21,27 @@ import StatusBadge from "@/Features/Calendar/components/StatusBadge";
 import StatCard from "./StatCard";
 import { useMemo } from "react";
 import Link from "next/link";
+import { SessionExercise, CompletedSessionType } from "@/types/workoutSession";
 
-export default function SessionDetailClient({ session, userId }) {
+interface SessionDetailClientProps {
+  session: CompletedSessionType;
+  userId: string;
+}
+
+export default function SessionDetailClient({ session, userId }: SessionDetailClientProps) {
   const router = useRouter();
 
   // Modals
   const { isOpen, openModal, closeModal } = useModals();
 
   const { mutate: deleteSessionMutation, isPending: isDeleting } =
-    useDeleteSession(userId);
+    useDeleteSession({ userId, statusFilter: null });
 
   // ═══════════════════════════════════════════════════════
   // 📊 CALCULS
   // ═══════════════════════════════════════════════════════
   const completedExercises = useMemo(
-    () => session?.exercises?.filter((ex) => ex.completed),
+    () => session?.exercises?.filter((ex: SessionExercise) => ex.completed),
     [session?.exercises],
   );
   const totalSets = useMemo(
@@ -135,7 +141,7 @@ export default function SessionDetailClient({ session, userId }) {
                 onClick={() => openModal("deleteConfirm")}
                 close
                 title="Supprimer"
-                label="Supprimer la séance"
+                aria-label="Supprimer la séance"
               >
                 <Trash2 size={20} />{" "}
                 <span className="hidden md:block">Supprimer la séance</span>

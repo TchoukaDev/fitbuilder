@@ -136,7 +136,7 @@ export default function WorkoutDetailPageClient({
             <div className="space-y-4">
               {workout.exercises?.map((exercise, index) => (
                 <WorkoutExerciseItem
-                  key={exercise.id || index}
+                  key={exercise.exerciseId || index}
                   exercise={exercise}
                 />
               ))}
