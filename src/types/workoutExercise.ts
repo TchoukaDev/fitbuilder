@@ -6,6 +6,5 @@ export type WorkoutExercise = {
     targetWeight: number;
     restTime: number;
     notes: string | null;
-    effort: number | null;
-    order: number;
+    order?: number;
 }
