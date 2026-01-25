@@ -6,10 +6,12 @@ import { WorkoutExercise } from "@/types/workoutExercise";
 import { handleKeyDown } from "@/Global/utils";
 import { Label } from "@/Global/components/ui/FormsComponents";
 import { Button } from "@/Global/components";
+import { WorkoutExerciseFormData } from "../components/WorkoutExerciseConfigurator/ExerciseConfiguration";
+
 
 interface WorkoutExerciseFormProps {
   exercise: WorkoutExercise | null;
-  onSubmit: (data: Partial<WorkoutExercise>) => void;
+  onSubmit: (data: WorkoutExerciseFormData) => void;
   onClose: () => void;
   onCloseLabel: string;
   onSubmitLabel: string;
