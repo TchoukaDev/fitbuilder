@@ -2,7 +2,7 @@ export type WorkoutExercise = {
     exerciseId: string;
     name: string;
     sets: number;
-    reps: number | string; // number (ex: 10) ou range (ex: "8-12")
+    reps: number; // number (ex: 10)
     targetWeight: number;
     restTime: number;
     notes: string | null;

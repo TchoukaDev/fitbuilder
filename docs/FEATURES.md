@@ -122,7 +122,7 @@ Pour chaque exercice ajouté au programme, on configure :
 
 - **Ordre** : Position dans le programme
 - **Séries prévues** : Nombre de séries (ex: 3)
-- **Répétitions** : Plage de reps (ex: 8-12)
+- **Répétitions** : Nombre de reps
 - **Poids** : Poids de départ recommandé
 - **Temps de repos** : Entre les séries (en secondes)
 - **Notes** : Conseils spécifiques pour cet exercice
