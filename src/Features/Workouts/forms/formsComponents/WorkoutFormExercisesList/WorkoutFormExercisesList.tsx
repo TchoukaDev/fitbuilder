@@ -8,20 +8,22 @@ import { AnimatePresence } from "framer-motion";
 import { BeatLoader } from "react-spinners";
 import ExerciseItem from "./ExerciseItem";
 import { useWorkoutStore } from "../../../store";
+import { useModals } from "@/Providers/Modals";
 
 interface WorkoutFormExercisesListProps {
   onAddClick: () => void;
   onEditClick: (index: number) => void;
   onRemoveClick: (index: number) => void;
-  onClearExercises: () => void;
 }
+
 
 export default function WorkoutFormExercisesList({
   onAddClick,
   onEditClick,
   onRemoveClick,
-  onClearExercises,
+
 }: WorkoutFormExercisesListProps) {
+  const { openModal } = useModals();
   const exercisesStore = useWorkoutStore((state) => state.exercises);
 
   const isMounted = useWorkoutStore((state) => state.isMounted);
@@ -36,10 +38,13 @@ export default function WorkoutFormExercisesList({
             <Plus size={20} />
             Ajouter un exercice
           </Button>
-          <Button type="button" onClick={onClearExercises} close>
-            <Trash size={20} />
-            Vider la liste
-          </Button></div>
+          {exercisesStore.length > 0 && (
+            <Button type="button" onClick={() => { openModal("clearExercises") }} close>
+              <Trash size={20} />
+              Vider la liste
+            </Button>
+          )}
+        </div>
       </div>
 
       {

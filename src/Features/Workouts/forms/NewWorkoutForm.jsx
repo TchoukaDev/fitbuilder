@@ -158,6 +158,21 @@ export default function NewWorkoutForm({
         />
       )}
 
+
+      {/* Modale de confirmation de suppression de tous les exercices */}
+      {isOpen("clearExercises") && (
+        <DeleteConfirmModal
+          title="Vider la liste des exercices"
+          message="Souhaitez-vous vider la liste des exercices ?"
+          onConfirm={() => {
+            setExercises([]);
+            closeModal("clearExercises");
+          }}
+          modalToClose="clearExercises"
+          confirmMessage="Vider"
+        />
+      )}
+
       {isOpen("confirmRouterBack") && (
         <ConfirmRouterBackModal onRouterBack={handleRouterBack} />
       )}
