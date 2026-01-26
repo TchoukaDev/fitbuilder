@@ -1,14 +1,15 @@
 // API Route pour la gestion des séances d'entraînement (création et récupération avec filtres/pagination)
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/libs/mongodb";
 import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
 import { ApiError } from "@/libs/apiResponse";
 import { requireAuth } from "@/libs/authMiddleware";
 import { getAllSessions } from "@/Features/Sessions/utils";
+import { WorkoutExercise } from "@/types/workoutExercise";
 
 // POST - Démarrer une nouvelle séance à partir d'un plan d'entraînement
-export async function POST(req) {
+export async function POST(req: NextRequest) {
   // Vérification de l'authentification
   const auth = await requireAuth(req);
   if (auth instanceof NextResponse) return auth;
@@ -38,7 +39,7 @@ export async function POST(req) {
 
   try {
     // Initialiser les exercices pour la nouvelle séance
-    const sessionExercises = exercises.map((ex) => ({
+    const sessionExercises = exercises.map((ex: WorkoutExercise) => ({
       exerciseId: ex.exerciseId, // exerciseId vient de WorkoutExercise
       exerciseName: ex.name,
       order: ex.order,
@@ -76,25 +77,20 @@ export async function POST(req) {
     };
 
     // ✅ MODIFICATION : Incrémenter timesUsed SEULEMENT si démarrage immédiat
-    const updateQuery = isPlanning
+    const updateQuery: any = isPlanning
       ? {
-          $push: { sessions: newSession }, // Planification : juste ajouter
-        }
+        $push: { sessions: newSession }, // Planification : juste ajouter
+      }
       : {
-          $inc: { "workouts.$[workout].timesUsed": 1 }, // Démarrage : incrémenter
-          $set: { "workouts.$[workout].lastUsedAt": new Date() },
-          $push: { sessions: newSession },
-        };
+        $inc: { "workouts.$[workout].timesUsed": 1 }, // Démarrage : incrémenter
+        $set: { "workouts.$[workout].lastUsedAt": new Date() },
+        $push: { sessions: newSession },
+      };
 
-    await db.collection("users").updateOne(
-      { _id: new ObjectId(userId) },
-      updateQuery,
-      isPlanning
-        ? {} // Pas d'arrayFilters pour planification
-        : {
-            arrayFilters: [{ "workout._id": new ObjectId(workoutId) }],
-          },
-    );
+    const options = isPlanning ? {} : { arrayFilters: [{ "workout._id": new ObjectId(workoutId) }] };
+
+
+    await db.collection("users").updateOne({ _id: new ObjectId(userId) }, updateQuery, options);
 
     revalidatePath("/sessions");
     revalidatePath(`/sessions/${sessionId}`);
@@ -122,7 +118,7 @@ export async function POST(req) {
 }
 
 // GET - Récupérer les séances avec filtres (statut, date, workout) et pagination
-export async function GET(req) {
+export async function GET(req: NextRequest) {
   // Vérification de l'authentification
   const auth = await requireAuth(req);
   if (auth instanceof NextResponse) return auth;
@@ -131,11 +127,11 @@ export async function GET(req) {
 
   // Extraction des paramètres d'URL
   const { searchParams } = new URL(req.url);
-  const page = parseInt(searchParams.get("page")) || 1;
-  const limit = parseInt(searchParams.get("limit")) || 20;
-  const status = searchParams.get("status");
-  const dateFilter = searchParams.get("dateFilter");
-  const workoutFilter = searchParams.get("workoutFilter");
+  const page = parseInt(searchParams.get("page") || "1");
+  const limit = parseInt(searchParams.get("limit") || "20");
+  const status = searchParams.get("status") || "all";
+  const dateFilter = searchParams.get("dateFilter") || "all";
+  const workoutFilter = searchParams.get("workoutFilter") || "all";
 
   try {
     // ✅ Utilise le helper qui fait tout : filtres, pagination, stats, transformation ObjectId → string
