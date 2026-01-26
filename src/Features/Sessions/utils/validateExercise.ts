@@ -1,8 +1,22 @@
 // Valide qu'un exercice est complété (toutes les séries cochées, reps/poids renseignés, effort RPE saisi).
 // Retourne { isComplete: boolean, missingFields: object }.
-export function validateExercise(exercises, exerciseIndex) {
+
+import { SessionExercise } from "@/types/SessionExercise";
+
+type ValidateExerciseProps = {
+  exercises: SessionExercise[];
+  exerciseIndex: number;
+}
+export function validateExercise({ exercises, exerciseIndex }: ValidateExerciseProps) {
   const exercise = exercises[exerciseIndex];
-  const missingFields = {
+
+  type MissingFields = {
+    incompleteSets: string[];
+    setsWithoutReps: string[];
+    setsWithoutWeight: string[];
+    effortMissing: boolean;
+  }
+  const missingFields: MissingFields = {
     incompleteSets: [],
     setsWithoutReps: [],
     setsWithoutWeight: [],
@@ -19,22 +33,18 @@ export function validateExercise(exercises, exerciseIndex) {
     }
 
     // Vérifier les reps (accepter 0)
-    if (set.reps === null || set.reps === undefined || set.reps === "") {
+    if (!set.reps) {
       missingFields.setsWithoutReps.push(setNumber);
     }
 
     // Vérifier le poids (accepter 0)
-    if (set.weight === null || set.weight === undefined || set.weight === "") {
+    if (!set.weight) {
       missingFields.setsWithoutWeight.push(setNumber);
     }
   });
 
   // Vérifier l'effort (RPE)
-  if (
-    exercise.effort === null ||
-    exercise.effort === undefined ||
-    exercise.effort === false
-  ) {
+  if (!exercise.effort) {
     missingFields.effortMissing = true;
   }
 

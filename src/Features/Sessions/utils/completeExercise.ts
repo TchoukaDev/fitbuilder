@@ -2,10 +2,13 @@ import { useSessionStore } from "../store";
 
 /**
  * Marque un exercice comme complété dans le store
- * @param {number} exerciseIndex - Index de l'exercice
- * @param {Function} handleSaveProgress - Callback pour sauvegarder
  */
-export function completeExercise(exerciseIndex, handleSaveProgress) {
+
+interface CompleteExerciseProps {
+  exerciseIndex: number;
+  handleSaveProgress: () => void;
+}
+export function completeExercise({ exerciseIndex, handleSaveProgress }: CompleteExerciseProps) {
   const state = useSessionStore.getState();
   const newExercises = [...state.exercises];
   newExercises[exerciseIndex].completed = true;
@@ -20,5 +23,5 @@ export function completeExercise(exerciseIndex, handleSaveProgress) {
   state.setCurrentExerciseIndex(currentExerciseIndex);
 
   // Sauvegarder
-  handleSaveProgress?.();
+  handleSaveProgress();
 }

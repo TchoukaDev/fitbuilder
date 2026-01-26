@@ -1,5 +1,5 @@
-export type sessionExercise = {
-    actualSets: actualSet[],
+export type SessionExercise = {
+    actualSets: ActualSet[],
     completed: boolean,
     effort: number | null,
     exerciseId: string,
@@ -12,8 +12,8 @@ export type sessionExercise = {
     targetWeight: number
 }
 
-export type actualSet = {
+export type ActualSet = {
     reps?: number,
     weight?: number,
-    completed: boolean
+    completed: boolean | false
 }
