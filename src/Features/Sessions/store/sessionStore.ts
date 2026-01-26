@@ -1,8 +1,31 @@
 import { create } from "zustand";
+import { SessionExercise, ActualSet } from "@/types/SessionExercise";
+
+interface SessionStore {
+
+  // Données
+  exercises: SessionExercise[];
+  currentExerciseIndex: number;
+  isSaving: boolean;
+
+  //
+  setExercises: (exercises: SessionExercise[]) => void;
+  setCurrentExerciseIndex: (index: number) => void;
+  setIsSaving: (isSaving: boolean) => void;
+  updateExerciseSet: (exerciseIndex: number, setIndex: number, field: keyof ActualSet, value: number | undefined) => void;
+  updateExerciseNotes: (exerciseIndex: number, value: string) => void;
+  updateExerciseEffort: (exerciseIndex: number, value: number | null) => void;
+  toggleExerciseSetComplete: (exerciseIndex: number, setIndex: number) => void;
+  reopenExercise: (exerciseIndex: number) => void;
+  saveToLocalStorage: (sessionId: string) => void;
+  loadFromLocalStorage: (sessionId: string) => void;
+  clearLocalStorage: (sessionId: string) => void;
+  resetSession: (sessionId: string | null) => void;
+}
 
 const STORAGE_KEY_PREFIX = "session_backup_";
 
-export const useSessionStore = create((set, get) => ({
+export const useSessionStore = create<SessionStore>((set, get) => ({
   // ============================================================
   // 📦 ÉTAT - State Management
   // ============================================================
@@ -33,14 +56,14 @@ export const useSessionStore = create((set, get) => ({
       // Créer le set si n'existe pas
       if (!newExercises[exerciseIndex].actualSets[setIndex]) {
         newExercises[exerciseIndex].actualSets[setIndex] = {
-          reps: null,
-          weight: newExercises[exerciseIndex].targetWeight || null,
+          reps: undefined,
+          weight: newExercises[exerciseIndex].targetWeight || undefined,
           completed: false,
         };
       }
 
       // Modifier le champ
-      newExercises[exerciseIndex].actualSets[setIndex][field] = value;
+      newExercises[exerciseIndex].actualSets[setIndex][field as keyof ActualSet];
 
       return { exercises: newExercises };
     });
