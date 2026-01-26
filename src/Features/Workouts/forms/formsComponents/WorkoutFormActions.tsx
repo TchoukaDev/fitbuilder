@@ -5,7 +5,7 @@ import RequiredFields from "@/Global/components/ui/FormsComponents/RequiredField
 import { useModals } from "@/Providers/Modals";
 
 interface WorkoutFormActionsProps {
-  errorExercises: string,
+  errorExercises: string | null,
   isLoading: boolean,
   loadingText: string,
   submitLabel: string

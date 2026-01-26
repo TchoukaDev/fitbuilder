@@ -55,7 +55,7 @@ export default function NewWorkoutForm({
     handleSubmit,
     watch,
     formState: { errors },
-  } = useForm({
+  } = useForm<WorkoutSchemaType>({
     resolver: zodResolver(workoutSchema),
     defaultValues: {
       name: "",
@@ -187,3 +187,8 @@ export default function NewWorkoutForm({
     </>
   );
 }
+
+
+
+
+

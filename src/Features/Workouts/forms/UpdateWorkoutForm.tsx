@@ -61,7 +61,7 @@ export default function UpdateWorkoutForm({
     handleSubmit,
     watch,
     formState: { errors },
-  } = useForm({
+  } = useForm<WorkoutSchemaType>({
     resolver: zodResolver(workoutSchema),
     defaultValues: {
       name: workout.name || "",

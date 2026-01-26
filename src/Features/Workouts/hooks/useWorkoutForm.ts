@@ -2,7 +2,6 @@ import { useEffect, useRef } from "react";
 import { useWorkoutStore } from "../store";
 import { useModals } from "@/Providers/Modals";
 import { useRouter } from "next/navigation";
-import { Exercise } from "@/types/exercise";
 import { WorkoutExercise } from "@/types/workoutExercise";
 
 /**

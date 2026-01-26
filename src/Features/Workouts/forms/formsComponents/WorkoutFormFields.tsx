@@ -7,13 +7,13 @@ import { useRef, useEffect } from "react";
 import { FieldErrors, UseFormRegister, UseFormRegisterReturn } from "react-hook-form";
 import { WorkoutSchemaType } from "../../utils/workoutSchema";
 
-type FormData = Partial<WorkoutSchemaType>
+
 
 
 interface WorkoutFormFieldsProps {
-  register: UseFormRegister<FormData>,
-  errors: FieldErrors<FormData>,
-  watchedFields: Record<string, string>,
+  register: UseFormRegister<WorkoutSchemaType>,
+  errors: FieldErrors<WorkoutSchemaType>,
+  watchedFields: WorkoutSchemaType,
   nameRegister: UseFormRegisterReturn<string>
 
 }
