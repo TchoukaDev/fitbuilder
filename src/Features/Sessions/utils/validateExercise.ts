@@ -7,15 +7,17 @@ type ValidateExerciseProps = {
   exercises: SessionExercise[];
   exerciseIndex: number;
 }
+
+export interface MissingFields {
+  incompleteSets: string[];
+  setsWithoutReps: string[];
+  setsWithoutWeight: string[];
+  effortMissing: boolean;
+}
 export function validateExercise({ exercises, exerciseIndex }: ValidateExerciseProps) {
   const exercise = exercises[exerciseIndex];
 
-  type MissingFields = {
-    incompleteSets: string[];
-    setsWithoutReps: string[];
-    setsWithoutWeight: string[];
-    effortMissing: boolean;
-  }
+
   const missingFields: MissingFields = {
     incompleteSets: [],
     setsWithoutReps: [],

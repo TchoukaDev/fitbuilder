@@ -1,20 +1,22 @@
 "use client";
 
 import { Play, Pause, SkipForward } from "lucide-react";
-import { useState, useEffect } from "react";
 import { Button } from "@/Global/components";
-import { useTimerEffects } from "@/Features/Sessions/hooks/useTimerEffects";
-import { useBlockScroll } from "@/Global/hooks/useBlockScroll";
 import { createPortal } from "react-dom";
-import { useModals } from "@/Providers/Modals";
 import { ModalLayout } from "@/Global/components";
 import { handleKeyDown } from "@/Global/utils";
 import { useRestTimer } from "../hooks/useRestTimer";
 
 // Modal du timer
+
+/**
+ * Props du composant RestTimerModal
+ * @param initialTime - Temps de repos en secondes (ex: 90)
+ */
+
 export default function RestTimerModal({
-  initialTime, // Temps de repos en secondes (ex: 90)
-}) {
+  initialTime
+}: { initialTime: number }) {
   // ✅ Valeur par défaut si initialTime est undefined
   const safeInitialTime = initialTime || 90;
 
@@ -32,7 +34,7 @@ export default function RestTimerModal({
   // ═══════════════════════════════════════════════════════
   // 🎨 FORMATAGE DU TEMPS (MM:SS)
   // ═══════════════════════════════════════════════════════
-  const formatTime = (seconds) => {
+  const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;
     return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
@@ -57,13 +59,12 @@ export default function RestTimerModal({
         {/* ⏰ Grand affichage du temps */}
         <div className="text-center">
           <div
-            className={`text-7xl font-bold transition-colors ${
-              remainingTime <= 10 && remainingTime > 0
-                ? "text-red-600 animate-pulse" // ⚠️ Alerte si moins de 10s
-                : remainingTime === 0
+            className={`text-7xl font-bold transition-colors ${remainingTime <= 10 && remainingTime > 0
+              ? "text-red-600 animate-pulse" // ⚠️ Alerte si moins de 10s
+              : remainingTime === 0
                 ? "text-green-600" // ✅ Vert si terminé
                 : "text-primary-900"
-            }`}
+              }`}
           >
             {formatTime(remainingTime)}
           </div>
@@ -71,8 +72,8 @@ export default function RestTimerModal({
             {remainingTime === 0
               ? "✅ Repos terminé !"
               : isRunning
-              ? "⏳ En cours..."
-              : "⏸️ En pause"}
+                ? "⏳ En cours..."
+                : "⏸️ En pause"}
           </p>
         </div>
 
@@ -167,6 +168,6 @@ export default function RestTimerModal({
         </div>
       </div>
     </ModalLayout>,
-    document.getElementById("portal-root"),
+    document.getElementById("portal-root") as HTMLDivElement,
   );
 }

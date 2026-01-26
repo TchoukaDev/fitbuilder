@@ -7,12 +7,17 @@ import { useModals } from "@/Providers/Modals";
 import { createPortal } from "react-dom";
 import { ModalLayout } from "@/Global/components";
 
+interface CancelSessionModalProps {
+  onConfirm: () => void;
+  isLoading: boolean;
+  isPlanned: boolean;
+}
 // Modale d'annulation de la session
 export default function CancelSessionModal({
   onConfirm,
   isLoading,
   isPlanned,
-}) {
+}: CancelSessionModalProps) {
   const { closeModal } = useModals();
   useBlockScroll();
 
@@ -46,13 +51,13 @@ export default function CancelSessionModal({
           type="button"
           disabled={isLoading}
           onClick={onConfirm}
-          label="Annuler la séance"
+          aria-label="Annuler la séance"
           close
         >
           Annuler la séance
         </LoaderButton>
       </div>
     </ModalLayout>,
-    document.getElementById("portal-root"),
+    document.getElementById("portal-root") as HTMLDivElement,
   );
 }

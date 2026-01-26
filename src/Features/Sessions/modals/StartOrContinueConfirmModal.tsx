@@ -10,12 +10,20 @@ import { toast } from "react-toastify";
 import { createPortal } from "react-dom";
 import { ModalLayout } from "@/Global/components";
 import { Trash2, X, Play } from "lucide-react";
+import { WorkoutSession } from "@/types/workoutSession";
+
+interface StartOrContinueConfirmModalProps {
+  action: "start" | "continue";
+  session: WorkoutSession;
+  userId: string;
+}
+
 
 export default function StartOrContinueConfirmModal({
   action,
   session,
   userId,
-}) {
+}: StartOrContinueConfirmModalProps) {
   const { closeModal } = useModals();
   const { mutate: startPlannedSession, isPending: isStarting } =
     useStartPlannedSession(userId);
@@ -82,11 +90,10 @@ export default function StartOrContinueConfirmModal({
           {/* Bouton de démarrage ou de reprise */}
           <LoaderButton
             isLoading={isStarting}
-            loadingText={`${
-              action === "start" ? "Démarrage" : "Reprise"
-            } en cours`}
+            loadingText={`${action === "start" ? "Démarrage" : "Reprise"
+              } en cours`}
             type="button"
-            label={action === "start" ? "Démarrer" : "Reprendre"}
+            aria-label={action === "start" ? "Démarrer" : "Reprendre"}
             onClick={handleStartOrContinue}
           >
             {" "}
@@ -98,11 +105,10 @@ export default function StartOrContinueConfirmModal({
           <LoaderButton
             close
             isLoading={action === "start" ? isDeleting : isCancelling}
-            loadingText={`${
-              action === "start" ? "Suppression" : "Annulation"
-            } en cours`}
+            loadingText={`${action === "start" ? "Suppression" : "Annulation"
+              } en cours`}
             type="button"
-            label={
+            aria-label={
               action === "start" ? " Supprimer la séance" : "Annuler la séance"
             }
             onClick={handleDeleteOrCancel}

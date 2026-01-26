@@ -3,13 +3,20 @@
 import { Button } from "@/Global/components";
 import { createPortal } from "react-dom";
 import { ModalLayout } from "@/Global/components";
+import { MissingFields } from "../utils/validateExercise";
+
+interface IncompleteExerciseModalProps {
+  missingFields: MissingFields;
+  onConfirm: () => void;
+  onCancel: () => void;
+}
 
 // Modale de confirmation/annulation avant validation d'un set incomplet
 export default function IncompleteExerciseModal({
   missingFields,
   onConfirm,
   onCancel,
-}) {
+}: IncompleteExerciseModalProps) {
   return createPortal(
     <ModalLayout title="Exercice incomplet" modalToClose="incompleteExercise">
       {/* Message */}
@@ -75,6 +82,6 @@ export default function IncompleteExerciseModal({
         <Button onClick={onConfirm}>Terminer quand même</Button>
       </div>
     </ModalLayout>,
-    document.getElementById("portal-root"),
+    document.getElementById("portal-root") as HTMLDivElement,
   );
 }

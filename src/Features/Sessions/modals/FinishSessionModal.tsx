@@ -7,6 +7,14 @@ import { useModals } from "@/Providers/Modals";
 import { createPortal } from "react-dom";
 import { ModalLayout } from "@/Global/components";
 
+interface FinishSessionModalProps {
+  onConfirm: () => void;
+  sessionName: string;
+  completedCount: number;
+  totalExercises: number;
+  duration: string;
+  isLoading: boolean;
+}
 // Modale de confirmation de fin de session
 export default function FinishSessionModal({
   onConfirm,
@@ -15,7 +23,7 @@ export default function FinishSessionModal({
   totalExercises,
   duration,
   isLoading,
-}) {
+}: FinishSessionModalProps) {
   const { closeModal } = useModals();
   useBlockScroll();
 
@@ -82,6 +90,6 @@ export default function FinishSessionModal({
         </Button>
       </div>
     </ModalLayout>,
-    document.getElementById("portal-root"),
+    document.getElementById("portal-root") as HTMLDivElement,
   );
 }
