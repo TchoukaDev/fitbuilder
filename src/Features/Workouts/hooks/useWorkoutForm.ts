@@ -2,17 +2,21 @@ import { useEffect, useRef } from "react";
 import { useWorkoutStore } from "../store";
 import { useModals } from "@/Providers/Modals";
 import { useRouter } from "next/navigation";
+import { Exercise } from "@/types/exercise";
+import { WorkoutExercise } from "@/types/workoutExercise";
 
 /**
  * Hook custom pour gérer la logique commune des formulaires de workout
- * @param {Object} options
- * @param {Array} options.initialExercises - Exercices initiaux (pour UpdateForm)
- * @param {boolean} options.loadFromStorage - Charger depuis localStorage (pour NewForm)
  */
+interface useWorkoutFormProps {
+  initialExercises?: WorkoutExercise[],
+  loadFromStorage: boolean
+}
+
 export function useWorkoutForm({
-  initialExercises = null,
+  initialExercises = [],
   loadFromStorage = false,
-}) {
+}: useWorkoutFormProps) {
   const { closeModal, getModalData } = useModals();
   const router = useRouter();
   // ========================================
@@ -39,7 +43,7 @@ export function useWorkoutForm({
 
   // 🔥 Handler pour la suppression d'exercice
   const handleDeleteExercise = () => {
-    const index = getModalData("deleteConfirm").index;
+    const index = getModalData<{ index: number }>("deleteConfirm")?.index ?? 0;
     removeExercise(index);
     closeModal("deleteConfirm");
   };

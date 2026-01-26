@@ -20,7 +20,16 @@ export const workoutSchema = z.object({
 // Schema pour valider que les exercices ne sont pas vides
 export const workoutExercisesSchema = z.object({
   exercises: z
-    .array(z.any())
+    .array(z.object({
+      exerciseId: z.string(),
+      name: z.string(),
+      sets: z.number(),
+      reps: z.number(),
+      targetWeight: z.number(),
+      restTime: z.number(),
+      order: z.number(),
+      notes: z.string().nullable(),
+    }))
     .min(1, { message: "Veuillez ajouter au moins un exercice" }),
 });
 

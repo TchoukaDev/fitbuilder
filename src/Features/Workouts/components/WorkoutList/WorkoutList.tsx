@@ -16,7 +16,7 @@ interface WorkoutListProps {
 }
 
 export default function WorkoutList({ initialWorkouts, userId }: WorkoutListProps) {
-  const { data: workouts = [] } = useWorkouts(initialWorkouts, userId);
+  const { data: workouts = [] } = useWorkouts({ initialData: initialWorkouts, userId });
   const { mutate: deleteWorkout, isPending: isDeleting } =
     useDeleteWorkout(userId);
   const { isOpen, closeModal, getModalData } = useModals();

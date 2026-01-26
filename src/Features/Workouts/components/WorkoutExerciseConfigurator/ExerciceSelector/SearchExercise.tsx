@@ -1,7 +1,12 @@
 // Champ de recherche pour filtrer les exercices par nom.
 import { Label } from "@/Global/components";
 
-export default function SearchExercise({ search, setSearch }) {
+interface SearchExerciseProps {
+  search: string;
+  setSearch: (search: string) => void
+}
+
+export default function SearchExercise({ search, setSearch }: SearchExerciseProps) {
   return (
     <div className="relative">
       {/* Recherche */}

@@ -11,12 +11,19 @@ import SearchExercise from "./SearchExercise";
 import { useWorkoutStore } from "@/Features/Workouts/store";
 import { useExerciseFilters } from "@/Features/Exercises/hooks";
 import RequiredFields from "@/Global/components/ui/FormsComponents/RequiredFields";
+import { Exercise } from "@/types/exercise";
 
+
+type ExerciseSelectorProps = {
+  exercises: Exercise[];
+  favoritesExercises: string[];
+  isAdmin: boolean;
+}
 export default function ExerciseSelector({
   exercises,
   favoritesExercises,
   isAdmin,
-}) {
+}: ExerciseSelectorProps) {
   // Store
   const exercisesAdded = useWorkoutStore((state) => state.exercises);
   const selectedExerciseId = useWorkoutStore(

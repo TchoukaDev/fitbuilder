@@ -1,7 +1,8 @@
 import { useWorkoutStore } from "@/Features/Workouts/store";
+import { Exercise } from "@/types/exercise";
 
 // Sélecteur d'exercices groupés par muscle avec gestion d'erreur.
-export default function WorkoutExerciseGroupSelect({ grouped }) {
+export default function WorkoutExerciseGroupSelect({ grouped }: { grouped: Record<string, Exercise[]> }) {
   const setSelectedExerciseId = useWorkoutStore(
     (state) => state.setSelectedExerciseId,
   );
@@ -31,7 +32,7 @@ export default function WorkoutExerciseGroupSelect({ grouped }) {
         {Object.entries(grouped).map(([_, exs]) =>
           exs.map((ex) => (
             <option value={ex.exerciseId} key={ex.exerciseId}>
-              {ex.name} {ex.type === "private" && "(Perso)"}
+              {ex.name} {ex.isPublic === false && "(Perso)"}
             </option>
           )),
         )}

@@ -1,9 +1,15 @@
 // Sélecteur d'onglets pour filtrer les exercices (Tous / Mes exercices / Favoris).
+interface WorkoutExerciseTabsProps {
+  counts: Record<string, number>;
+  activeTab: string
+  onTabChange: (tab: string) => void
+}
+
 export default function WorkoutExerciseTabs({
   counts,
   activeTab,
   onTabChange,
-}) {
+}: WorkoutExerciseTabsProps) {
   // Filtres
   const tabs = [
     { id: "all", label: "Tous", count: counts.all },

@@ -1,7 +1,9 @@
 "use client";
 
+import { WorkoutExercise } from "@/types/workoutExercise";
+
 // Affiche une carte d'exercice dans le détail d'un plan d'entraînement.
-export default function WorkoutExerciseItem({ exercise }) {
+export default function WorkoutExerciseItem({ exercise }: { exercise: WorkoutExercise }) {
   return (
     <div className="border border-gray-200 rounded-lg p-2 md:p-4 hover:border-primary-300 transition overflow-hidden">
       <div className="flex items-start gap-3 md:gap-4">

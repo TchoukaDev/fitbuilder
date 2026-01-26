@@ -5,8 +5,14 @@ import { LoaderButton } from "@/Global/components";
 import { useStartNewSession } from "@/Features/Sessions/hooks";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import { Workout } from "@/types/workout";
 
-export default function StartWorkoutButton({ userId, workout }) {
+
+type StartWorkoutButtonProps = {
+  userId: string;
+  workout: Workout;
+}
+export default function StartWorkoutButton({ userId, workout }: StartWorkoutButtonProps) {
   const { mutate: startSession, isPending: isStarting } =
     useStartNewSession(userId);
   const router = useRouter();
@@ -34,7 +40,7 @@ export default function StartWorkoutButton({ userId, workout }) {
       type="button"
       onClick={handleStart}
       title="Démarrer la séance"
-      label="Démarrer la séance"
+      aria-label="Démarrer la séance"
       width="w-12 md:w-auto"
     >
       {" "}

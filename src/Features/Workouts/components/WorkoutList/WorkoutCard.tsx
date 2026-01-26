@@ -6,8 +6,14 @@ import StartWorkoutButton from "../Buttons/StartWorkoutButton";
 import { Calendar, Clock, Dumbbell, Edit, Search, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { WorkoutDeleteButton } from "../Buttons";
+import { Workout } from "@/types/workout";
 
-export default function WorkoutCard({ workout, userId }) {
+interface WorkoutCardProps {
+  workout: Workout,
+  userId: string
+}
+
+export default function WorkoutCard({ workout, userId }: WorkoutCardProps) {
   const date = new Date(workout.createdAt);
   const workoutDate = date.toLocaleDateString("fr-FR", {
     day: "numeric",
@@ -69,7 +75,7 @@ export default function WorkoutCard({ workout, userId }) {
           <Button
             asChild
             title="Voir les détails"
-            label="Voir les détails de l'entraînement"
+            aria-label="Voir les détails de l'entraînement"
             width="w-12 md:w-fit"
           >
             <Link href={`/workouts/${workout.id}`}>

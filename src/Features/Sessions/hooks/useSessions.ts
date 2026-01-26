@@ -8,6 +8,8 @@ import {
 import { toast } from "react-toastify";
 import { ApiErrorType, ApiSuccessType } from "@/libs/apiResponse";
 import { WorkoutSession } from "@/types/workoutSession";
+import { Workout } from "@/types/workout";
+import { WorkoutExercise } from "@/types/workoutExercise";
 
 /**
  * Récupère la liste paginée de sessions avec filtres côté serveur.
@@ -166,23 +168,27 @@ export function useStartPlannedSession(userId) {
 
 /**
  * Créer et démarrer une nouvelle session d'entraînement (mutation React Query).
- *
- * @param {string} userId - Identifiant de l'utilisateur.
  */
-export function useStartNewSession(userId) {
+export function useStartNewSession(userId: string) {
+  type UseStartNewSessionVariables = {
+    workoutId: string;
+    workoutName: string;
+    exercises: WorkoutExercise[];
+  }
+
   const queryClient = useQueryClient();
   const sessionsKey = ["sessions", userId];
   const calendarKey = ["calendar-sessions", userId];
   const dashboardKey = ["dashboard", userId];
-  return useMutation({
-    mutationFn: async (newSession) => {
+  return useMutation<{ sessionId: string }, ApiErrorType, UseStartNewSessionVariables, { previousSessions?: WorkoutSession[] }>({
+    mutationFn: async (newSession: UseStartNewSessionVariables) => {
       const response = await fetch("/api/sessions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newSession),
       });
       if (!response.ok) {
-        const errorData = await response.json();
+        const errorData: ApiErrorType = await response.json();
         // L'API retourne { error: "string", message: "string" }
         throw new Error(
           errorData.message ||
@@ -190,19 +196,19 @@ export function useStartNewSession(userId) {
           "Erreur lors de la création de la séance",
         );
       }
-      const data = await response.json();
+      const data: { sessionId: string } = await response.json();
       return data;
     },
-    onMutate: async (newSession) => {
+    onMutate: async (newSession: UseStartNewSessionVariables) => {
       await queryClient.cancelQueries({ queryKey: sessionsKey });
       await queryClient.cancelQueries({ queryKey: calendarKey });
       await queryClient.cancelQueries({ queryKey: dashboardKey });
-      const previousSessions = queryClient.getQueryData(sessionsKey);
-      queryClient.setQueryData(sessionsKey, (old = []) => [...old, newSession]);
+      const previousSessions = queryClient.getQueryData<WorkoutSession[]>(sessionsKey);
+      queryClient.setQueryData(sessionsKey, (old: WorkoutSession[] = []) => [...old, newSession]);
       return { previousSessions };
     },
     onError: (error, newSession, context) => {
-      queryClient.setQueryData(sessionsKey, context.previousSessions);
+      queryClient.setQueryData(sessionsKey, context?.previousSessions || []);
     },
     onSuccess: () => {
       toast.success("L'entraînement a démarré, bon courage! 💪");

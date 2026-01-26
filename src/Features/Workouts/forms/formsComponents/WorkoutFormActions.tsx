@@ -4,13 +4,19 @@ import { Button, LoaderButton } from "@/Global/components";
 import RequiredFields from "@/Global/components/ui/FormsComponents/RequiredFields";
 import { useModals } from "@/Providers/Modals";
 
+interface WorkoutFormActionsProps {
+  errorExercises: string,
+  isLoading: boolean,
+  loadingText: string,
+  submitLabel: string
+}
 
 export default function WorkoutFormActions({
   errorExercises,
   isLoading,
   loadingText,
   submitLabel,
-}) {
+}: WorkoutFormActionsProps) {
   const { openModal } = useModals();
   return (
     <>

@@ -4,14 +4,27 @@
 import { Label } from "@/Global/components";
 import { handleKeyDown } from "@/Global/utils";
 import { useRef, useEffect } from "react";
+import { FieldErrors, UseFormRegister, UseFormRegisterReturn } from "react-hook-form";
+import { WorkoutSchemaType } from "../../utils/workoutSchema";
+
+type FormData = Partial<WorkoutSchemaType>
+
+
+interface WorkoutFormFieldsProps {
+  register: UseFormRegister<FormData>,
+  errors: FieldErrors<FormData>,
+  watchedFields: Record<string, string>,
+  nameRegister: UseFormRegisterReturn<string>
+
+}
 
 export default function WorkoutFormFields({
   register,
   errors,
   watchedFields,
   nameRegister,
-}) {
-  const nameRef = useRef(null);
+}: WorkoutFormFieldsProps) {
+  const nameRef = useRef<HTMLInputElement | null>(null);
 
   // Focus automatique sur le champ name
   useEffect(() => {
@@ -90,7 +103,6 @@ export default function WorkoutFormFields({
           </label>
           <select
             id="category"
-            name="category"
             {...register("category")}
             className="input pt-2"
           >

@@ -10,17 +10,25 @@ import { useModals } from "@/Providers/Modals";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { WorkoutExerciseItem } from ".";
+import { Workout } from "@/types/workout";
+
+
+type WorkoutDetailPageClientProps = {
+  userId: string;
+  workout: Workout;
+  workoutId: string;
+}
 
 export default function WorkoutDetailPageClient({
   userId,
   workout,
   workoutId,
-}) {
+}: WorkoutDetailPageClientProps) {
   const { mutate: deleteWorkout, isPending: isDeleting } =
     useDeleteWorkout(userId);
   const { isOpen, closeModal } = useModals();
   const router = useRouter();
-
+  console.log(workout);
   const handleDelete = async () => {
     deleteWorkout(workoutId, {
       onSuccess: () => {

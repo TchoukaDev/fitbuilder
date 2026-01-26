@@ -1,12 +1,18 @@
 // Filtre par groupe musculaire avec compteurs d'exercices par muscle.
+interface WorkoutMuscleFiltersProps {
+  muscles: string[];
+  muscleCounts?: Record<string, number>;
+  onMuscleChange: (muscle: string) => void
+}
+
 export default function WorkoutMuscleFilters({
   muscles,
   muscleCounts = {},
   onMuscleChange,
-}) {
+}: WorkoutMuscleFiltersProps) {
   // Compteur de tous les exercices
-  const totalCount = Object.values(muscleCounts).reduce((acc, mus) => {
-    return acc + mus;
+  const totalCount = Object.values(muscleCounts).reduce((acc, muscleCount) => {
+    return acc + muscleCount;
   }, 0);
 
   return (
