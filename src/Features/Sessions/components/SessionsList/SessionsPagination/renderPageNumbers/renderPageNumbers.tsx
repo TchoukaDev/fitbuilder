@@ -1,12 +1,14 @@
 // Génère la liste des boutons de numéros de pages avec ellipses si nécessaire
 import PageButton from "./PageButton";
 
-export default function renderPageNumbers(
-  currentPage,
-  totalPages,
-  onPageChange,
-  isFetching,
-) {
+interface RenderPageNumbersProps {
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+  isFetching: boolean;
+}
+
+export default function RenderPageNumbers({ currentPage, totalPages, onPageChange, isFetching }: RenderPageNumbersProps) {
   const pages = [];
   const maxVisible = 5;
 

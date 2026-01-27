@@ -183,7 +183,7 @@ function FilterButton({
       onClick={onClick}
       disabled={disabled}
       className={`px-4 py-2 rounded-lg text-sm font-medium transition whitespace-nowrap ${isActive
-        ? colorClasses[activeColor]
+        ? colorClasses[activeColor as keyof typeof colorClasses]
         : "bg-gray-100 text-gray-700 hover:bg-gray-200 cursor-pointer"
         } ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
     >

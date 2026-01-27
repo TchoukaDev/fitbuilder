@@ -1,6 +1,5 @@
 // Affiche les statistiques globales des séances (total, terminées, en cours, planifiées).
-export default function SessionStats({ stats }) {
-  if (!stats) return null;
+export default function SessionStats({ stats }: { stats: { total: number; completed: number; inProgress: number; planned: number } }) {
 
   const statsConfig = [
     {
@@ -27,11 +26,10 @@ export default function SessionStats({ stats }) {
       textColor: "text-accent-700",
       valueColor: "text-accent-900",
     },
-    ,
     {
       label: "Planifiées",
       value: stats.planned,
-      bgColor: "bg-primay-100",
+      bgColor: "bg-primary-100",
       borderColor: "border-primary-300",
       textColor: "text-primary-700",
       valueColor: "text-primary-900",

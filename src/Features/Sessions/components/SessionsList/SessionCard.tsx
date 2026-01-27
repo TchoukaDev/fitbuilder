@@ -4,15 +4,19 @@
 import { Clock, Calendar, Dumbbell, CheckCircle, Play } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useModals } from "@/Providers/Modals";
+import { WorkoutSession } from "@/types/workoutSession";
 
-export default function SessionCard({ session, userId }) {
+interface SessionCardProps {
+  session: WorkoutSession;
+}
+export default function SessionCard({ session }: SessionCardProps) {
   const router = useRouter();
   const { openModal } = useModals();
 
   // ═══════════════════════════════════════════════════════
   // 🎨 HELPERS
   // ═══════════════════════════════════════════════════════
-  const getStatusConfig = (status) => {
+  const getStatusConfig = (status: string) => {
     const configs = {
       completed: {
         bg: "bg-green-100",
@@ -36,10 +40,10 @@ export default function SessionCard({ session, userId }) {
         label: "Planifiée",
       },
     };
-    return configs[status] || configs.planned;
+    return configs[status as keyof typeof configs] || configs.planned;
   };
 
-  const formatDate = (date) => {
+  const formatDate = (date: string) => {
     if (!date) return "Date inconnue";
     return new Date(date).toLocaleDateString("fr-FR", {
       weekday: "short",
@@ -49,7 +53,7 @@ export default function SessionCard({ session, userId }) {
     });
   };
 
-  const formatTime = (time) => {
+  const formatTime = (time: string) => {
     if (!time) return "N/A";
     if (typeof time === "string" && time.includes(":")) return time;
     return time;
@@ -99,9 +103,9 @@ export default function SessionCard({ session, userId }) {
           <p className="text-sm text-gray-600">
             {formatDate(
               session.completedDate ||
-                session.scheduledDate ||
-                session.startedAt ||
-                session.createdAt,
+              session.scheduledDate ||
+              session.startedAt ||
+              session.createdAt,
             )}
           </p>
         </div>
@@ -152,11 +156,10 @@ export default function SessionCard({ session, userId }) {
         <div className="mt-3">
           <div className="w-full bg-gray-200 rounded-full h-2">
             <div
-              className={`h-2 rounded-full transition-all ${
-                session.status === "completed"
+              className={`h-2 rounded-full transition-all ${session.status === "completed"
                   ? "bg-green-600"
                   : "bg-primary-600"
-              }`}
+                }`}
               style={{
                 width: `${(completedExercises / totalExercises) * 100}%`,
               }}

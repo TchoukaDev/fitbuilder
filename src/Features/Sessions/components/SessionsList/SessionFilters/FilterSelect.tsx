@@ -1,9 +1,15 @@
+interface FilterSelectProps {
+  filters: { value: string; label: string }[];
+  onSelectChange: (value: string) => void;
+  isFetching: boolean;
+  id: string;
+}
 export default function FilterSelect({
   filters,
   onSelectChange,
   isFetching,
   id,
-}) {
+}: FilterSelectProps) {
   return (
     <div className="flex md:hidden gap-2 overflow-x-auto pb-2">
       <select

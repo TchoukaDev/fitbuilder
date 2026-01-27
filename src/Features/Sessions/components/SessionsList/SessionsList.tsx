@@ -126,7 +126,6 @@ export default function SessionsList({
               <SessionCard
                 key={session.id}
                 session={session}
-                userId={userId}
               />
             ))}
           </div>

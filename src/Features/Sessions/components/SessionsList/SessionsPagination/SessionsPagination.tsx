@@ -1,6 +1,6 @@
 // Composant de pagination pour naviguer entre les pages de séances.
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { renderPageNumbers } from "./renderPageNumbers";
+import RenderPageNumbers from "./renderPageNumbers/renderPageNumbers";
 
 interface SessionsPaginationProps {
   currentPage: number;
@@ -40,7 +40,7 @@ export default function SessionsPagination({
 
         {/* Numéros de pages */}
         <div className="flex gap-1">
-          {renderPageNumbers(currentPage, totalPages, onPageChange, isFetching)}
+          <RenderPageNumbers currentPage={currentPage} totalPages={totalPages} onPageChange={onPageChange} isFetching={isFetching} />
         </div>
 
         {/* Bouton Suivant */}
