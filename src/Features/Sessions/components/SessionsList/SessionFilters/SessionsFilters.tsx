@@ -1,6 +1,18 @@
 // Filtres pour les séances : période, statut (complétées/en cours/planifiées), workout.
 import { Calendar, Filter } from "lucide-react";
 import { FilterSelect } from ".";
+import { WorkoutSession } from "@/types/workoutSession";
+
+interface SessionFiltersProps {
+  statusFilter: string;
+  dateFilter: string;
+  workoutFilter: string;
+  onWorkoutFilterChange: (workoutFilter: string) => void;
+  sessions: WorkoutSession[];
+  onStatusChange: (statusFilter: string) => void;
+  onDateFilterChange: (dateFilter: string) => void;
+  isFetching: boolean;
+}
 
 export default function SessionFilters({
   statusFilter,
@@ -11,7 +23,8 @@ export default function SessionFilters({
   onStatusChange,
   onDateFilterChange,
   isFetching,
-}) {
+}: SessionFiltersProps) {
+
   const dateFilters = [
     { value: "all", label: "Toutes" },
     { value: "week", label: "7 derniers jours" },
@@ -27,8 +40,9 @@ export default function SessionFilters({
     { value: "planned", label: "Planifiées", color: "primary" },
   ];
 
+
   // Retirer les doublons d'entrainement
-  const workoutSet = new Set();
+  const workoutSet = new Set<string>();
   sessions.forEach((s) => workoutSet.add(s.workoutName));
 
   const workoutFilters = [
@@ -39,10 +53,10 @@ export default function SessionFilters({
 
     ...[...workoutSet].map(
       (s) =>
-        ({
-          value: s,
-          label: s,
-        } || {}),
+      ({
+        value: s,
+        label: s,
+      }),
     ),
   ];
   return (
@@ -126,7 +140,7 @@ export default function SessionFilters({
               isActive={workoutFilter === filter.value}
               onClick={() => onWorkoutFilterChange(filter.value)}
               disabled={isFetching}
-              activeColor={filter.color}
+              activeColor="primary"
             />
           ))}
         </div>
@@ -144,13 +158,20 @@ export default function SessionFilters({
 }
 
 // Bouton de filtre réutilisable avec état actif
+interface FilterButtonProps {
+  label: string;
+  isActive: boolean;
+  onClick: () => void;
+  disabled: boolean;
+  activeColor: string
+}
 function FilterButton({
   label,
   isActive,
   onClick,
   disabled,
   activeColor = "primary",
-}) {
+}: FilterButtonProps) {
   const colorClasses = {
     primary: "bg-primary-600 text-white",
     green: "bg-green-600 text-white",
@@ -161,11 +182,10 @@ function FilterButton({
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`px-4 py-2 rounded-lg text-sm font-medium transition whitespace-nowrap ${
-        isActive
-          ? colorClasses[activeColor]
-          : "bg-gray-100 text-gray-700 hover:bg-gray-200 cursor-pointer"
-      } ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
+      className={`px-4 py-2 rounded-lg text-sm font-medium transition whitespace-nowrap ${isActive
+        ? colorClasses[activeColor]
+        : "bg-gray-100 text-gray-700 hover:bg-gray-200 cursor-pointer"
+        } ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
     >
       {label}
     </button>

@@ -4,6 +4,7 @@ import { authOptions } from "@/libs/auth";
 import { SessionsList } from "@/Features/Sessions/components";
 import { Header } from "@/Global/components";
 import { getAllSessions } from "@/Features/Sessions/utils";
+import { DEFAULT_SESSION_FILTERS } from "@/Features/Sessions/hooks/useSessions";
 import { redirect } from "next/navigation";
 import { Metadata } from "next";
 
@@ -20,14 +21,20 @@ export default async function SessionsPage({ searchParams }: { searchParams: Pro
   }
 
   // Extraction des filtres depuis l'URL
-  const status = resolvedSearchParams?.status || "all";
-  const dateFilter = resolvedSearchParams?.dateFilter || "all";
-  const workoutFilter = resolvedSearchParams?.workoutFilter || "all";
-  const page = parseInt(resolvedSearchParams?.page) || 1;
-  const limit = 7;
+  const status = resolvedSearchParams?.status || DEFAULT_SESSION_FILTERS.status;
+  const dateFilter = resolvedSearchParams?.dateFilter || DEFAULT_SESSION_FILTERS.dateFilter;
+  const workoutFilter = resolvedSearchParams?.workoutFilter || DEFAULT_SESSION_FILTERS.workoutFilter;
+  const page = parseInt(resolvedSearchParams?.page) || DEFAULT_SESSION_FILTERS.page;
+  const limit = parseInt(resolvedSearchParams?.limit) || DEFAULT_SESSION_FILTERS.limit;
 
   // Récupération des données initiales
-  const initialData = await getAllSessions(userId, {});
+  const initialData = await getAllSessions(userId, {
+    status,
+    dateFilter,
+    workoutFilter,
+    page,
+    limit,
+  });
 
   const serializedData = JSON.parse(JSON.stringify(initialData));
 

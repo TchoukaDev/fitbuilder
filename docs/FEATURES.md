@@ -301,11 +301,13 @@ Tout changement dans une séance se reflète immédiatement au calendrier.
 
 Une séance (session) est l'exécution concrète d'un programme d'entraînement. L'utilisateur trace chaque exercice, les séries, répétitions, poids réels et enregistre ses notes.
 
+### Affichage
+
+Affichage de toutes les séances avec filtres (par date, par workout, pas statut (planifiée, en cours, terminée))
+
 ### Cycle de vie d'une séance
 
-```
 Créer → Commencer → Exécuter exercices → Compléter → Visualiser détails
-```
 
 ### Création d'une séance
 
@@ -332,7 +334,7 @@ Session
 ├── Exercices[]
 │   ├── Exercice ID
 │   ├── Configuration (séries, reps, poids)
-│   ├── Statut (NOT_STARTED, IN_PROGRESS, COMPLETED)
+│   ├── Statut (PLANNED, IN_PROGRESS, COMPLETED)
 │   ├── Sets réels[]
 │   │   ├── Numéro
 │   │   ├── Reps réalisées

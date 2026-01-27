@@ -51,7 +51,7 @@ export default function UpdateExerciseForm({ exerciseToUpdate }: { exerciseToUpd
   const onSubmit = async (data: ExerciseFormData) => {
     updateExercise(
       {
-        id: exerciseToUpdate.id,
+        exerciseId: exerciseToUpdate.exerciseId,
         updatedExercise: data,
       },
       {

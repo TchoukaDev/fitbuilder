@@ -1,5 +1,5 @@
-import { WorkoutExercise } from "./workoutExercise";
 import { ObjectId } from "mongodb";
+import { SessionExercise } from "./SessionExercise";
 
 // Type de base partagé (champs communs)
 type WorkoutSessionBase = {
@@ -39,21 +39,3 @@ export type CompletedSessionType = Omit<WorkoutSession, "completedDate" | "start
     status: "completed";
 }
 
-export type SessionExercise = {
-    exerciseId: string;
-    exerciseName: string;
-    targetSets: number;
-    targetReps: number;
-    targetWeight: number;
-    restTime: number;
-    actualSets: SessionExerciseSet[];
-    notes: string | null;
-    effort: number | null;
-    completed: boolean;
-}
-
-export type SessionExerciseSet = {
-    reps: number | null;
-    weight: number | null;
-    completed: boolean;
-}

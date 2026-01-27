@@ -2,13 +2,20 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { renderPageNumbers } from "./renderPageNumbers";
 
+interface SessionsPaginationProps {
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+  onPageChange: (page: number) => void;
+  isFetching: boolean;
+}
 export default function SessionsPagination({
   currentPage,
   totalPages,
   totalItems,
   onPageChange,
   isFetching,
-}) {
+}: SessionsPaginationProps) {
   if (totalPages <= 1) return null;
 
   return (

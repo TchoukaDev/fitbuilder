@@ -2,10 +2,9 @@ import { useState, useEffect } from "react";
 
 /**
  * Gère un timer basé sur une date de départ (en secondes écoulées + affichage formaté).
- *
- * @param {string | Date | null} startedAt - Date/heure de début de la session.
+
  */
-export function useSessionTimer(startedAt) {
+export function useSessionTimer(startedAt: string | null) {
   const [elapsedTime, setElapsedTime] = useState(0);
   const [isMounted, setIsMounted] = useState(false);
 
@@ -42,7 +41,7 @@ export function useSessionTimer(startedAt) {
    * @param {number} seconds
    * @returns {string}
    */
-  const formatTime = (seconds) => {
+  const formatTime = (seconds: number) => {
     const h = Math.floor(seconds / 3600);
     const m = Math.floor((seconds % 3600) / 60);
     const s = seconds % 60;

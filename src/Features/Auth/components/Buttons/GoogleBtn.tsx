@@ -9,7 +9,7 @@ import { ClipLoader } from "react-spinners";
 
 interface GoogleBtnProps {
   children: React.ReactNode;
-  callbackUrl: string;
+  callbackUrl?: string;
 }
 
 export default function GoogleBtn({ children, callbackUrl }: GoogleBtnProps) {

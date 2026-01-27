@@ -20,6 +20,7 @@ export default function ExerciseConfiguration({ exerciseSelected }: { exerciseSe
   const setStepAction = useWorkoutStore((state) => state.setStep);
   const clearAll = useWorkoutStore((state) => state.clearAll);
   const setModaleTitle = useWorkoutStore((state) => state.setModaleTitle);
+  const exercises = useWorkoutStore((state) => state.exercises);
 
 
   useEffect(() => {
@@ -28,7 +29,7 @@ export default function ExerciseConfiguration({ exerciseSelected }: { exerciseSe
 
   const handleSubmit = (data: WorkoutExerciseFormData) => {
 
-    addExercise({ ...exerciseSelected, ...data });
+    addExercise({ ...exerciseSelected, ...data, order: exercises.length + 1 });
     clearAll();
     setStepAction(1);
     toast.success("Exercice ajouté !");

@@ -1,3 +1,5 @@
+"use client";
+
 // Page de liste des exercices avec onglets, filtres, modals et actions
 import { Button, DeleteConfirmModal } from "@/Global/components";
 import { ExerciseGroup } from ".";
@@ -9,6 +11,7 @@ import { useModals } from "@/Providers/Modals";
 import { ExerciseMuscleFilters, ExerciseTabs } from ".";
 import { useDeleteExercise } from "@/Features/Exercises/hooks";
 import { Exercise } from "@/types/exercise";
+import { useEffect } from "react";
 
 
 type ExercisePageListProps = {
@@ -51,11 +54,16 @@ export default function ExercisePageList({
 
   const handleModalConfirm = () => {
     deleteExercise(getModalData<{ exerciseId: string | undefined }>("deleteConfirm")?.exerciseId || "");
-    if (grouped[selectedMuscle].length === 1) {
-      setSelectedMuscle("all");
-    }
     closeModal("deleteConfirm");
   };
+
+  // Si le muscle sélectionné n'a pas d'exercices, on réinitialise le muscle sélectionné 
+  useEffect(() => {
+    if ((grouped)[selectedMuscle]?.length === 0 && selectedMuscle !== "all") {
+      setSelectedMuscle("all");
+    }
+  }, [grouped, selectedMuscle]);
+
 
   return (
     <div className="overflow-hidden">

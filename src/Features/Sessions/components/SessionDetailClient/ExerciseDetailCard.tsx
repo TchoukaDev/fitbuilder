@@ -1,6 +1,6 @@
 "use client";
 
-import { SessionExercise } from "@/types/workoutSession";
+import { SessionExercise } from "@/types/SessionExercise";
 // Carte détaillée d'un exercice terminé : toutes les séries, poids max, volume, RPE, notes.
 import {
   TrendingUp,

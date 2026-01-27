@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import { ApiError } from "@/libs/apiResponse";
 import { requireAuth } from "@/libs/authMiddleware";
 import { getAllSessions } from "@/Features/Sessions/utils";
+import { DEFAULT_SESSION_FILTERS } from "@/Features/Sessions/hooks/useSessions";
 import { WorkoutExercise } from "@/types/workoutExercise";
 
 // POST - Démarrer une nouvelle séance à partir d'un plan d'entraînement
@@ -127,11 +128,14 @@ export async function GET(req: NextRequest) {
 
   // Extraction des paramètres d'URL
   const { searchParams } = new URL(req.url);
-  const page = parseInt(searchParams.get("page") || "1");
-  const limit = parseInt(searchParams.get("limit") || "20");
-  const status = searchParams.get("status") || "all";
-  const dateFilter = searchParams.get("dateFilter") || "all";
-  const workoutFilter = searchParams.get("workoutFilter") || "all";
+
+
+  const page = parseInt(searchParams.get("page") || DEFAULT_SESSION_FILTERS.page.toString())
+  const limit = parseInt(searchParams.get("limit") || DEFAULT_SESSION_FILTERS.limit.toString())
+  const status = searchParams.get("status") || DEFAULT_SESSION_FILTERS.status;
+  const dateFilter = searchParams.get("dateFilter") || DEFAULT_SESSION_FILTERS.dateFilter;
+  const workoutFilter = searchParams.get("workoutFilter") || DEFAULT_SESSION_FILTERS.workoutFilter;
+
 
   try {
     // ✅ Utilise le helper qui fait tout : filtres, pagination, stats, transformation ObjectId → string
@@ -142,6 +146,7 @@ export async function GET(req: NextRequest) {
       dateFilter,
       workoutFilter,
     });
+
 
     return NextResponse.json(result, { status: 200 });
   } catch (error) {

@@ -21,7 +21,8 @@ import StatusBadge from "@/Features/Calendar/components/StatusBadge";
 import StatCard from "./StatCard";
 import { useMemo } from "react";
 import Link from "next/link";
-import { SessionExercise, CompletedSessionType } from "@/types/workoutSession";
+import { CompletedSessionType } from "@/types/workoutSession";
+import { SessionExercise } from "@/types/SessionExercise";
 
 interface SessionDetailClientProps {
   session: CompletedSessionType;

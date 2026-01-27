@@ -3,30 +3,40 @@ import connectDB from "@/libs/mongodb";
 import { ObjectId } from "mongodb";
 import { WorkoutSession, WorkoutSessionDB } from "@/types/workoutSession";
 import { CompletedSessionType } from "@/types/workoutSession";
+import { DEFAULT_SESSION_FILTERS, SessionFiltersType } from "../hooks/useSessions";
 
 // Récupère toutes les sessions d'un utilisateur avec filtres (statut, date, workout) et pagination.
 // Retourne { sessions: [], pagination: {}, stats: {} }.
 
-export interface SessionFiltersType {
-  status?: string;
-  dateFilter?: string;
-  workoutFilter?: string;
-  page?: number;
-  limit?: number;
+interface GetAllSessionsResponse {
+  sessions: WorkoutSession[];
+  pagination: {
+    page: number;
+    limit: number;
+    totalSessions: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
+  } | {};
+  stats: {
+    total: number;
+    completed: number;
+    inProgress: number;
+    planned: number;
+  } | {};
 }
 
-
-
-export async function getAllSessions(userId: string, filters: SessionFiltersType) {
+export async function getAllSessions(userId: string, filters: SessionFiltersType): Promise<GetAllSessionsResponse> {
   if (!userId) return { sessions: [], pagination: {}, stats: {} };
 
   const {
-    status = "all",
-    dateFilter = "all",
-    workoutFilter = "all",
-    page = 1,
-    limit = 20,
-  } = filters;
+    status,
+    dateFilter,
+    workoutFilter,
+    page,
+    limit,
+  } = { ...DEFAULT_SESSION_FILTERS, ...filters };
+
 
   try {
     const db = await connectDB();
@@ -125,6 +135,7 @@ export async function getAllSessions(userId: string, filters: SessionFiltersType
       workoutId: workoutId?.toString(),
     }));
 
+
     return {
       sessions: formattedSessions,
       pagination: {
@@ -139,7 +150,7 @@ export async function getAllSessions(userId: string, filters: SessionFiltersType
     };
   } catch (error) {
     console.error("Erreur getAllSessions:", error);
-    return { sessions: [], pagination: {}, stats: {} };
+    return { sessions: [], pagination: { page: 0, limit: 0, totalSessions: 0, totalPages: 0, hasNextPage: false, hasPreviousPage: false }, stats: { total: 0, completed: 0, inProgress: 0, planned: 0 } };
   }
 }
 

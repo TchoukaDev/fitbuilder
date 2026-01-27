@@ -3,7 +3,7 @@ import connectDB from "@/libs/mongodb";
 import bcrypt from "bcryptjs";
 import { signUpSchema } from "@/Features/Auth/utils";
 import { NextRequest, NextResponse } from "next/server";
-import { ApiError, ApiSuccess } from "@/libs/apiResponse";
+import { ApiError } from "@/libs/apiResponse";
 import { createVerificationToken } from "@/libs/emailVerification";
 import { sendVerificationEmail } from "@/libs/emailService";
 

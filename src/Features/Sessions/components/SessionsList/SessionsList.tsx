@@ -2,7 +2,7 @@
 
 // Liste des séances avec filtres (statut, date, workout), pagination et stats.
 import { Calendar } from "lucide-react";
-import { useSessionsList } from "../../hooks";
+import { SessionsResponse, useSessionsList } from "../../hooks";
 import {
   SessionCard,
   SessionsFilters,
@@ -11,12 +11,22 @@ import {
 } from ".";
 import { useModals } from "@/Providers/Modals";
 import { StartOrContinueConfirmModal } from "../../modals";
+import { SessionFiltersType } from "../../hooks/useSessions";
+import { WorkoutSession } from "@/types/workoutSession";
+
+interface SessionsListProps {
+  initialSessions: SessionsResponse;
+  userId: string;
+  initialFilters: SessionFiltersType;
+}
 
 export default function SessionsList({
   initialSessions,
   userId,
   initialFilters,
-}) {
+}: SessionsListProps) {
+
+
   const {
     statusFilter,
     dateFilter,
@@ -31,9 +41,10 @@ export default function SessionsList({
     handleWorkoutFilterChange,
     handlePageChange,
     handleResetFilters,
-  } = useSessionsList(initialSessions, userId, initialFilters);
+  } = useSessionsList({ initialData: initialSessions, userId, initialFilters });
 
   const { isOpen, getModalData } = useModals();
+
 
   // État de chargement
   if (isLoading) {
@@ -99,7 +110,7 @@ export default function SessionsList({
         <div className="text-center py-12 bg-gray-50 rounded-lg">
           <Calendar size={48} className="mx-auto text-gray-300 mb-3" />
           <p className="text-gray-500 mb-4">
-            Aucune séance trouvée avec ces filtres
+            Aucune séance ne correspond à cette recherche
           </p>
           <button
             onClick={handleResetFilters}
@@ -121,8 +132,8 @@ export default function SessionsList({
           </div>
           {isOpen("startOrContinueSession") && (
             <StartOrContinueConfirmModal
-              action={getModalData("startOrContinueSession").action}
-              session={getModalData("startOrContinueSession").session}
+              action={getModalData<{ action: "start" | "continue" }>("startOrContinueSession")?.action || "start"}
+              session={getModalData<{ session: WorkoutSession }>("startOrContinueSession")?.session as WorkoutSession}
               userId={userId}
             />
           )}

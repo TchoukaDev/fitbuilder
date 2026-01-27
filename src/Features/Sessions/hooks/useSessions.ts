@@ -8,26 +8,68 @@ import {
 import { toast } from "react-toastify";
 import { ApiErrorType, ApiSuccessType } from "@/libs/apiResponse";
 import { WorkoutSession } from "@/types/workoutSession";
-import { Workout } from "@/types/workout";
 import { WorkoutExercise } from "@/types/workoutExercise";
+
+
+
+export const DEFAULT_SESSION_FILTERS = {
+  status: "all",
+  dateFilter: "all",
+  workoutFilter: "all",
+  page: 1,
+  limit: 10,
+} as const;
+
+export interface SessionFiltersType {
+  status: string | typeof DEFAULT_SESSION_FILTERS.status;
+  dateFilter: string | typeof DEFAULT_SESSION_FILTERS.dateFilter;
+  workoutFilter: string | typeof DEFAULT_SESSION_FILTERS.workoutFilter;
+  page: number | typeof DEFAULT_SESSION_FILTERS.page;
+  limit: number | typeof DEFAULT_SESSION_FILTERS.limit;
+}
 
 /**
  * Récupère la liste paginée de sessions avec filtres côté serveur.
- *
- * @param {any} initialData - Données initiales pour hydrater le cache.
- * @param {string} userId - Identifiant de l'utilisateur.
- * @param {Object} [filters] - Filtres (status, dateFilter, workoutFilter, page, limit).
- */
-export function useGetSessions(initialData, userId, filters = {}) {
-  const {
-    status = "all",
-    dateFilter = "all",
-    workoutFilter = "all",
-    page = 1,
-    limit = 20,
-  } = filters;
 
-  // ✅ Tous les filtres dans la queryKey pour cache séparé
+ */
+interface UseGetSessionsProps {
+  initialData?: SessionsResponse;
+  userId: string;
+  filters?: SessionFiltersType;
+}
+
+export interface SessionsResponse {
+  sessions: WorkoutSession[];
+  pagination: {
+    page: number | 0;
+    limit: number | 0;
+    totalSessions: number | 0;
+    totalPages: number | 0;
+    hasNextPage: boolean | false;
+    hasPreviousPage: boolean | false;
+  };
+  stats: {
+    total: number | 0;
+    completed: number | 0;
+    inProgress: number | 0;
+    planned: number | 0;
+  };
+}
+
+export function useGetSessions({
+  initialData,
+  userId,
+  filters = DEFAULT_SESSION_FILTERS
+}: UseGetSessionsProps) {
+
+  const {
+    status,
+    dateFilter,
+    workoutFilter,
+    page,
+    limit,
+  } = { ...DEFAULT_SESSION_FILTERS, ...filters };
+
   const key = [
     "sessions",
     userId,
@@ -36,19 +78,16 @@ export function useGetSessions(initialData, userId, filters = {}) {
 
   return useQuery({
     queryKey: key,
-    queryFn: async () => {
-      // ✅ Construction des query params
+    queryFn: async (): Promise<SessionsResponse> => {
       const params = new URLSearchParams({
         page: page.toString(),
         limit: limit.toString(),
       });
 
-      // ✅ Ajouter status si différent de "all"
       if (status && status !== "all") {
         params.append("status", status);
       }
 
-      // ✅ Ajouter dateFilter si différent de "all"
       if (dateFilter && dateFilter !== "all") {
         params.append("dateFilter", dateFilter);
       }
@@ -63,29 +102,21 @@ export function useGetSessions(initialData, userId, filters = {}) {
         throw new Error("Erreur fetch sessions");
       }
 
-      const data = await response.json();
+      const data: SessionsResponse = await response.json();
 
-      // ✅ Retourner TOUT (sessions, pagination, stats)
-      return {
-        sessions: data.sessions || [],
-        pagination: data.pagination || {},
-        stats: data.stats || {},
-      };
+      return data;
     },
-    initialData:
-      status === "all" &&
-        dateFilter === "all" &&
-        workoutFilter === "all" &&
-        page === 1 &&
-        limit === 20
-        ? initialData
-        : undefined,
-    placeholderData: keepPreviousData, // ✅ Garde les données pendant le fetch
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    gcTime: 1000 * 60 * 30, // 30 minutes
+    initialData: status === "all" && dateFilter === "all" && workoutFilter === "all" && page === 1
+      ? initialData
+      : undefined,
+    placeholderData: keepPreviousData,
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 30,
     enabled: !!userId,
   });
 }
+
+
 
 /**
  * Hook pour récupérer les sessions du calendrier
@@ -137,10 +168,9 @@ export function useGetCalendarSessions(
 
 /**
  * Démarrer une session planifiée
- * @param {string} userId - Identifiant de l'utilisateur.
- * @returns {Object} - Mutation pour démarrer une session planifiée.
  */
-export function useStartPlannedSession(userId) {
+
+export function useStartPlannedSession(userId: string) {
   const queryClient = useQueryClient();
   const sessionsKey = ["sessions", userId];
   const calendarKey = ["calendar-sessions", userId];
