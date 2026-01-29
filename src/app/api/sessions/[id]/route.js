@@ -70,11 +70,26 @@ export async function PATCH(req, { params }) {
       // CAS 1: Démarrer une session planifiée
       case "start":
         // 2. Démarrer + incrémenter timesUsed
+
+
+        const resetedExercises = session.exercises.map(exercise => {
+          return {
+            ...exercise,
+            actualSets: Array.from({ length: exercise.targetSets }).map(() => ({
+              reps: exercise.targetReps,
+              weight: exercise.targetWeight,
+              completed: false,
+            })),
+          };
+        });
+
+
         const startResult = await db.collection("users").updateOne(
           { _id: new ObjectId(userId) },
           {
             $set: {
               "sessions.$[session].startedAt": new Date(),
+              "sessions.$[session].exercises": resetedExercises,
               "sessions.$[session].status": "in-progress",
               "sessions.$[session].updatedAt": new Date(),
               "workouts.$[workout].lastUsedAt": new Date(),
