@@ -129,7 +129,7 @@ export default function RestTimerModal({
               onChange={(e) => setCustomTime(parseInt(e.target.value) || 0)}
               className="input flex-1 p-2"
             />
-            <Button onClick={handleApplyCustomTime}>Appliquer</Button>
+            <Button onClick={() => handleApplyCustomTime(customTime)}>Appliquer</Button>
           </div>
 
           {/* Boutons rapides */}

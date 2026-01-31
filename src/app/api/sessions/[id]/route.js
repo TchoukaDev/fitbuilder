@@ -76,7 +76,7 @@ export async function PATCH(req, { params }) {
           return {
             ...exercise,
             actualSets: Array.from({ length: exercise.targetSets }).map(() => ({
-              reps: exercise.targetReps,
+              reps: null,
               weight: exercise.targetWeight,
               completed: false,
             })),

@@ -11,6 +11,22 @@ interface CompleteExerciseProps {
 export function completeExercise({ exerciseIndex, handleSaveProgress }: CompleteExerciseProps) {
   const state = useSessionStore.getState();
   const newExercises = [...state.exercises];
+
+// ✅ Pour les séries non complétées, mettre weight et reps à 0
+if (newExercises[exerciseIndex].actualSets) {
+  newExercises[exerciseIndex].actualSets = newExercises[exerciseIndex].actualSets.map(set => {
+    if (!set.completed) {
+      return {
+        ...set,
+        weight: 0,
+        reps: 0,
+        completed: false
+      };
+    }
+    return set;
+  });
+}
+
   newExercises[exerciseIndex].completed = true;
 
   // Passer à l'exercice suivant si possible

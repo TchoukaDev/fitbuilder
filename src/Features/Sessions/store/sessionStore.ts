@@ -62,8 +62,8 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
         };
       }
 
-      // Modifier le champ
-      newExercises[exerciseIndex].actualSets[setIndex][field as keyof ActualSet];
+      // ✅ Modifier le champ (le = value manquait !)
+      (newExercises[exerciseIndex].actualSets[setIndex] as any)[field] = value;
 
       return { exercises: newExercises };
     });
