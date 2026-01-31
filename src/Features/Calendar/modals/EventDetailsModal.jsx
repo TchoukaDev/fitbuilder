@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useModals } from "@/Providers/Modals";
 import { Button, ModalLayout } from "@/Global/components";
-import { useStartPlannedSession } from "@/Features/Sessions/hooks";
+import { useStartPlannedSession } from "@/Features/Sessions/hooks/useQuerySessions";
 import { createPortal } from "react-dom";
 import StatusBadge from "../components/StatusBadge";
 import { Play, Edit, Trash2 } from "lucide-react";

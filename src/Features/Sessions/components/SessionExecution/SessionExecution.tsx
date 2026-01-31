@@ -22,6 +22,7 @@ import { useSessionStore } from "../../store";
 
 // Components
 import { SessionHeader } from "./index";
+import { WorkoutSession } from "@/types/workoutSession";
 
 // Modals
 import {
@@ -30,8 +31,16 @@ import {
   CancelSessionModal,
   RestTimerModal,
 } from "../../modals";
+import { MissingFields } from "../../utils/validateExercise";
 
-export default function SessionExecution({ sessionData, sessionId, userId }) {
+
+interface SessionExecutionProps {
+  sessionData: WorkoutSession;
+  sessionId: string;
+  userId: string;
+}
+
+export default function SessionExecution({ sessionData, sessionId, userId }: SessionExecutionProps) {
   const router = useRouter();
   const isPlanned = sessionData.isPlanned;
   // ═══════════════════════════════════════════════════════
@@ -71,11 +80,7 @@ export default function SessionExecution({ sessionData, sessionId, userId }) {
 
   // Sauvegarder, terminer et annuler session
   const { saveProgress, finishSession, cancelSession } = useSessionCompletion(
-    sessionId,
-    sessionData,
-    userId,
-    clearBackup,
-    calculateFormattedTime,
+    { sessionId, sessionData, userId, clearBackup, calculateFormattedTime },
   );
 
   // ✅ WRAPPER pour saveProgress
@@ -84,7 +89,7 @@ export default function SessionExecution({ sessionData, sessionId, userId }) {
   }, [exercises, saveProgress]);
 
   // Auto-save (30 secondes)
-  useAutoSave(exercises, handleSaveProgress, 30000);
+  useAutoSave({ exercises, handleSaveProgress, delay: 30000 });
 
   // ═══════════════════════════════════════════════════════
   // 🎬 HANDLERS POUR MODALS
@@ -92,9 +97,9 @@ export default function SessionExecution({ sessionData, sessionId, userId }) {
 
   // Confirmer la validation d'exercice incomplet ("Terminer quand même")
   const handleModalConfirm = () => {
-    const exerciseIndex = getModalData("incompleteExercise").exerciseIndex;
+    const exerciseIndex = getModalData<{ exerciseIndex: number }>("incompleteExercise")?.exerciseIndex ?? 0;
     // ✅ Compléter directement l'exercice
-    completeExerciseAction(exerciseIndex, handleSaveProgress);
+    completeExerciseAction({ exerciseIndex, handleSaveProgress });
     closeModal("incompleteExercise");
   };
 
@@ -133,15 +138,15 @@ export default function SessionExecution({ sessionData, sessionId, userId }) {
 
   // ✅ Fonction pour compléter un exercice (avec validation)
   const validateAndCompleteExercise = useCallback(
-    (exerciseIndex) => {
-      const validation = validateExercise(exercises, exerciseIndex);
+    (exerciseIndex: number) => {
+      const validation = validateExercise({ exercises, exerciseIndex });
 
       if (!validation.isComplete) {
         // ❌ Validation échouée - ouvrir modal avec détails
         openModal("incompleteExercise", { validation, exerciseIndex });
       } else {
         // ✅ Validation réussie - compléter l'exercice
-        completeExerciseAction(exerciseIndex, handleSaveProgress);
+        completeExerciseAction({ exerciseIndex, handleSaveProgress });
       }
     },
     [exercises, openModal, handleSaveProgress],
@@ -195,7 +200,7 @@ export default function SessionExecution({ sessionData, sessionId, userId }) {
 
         {/* Modal du timer de repos */}
         {isOpen("restTimer") && (
-          <RestTimerModal initialTime={getModalData("restTimer").restTime} />
+          <RestTimerModal initialTime={getModalData<{ restTime: number }>("restTimer")?.restTime ?? 0} />
         )}
       </div>
 
@@ -207,7 +212,7 @@ export default function SessionExecution({ sessionData, sessionId, userId }) {
             loadingText="Sauvegarde en cours"
             type="button"
             onClick={handleSaveProgress}
-            label="Sauvegarder"
+            aria-label="Sauvegarder"
           >
             💾 Sauvegarder
           </LoaderButton>
@@ -218,11 +223,13 @@ export default function SessionExecution({ sessionData, sessionId, userId }) {
         </div>
       </div>
 
+
+
       {/* Modal de validation d'exercice incomplet */}
       {isOpen("incompleteExercise") && (
         <IncompleteExerciseModal
           missingFields={
-            getModalData("incompleteExercise").validation.missingFields
+            getModalData<{ validation: { missingFields: MissingFields } }>("incompleteExercise")?.validation.missingFields ?? { incompleteSets: [], setsWithoutReps: [], setsWithoutWeight: [], effortMissing: false }
           }
           onConfirm={handleModalConfirm}
           onCancel={handleModalCancel}

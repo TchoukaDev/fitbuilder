@@ -2,7 +2,7 @@
 
 // Liste des séances avec filtres (statut, date, workout), pagination et stats.
 import { Calendar } from "lucide-react";
-import { SessionsResponse, useSessionsList } from "../../hooks";
+
 import {
   SessionCard,
   SessionsFilters,
@@ -11,8 +11,10 @@ import {
 } from ".";
 import { useModals } from "@/Providers/Modals";
 import { StartOrContinueConfirmModal } from "../../modals";
-import { SessionFiltersType } from "../../hooks/useSessions";
+import { SessionsResponse } from "../../hooks/useQuerySessions/useGetSessions";
+import { SessionFiltersType } from "../../utils/sessionFilters";
 import { WorkoutSession } from "@/types/workoutSession";
+import { useSessionsList } from "../../hooks";
 
 interface SessionsListProps {
   initialSessions: SessionsResponse;

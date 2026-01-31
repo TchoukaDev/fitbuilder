@@ -5,12 +5,13 @@ import {
   useDeleteSession,
   useStartPlannedSession,
   useCancelPlannedSession,
-} from "../hooks";
+} from "../hooks/useQuerySessions";
 import { toast } from "react-toastify";
 import { createPortal } from "react-dom";
 import { ModalLayout } from "@/Global/components";
 import { Trash2, X, Play } from "lucide-react";
 import { WorkoutSession } from "@/types/workoutSession";
+import { ApiErrorType } from "@/libs/apiResponse";
 
 interface StartOrContinueConfirmModalProps {
   action: "start" | "continue";
@@ -28,7 +29,7 @@ export default function StartOrContinueConfirmModal({
   const { mutate: startPlannedSession, isPending: isStarting } =
     useStartPlannedSession(userId);
   const { mutate: deleteSession, isPending: isDeleting } =
-    useDeleteSession(userId);
+    useDeleteSession({ userId, statusFilter: null });
   const { mutate: cancelSession, isPending: isCancelling } =
     useCancelPlannedSession(userId);
   const router = useRouter();
@@ -40,8 +41,8 @@ export default function StartOrContinueConfirmModal({
           router.push(`/sessions/${session.id}`);
           closeModal("startOrContinueSession");
         },
-        onError: (error) => {
-          toast.error(error.message || "Erreur lors du démarrage de la séance");
+        onError: (error: ApiErrorType) => {
+          toast.error(error.message || error.error || "Erreur lors du démarrage de la séance");
         },
       });
     } else {
@@ -57,7 +58,7 @@ export default function StartOrContinueConfirmModal({
           toast.success("Séance supprimée avec succès");
           closeModal("startOrContinueSession");
         },
-        onError: (error) => {
+        onError: (error: Error) => {
           toast.error(
             error.message || "Erreur lors de la suppression de la séance",
           );
@@ -68,7 +69,7 @@ export default function StartOrContinueConfirmModal({
         onSuccess: () => {
           closeModal("startOrContinueSession");
         },
-        onError: (error) => {
+        onError: (error: ApiErrorType) => {
           toast.error(
             error.message || "Erreur lors de l'annulation de la séance",
           );

@@ -3,7 +3,7 @@ import connectDB from "@/libs/mongodb";
 import { ObjectId } from "mongodb";
 import { WorkoutSession, WorkoutSessionDB } from "@/types/workoutSession";
 import { CompletedSessionType } from "@/types/workoutSession";
-import { DEFAULT_SESSION_FILTERS, SessionFiltersType } from "../hooks/useSessions";
+import { DEFAULT_SESSION_FILTERS, SessionFiltersType } from "./sessionFilters";
 
 // Récupère toutes les sessions d'un utilisateur avec filtres (statut, date, workout) et pagination.
 // Retourne { sessions: [], pagination: {}, stats: {} }.

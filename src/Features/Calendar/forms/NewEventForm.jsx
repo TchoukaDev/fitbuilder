@@ -1,5 +1,5 @@
 import { Button, LoaderButton } from "@/Global/components";
-import { usePlanSession } from "@/Features/Sessions/hooks";
+import { usePlanSession } from "@/Features/Sessions/hooks/useQuerySessions";
 import { toast } from "react-toastify";
 import RequiredFields from "@/Global/components/ui/FormsComponents/RequiredFields";
 import { EventFormFields } from "../forms";

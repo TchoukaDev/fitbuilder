@@ -1,9 +1,9 @@
 // Hook pour gérer l'état et la logique de la liste des séances
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { DEFAULT_SESSION_FILTERS, useGetSessions } from "./useSessions";
-import { SessionFiltersType } from "./useSessions";
-import { SessionsResponse } from "./useSessions";
+import { useGetSessions } from "./useQuerySessions/useGetSessions";
+import { DEFAULT_SESSION_FILTERS, SessionFiltersType } from "../utils/sessionFilters";
+import { SessionsResponse } from "./useQuerySessions/useGetSessions";
 
 interface UseSessionsListProps {
   initialData: SessionsResponse;

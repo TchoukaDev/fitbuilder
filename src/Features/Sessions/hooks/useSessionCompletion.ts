@@ -2,13 +2,11 @@
 
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import {
-  useCancelPlannedSession,
-  useDeleteSession,
-  useFinishSession,
-} from "./useSessions";
+import { useCancelPlannedSession, useDeleteSession, useFinishSession } from "./useQuerySessions";
 import { useSessionStore } from "../store";
 import { useModals } from "@/Providers/Modals";
+import { WorkoutSession } from "@/types/workoutSession";
+import { ActualSet, SessionExercise } from "@/types/SessionExercise";
 
 /**
  * Fournit les actions de fin de session (sauvegarder, terminer, annuler).
@@ -17,25 +15,28 @@ import { useModals } from "@/Providers/Modals";
  * ✅ OPTIMISATION PERFORMANCE :
  * formattedTime est maintenant une FONCTION au lieu d'une valeur.
  * Cela évite que useSessionCompletion se recrée à chaque changement de timer.
- *
- * @param {string} sessionId - Identifiant de la session.
- * @param {string} userId - Identifiant de l'utilisateur.
- * @param {Function} clearBackup - Fonction pour nettoyer le backup local.
- * @param {() => string} calculateFormattedTime - Fonction pour calculer le temps formaté à la demande.
  */
+interface UseSessionCompletionProps {
+  sessionId: string;
+  sessionData: WorkoutSession,
+  userId: string
+  clearBackup: () => void;
+  calculateFormattedTime: ()=> string;
+}
+
 export function useSessionCompletion(
-  sessionId,
+  {sessionId,
   sessionData,
   userId,
   clearBackup,
-  calculateFormattedTime, // ✅ Fonction au lieu de valeur
+  calculateFormattedTime}: UseSessionCompletionProps // ✅ Fonction au lieu de valeur
 ) {
   const isPlanned = sessionData.isPlanned;
   const { closeAllModals } = useModals();
   const router = useRouter();
-  const { mutate: deleteSession } = useDeleteSession(userId);
+  const { mutate: deleteSession } = useDeleteSession({ userId, statusFilter: null });
   const { mutate: cancelPlannedSession } = useCancelPlannedSession(userId);
-  const { mutate: finishSessionMutation } = useFinishSession(userId, sessionId);
+  const { mutate: finishSessionMutation } = useFinishSession({ userId, sessionId });
   // Store
   const exercises = useSessionStore((state) => state.exercises);
   const setIsSaving = useSessionStore((state) => state.setIsSaving);
@@ -75,15 +76,12 @@ export function useSessionCompletion(
   // ✅ Nettoyer les données
   /**
    * Nettoie / normalise les données des exercices avant envoi au backend.
-   *
-   * @param {any[]} exercisesToClean - Exercices bruts.
-   * @returns {any[]} Exercices nettoyés.
    */
-  const cleanExercisesData = (exercisesToClean) => {
+  const cleanExercisesData = (exercisesToClean:SessionExercise[]) => {
     return exercisesToClean.map((ex) => ({
       ...ex,
       actualSets:
-        ex.actualSets?.map((set) => ({
+        ex.actualSets?.map((set:ActualSet) => ({
           ...set,
           reps: set.reps ?? 0,
           weight: set.weight ?? 0,

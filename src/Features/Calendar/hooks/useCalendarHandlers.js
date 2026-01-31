@@ -1,4 +1,4 @@
-import { useDeleteSession } from "@/Features/Sessions/hooks";
+import { useDeleteSession } from "@/Features/Sessions/hooks/useQuerySessions";
 import { useModals } from "@/Providers/Modals";
 import { toast } from "react-toastify";
 

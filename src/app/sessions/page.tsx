@@ -4,7 +4,7 @@ import { authOptions } from "@/libs/auth";
 import { SessionsList } from "@/Features/Sessions/components";
 import { Header } from "@/Global/components";
 import { getAllSessions } from "@/Features/Sessions/utils";
-import { DEFAULT_SESSION_FILTERS } from "@/Features/Sessions/hooks/useSessions";
+import { DEFAULT_SESSION_FILTERS } from "@/Features/Sessions/utils/sessionFilters";
 import { redirect } from "next/navigation";
 import { Metadata } from "next";
 

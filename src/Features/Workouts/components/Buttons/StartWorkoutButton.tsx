@@ -2,7 +2,7 @@
 
 import { Play } from "lucide-react";
 import { LoaderButton } from "@/Global/components";
-import { useStartNewSession } from "@/Features/Sessions/hooks";
+import { useStartNewSession } from "@/Features/Sessions/hooks/useQuerySessions";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { Workout } from "@/types/workout";

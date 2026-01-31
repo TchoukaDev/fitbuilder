@@ -12,8 +12,8 @@ import {
   useMemoCalendar,
 } from "../hooks";
 import { NewEventModal, EditEventModal, EventDetailsModal } from "../modals";
-import { useGetCalendarSessions } from "@/Features/Sessions/hooks";
-import { CalendarLoader, StatusFilter } from "@/Features/Calendar/components";
+import { useGetCalendarSessions } from "@/Features/Sessions/hooks/useQuerySessions";
+import { StatusFilter } from "@/Features/Calendar/components";
 import { useWorkouts } from "@/Features/Workouts/hooks";
 import { ClipLoader } from "react-spinners";
 

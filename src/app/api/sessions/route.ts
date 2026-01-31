@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 import { ApiError } from "@/libs/apiResponse";
 import { requireAuth } from "@/libs/authMiddleware";
 import { getAllSessions } from "@/Features/Sessions/utils";
-import { DEFAULT_SESSION_FILTERS } from "@/Features/Sessions/hooks/useSessions";
+import { DEFAULT_SESSION_FILTERS } from "@/Features/Sessions/utils/sessionFilters";
 import { WorkoutExercise } from "@/types/workoutExercise";
 
 // POST - Démarrer une nouvelle séance à partir d'un plan d'entraînement
