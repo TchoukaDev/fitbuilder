@@ -21,10 +21,12 @@ export default function useEventForm({
 
   const { closeModal } = useModals();
 
-  const { data: workouts, isFetching } = useWorkouts(null, userId, {
-    staleTime: 0,
-    refetchOnMount: true,
-    refetchOnWindowFocus: false,
+  const { data: workouts = [], isFetching } = useWorkouts({
+    initialData: [], userId, options: {
+      staleTime: 0,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
+    }
   });
 
   const newDefaultValues = {
@@ -34,8 +36,8 @@ export default function useEventForm({
       : formatDateToInput(new Date()),
     startTime: selectedDate
       ? `${String(selectedDate.getHours()).padStart(2, "0")}:${String(
-          selectedDate.getMinutes(),
-        ).padStart(2, "0")}`
+        selectedDate.getMinutes(),
+      ).padStart(2, "0")}`
       : "",
     duration: 60,
     endTime: "",
@@ -48,12 +50,12 @@ export default function useEventForm({
       : formatDateToLocal(new Date()),
     startTime: session?.scheduledDate
       ? `${String(new Date(session.scheduledDate).getHours()).padStart(
-          2,
-          "0",
-        )}:${String(new Date(session.scheduledDate).getMinutes()).padStart(
-          2,
-          "0",
-        )}`
+        2,
+        "0",
+      )}:${String(new Date(session.scheduledDate).getMinutes()).padStart(
+        2,
+        "0",
+      )}`
       : "",
     duration: session?.estimatedDuration || 60,
     endTime: "",
