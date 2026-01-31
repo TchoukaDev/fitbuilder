@@ -1,13 +1,17 @@
+import { SessionExercise } from "@/types/SessionExercise";
 import { useEffect } from "react";
 
 /**
  * Sauvegarde automatiquement la progression après un délai donné.
- *
- * @param {any[]} exercises - Exercices à sauvegarder.
- * @param {(exercises: any[]) => void} handleSaveProgress - Fonction de sauvegarde.
- * @param {number} [delay=30000] - Délai en ms avant chaque sauvegarde.
  */
-export function useAutoSave(exercises, handleSaveProgress, delay = 30000) {
+
+interface UseAutoSaveProps {
+  exercises: SessionExercise[];
+  handleSaveProgress: (exercises: SessionExercise[]) => void;
+  delay?: number;
+}
+
+export function useAutoSave({exercises, handleSaveProgress, delay = 30000}: UseAutoSaveProps) {
   useEffect(() => {
     if (!exercises || exercises.length === 0) return;
 

@@ -3,7 +3,7 @@ import { useTimerEffects } from "./useTimerEffects";
 import { useModals } from "@/Providers/Modals";
 import { useBlockScroll } from "@/Global/hooks";
 
-export const useRestTimer = (safeInitialTime) => {
+export const useRestTimer = (safeInitialTime: number) => {
   // ═══════════════════════════════════════════════════════
   // 📊 STATES
   // ═══════════════════════════════════════════════════════
@@ -83,11 +83,11 @@ export const useRestTimer = (safeInitialTime) => {
   };
 
   // Appliquer un temps personnalisé
-  const handleApplyCustomTime = (option) => {
+  const handleApplyCustomTime = (option: number) => {
     let newTime = customTime;
 
     if (isNaN(option)) {
-      newTime = parseInt(customTime);
+      newTime = customTime;
     } else {
       newTime = option;
       setCustomTime(newTime);
