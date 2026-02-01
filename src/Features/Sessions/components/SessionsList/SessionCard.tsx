@@ -5,6 +5,7 @@ import { Clock, Calendar, Dumbbell, CheckCircle, Play } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useModals } from "@/Providers/Modals";
 import { WorkoutSession } from "@/types/workoutSession";
+import { formatDateForDisplay } from "@/Features/Calendar/utils";
 
 interface SessionCardProps {
   session: WorkoutSession;
@@ -43,15 +44,6 @@ export default function SessionCard({ session }: SessionCardProps) {
     return configs[status as keyof typeof configs] || configs.planned;
   };
 
-  const formatDate = (date: string) => {
-    if (!date) return "Date inconnue";
-    return new Date(date).toLocaleDateString("fr-FR", {
-      weekday: "short",
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    });
-  };
 
   const formatTime = (time: string) => {
     if (!time) return "N/A";
@@ -101,7 +93,7 @@ export default function SessionCard({ session }: SessionCardProps) {
             {session.workoutName}
           </h3>
           <p className="text-sm text-gray-600">
-            {formatDate(
+            {formatDateForDisplay(
               session.completedDate ||
               session.scheduledDate ||
               session.startedAt ||

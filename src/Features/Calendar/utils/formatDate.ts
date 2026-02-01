@@ -14,3 +14,14 @@ export function formatDateToLocal(date: Date): string {
   const day = String(d.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 }
+
+
+export function formatDateForDisplay(date: string): string {
+    if (!date) return "Date inconnue";
+    return new Date(date).toLocaleDateString("fr-FR", {
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+  };
