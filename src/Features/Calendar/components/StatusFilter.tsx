@@ -13,7 +13,12 @@ import {
 import { Calendar, ChevronDown, Clock, CheckCircle2, X } from "lucide-react";
 import { DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
 
-export default function StatusFilter({ selected = [], onChange }) {
+interface StatusFilterProps {
+  selected: string[];
+  onChange: (statuses: string[]) => void;
+}
+
+export default function StatusFilter({ selected = [], onChange }: StatusFilterProps) {
   const statuses = [
     {
       value: "planned",
@@ -41,7 +46,7 @@ export default function StatusFilter({ selected = [], onChange }) {
     },
   ];
 
-  const handleToggle = (statusValue) => {
+  const handleToggle = (statusValue: string) => {
     const allValues = statuses.map((s) => s.value);
     const newSelected = selected.includes("all")
       ? allValues.filter((s) => s !== statusValue)

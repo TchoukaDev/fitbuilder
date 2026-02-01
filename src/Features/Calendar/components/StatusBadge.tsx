@@ -1,7 +1,7 @@
 // components/StatusBadge/StatusBadge.jsx
 import { Calendar, Clock, CheckCircle } from "lucide-react";
 
-export default function StatusBadge({ status }) {
+export default function StatusBadge({ status }: { status: "planned" | "in-progress" | "completed" }) {
   const config = {
     planned: {
       label: "planifiée",
