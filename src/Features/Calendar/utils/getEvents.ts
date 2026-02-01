@@ -24,7 +24,7 @@ export async function getEvents(userId: string): Promise<CalendarEvent[]> {
     const end = new Date(start.getTime() + durationMs);
 
     return {
-      id: session.id.toString(),
+      id: session.id,
       title: session.workoutName,
       start: start,
       end: end,
