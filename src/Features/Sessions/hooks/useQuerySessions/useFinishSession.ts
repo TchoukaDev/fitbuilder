@@ -1,6 +1,7 @@
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { SessionExercise } from "@/types/SessionExercise";
 import { WorkoutSession } from "@/types/workoutSession";
+import { SessionsResponse } from "./useGetSessions";
 
 export interface UseFinishSessionType {
   userId: string;
@@ -12,11 +13,17 @@ type UseFinishSessionVariables = {
   duration: string;
 }
 
+interface CalendarEvent {
+  id: string;
+  resource: WorkoutSession;
+  [key: string]: unknown;
+}
+
 export function useFinishSession({ userId, sessionId }: UseFinishSessionType) {
     const queryClient = useQueryClient();
-    const sessionsKey = ["sessions", userId];
     const calendarKey = ["calendar-sessions", userId];
     const dashboardKey = ["dashboard", userId];
+    
     return useMutation({
       mutationFn: async ({ exercises, duration }: UseFinishSessionVariables) => {
         const response = await fetch(`/api/sessions/${sessionId}`, {
@@ -32,41 +39,70 @@ export function useFinishSession({ userId, sessionId }: UseFinishSessionType) {
         }
         return response.json();
       },
+
       onMutate: async ({ exercises, duration }) => {
-        await queryClient.cancelQueries({ queryKey: sessionsKey });
+        // Cancel toutes les queries sessions
+        await queryClient.cancelQueries({ queryKey: ["sessions", userId] });
         await queryClient.cancelQueries({ queryKey: calendarKey });
-        const previousSessions = queryClient.getQueryData(sessionsKey);
-        const previousEvents = queryClient.getQueryData(calendarKey);
-        queryClient.setQueryData(sessionsKey, (old: WorkoutSession[] = []) => [
-          old.map((s: WorkoutSession) =>
-            s.id === sessionId ? { ...s, exercises, duration } : s,
-          ),
-        ]);
-        queryClient.setQueryData(calendarKey, (old = []) => [
-          old.map((e) =>
-            e.resource.id === sessionId
-              ? {
-                ...e,
-                resource: {
-                  ...e.resource,
-                  exercises,
-                  duration,
-                  status: "completed",
-                  completedDate: new Date(),
-                },
-              }
-              : e,
-          ),
-        ]);
-        return { previousSessions, previousEvents };
+
+        // ✅ Récupérer TOUTES les queries sessions (avec leurs filtres)
+        const sessionsQueries = queryClient.getQueriesData<SessionsResponse>({ 
+          queryKey: ["sessions", userId] 
+        });
+
+        // ✅ Mise à jour optimiste sur TOUTES les variantes de sessions
+        sessionsQueries.forEach(([key, data]) => {
+          if (data?.sessions) {
+            queryClient.setQueryData(key, {
+              ...data,
+              sessions: data.sessions.map((s: WorkoutSession) =>
+                s.id === sessionId 
+                  ? { ...s, exercises, duration, status: "completed", completedDate: new Date() } 
+                  : s
+              ),
+            });
+          }
+        });
+
+        // ✅ Calendar - mise à jour optimiste
+        const previousEvents = queryClient.getQueryData<CalendarEvent[]>(calendarKey);
+        if (previousEvents) {
+          queryClient.setQueryData(calendarKey, 
+            previousEvents.map((e: CalendarEvent) =>
+              e.resource?.id === sessionId
+                ? {
+                    ...e,
+                    resource: {
+                      ...e.resource,
+                      exercises,
+                      duration,
+                      status: "completed",
+                      completedDate: new Date(),
+                    },
+                  }
+                : e
+            )
+          );
+        }
+
+        return { sessionsQueries, previousEvents };
       },
-      onError: (error, { exercises, duration }, context) => {
-        queryClient.setQueryData(sessionsKey, context?.previousSessions);
-        queryClient.setQueryData(calendarKey, context?.previousEvents);
+
+      onError: (error, _variables, context) => {
         console.error("Erreur finalisation:", error);
+        // ✅ Rollback toutes les queries sessions
+        context?.sessionsQueries?.forEach(([key, data]) => {
+          queryClient.setQueryData(key, data);
+        });
+        // ✅ Rollback calendar
+        if (context?.previousEvents) {
+          queryClient.setQueryData(calendarKey, context.previousEvents);
+        }
       },
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: sessionsKey });
+
+      onSettled: () => {
+        // ✅ Invalider tous les caches après la mutation
+        queryClient.invalidateQueries({ queryKey: ["sessions", userId] });
         queryClient.invalidateQueries({ queryKey: calendarKey });
         queryClient.invalidateQueries({ queryKey: dashboardKey });
       },

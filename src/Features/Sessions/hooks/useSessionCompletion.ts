@@ -94,8 +94,6 @@ export function useSessionCompletion(
 
   /**
    * Finalise la session : envoie toutes les données et redirige l'utilisateur.
-   *
-   * @param {any[]} exercisesToFinish - Exercices de la session (optionnel, utilise le store par défaut).
    */
   const finishSession = async (exercisesToFinish = exercises) => {
     setIsSaving(true);
