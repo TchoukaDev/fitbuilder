@@ -3,8 +3,8 @@ import {
   useMutation,
   useQuery,
   useQueryClient,
-  QueryOptions,
   UseQueryResult,
+  UseQueryOptions,
 } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { useCallback } from "react";
@@ -19,7 +19,7 @@ import { ApiErrorType } from "@/libs/apiResponse";
 interface UseWorkoutsProps {
   initialData: Workout[];
   userId: string;
-  options?: QueryOptions
+  options?: Omit<UseQueryOptions<Workout[], Error>, 'queryKey'>
 }
 export function useWorkouts({ initialData, userId, options = {} }: UseWorkoutsProps): UseQueryResult<Workout[], Error> & { prefetchWorkouts: () => void } {
   const queryClient = useQueryClient();

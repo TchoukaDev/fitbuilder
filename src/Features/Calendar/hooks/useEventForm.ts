@@ -5,15 +5,25 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { eventSchema } from "../utils";
 import { useModals } from "@/Providers/Modals";
+import { CalendarEvent } from "@/types/calendarEvent";
+import { EventSchemaType } from "../utils/EventSchema";
+
+
+interface UseEventFormProps {
+  event: CalendarEvent | null;
+  newEvent: boolean;
+  selectedDate: Date | null;
+  userId: string
+}
 
 export default function useEventForm({
   event = null,
   newEvent = false,
   selectedDate = null,
-  userId = null,
-}) {
+  userId,
+}: UseEventFormProps) {
   const session = event?.resource;
-  const workoutRef = useRef(null);
+  const workoutRef = useRef<HTMLSelectElement | null>(null);
 
   // ✅ Refs pour éviter les boucles
   const isUpdatingEndTime = useRef(false);
@@ -44,9 +54,9 @@ export default function useEventForm({
   };
 
   const updateDefaultValues = {
-    workout: session?.workoutId,
+    workout: session?.workoutId || "",
     date: session?.scheduledDate
-      ? formatDateToLocal(session.scheduledDate)
+      ? formatDateToLocal(new Date(session.scheduledDate))
       : formatDateToLocal(new Date()),
     startTime: session?.scheduledDate
       ? `${String(new Date(session.scheduledDate).getHours()).padStart(
@@ -68,7 +78,7 @@ export default function useEventForm({
     setValue,
     trigger,
     formState: { errors },
-  } = useForm({
+  } = useForm<EventSchemaType>({
     resolver: zodResolver(eventSchema),
     mode: "onSubmit",
     reValidateMode: "onChange",
@@ -143,7 +153,7 @@ export default function useEventForm({
     const end = new Date();
     end.setHours(parseInt(eh), parseInt(em), 0, 0);
 
-    const diff = Math.round((end - start) / (60 * 1000));
+    const diff = Math.round((end.getTime() - start.getTime()) / (60 * 1000));
 
     if (diff > 0 && diff !== duration) {
       isUpdatingDuration.current = true; // ✅ Flag pour éviter la boucle
