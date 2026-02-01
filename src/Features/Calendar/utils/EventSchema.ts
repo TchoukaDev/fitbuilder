@@ -49,3 +49,5 @@ export const eventSchema = z
       path: ["endTime"],
     },
   );
+
+  export type EventSchemaType = z.infer<typeof eventSchema>;

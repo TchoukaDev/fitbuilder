@@ -1,5 +1,5 @@
 // Retourne la couleur en fonction du statut
-export function getColorByStatus(status) {
+export function getColorByStatus(status: "planned" | "in-progress" | "completed"): { color: string; colorHover: string } {
   const colors = {
     planned: "#5c31e0", // 🔵primary-400
     "in-progress": "#ffaa66", // 🟠 accent-400
