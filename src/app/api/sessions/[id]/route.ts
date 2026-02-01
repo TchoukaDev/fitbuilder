@@ -1,14 +1,18 @@
 // API Route pour les opérations sur une séance spécifique (récupération, modification, finalisation, suppression)
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/libs/mongodb";
 import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
 import { ApiError, ApiSuccess } from "@/libs/apiResponse";
 import { requireAuth } from "@/libs/authMiddleware";
 import { getSessionbyId } from "@/Features/Sessions/utils";
+import { CompletedSessionType, WorkoutSession, WorkoutSessionDB } from "@/types/workoutSession";
+import { SessionExercise } from "@/types/SessionExercise";
+import { WorkoutDB } from "@/types/workout";
+import { UserDocument } from "@/types/user";
 
 // GET - Récupérer une séance spécifique
-export async function GET(req, { params }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   // Vérification de l'authentification
   const auth = await requireAuth(req);
   if (auth instanceof NextResponse) return auth;
@@ -33,7 +37,7 @@ export async function GET(req, { params }) {
 }
 
 // PATCH - Mettre à jour les exercices et la durée d'une séance en cours
-export async function PATCH(req, { params }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   // Vérification de l'authentification
   const auth = await requireAuth(req);
   if (auth instanceof NextResponse) return auth;
@@ -59,7 +63,7 @@ export async function PATCH(req, { params }) {
       });
     }
 
-    const session = user?.sessions?.find((s) => s._id.toString() === sessionId);
+    const session = user?.sessions?.find((s: WorkoutSessionDB) => s._id.toString() === sessionId);
     if (!session) {
       return NextResponse.json(ApiError.NOT_FOUND("Session"), {
         status: 404,
@@ -72,7 +76,7 @@ export async function PATCH(req, { params }) {
         // 2. Démarrer + incrémenter timesUsed
 
 
-        const resetedExercises = session.exercises.map(exercise => {
+        const resetedExercises = session.exercises.map((exercise: SessionExercise) => {
           return {
             ...exercise,
             actualSets: Array.from({ length: exercise.targetSets }).map(() => ({
@@ -173,27 +177,27 @@ export async function PATCH(req, { params }) {
         }
 
         const workoutId = session.workoutId;
-        const otherSessions =
+        const otherSessions: CompletedSessionType[] =
           user.sessions?.filter(
-            (s) =>
+            (s: WorkoutSession) =>
               s.workoutId.toString() === workoutId.toString() &&
               s.status === "completed", // Seulement les séances terminées
           ) || [];
 
         // Calculer la nouvelle date de dernière utilisation
-        let newLastUsedAt = null;
+        let newLastUsedAt: Date | null = null;
         if (otherSessions.length > 0) {
           otherSessions.sort(
             (a, b) =>
               new Date(b.completedDate).getTime() -
               new Date(a.completedDate).getTime(),
           );
-          newLastUsedAt = otherSessions[0].completedDate;
+          newLastUsedAt = new Date(otherSessions[0].completedDate);
         }
 
         // Décrémenter le compteur et mettre à jour la date
         let timesUsed =
-          user.workouts?.find((w) => w._id.toString() === workoutId.toString())
+          user.workouts?.find((w: WorkoutDB) => w._id.toString() === workoutId.toString())
             ?.timesUsed ?? 0;
         if (timesUsed > 0) {
           timesUsed--;
@@ -287,7 +291,7 @@ export async function PATCH(req, { params }) {
 }
 
 // PUT - Terminer une séance (changement de statut à "completed")
-export async function PUT(req, { params }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   // Vérification de l'authentification
   const auth = await requireAuth(req);
   if (auth instanceof NextResponse) return auth;
@@ -315,7 +319,7 @@ export async function PUT(req, { params }) {
     }
 
     const existingSession = user.sessions.find(
-      (s) => s._id.toString() === sessionId,
+      (s: WorkoutSessionDB) => s._id.toString() === sessionId,
     );
 
     if (!existingSession) {
@@ -358,7 +362,7 @@ export async function PUT(req, { params }) {
 }
 
 // DELETE - Supprimer une séance et mettre à jour les stats du plan d'entraînement
-export async function DELETE(req, { params }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   // Vérification de l'authentification
   const auth = await requireAuth(req);
   if (auth instanceof NextResponse) return auth;
@@ -384,7 +388,7 @@ export async function DELETE(req, { params }) {
     }
 
     const sessionToDelete = user.sessions.find(
-      (s) => s._id.toString() === sessionId,
+      (s: WorkoutSessionDB) => s._id.toString() === sessionId,
     );
 
     if (!sessionToDelete) {
@@ -394,7 +398,7 @@ export async function DELETE(req, { params }) {
     const workoutId = sessionToDelete.workoutId;
 
     // Supprimer la séance
-    await db.collection("users").updateOne(
+    await db.collection<UserDocument>("users").updateOne(
       { _id: new ObjectId(userId) },
       {
         $pull: {
@@ -408,28 +412,34 @@ export async function DELETE(req, { params }) {
       _id: new ObjectId(userId),
     });
 
-    const otherSessions =
+    if (!updatedUser) {
+      return NextResponse.json(ApiError.NOT_FOUND("Utilisateur"), {
+        status: 404,
+      });
+    }
+
+    const otherSessions: CompletedSessionType[] =
       updatedUser.sessions?.filter(
-        (s) =>
+        (s: WorkoutSession) =>
           s.workoutId.toString() === workoutId.toString() &&
           s.status === "completed", // Seulement les séances terminées
       ) || [];
 
     // Calculer la nouvelle date de dernière utilisation
-    let newLastUsedAt = null;
+    let newLastUsedAt: Date | null = null
     if (otherSessions.length > 0) {
       otherSessions.sort(
         (a, b) =>
           new Date(b.completedDate).getTime() -
           new Date(a.completedDate).getTime(),
       );
-      newLastUsedAt = otherSessions[0].completedDate;
+      newLastUsedAt = new Date(otherSessions[0].completedDate);
     }
 
     // Décrémenter le compteur et mettre à jour la date
     let timesUsed =
       updatedUser.workouts?.find(
-        (w) => w._id.toString() === workoutId.toString(),
+        (w: WorkoutDB) => w._id.toString() === workoutId.toString(),
       )?.timesUsed ?? 0;
     if (timesUsed > 0) {
       timesUsed--;
