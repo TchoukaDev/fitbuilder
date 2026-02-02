@@ -1,6 +1,7 @@
 "use client";
 
-import { createContext, useState, useContext } from "react";
+import { createContext, useState, useContext, useEffect } from "react";
+import { usePathname } from "next/navigation";
 
 type ModalState = {
   [key: string]: boolean;
@@ -33,6 +34,7 @@ export const useModals = (): ModalContextType => {
 export default function ModalProvider({ children }: { children: React.ReactNode }) {
   const [modals, setModals] = useState<ModalState>({});
   const [modalData, setModalData] = useState<ModalDataState>({});
+  const pathname = usePathname();
 
   const openModal = (name: string, data: unknown = null) => {
     setModals((prev) => ({ ...prev, [name]: true }));
@@ -53,6 +55,10 @@ export default function ModalProvider({ children }: { children: React.ReactNode 
     setModals({});
     setModalData({});
   };
+
+  useEffect(() => {
+    closeAllModals();
+  }, [pathname]);
 
   return (
     <ModalContext.Provider
