@@ -1,6 +1,7 @@
 import { cn } from "@/libs/utils";
+import { LabelHTMLAttributes } from "react";
 
-type LabelProps = React.ComponentProps<"label"> & {
+type LabelProps = LabelHTMLAttributes<HTMLLabelElement> & {
   value: string | number | undefined;
 };
 

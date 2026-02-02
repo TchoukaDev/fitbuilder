@@ -1,12 +1,9 @@
 'use client'
 import { useUnsavedStore } from '@/Global/store/unsavedStore'
 import Link from 'next/link'
+import { ComponentProps } from 'react'
 
-interface SafeLinkProps {
-    href: string
-    children: React.ReactNode
-    [key: string]: any
-}
+type SafeLinkProps = ComponentProps<typeof Link>
 
 export default function SafeLink({ href, children, ...props }: SafeLinkProps) {
 
@@ -16,7 +13,7 @@ export default function SafeLink({ href, children, ...props }: SafeLinkProps) {
             e.preventDefault()
             if (window.confirm('Vous avez des modifications non enregistrées. Quitter sans enregistrer ?')) {
                 setHasUnsavedChanges(false)
-                window.location.href = href
+                window.location.href = href as string
             }
         }
     }

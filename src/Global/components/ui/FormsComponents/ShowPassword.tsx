@@ -1,6 +1,7 @@
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { ButtonHTMLAttributes } from "react";
 
-export type ShowPasswordProps = React.ComponentProps<"button"> & {
+export type ShowPasswordProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   showPassword: boolean;
   };
 

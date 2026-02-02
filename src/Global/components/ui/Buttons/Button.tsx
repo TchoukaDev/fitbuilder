@@ -1,13 +1,13 @@
 import { Slot } from "@radix-ui/react-slot";
 import { cn } from "@/libs/utils";
+import { ButtonHTMLAttributes } from "react";
 
-export type ButtonProps = React.ComponentProps<"button"> & {
+export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   asChild?: boolean;
   width?: string | null;
   full?: boolean;
   close?: boolean;
   edit?: boolean;
-
 };
 
 export default function Button({
