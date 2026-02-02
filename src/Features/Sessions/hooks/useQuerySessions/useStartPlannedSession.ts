@@ -2,12 +2,8 @@ import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { WorkoutSession } from "@/types/workoutSession";
 import { SessionsResponse } from "./useGetSessions";
+import { CalendarEvent } from "@/types/calendarEvent";
 
-interface CalendarEvent {
-  id: string;
-  resource: WorkoutSession;
-  [key: string]: unknown;
-}
 
 /**
  * Démarrer une session planifiée

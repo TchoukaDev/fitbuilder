@@ -4,6 +4,7 @@ import { WorkoutSession } from "@/types/workoutSession";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { SessionsResponse } from "./useGetSessions";
+import { CalendarEvent } from "@/types/calendarEvent";
 
 type UseStartNewSessionVariables = {
   workoutId: string;
@@ -11,10 +12,9 @@ type UseStartNewSessionVariables = {
   exercises: WorkoutExercise[];
 }
 
-interface CalendarEvent {
-  id: string;
-  resource: WorkoutSession;
-  [key: string]: unknown;
+type MutationContext = {
+  sessionsQueries: [readonly unknown[], SessionsResponse | undefined][];
+  previousEvents: CalendarEvent[] | undefined;
 }
 
 /**
@@ -25,7 +25,7 @@ export function useStartNewSession(userId: string) {
   const calendarKey = ["calendar-sessions", userId];
   const dashboardKey = ["dashboard", userId];
 
-  return useMutation<{ sessionId: string }, ApiErrorType, UseStartNewSessionVariables>({
+  return useMutation<{ sessionId: string }, ApiErrorType, UseStartNewSessionVariables, MutationContext>({
     mutationFn: async (newSession: UseStartNewSessionVariables) => {
       const response = await fetch("/api/sessions", {
         method: "POST",
@@ -80,9 +80,14 @@ export function useStartNewSession(userId: string) {
 
     onError: (error, _newSession, context) => {
       console.error("Erreur création session:", error);
+
+      // ✅ Rollback calendar
+      if (context?.previousEvents) {
+        queryClient.setQueryData(calendarKey, context.previousEvents);
+      }
       // ✅ Rollback toutes les queries sessions
       context?.sessionsQueries?.forEach(([key, data]) => {
-        queryClient.setQueryData(key, data);
+        queryClient.setQueryData(key as readonly unknown[], data);
       });
       toast.error("Erreur lors de la création de la séance");
     },

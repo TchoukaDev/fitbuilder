@@ -1,18 +1,18 @@
 import { getColorByStatus } from "@/Features/Calendar/utils";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { CalendarEvent } from "@/types/calendarEvent";
+import { WorkoutSession } from "@/types/workoutSession";
 
  
   /**
    * Hook pour récupérer les sessions du calendrier
-   * @param {string} userId - ID de l'utilisateur
-   * @param {string|null} statusFilter - Filtre par statut ("planned" | "in-progress" | "completed" | null)
    */
   export function useGetCalendarSessions(
-    initialEvents,
-    userId,
-    statusFilter = null,
+    initialEvents: CalendarEvent[],
+    userId: string,
+    statusFilter: string[] | null,
   ) {
-    const calendarKey = ["calendar-sessions", userId, statusFilter || null]; // ✅ Cache différent par statut
+    const calendarKey = ["calendar-sessions", userId]; // ✅ Cache différent par statut
     return useQuery({
       queryKey: calendarKey,
       queryFn: async () => {
@@ -26,7 +26,7 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
         const data = await response.json();
   
         // Transformer en événements calendrier
-        return data.sessions.map((session) => {
+        return data.sessions.map((session: WorkoutSession) => {
           const start = new Date(session.scheduledDate);
           const durationMs = (session.estimatedDuration || 60) * 60 * 1000;
           const end = new Date(start.getTime() + durationMs);

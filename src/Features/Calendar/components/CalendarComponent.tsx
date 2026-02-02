@@ -113,7 +113,6 @@ export default function CalendarComponent({ userId, initialEvents }: CalendarCom
             userId={userId}
             handleDeleteEvent={handleDeleteEvent}
             handleEditEvent={handleEditEvent}
-            statusFilter={statusFilter}
           />
         )}
         {/* Modale de confirmation de suppression */}

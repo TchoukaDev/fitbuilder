@@ -36,7 +36,7 @@ export default function SessionDetailClient({ session, userId }: SessionDetailCl
   const { isOpen, openModal, closeModal } = useModals();
 
   const { mutate: deleteSessionMutation, isPending: isDeleting } =
-    useDeleteSession({ userId, statusFilter: null });
+    useDeleteSession({ userId });
 
   // ═══════════════════════════════════════════════════════
   // 📊 CALCULS

@@ -29,7 +29,7 @@ export default function StartOrContinueConfirmModal({
   const { mutate: startPlannedSession, isPending: isStarting } =
     useStartPlannedSession(userId);
   const { mutate: deleteSession, isPending: isDeleting } =
-    useDeleteSession({ userId, statusFilter: null });
+    useDeleteSession({ userId });
   const { mutate: cancelSession, isPending: isCancelling } =
     useCancelPlannedSession(userId);
   const router = useRouter();
@@ -41,8 +41,8 @@ export default function StartOrContinueConfirmModal({
           router.push(`/sessions/${session.id}`);
           closeModal("startOrContinueSession");
         },
-        onError: (error: ApiErrorType) => {
-          toast.error(error.message || error.error || "Erreur lors du démarrage de la séance");
+        onError: (error: Error) => {
+          toast.error(error.message || "Erreur lors du démarrage de la séance");
         },
       });
     } else {

@@ -14,9 +14,8 @@ interface EventDetailsModalProps {
   userId: string;
   handleDeleteEvent: (event: CalendarEvent) => void;
   handleEditEvent: (event: CalendarEvent) => void;
-  statusFilter: string[];
 }
-export default function EventDetailsModal({ event, userId, handleDeleteEvent, handleEditEvent, statusFilter }: EventDetailsModalProps) {
+export default function EventDetailsModal({ event, userId, handleDeleteEvent, handleEditEvent }: EventDetailsModalProps) {
   const session = event?.resource; // Données complètes de la session
 
   const formattedDate = event.start.toLocaleDateString("fr-FR", {
@@ -28,7 +27,7 @@ export default function EventDetailsModal({ event, userId, handleDeleteEvent, ha
   const { closeModal } = useModals();
   const router = useRouter();
 
-  const startSession = useStartPlannedSession({ userId }, { statusFilter });
+  const startSession = useStartPlannedSession(userId);
 
   if (!session) return null;
 

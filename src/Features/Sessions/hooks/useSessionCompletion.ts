@@ -34,7 +34,7 @@ export function useSessionCompletion(
   const isPlanned = sessionData.isPlanned;
   const { closeAllModals } = useModals();
   const router = useRouter();
-  const { mutate: deleteSession } = useDeleteSession({ userId, statusFilter: null });
+  const { mutate: deleteSession } = useDeleteSession({ userId });
   const { mutate: cancelPlannedSession } = useCancelPlannedSession(userId);
   const { mutate: finishSessionMutation } = useFinishSession({ userId, sessionId });
   // Store
