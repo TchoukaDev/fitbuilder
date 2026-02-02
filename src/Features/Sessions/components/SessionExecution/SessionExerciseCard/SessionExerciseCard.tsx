@@ -15,7 +15,7 @@ interface SessionExerciseCardProps {
   exercise: SessionExercise;
   index: number;
   isActive: boolean;
-  onOpenRestTimer: (modalName: string, data: any) => void;
+  onOpenRestTimer: (modalName: string, data: { restTime: number }) => void;
   onCompleteExercise: (exerciseIndex: number) => void;
 }
 

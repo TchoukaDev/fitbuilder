@@ -45,8 +45,6 @@ export function useSessionCompletion(
   // ✅ useCallback pour éviter de recréer la fonction à chaque render
   /**
    * Sauvegarde la progression courante de la session (PATCH partiel).
-   *
-   * @param {any[]} exercisesToSave - Liste des exercices à sauvegarder (optionnel, utilise le store par défaut).
    */
   const saveProgress = async (exercisesToSave = exercises) => {
     setIsSaving(true);

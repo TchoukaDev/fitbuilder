@@ -15,5 +15,5 @@ export type SessionExercise = {
 export type ActualSet = {
     reps?: number,
     weight?: number,
-    completed: boolean | false
+    completed?: boolean
 }

@@ -23,7 +23,7 @@ export default function WorkoutList({ initialWorkouts, userId }: WorkoutListProp
   const router = useRouter();
 
   const handleDelete = async (workoutId: string) => {
-    deleteWorkout(workoutId as any, {
+    deleteWorkout(workoutId, {
       onSuccess: () => {
         router.push("/workouts");
         router.refresh();

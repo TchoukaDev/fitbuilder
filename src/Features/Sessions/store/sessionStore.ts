@@ -12,7 +12,7 @@ interface SessionStore {
   setExercises: (exercises: SessionExercise[]) => void;
   setCurrentExerciseIndex: (index: number) => void;
   setIsSaving: (isSaving: boolean) => void;
-  updateExerciseSet: (exerciseIndex: number, setIndex: number, field: keyof ActualSet, value: number | undefined) => void;
+  updateExerciseSet: (exerciseIndex: number, setIndex: number, field: keyof ActualSet, value: number | boolean | undefined) => void;
   updateExerciseNotes: (exerciseIndex: number, value: string) => void;
   updateExerciseEffort: (exerciseIndex: number, value: number | null) => void;
   toggleExerciseSetComplete: (exerciseIndex: number, setIndex: number) => void;
@@ -62,8 +62,11 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
         };
       }
 
-      // ✅ Modifier le champ (le = value manquait !)
-      (newExercises[exerciseIndex].actualSets[setIndex] as any)[field] = value;
+       const currentSet = newExercises[exerciseIndex].actualSets[setIndex];
+    
+    if (field === "reps") currentSet.reps = value as number | undefined;
+    if (field === "weight") currentSet.weight = value as number | undefined;
+    if (field === "completed") currentSet.completed = value as boolean | undefined;
 
       return { exercises: newExercises };
     });
