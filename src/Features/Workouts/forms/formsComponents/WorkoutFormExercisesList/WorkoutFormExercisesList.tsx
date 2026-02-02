@@ -1,4 +1,4 @@
-// components/Features/Workouts/ExercisesList/ExercisesList.jsx
+
 "use client";
 
 // Bloc de formulaire qui affiche et gère la liste des exercices du plan.

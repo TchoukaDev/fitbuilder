@@ -7,14 +7,16 @@ import { useStartPlannedSession } from "@/Features/Sessions/hooks/useQuerySessio
 import { createPortal } from "react-dom";
 import StatusBadge from "../components/StatusBadge";
 import { Play, Edit, Trash2 } from "lucide-react";
+import { CalendarEvent } from "@/types/calendarEvent";
 
-export default function EventDetailsModal({
-  event,
-  userId,
-  handleDeleteEvent,
-  handleEditEvent,
-  statusFilter,
-}) {
+interface EventDetailsModalProps {
+  event: CalendarEvent;
+  userId: string;
+  handleDeleteEvent: (event: CalendarEvent) => void;
+  handleEditEvent: (event: CalendarEvent) => void;
+  statusFilter: string[];
+}
+export default function EventDetailsModal({ event, userId, handleDeleteEvent, handleEditEvent, statusFilter }: EventDetailsModalProps) {
   const session = event?.resource; // Données complètes de la session
 
   const formattedDate = event.start.toLocaleDateString("fr-FR", {
@@ -26,7 +28,7 @@ export default function EventDetailsModal({
   const { closeModal } = useModals();
   const router = useRouter();
 
-  const startSession = useStartPlannedSession(userId, statusFilter);
+  const startSession = useStartPlannedSession({ userId }, { statusFilter });
 
   if (!session) return null;
 
@@ -108,6 +110,6 @@ export default function EventDetailsModal({
         </Button>
       </div>
     </ModalLayout>,
-    document.getElementById("portal-root"),
+    document.getElementById("portal-root") as HTMLDivElement,
   );
 }

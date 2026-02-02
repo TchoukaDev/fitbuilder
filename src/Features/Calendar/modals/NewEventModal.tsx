@@ -2,7 +2,12 @@ import { createPortal } from "react-dom";
 import { ModalLayout } from "@/Global/components";
 import { NewEventForm } from "../forms";
 
-export default function NewEventModal({ userId, selectedDate = null }) {
+
+interface NewEventModalProps {
+  userId: string;
+  selectedDate: Date | null;
+}
+export default function NewEventModal({ userId, selectedDate = null }: NewEventModalProps) {
   const formattedDate = selectedDate
     ? selectedDate.toLocaleDateString("fr-FR", {
         weekday: "long",
@@ -18,6 +23,6 @@ export default function NewEventModal({ userId, selectedDate = null }) {
     >
       <NewEventForm userId={userId} selectedDate={selectedDate} />
     </ModalLayout>,
-    document.getElementById("portal-root"),
+    document.getElementById("portal-root") as HTMLDivElement,
   );
 }

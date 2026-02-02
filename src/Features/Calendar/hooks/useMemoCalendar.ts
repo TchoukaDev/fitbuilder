@@ -1,12 +1,20 @@
 import { useMemo, useCallback } from "react";
 import { Views } from "react-big-calendar";
 import moment from "moment";
+import { CalendarEvent } from "@/types/calendarEvent";
+import { CSSProperties } from "react";
 
-export default function useMemoCalendar(isMobile, events, statusFilter) {
+interface UseMemoCalendarProps {
+  isMobile: boolean;
+  events: CalendarEvent[];
+  statusFilter: string[];
+}
+
+export default function useMemoCalendar({ isMobile, events, statusFilter }: UseMemoCalendarProps) {
   // Formats personnalisés pour la vue Agenda
   const formats = useMemo(
     () => ({
-      agendaDateFormat: (date) => {
+      agendaDateFormat: (date: Date) => {
         return isMobile
           ? moment(date).format("DD/MM") // Format court pour mobile
           : moment(date).format("ddd DD MMM"); // Format long avec jour de la semaine pour desktop
@@ -16,7 +24,7 @@ export default function useMemoCalendar(isMobile, events, statusFilter) {
       agendaTimeFormat: "HH:mm",
 
       // Format de la plage horaire complète (ex: "14:30 - 16:00")
-      agendaTimeRangeFormat: ({ start, end }) => {
+      agendaTimeRangeFormat: ({ start, end }: { start: Date; end: Date }) => {
         return `${moment(start).format("HH:mm")} - ${moment(end).format(
           "HH:mm",
         )}`;
@@ -62,11 +70,11 @@ export default function useMemoCalendar(isMobile, events, statusFilter) {
   );
 
   const eventPropGetter = useCallback(
-    (event) => ({
+    (event: CalendarEvent) => ({
       style: {
         "--event-color": event.color,
         "--event-color-hover": event.colorHover,
-      },
+      }as React.CSSProperties
     }),
     [],
   );

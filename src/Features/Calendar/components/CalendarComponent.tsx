@@ -16,6 +16,7 @@ import { useGetCalendarSessions } from "@/Features/Sessions/hooks/useQuerySessio
 import { StatusFilter } from "@/Features/Calendar/components";
 import { useWorkouts } from "@/Features/Workouts/hooks";
 import { ClipLoader } from "react-spinners";
+import { CalendarEvent } from "@/types/calendarEvent";
 
 // Configuration de moment en français (dates, jours, mois traduits)
 moment.locale("fr");
@@ -23,7 +24,12 @@ moment.locale("fr");
 // Création du localiseur qui permet à react-big-calendar d'utiliser moment pour formater les dates
 const localizer = momentLocalizer(moment);
 
-export default function CalendarComponent({ userId, initialEvents }) {
+interface CalendarComponentProps {
+  userId: string;
+  initialEvents: CalendarEvent[];
+}
+
+export default function CalendarComponent({ userId, initialEvents }: CalendarComponentProps) {
   // 📅 STATES
   const {
     isMobile,
@@ -54,7 +60,7 @@ export default function CalendarComponent({ userId, initialEvents }) {
 
   // 📅 MEMO
   const { formats, views, filteredEvents, eventPropGetter, messages } =
-    useMemoCalendar(isMobile, events, statusFilter);
+    useMemoCalendar({ isMobile, events, statusFilter });
 
   // 📅 HANDLERS
   const {
@@ -65,10 +71,10 @@ export default function CalendarComponent({ userId, initialEvents }) {
     handleDeleteEvent,
     handleDeleteConfirm,
     isDeleting,
+    openModal,
     getModalData,
     isOpen,
-    openModal,
-  } = useCalendarHandlers(userId, setCurrentDate);
+  } = useCalendarHandlers({ userId, setCurrentDate });
 
   return (
     <>
@@ -80,7 +86,7 @@ export default function CalendarComponent({ userId, initialEvents }) {
             onClick={() => openModal("newEvent", { userId })}
             onMouseEnter={prefetchWorkouts}
             title="Ajouter un événement"
-            label="Ajouter un événement"
+            aria-label="Ajouter un événement"
           >
             + Ajouter un événement
           </Button>{" "}
@@ -89,38 +95,39 @@ export default function CalendarComponent({ userId, initialEvents }) {
         {/* Modale de création d'événement */}
         {isOpen("newEvent") && (
           <NewEventModal
-            userId={getModalData("newEvent").userId}
-            selectedDate={getModalData("newEvent").selectedDate}
+            userId={getModalData<{ userId: string }>("newEvent")!.userId}
+            selectedDate={getModalData<{ selectedDate: Date }>("newEvent")?.selectedDate ?? null}
           />
         )}
         {/* Modale de modification d'événement */}
         {isOpen("editEvent") && (
           <EditEventModal
             userId={userId}
-            event={getModalData("editEvent").event}
+            event={getModalData<{ event: CalendarEvent }>("editEvent")!.event}
           />
         )}
         {/* Modale de détails d'événement */}
         {isOpen("eventDetails") && (
           <EventDetailsModal
-            event={getModalData("eventDetails").event}
+            event={getModalData<{ event: CalendarEvent }>("eventDetails")!.event}
             userId={userId}
             handleDeleteEvent={handleDeleteEvent}
             handleEditEvent={handleEditEvent}
+            statusFilter={statusFilter}
           />
         )}
         {/* Modale de confirmation de suppression */}
         {isOpen("deleteConfirm") && (
           <DeleteConfirmModal
             onConfirm={() =>
-              handleDeleteConfirm(getModalData("deleteConfirm").id)
+              handleDeleteConfirm(getModalData<{ id: string }>("deleteConfirm")!.id)
             }
             isLoading={isDeleting}
             message={message}
             title={title}
           />
         )}
-        <div className="calendar-wrapper">
+        <div className="calendar-wrapper" onMouseEnter={prefetchWorkouts}>
           {isLoadingEvents ? (
             <div className="animate-pulse w-full h-full flex items-center justify-center">
               <ClipLoader size={60} color="#7557ff" />
@@ -132,7 +139,6 @@ export default function CalendarComponent({ userId, initialEvents }) {
               localizer={localizer} // Système de localisation (gestion des dates avec moment)
               events={filteredEvents} // Événements à afficher dans le calendrier
               selectable={true}
-              onMouseEnter={prefetchWorkouts}
               onNavigate={handleDateChange}
               onSelectSlot={handleSelectSlot}
               onSelectEvent={handleSelectEvent}

@@ -1,8 +1,16 @@
 import { createPortal } from "react-dom";
 import { ModalLayout } from "@/Global/components";
 import { UpdateEventForm } from "../forms";
+import { CalendarEvent } from "@/types/calendarEvent";
 
-export default function EditEventModal({ userId, event = null }) {
+
+interface EditEventModalProps {
+  userId: string;
+  event: CalendarEvent
+}
+
+export default function EditEventModal({ userId, event }: EditEventModalProps) {
+
   const session = event.resource;
 
   const formattedDate = session?.scheduledDate
@@ -23,6 +31,6 @@ export default function EditEventModal({ userId, event = null }) {
     >
       <UpdateEventForm userId={userId} event={event} />
     </ModalLayout>,
-    document.getElementById("portal-root"),
+    document.getElementById("portal-root") as HTMLDivElement,
   );
 }
