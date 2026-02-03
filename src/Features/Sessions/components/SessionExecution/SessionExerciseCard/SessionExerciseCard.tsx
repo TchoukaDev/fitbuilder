@@ -8,6 +8,7 @@ import {
   CurrentExerciseCard,
 } from ".";
 import { SessionExercise } from "@/types/SessionExercise";
+import { AnimatePresence } from "framer-motion";
 
 
 // Carte d'un exercice pendant l'exécution de la session
@@ -76,14 +77,16 @@ const SessionExerciseCard = memo(function SessionExerciseCard({
         )}
 
         {/* Détail des séries (déplié) */}
-        {isExpanded && !exercise.completed && (
-          <CurrentExerciseCard
-            exercise={exercise}
-            index={index}
-            isActive={isActive}
-            onCompleteExercise={onCompleteExercise}
-          />
-        )}
+        <AnimatePresence>
+          {isExpanded && !exercise.completed && (
+            <CurrentExerciseCard
+              exercise={exercise}
+              index={index}
+              isActive={isActive}
+              onCompleteExercise={onCompleteExercise}
+            />
+          )}
+        </AnimatePresence>
 
       </div>
     </>

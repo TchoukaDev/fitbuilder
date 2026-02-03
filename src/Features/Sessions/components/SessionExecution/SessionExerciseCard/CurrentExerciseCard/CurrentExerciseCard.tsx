@@ -56,9 +56,9 @@ export default function CurrentExerciseCard({
   return (
 
     <motion.div
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
+      initial={{ opacity: 0, y: -20, height: 0 }}
+      animate={{ opacity: 1, y: 0, height: "auto" }}
+      exit={{ opacity: 0, y: -20, height: 0 }}
       transition={{ duration: 0.3 }}
       className="mt-4 space-y-7"
     >

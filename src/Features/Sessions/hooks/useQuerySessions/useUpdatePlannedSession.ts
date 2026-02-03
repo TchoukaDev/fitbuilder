@@ -111,7 +111,6 @@ export function useUpdatePlannedSession(userId: string) {
     },
 
     onSuccess: () => {
-      toast.success("Séance modifiée avec succès");
       queryClient.invalidateQueries({ queryKey: ["sessions", userId] });
       queryClient.invalidateQueries({ queryKey: calendarKey });
       queryClient.invalidateQueries({ queryKey: dashboardKey });
