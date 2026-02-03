@@ -25,7 +25,7 @@ export default function EventFormFields({
             <option>Chargement...</option>
           ) : (
             workouts?.map((w) => (
-              <option key={w._id} value={w._id}>
+              <option key={w.id} value={w.id}>
                 {w.name}
               </option>
             ))

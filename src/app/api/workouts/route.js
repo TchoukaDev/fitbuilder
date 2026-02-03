@@ -9,6 +9,7 @@ import {
   workoutSchema,
   workoutExercisesSchema,
 } from "@/Features/Workouts/utils/workoutSchema";
+import { getWorkouts } from "@/Features/Workouts/utils";
 
 // POST - Créer un nouveau plan d'entraînement
 export async function POST(req) {
@@ -116,15 +117,9 @@ export async function GET(req) {
 
   const { userId } = auth;
 
-  const db = await connectDB();
-
   try {
-    const user = await db
-      .collection("users")
-      .findOne({ _id: new ObjectId(userId) });
-
-    const workouts = user?.workouts;
-
+    // ✅ Utilise le helper qui retourne Workout[] avec id (pas _id)
+    const workouts = await getWorkouts(userId);
     return NextResponse.json(workouts, { status: 200 });
   } catch (error) {
     console.error("Erreur récupération workouts:", error);

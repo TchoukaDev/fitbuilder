@@ -122,7 +122,7 @@ Pour chaque exercice ajouté au programme, on configure :
 
 - **Ordre** : Position dans le programme
 - **Séries prévues** : Nombre de séries (ex: 3)
-- **Répétitions** : Plage de reps (ex: 8-12)
+- **Répétitions** : Nombre de reps
 - **Poids** : Poids de départ recommandé
 - **Temps de repos** : Entre les séries (en secondes)
 - **Notes** : Conseils spécifiques pour cet exercice
@@ -248,7 +248,7 @@ Le calendrier permet de visualiser et planifier les séances d'entraînement sur
 | **PLANNED** | Bleu | Séance programmée, pas encore commencée |
 | **IN_PROGRESS** | Jaune | Séance en cours d'exécution |
 | **COMPLETED** | Vert | Séance terminée |
-| **CANCELLED** | Gris/Rouge | Séance annulée |
+
 
 ### Création d'une séance via calendrier
 
@@ -301,11 +301,13 @@ Tout changement dans une séance se reflète immédiatement au calendrier.
 
 Une séance (session) est l'exécution concrète d'un programme d'entraînement. L'utilisateur trace chaque exercice, les séries, répétitions, poids réels et enregistre ses notes.
 
+### Affichage
+
+Affichage de toutes les séances avec filtres (par date, par workout, pas statut (planifiée, en cours, terminée))
+
 ### Cycle de vie d'une séance
 
-```
 Créer → Commencer → Exécuter exercices → Compléter → Visualiser détails
-```
 
 ### Création d'une séance
 
@@ -328,11 +330,11 @@ Session
 ├── Utilisateur
 ├── Workout lié
 ├── Date prévue
-├── Statut (PLANNED, IN_PROGRESS, COMPLETED, CANCELLED)
+├── Statut (PLANNED, IN_PROGRESS, COMPLETED)
 ├── Exercices[]
 │   ├── Exercice ID
 │   ├── Configuration (séries, reps, poids)
-│   ├── Statut (NOT_STARTED, IN_PROGRESS, COMPLETED)
+│   ├── Statut (PLANNED, IN_PROGRESS, COMPLETED)
 │   ├── Sets réels[]
 │   │   ├── Numéro
 │   │   ├── Reps réalisées

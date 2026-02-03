@@ -1,5 +1,5 @@
 import { Button, LoaderButton } from "@/Global/components";
-import { useUpdatePlannedSession } from "@/Features/Sessions/hooks";
+import { useUpdatePlannedSession } from "@/Features/Sessions/hooks/useQuerySessions";
 import { toast } from "react-toastify";
 import RequiredFields from "@/Global/components/ui/FormsComponents/RequiredFields";
 import { EventFormFields } from "../forms";
@@ -25,7 +25,7 @@ export default function UpdateEventForm({ userId, event }) {
   // SUBMIT
   // ========================================
   const onSubmit = (data) => {
-    const workout = workouts?.find((w) => w._id === data.workout);
+    const workout = workouts?.find((w) => w.id === data.workout);
     const scheduledDate = new Date(`${data.date}T${data.startTime}`);
     const updatedSession = {
       workoutId: data.workout,
@@ -36,7 +36,7 @@ export default function UpdateEventForm({ userId, event }) {
     };
     updateSession(
       {
-        sessionId: session._id,
+        sessionId: session.id,
         updatedSession,
       },
       {
