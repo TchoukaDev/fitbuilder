@@ -2,6 +2,8 @@ import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { SessionExercise } from "@/types/SessionExercise";
 import { WorkoutSession } from "@/types/workoutSession";
 import { SessionsResponse } from "./useGetSessions";
+import { getColorByStatus } from "@/Features/Calendar/utils";
+import { CalendarEvent } from "@/types/calendarEvent";
 
 export interface UseFinishSessionType {
   userId: string;
@@ -13,11 +15,7 @@ type UseFinishSessionVariables = {
   duration: string;
 }
 
-interface CalendarEvent {
-  id: string;
-  resource: WorkoutSession;
-  [key: string]: unknown;
-}
+
 
 export function useFinishSession({ userId, sessionId }: UseFinishSessionType) {
     const queryClient = useQueryClient();
@@ -67,11 +65,14 @@ export function useFinishSession({ userId, sessionId }: UseFinishSessionType) {
         // ✅ Calendar - mise à jour optimiste
         const previousEvents = queryClient.getQueryData<CalendarEvent[]>(calendarKey);
         if (previousEvents) {
+          const { color, colorHover } = getColorByStatus("completed");
           queryClient.setQueryData(calendarKey, 
             previousEvents.map((e: CalendarEvent) =>
               e.resource?.id === sessionId
                 ? {
                     ...e,
+                    color,
+                    colorHover,
                     resource: {
                       ...e.resource,
                       exercises,

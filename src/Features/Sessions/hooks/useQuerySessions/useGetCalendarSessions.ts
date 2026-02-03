@@ -12,7 +12,7 @@ import { WorkoutSession } from "@/types/workoutSession";
     userId: string,
     statusFilter: string[] | null,
   ) {
-    const calendarKey = ["calendar-sessions", userId]; // ✅ Cache différent par statut
+    const calendarKey = ["calendar-sessions", userId]; 
     return useQuery({
       queryKey: calendarKey,
       queryFn: async () => {

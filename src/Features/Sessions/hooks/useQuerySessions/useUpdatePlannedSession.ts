@@ -2,21 +2,14 @@ import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { WorkoutSession } from "@/types/workoutSession";
 import { SessionsResponse } from "./useGetSessions";
 import { toast } from "react-toastify";
+import { CalendarEvent } from "@/types/calendarEvent";
 
-interface CalendarEvent {
-  id: string;
-  title: string;
-  start: Date;
-  end: Date;
-  resource: WorkoutSession;
-  [key: string]: unknown;
-}
+
 
 interface UpdatedSession {
   scheduledDate?: string;
   estimatedDuration?: number;
   workoutName?: string;
-  [key: string]: unknown;
 }
 
 interface UpdatePlannedSessionVariables {

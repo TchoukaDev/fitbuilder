@@ -6,12 +6,10 @@ import {
 } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { SessionsResponse } from "./useGetSessions";
+import { getColorByStatus } from "@/Features/Calendar/utils";
+import { CalendarEvent } from "@/types/calendarEvent";
 
-interface CalendarEvent {
-  id: string;
-  resource: WorkoutSession;
-  [key: string]: unknown;
-}
+
 
 /**
  * Annuler une session planifiée
@@ -48,25 +46,35 @@ export function useCancelPlannedSession(userId: string) {
         queryKey: ["sessions", userId] 
       });
 
-      // ✅ Mise à jour optimiste - changer le status en "cancelled"
+      // ✅ Mise à jour optimiste - changer le status en "planned"
       sessionsQueries.forEach(([key, data]) => {
         if (data?.sessions) {
           queryClient.setQueryData(key, {
             ...data,
             sessions: data.sessions.map((s: WorkoutSession) =>
               s.id === sessionId 
-                ? { ...s, status: "cancelled" } 
+                ? { ...s, status: "planned" } 
                 : s
             ),
           });
         }
       });
 
-      // ✅ Calendar - mise à jour optimiste (retirer l'événement)
+      // ✅ Calendar - mise à jour optimiste (passer l'événement en status "planned")
       const previousEvents = queryClient.getQueryData<CalendarEvent[]>(calendarKey);
       if (previousEvents) {
+        const { color, colorHover } = getColorByStatus("planned");
         queryClient.setQueryData(calendarKey, 
-          previousEvents.filter((e: CalendarEvent) => e.resource?.id !== sessionId)
+          previousEvents.map((e: CalendarEvent) =>
+            e.resource?.id === sessionId
+              ? { 
+                  ...e, 
+                  color,      // ✅ Mettre à jour la couleur
+                  colorHover, // ✅ Mettre à jour la couleur hover
+                  resource: { ...e.resource, status: "planned" } 
+                }
+              : e
+          )
         );
       }
 

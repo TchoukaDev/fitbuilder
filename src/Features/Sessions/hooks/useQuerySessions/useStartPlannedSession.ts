@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import { WorkoutSession } from "@/types/workoutSession";
 import { SessionsResponse } from "./useGetSessions";
 import { CalendarEvent } from "@/types/calendarEvent";
+import { getColorByStatus } from "@/Features/Calendar/utils";
 
 
 /**
@@ -52,11 +53,14 @@ export function useStartPlannedSession(userId: string) {
       // ✅ Calendar - mise à jour optimiste
       const previousEvents = queryClient.getQueryData<CalendarEvent[]>(calendarKey);
       if (previousEvents) {
+        const { color, colorHover } = getColorByStatus("in-progress");
         queryClient.setQueryData(calendarKey, 
           previousEvents.map((e: CalendarEvent) =>
             e.resource?.id === sessionId
               ? {
                   ...e,
+                  color,
+                  colorHover,
                   resource: {
                     ...e.resource,
                     status: "in-progress",
