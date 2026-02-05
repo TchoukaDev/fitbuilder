@@ -9,7 +9,6 @@ import { Header } from "@/Global/components";
 import { NewWorkoutForm } from "@/Features/Workouts/forms";
 import { WorkoutStoreProvider } from "@/Features/Workouts/store";
 import { redirect } from "next/navigation";
-export const revalidate = 60;
 
 
 export default async function CreateWorkoutPage() {

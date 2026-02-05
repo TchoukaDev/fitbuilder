@@ -8,7 +8,6 @@ import {
 } from "@/Features/Exercises/utils";
 import { Header } from "@/Global/components";
 import { redirect } from "next/navigation";
-export const revalidate = 60;
 
 export default async function ExercisesPage() {
   const session = await getServerSession(authOptions);
