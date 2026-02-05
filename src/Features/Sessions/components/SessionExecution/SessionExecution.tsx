@@ -32,6 +32,8 @@ import {
   RestTimerModal,
 } from "../../modals";
 import { MissingFields } from "../../utils/validateExercise";
+import ErrorBoundary from "@/Global/components/utils/ErrorBoundarie";
+import RestTimerFallback from "../../modals/RestTimerFallback";
 
 
 interface SessionExecutionProps {
@@ -200,7 +202,9 @@ export default function SessionExecution({ sessionData, sessionId, userId }: Ses
 
         {/* Modal du timer de repos */}
         {isOpen("restTimer") && (
-          <RestTimerModal initialTime={getModalData<{ restTime: number }>("restTimer")?.restTime ?? 0} />
+          <ErrorBoundary fallback={<RestTimerFallback />}>
+            <RestTimerModal initialTime={getModalData<{ restTime: number }>("restTimer")?.restTime ?? 0} />
+          </ErrorBoundary>
         )}
       </div>
 
