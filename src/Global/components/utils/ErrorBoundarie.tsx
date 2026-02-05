@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { ReactNode } from 'react';
+import * as Sentry from "@sentry/nextjs";
 
 // Les props qu'on va recevoir
 interface Props {
@@ -24,7 +25,7 @@ class ErrorBoundary extends React.Component<Props, State> {
     }
 
     componentDidCatch(error: Error, info: React.ErrorInfo) {
-        console.error(error, info);
+        Sentry.captureException(error, { extra: { componentStack: info.componentStack } })
     }
 
     render() {
