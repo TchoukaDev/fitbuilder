@@ -4,23 +4,7 @@ import { useCallback } from "react";
  * Regroupe les effets liés au timer (sons, vibration, notification).
  */
 export function useTimerEffects() {
-  /**
-   * Joue un son de fin de timer (fichier audio ou bip de fallback).
-   */
-  const playSound = useCallback(() => {
-    try {
-      const audio = new Audio("/sounds/timer.mp3");
-      audio.volume = 0.5; // Volume à 50%
-      audio.play().catch((err) => {
-        console.warn("Impossible de jouer le son:", err);
-        // Fallback : synthétiser un bip si le fichier n'existe pas
-        playBeep();
-      });
-    } catch (error) {
-      console.warn("Erreur audio:", error);
-      playBeep(); // Fallback
-    }
-  }, []);
+
 
   /**
    * Joue un bip synthétique via l'API Web Audio.
@@ -29,7 +13,7 @@ export function useTimerEffects() {
     try {
       // Créer un contexte audio
       const audioContext = new (window.AudioContext ||
-        window.webkitAudioContext)();
+        window.AudioContext)();
 
       // Créer un oscillateur (générateur de fréquence)
       const oscillator = audioContext.createOscillator();
@@ -58,19 +42,39 @@ export function useTimerEffects() {
     }
   }, []);
 
+
+  /**
+ * Joue un son de fin de timer (fichier audio ou bip de fallback).
+ */
+  const playSound = useCallback(() => {
+    try {
+      const audio = new Audio("/sounds/timer.mp3");
+      audio.volume = 0.5; // Volume à 50%
+      audio.play().catch(() => {
+        // Fallback : synthétiser un bip si le fichier n'existe pas
+        playBeep();
+      });
+    } catch {
+      playBeep(); // Fallback
+    }
+  }, [playBeep]);
+
   /**
    * Déclenche une courte vibration sur mobile (si supportée).
    */
   const vibrate = useCallback(() => {
-    // Vérifier si l'API Vibration est disponible
-    if ("vibrate" in navigator) {
-      // Pattern de vibration : [durée vibration, pause, durée, pause, ...]
-      // Ici : 3 petites vibrations
-      navigator.vibrate([200, 100, 200, 100, 200]);
-    } else {
-      console.warn("Vibration API non supportée sur ce navigateur");
+
+    try {
+      // Vérifier si l'API Vibration est disponible
+      if (typeof navigator.vibrate === "function") {
+        // Pattern de vibration : [durée vibration, pause, durée, pause, ...]
+        // Ici : 3 petites vibrations
+        navigator.vibrate([200, 100, 200, 100, 200]);
+      }
+    } catch {
+
     }
-  }, []);
+  }, [playBeep]);
 
   /**
    * Affiche une notification navigateur (si supportée / autorisée).
@@ -79,26 +83,45 @@ export function useTimerEffects() {
    * @param {string} body - Message de la notification.
    */
   const showNotification = useCallback((title, body) => {
-    // Vérifier si les notifications sont supportées
-    if (!("Notification" in window)) {
-      console.warn("Notifications non supportées");
-      return;
-    }
 
-    // Demander la permission si pas encore accordée
-    if (Notification.permission === "granted") {
-      new Notification(title, {
-        body: body,
-        icon: "/icon.png", // Optionnel : icône de l'app
-        badge: "/badge.png", // Optionnel : badge
-        vibrate: [200, 100, 200], // Vibration sur mobile
-      });
-    } else if (Notification.permission !== "denied") {
-      Notification.requestPermission().then((permission) => {
-        if (permission === "granted") {
-          new Notification(title, { body });
-        }
-      });
+
+    try { // Vérifier si les notifications sont supportées
+      if (!("Notification" in window)) {
+        console.warn("Notifications non supportées");
+        return;
+      }
+
+      // //Méthode mobile
+      // if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
+      //   navigator.serviceWorker.ready.then((registration) => {
+      //     registration.showNotification(title, {
+      //       body: body,
+      //       icon: "/app/favicon.ico",
+      //     });
+      //   });
+      //   return;
+      // }
+
+      //Méthode desktop
+      // Demander la permission si pas encore accordée
+      if (Notification.permission === "granted") {
+        new Notification(title, {
+          body: body,
+          icon: "/app/favicon.ico", // Optionnel : icône de l'app
+        });
+      } else if (Notification.permission !== "denied") {
+        Notification.requestPermission().then((permission) => {
+          if (permission === "granted") {
+            try {
+              new Notification(title, { body });
+            } catch {
+              //Si erreur -> On ne fait rien
+            }
+          }
+        });
+      }
+    } catch {
+      //Si erreur -> On ne fait rien
     }
   }, []);
 
