@@ -52,7 +52,7 @@ export default function CalendarComponent({ userId, initialEvents }: CalendarCom
     useGetCalendarSessions(hydratedInitialEvents, userId, null);
 
   // 📅 PREFETCH
-  const { prefetchWorkouts } = useWorkouts({ initialData: [], userId });
+  const { prefetchWorkouts } = useWorkouts({ userId });
 
   // 📅 CONSTANTES
   const message = "Êtes-vous sûr de vouloir supprimer cet événement ?";

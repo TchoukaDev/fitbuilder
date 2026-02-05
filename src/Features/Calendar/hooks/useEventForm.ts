@@ -32,7 +32,8 @@ export default function useEventForm({
   const { closeModal } = useModals();
 
   const { data: workouts = [], isFetching } = useWorkouts({
-    initialData: [], userId, options: {
+    userId,
+    options: {
       staleTime: 0,
       refetchOnMount: true,
       refetchOnWindowFocus: false,

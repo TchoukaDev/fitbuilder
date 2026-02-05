@@ -17,7 +17,7 @@ import { ApiErrorType } from "@/libs/apiResponse";
  */
 
 interface UseWorkoutsProps {
-  initialData: Workout[];
+  initialData?: Workout[]; // Optionnel maintenant
   userId: string;
   options?: Omit<UseQueryOptions<Workout[], Error>, 'queryKey'>
 }
@@ -39,7 +39,8 @@ export function useWorkouts({ initialData, userId, options = {} }: UseWorkoutsPr
 
       return data || [];
     },
-    initialData: initialData,
+    // ⭐ N'utilise initialData que si c'est un tableau avec des données réelles
+    initialData: initialData && initialData.length > 0 ? initialData : undefined,
     placeholderData: keepPreviousData,
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 30,
