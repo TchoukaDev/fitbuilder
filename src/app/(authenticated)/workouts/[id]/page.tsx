@@ -2,7 +2,6 @@
 import { authOptions } from "@/libs/auth";
 import { getServerSession } from "next-auth";
 import { notFound, redirect } from "next/navigation";
-import { Header } from "@/Global/components";
 import { getWorkoutById } from "@/Features/Workouts/utils";
 import { WorkoutDetailPageClient } from "@/Features/Workouts/components";
 
@@ -26,14 +25,11 @@ export default async function WorkoutDetailPage({ params }: { params: Promise<{ 
 
   return (
     <>
-      <Header />
-      <main>
-        <WorkoutDetailPageClient
-          workout={serializedWorkout}
-          workoutId={workoutId}
-          userId={userId}
-        />
-      </main>
+      <WorkoutDetailPageClient
+        workout={serializedWorkout}
+        workoutId={workoutId}
+        userId={userId}
+      />
     </>
   );
 }

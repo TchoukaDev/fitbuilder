@@ -2,7 +2,6 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/libs/auth";
 import { SessionsList } from "@/Features/Sessions/components";
-import { Header } from "@/Global/components";
 import { getAllSessions } from "@/Features/Sessions/utils";
 import { DEFAULT_SESSION_FILTERS } from "@/Features/Sessions/utils/sessionFilters";
 import { redirect } from "next/navigation";
@@ -40,23 +39,20 @@ export default async function SessionsPage({ searchParams }: { searchParams: Pro
 
   return (
     <>
-      <Header />
-      <main>
-        <h1>📈 Suivi des séances</h1>
-        <div className="p-6">
-          <SessionsList
-            initialSessions={serializedData}
-            userId={userId}
-            initialFilters={{
-              status,
-              dateFilter,
-              workoutFilter,
-              page,
-              limit,
-            }}
-          />
-        </div>
-      </main>
+      <h1>📈 Suivi des séances</h1>
+      <div className="p-6">
+        <SessionsList
+          initialSessions={serializedData}
+          userId={userId}
+          initialFilters={{
+            status,
+            dateFilter,
+            workoutFilter,
+            page,
+            limit,
+          }}
+        />
+      </div>
     </>
   );
 }

@@ -5,7 +5,6 @@ import {
   getFavoritesExercises,
 } from "@/Features/Exercises/utils/getExercises";
 import { getServerSession } from "next-auth";
-import { Header } from "@/Global/components";
 import { NewWorkoutForm } from "@/Features/Workouts/forms";
 import { WorkoutStoreProvider } from "@/Features/Workouts/store";
 import { redirect } from "next/navigation";
@@ -30,20 +29,17 @@ export default async function CreateWorkoutPage() {
 
   return (
     <>
-      <Header />
-      <main>
-        <h1>📋 Créer un nouveau plan d'entraînement</h1>
-        <WorkoutStoreProvider key="createWorkout" autoSave={true}>
-          <div className="p-6">
-            <NewWorkoutForm
-              allExercises={serializedExercises}
-              favoritesExercises={serializedFavorites}
-              isAdmin={isAdmin}
-              userId={userId}
-            />
-          </div>
-        </WorkoutStoreProvider>
-      </main>
+      <h1>📋 Créer un nouveau plan d'entraînement</h1>
+      <WorkoutStoreProvider key="createWorkout" autoSave={true}>
+        <div className="p-6">
+          <NewWorkoutForm
+            allExercises={serializedExercises}
+            favoritesExercises={serializedFavorites}
+            isAdmin={isAdmin}
+            userId={userId}
+          />
+        </div>
+      </WorkoutStoreProvider>
     </>
   );
 }

@@ -6,7 +6,6 @@ import {
   getAllExercises,
   getFavoritesExercises,
 } from "@/Features/Exercises/utils";
-import { Header } from "@/Global/components";
 import { UpdateWorkoutForm } from "@/Features/Workouts/forms";
 import { WorkoutStoreProvider } from "@/Features/Workouts/store";
 import { notFound, redirect } from "next/navigation";
@@ -34,21 +33,18 @@ export default async function EditWorkout({ params }: { params: Promise<{ id: st
 
   return (
     <>
-      <Header />
-      <main>
-        <h1>📋 Modifier le plan d'entraînement "{workout.name}"</h1>
-        <WorkoutStoreProvider key="updateWorkout" autoSave={false}>
-          <div className="p-6">
-            <UpdateWorkoutForm
-              workout={workout}
-              isAdmin={isAdmin}
-              userId={userId}
-              allExercises={allExercises}
-              favoritesExercises={favoritesExercises}
-            />
-          </div>
-        </WorkoutStoreProvider>
-      </main>
+      <h1>📋 Modifier le plan d'entraînement "{workout.name}"</h1>
+      <WorkoutStoreProvider key="updateWorkout" autoSave={false}>
+        <div className="p-6">
+          <UpdateWorkoutForm
+            workout={workout}
+            isAdmin={isAdmin}
+            userId={userId}
+            allExercises={allExercises}
+            favoritesExercises={favoritesExercises}
+          />
+        </div>
+      </WorkoutStoreProvider>
     </>
   );
 }

@@ -1,4 +1,4 @@
-import { Header } from "@/Global/components";
+
 import { authOptions } from "@/libs/auth";
 import { getServerSession } from "next-auth";
 import { getEvents } from "@/Features/Calendar/utils";
@@ -22,13 +22,9 @@ export default async function CalendarPage() {
 
   return (
     <>
-      <Header />
-      <main>
-        <h1>📅 Planning d'entraînement</h1>
-        <Suspense fallback={<CalendarSkeleton />}>
-          <CalendarComponent userId={userId} initialEvents={serializedEvents} />
-        </Suspense>
-      </main>
-    </>
+      <h1>📅 Planning d'entraînement</h1>
+      <Suspense fallback={<CalendarSkeleton />}>
+        <CalendarComponent userId={userId} initialEvents={serializedEvents} />
+      </Suspense></>
   );
 }

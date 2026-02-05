@@ -1,6 +1,4 @@
 // Page tableau de bord utilisateur
-
-import { Header } from "@/Global/components";
 import DashboardClient from "@/Features/Dashboard/components/DashboardClient";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/libs/auth";
@@ -19,14 +17,11 @@ export default async function Dashboard({ searchParams }: { searchParams: { auth
 
   return (
     <>
-      <Header />
-      <main>
-        {authError === "forbidden" && (
-          <p className="formError">Accès refusé. Page strictement réservée</p>
-        )}
-        <h1>📊 Dashboard</h1>
-        <DashboardClient userId={userId} />
-      </main>
+      {authError === "forbidden" && (
+        <p className="formError">Accès refusé. Page strictement réservée</p>
+      )}
+      <h1>📊 Dashboard</h1>
+      <DashboardClient userId={userId} />
     </>
   );
 }

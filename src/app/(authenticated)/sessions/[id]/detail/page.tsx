@@ -4,7 +4,6 @@ import { authOptions } from "@/libs/auth";
 import { getSessionbyId } from "@/Features/Sessions/utils";
 import { redirect } from "next/navigation";
 import { SessionDetailClient } from "@/Features/Sessions/components";
-import { Header } from "@/Global/components";
 import { CompletedSessionType } from "@/types/workoutSession";
 
 export default async function SessionDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -33,10 +32,7 @@ export default async function SessionDetailPage({ params }: { params: Promise<{ 
 
   return (
     <>
-      <Header />
-      <main>
-        <SessionDetailClient session={serializedSession} userId={userId} />
-      </main>
+      <SessionDetailClient session={serializedSession} userId={userId} />
     </>
   );
 }

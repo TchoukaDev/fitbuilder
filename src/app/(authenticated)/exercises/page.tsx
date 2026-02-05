@@ -6,7 +6,6 @@ import {
   getAllExercises,
   getFavoritesExercises,
 } from "@/Features/Exercises/utils";
-import { Header } from "@/Global/components";
 import { redirect } from "next/navigation";
 
 export default async function ExercisesPage() {
@@ -24,16 +23,13 @@ export default async function ExercisesPage() {
 
   return (
     <>
-      <Header />
-      <main>
-        <h1>📝 Mes exercices</h1>
-        <ExercisesList
-          initialExercises={exercises}
-          initialFavorites={favoritesExercises}
-          isAdmin={isAdmin}
-          userId={userId}
-        />
-      </main>
+      <h1>📝 Mes exercices</h1>
+      <ExercisesList
+        initialExercises={exercises}
+        initialFavorites={favoritesExercises}
+        isAdmin={isAdmin}
+        userId={userId}
+      />
     </>
   );
 }
