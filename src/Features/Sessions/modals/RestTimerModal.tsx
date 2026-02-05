@@ -55,6 +55,20 @@ export default function RestTimerModal({
       {/* ─────────────────────────────────────────────────── */}
       {/* BODY - AFFICHAGE DU TIMER */}
       {/* ─────────────────────────────────────────────────── */}
+
+
+      <button
+        onClick={() => {
+          if (navigator.vibrate) {
+            navigator.vibrate([200, 100, 200]);
+            alert("Vibration déclenchée !");
+          } else {
+            alert("Vibration non supportée");
+          }
+        }}
+      >
+        🧪 Test Vibration
+      </button>
       <div className="p-8 space-y-6">
         {/* ⏰ Grand affichage du temps */}
         <div className="text-center">
