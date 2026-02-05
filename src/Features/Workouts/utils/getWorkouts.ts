@@ -2,8 +2,9 @@
 import connectDB from "@/libs/mongodb";
 import { Workout, WorkoutDB } from "@/types/workout";
 import { ObjectId } from "mongodb";
+import { unstable_cache } from "next/cache";
 
-export async function getWorkouts(userId: string): Promise<Workout[]> {
+async function _getWorkouts(userId: string): Promise<Workout[]> {
   const db = await connectDB();
 
   const user = await db
@@ -18,8 +19,11 @@ export async function getWorkouts(userId: string): Promise<Workout[]> {
     id: _id.toString(),
   }));
 }
+export const getWorkouts = unstable_cache(_getWorkouts, ["allWorkouts"], { revalidate: 300, tags: ["workouts"] });
 
-export async function getWorkoutById(
+
+
+async function _getWorkoutById(
   userId: string,
   workoutId: string
 ): Promise<Workout | null> {
@@ -41,3 +45,4 @@ export async function getWorkoutById(
     id: _id.toString(),
   };
 }
+export const getWorkoutById = unstable_cache(_getWorkoutById, ["workoutById"], { revalidate: 300, tags: ["workouts"] });

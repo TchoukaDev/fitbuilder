@@ -4,6 +4,7 @@ import { ObjectId } from "mongodb";
 import { WorkoutSession, WorkoutSessionDB } from "@/types/workoutSession";
 import { CompletedSessionType } from "@/types/workoutSession";
 import { DEFAULT_SESSION_FILTERS, SessionFiltersType } from "./sessionFilters";
+import { unstable_cache } from "next/cache";
 
 // Récupère toutes les sessions d'un utilisateur avec filtres (statut, date, workout) et pagination.
 // Retourne { sessions: [], pagination: {}, stats: {} }.
@@ -26,7 +27,7 @@ interface GetAllSessionsResponse {
   } | {};
 }
 
-export async function getAllSessions(userId: string, filters: SessionFiltersType): Promise<GetAllSessionsResponse> {
+async function _getAllSessions(userId: string, filters: SessionFiltersType): Promise<GetAllSessionsResponse> {
   if (!userId) return { sessions: [], pagination: {}, stats: {} };
 
   const {
@@ -153,12 +154,13 @@ export async function getAllSessions(userId: string, filters: SessionFiltersType
     return { sessions: [], pagination: { page: 0, limit: 0, totalSessions: 0, totalPages: 0, hasNextPage: false, hasPreviousPage: false }, stats: { total: 0, completed: 0, inProgress: 0, planned: 0 } };
   }
 }
-
+export const getAllSessions = unstable_cache(_getAllSessions, ["allSessions"], { revalidate: 300, tags: ["sessions"] });
 // Récupère une session spécifique par son ID pour un utilisateur donné.
 // Retourne la session avec les ObjectId convertis en strings ou null si non trouvée.
 
 
-export async function getSessionbyId(userId: string, sessionId: string): Promise<WorkoutSession | CompletedSessionType | null> {
+
+async function _getSessionbyId(userId: string, sessionId: string): Promise<WorkoutSession | CompletedSessionType | null> {
   try {
     const db = await connectDB();
     const user = await db
@@ -201,8 +203,10 @@ export async function getSessionbyId(userId: string, sessionId: string): Promise
   }
 }
 
+export const getSessionbyId = unstable_cache(_getSessionbyId, ["sessionById"], { revalidate: 300, tags: ["sessions"] });
+
 // Récupère toutes les sessions planifiées
-export async function getPlannedSessions(userId: string): Promise<WorkoutSession[]> {
+async function _getPlannedSessions(userId: string): Promise<WorkoutSession[]> {
   if (!userId) return [];
   try {
     const db = await connectDB();
@@ -228,9 +232,9 @@ export async function getPlannedSessions(userId: string): Promise<WorkoutSession
     return [];
   }
 }
-
+export const getPlannedSessions = unstable_cache(_getPlannedSessions, ["plannedSessions"], { revalidate: 300, tags: ["sessions"] });
 // Récupère les sessions pour le calendrier (toutes ou filtrées par statut)
-export async function getCalendarSessions(userId: string, statusFilter: string | null): Promise<WorkoutSession[]> {
+async function _getCalendarSessions(userId: string, statusFilter: string | null): Promise<WorkoutSession[]> {
   if (!userId) return [];
 
   try {
@@ -263,3 +267,4 @@ export async function getCalendarSessions(userId: string, statusFilter: string |
     return [];
   }
 }
+export const getCalendarSessions = unstable_cache(_getCalendarSessions, ["calendarSessions"], { revalidate: 300, tags: ["sessions"] });

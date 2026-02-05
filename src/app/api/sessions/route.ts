@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/libs/mongodb";
 import { ObjectId } from "mongodb";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { ApiError } from "@/libs/apiResponse";
 import { requireAuth } from "@/libs/authMiddleware";
 import { getAllSessions } from "@/Features/Sessions/utils";
@@ -98,7 +98,8 @@ export async function POST(req: NextRequest) {
     revalidatePath("/calendar");
     revalidatePath("/dashboard");
     revalidatePath("/admin");
-
+    revalidateTag("sessions");
+    revalidateTag("calendar");
     return NextResponse.json(
       {
         success: true,

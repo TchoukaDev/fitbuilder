@@ -5,8 +5,9 @@ import { ObjectId } from "mongodb";
 import { getColorByStatus } from "./getColorByStatus";
 import { CalendarEvent } from "@/types/calendarEvent";
 import { WorkoutSessionDB } from "@/types/workoutSession";
+import { unstable_cache } from "next/cache";
 
-export async function getEvents(userId: string): Promise<CalendarEvent[]> {
+async function _getEvents(userId: string): Promise<CalendarEvent[]> {
   const db = await connectDB();
   const user = await db
     .collection("users")
@@ -39,3 +40,4 @@ export async function getEvents(userId: string): Promise<CalendarEvent[]> {
     };
   });
 }
+export const getEvents = unstable_cache(_getEvents, ["calendarEvents"], { revalidate: 300, tags: ["calendar"] });

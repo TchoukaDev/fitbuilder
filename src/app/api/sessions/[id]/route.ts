@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/libs/mongodb";
 import { ObjectId } from "mongodb";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { ApiError, ApiSuccess } from "@/libs/apiResponse";
 import { requireAuth } from "@/libs/authMiddleware";
 import { getSessionbyId } from "@/Features/Sessions/utils";
@@ -119,7 +119,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         revalidatePath("/sessions");
         revalidatePath(`/sessions/${sessionId}`);
         revalidatePath("/calendar");
-
+        revalidateTag("sessions");
+        revalidateTag("calendar");
         return NextResponse.json(
           ApiSuccess.OPERATION_SUCCESS("Séance démarrée"),
           { status: 200 },
@@ -158,7 +159,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         revalidatePath(`/sessions/${sessionId}`);
         revalidatePath("/dashboard");
         revalidatePath("/admin");
-
+        revalidateTag("sessions");
+        revalidateTag("calendar");
         return NextResponse.json(
           ApiSuccess.OPERATION_SUCCESS("Sauvegarde de la progression"),
           { status: 200 },
@@ -239,7 +241,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         revalidatePath("/sessions");
         revalidatePath(`/sessions/${sessionId}`);
         revalidatePath("/calendar");
-
+        revalidateTag("sessions");
+        revalidateTag("calendar");
         return NextResponse.json(
           ApiSuccess.OPERATION_SUCCESS("Séance annulée"),
           { status: 200 },
@@ -279,6 +282,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         revalidatePath("/sessions");
         revalidatePath(`/sessions/${sessionId}`);
         revalidatePath("/calendar");
+        revalidateTag("sessions");
+        revalidateTag("calendar");
         return NextResponse.json(
           ApiSuccess.OPERATION_SUCCESS("Session mise à jour"),
           { status: 200 },
@@ -351,7 +356,8 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     revalidatePath(`/sessions/${sessionId}`);
     revalidatePath("/dashboard");
     revalidatePath("/admin");
-
+    revalidateTag("sessions");
+    revalidateTag("calendar");
     return NextResponse.json(ApiSuccess.OPERATION_SUCCESS("Session terminée"), {
       status: 200,
     });
@@ -462,7 +468,8 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     revalidatePath(`/sessions/${sessionId}`);
     revalidatePath("/dashboard");
     revalidatePath("/admin");
-
+    revalidateTag("sessions");
+    revalidateTag("calendar");
     return NextResponse.json(ApiSuccess.DELETED("Session"), { status: 200 });
   } catch (error) {
     console.error("Erreur DELETE session:", error);

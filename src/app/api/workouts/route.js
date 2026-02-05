@@ -2,7 +2,7 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/libs/mongodb";
 import { ObjectId } from "mongodb";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { ApiError, ApiSuccess } from "@/libs/apiResponse";
 import { requireAuth } from "@/libs/authMiddleware";
 import {
@@ -95,7 +95,7 @@ export async function POST(req) {
     revalidatePath("/workouts");
     revalidatePath("/dashboard");
     revalidatePath("/admin");
-
+    revalidateTag("workouts");
     return NextResponse.json(
       {
         ...ApiSuccess.CREATED("Plan d'entraînement"),
