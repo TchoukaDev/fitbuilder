@@ -2,7 +2,7 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/libs/mongodb";
 import { ObjectId } from "mongodb";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { ApiError, ApiSuccess } from "@/libs/apiResponse";
 import { requireAuth } from "@/libs/authMiddleware";
 import {
@@ -40,7 +40,7 @@ export async function DELETE(req, { params }) {
     revalidatePath("/workouts");
     revalidatePath("/dashboard");
     revalidatePath("/admin");
-
+    revalidateTag("workouts");
     return NextResponse.json(ApiSuccess.DELETED("Plan d'entraînement"), {
       status: 200,
     });
@@ -135,7 +135,7 @@ export async function PATCH(req, { params }) {
 
     revalidatePath("/workouts");
     revalidatePath(`/workouts/${workoutId}`);
-
+    revalidateTag("workouts");
     return NextResponse.json(ApiSuccess.UPDATED("Plan d'entraînement"), {
       status: 200,
     });

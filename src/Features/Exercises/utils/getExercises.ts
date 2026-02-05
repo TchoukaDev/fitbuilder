@@ -2,11 +2,12 @@
 import connectDB from "@/libs/mongodb";
 import { Exercise, ExerciseDB } from "@/types/exercise";
 import { ObjectId } from "mongodb";
+import { unstable_cache } from "next/cache";
 
 
 
 // Récupère tous les exercices publics triés par muscle puis nom
-export async function getPublicExercises(): Promise<Exercise[]> {
+async function _getPublicExercises(): Promise<Exercise[]> {
   const db = await connectDB();
   const publicExercises: ExerciseDB[] =
     (await db
@@ -22,8 +23,10 @@ export async function getPublicExercises(): Promise<Exercise[]> {
   }));
 }
 
+export const getPublicExercises = unstable_cache(_getPublicExercises, ["publicExercises"], { revalidate: 300, tags: ["exercises"] });
+
 // Récupère les exercices privés d'un utilisateur triés par muscle puis nom
-export async function getPrivateExercises(userId: string): Promise<Exercise[]> {
+async function _getPrivateExercises(userId: string): Promise<Exercise[]> {
   const db = await connectDB();
 
   const user = await db
@@ -41,8 +44,12 @@ export async function getPrivateExercises(userId: string): Promise<Exercise[]> {
   }));
 }
 
+export const getPrivateExercises = unstable_cache(_getPrivateExercises, ["privateExercises"], { revalidate: 300, tags: ["exercises"] });
+
+
+
 // Récupère tous les exercices (publics + privés) en parallèle
-export async function getAllExercises(userId: string): Promise<Exercise[]> {
+async function _getAllExercises(userId: string): Promise<Exercise[]> {
   const [publicExercises, privateExercises] = await Promise.all([
     getPublicExercises(),
     getPrivateExercises(userId),
@@ -58,8 +65,10 @@ export async function getAllExercises(userId: string): Promise<Exercise[]> {
   return allExercises;
 }
 
+export const getAllExercises = unstable_cache(_getAllExercises, ["allExercises"], { revalidate: 300, tags: ["exercises"] });
+
 // Récupère les IDs des exercices favoris d'un utilisateur
-export async function getFavoritesExercises(userId: string): Promise<string[]> {
+async function _getFavoritesExercises(userId: string): Promise<string[]> {
   const db = await connectDB();
   const user = await db
     .collection("users")
@@ -67,3 +76,4 @@ export async function getFavoritesExercises(userId: string): Promise<string[]> {
   const favoritesExercises: string[] = user?.favoritesExercises || [];
   return favoritesExercises;
 }
+export const getFavoritesExercises = unstable_cache(_getFavoritesExercises, ["favoritesExercises"], { revalidate: 300, tags: ["favorites"] });

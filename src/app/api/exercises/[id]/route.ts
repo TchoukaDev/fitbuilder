@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/libs/mongodb";
 import { ObjectId } from "mongodb";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { ApiError, ApiSuccess } from "@/libs/apiResponse";
 import { requireAuth } from "@/libs/authMiddleware";
 import { exerciseSchema } from "@/Features/Exercises/utils/ExerciseSchema";
@@ -60,7 +60,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 
       revalidatePath("/exercices");
       revalidatePath(`/exercises/${id}`);
-
+      revalidateTag("exercises");
       return NextResponse.json(ApiSuccess.UPDATED("Exercice public"));
     }
 
@@ -89,7 +89,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 
     revalidatePath("/exercices");
     revalidatePath(`/exercises/${id}`);
-
+    revalidateTag("exercises");
     return NextResponse.json(ApiSuccess.UPDATED("Exercice privé"));
   } catch (error) {
     console.error("Erreur modification exercice:", error);
@@ -130,6 +130,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
       revalidatePath("/exercices");
       revalidatePath("/dashboard");
       revalidatePath("/workouts/create");
+      revalidateTag("exercises");
 
       return NextResponse.json(ApiSuccess.DELETED("Exercice public"));
     }
@@ -152,6 +153,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
     revalidatePath("/admin");
     revalidatePath("/dashboard");
     revalidatePath("/workouts/create");
+    revalidateTag("exercises");
 
     return NextResponse.json(ApiSuccess.DELETED("Exercice privé"), {
       status: 200,

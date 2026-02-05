@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/libs/mongodb";
 import { ObjectId } from "mongodb";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { ApiError, ApiSuccess } from "@/libs/apiResponse";
 import { requireAuth } from "@/libs/authMiddleware";
 import { exerciseSchema, ExerciseFormData } from "@/Features/Exercises/utils/ExerciseSchema";
@@ -55,7 +55,8 @@ export async function POST(req: NextRequest) {
 
       revalidatePath("/exercises");
       revalidatePath("/admin");
-
+      revalidateTag("exercises");
+      revalidateTag("favorites");
       return NextResponse.json(
         {
           ...ApiSuccess.CREATED("Exercice public"),
@@ -101,6 +102,8 @@ export async function POST(req: NextRequest) {
 
     revalidatePath("/exercises");
     revalidatePath("/dashboard");
+    revalidateTag("exercises");
+    revalidateTag("favorites");
 
     return NextResponse.json(
       {
