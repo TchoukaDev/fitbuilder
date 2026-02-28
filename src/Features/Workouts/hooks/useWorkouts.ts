@@ -11,6 +11,7 @@ import { useCallback } from "react";
 import { WorkoutExercisesSchemaType, WorkoutSchemaType } from "../utils/workoutSchema";
 import { Workout } from "@/types/workout";
 import { ApiErrorType } from "@/libs/apiResponse";
+import { init } from "@sentry/nextjs";
 
 /**
  * Récupère la liste des workouts pour un utilisateur via React Query.
@@ -63,6 +64,27 @@ export function useWorkouts({ initialData, userId, options = {} }: UseWorkoutsPr
 
 
   return { ...query, prefetchWorkouts } as UseQueryResult<Workout[], Error> & { prefetchWorkouts: () => void };
+}
+
+export function useWorkoutById(userId: string, workoutId: string, initialData: Workout) {
+  return useQuery({
+    queryKey: ["workout", workoutId],
+    queryFn: async () => {
+      const response = await fetch(`/api/workouts/${workoutId}`)
+      if (!response.ok) {
+        const errorData: ApiErrorType = await response.json();
+        throw new Error(
+          errorData.message || errorData.error || "Erreur inconnue",
+        );
+      }
+      return response.json() as Promise<Workout>
+    },
+    initialData: initialData,
+    placeholderData: keepPreviousData,
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 30,
+    enabled: !!userId && !!workoutId,
+  })
 }
 
 // CREATE
@@ -149,34 +171,42 @@ export function useUpdateWorkout(userId: string) {
         );
       }
 
-      const data: Workout = await response.json();
-      return data;
+      const { workout } = await response.json();
+      return workout
     },
 
     // 🔥 RENDU OPTIMISTE
-    onMutate: async ({ id, updatedWorkout }: { id: string, updatedWorkout: WorkoutSchemaType & WorkoutExercisesSchemaType }): Promise<{ previousWorkouts?: Workout[] }> => {
+    onMutate: async ({ id, updatedWorkout }: { id: string, updatedWorkout: WorkoutSchemaType & WorkoutExercisesSchemaType }): Promise<{ previousWorkouts?: Workout[], previousWorkout?: Workout }> => {
       // 1. Annule les requêtes en cours
       await queryClient.cancelQueries({ queryKey: key });
+      await queryClient.cancelQueries({ queryKey: ["workout", id] })
 
       // 2. Sauvegarde l'état actuel
-      const previousWorkouts = queryClient.getQueryData<Workout[]>(key);
+      const previousWorkouts = queryClient.getQueryData<Workout[]>(key)
+      const previousWorkout = queryClient.getQueryData<Workout>(["workout", id])
 
       // 3. Met à jour IMMÉDIATEMENT le cache
       queryClient.setQueryData(key, (old: Workout[] = []) => {
-        if (!old) return old;
+
         return old.map((w) => (w.id === id ? { ...w, ...updatedWorkout } : w));
       });
 
-      return { previousWorkouts };
+      queryClient.setQueryData(["workout", id], updatedWorkout
+      )
+
+
+      return { previousWorkouts, previousWorkout };
     },
 
     // ❌ Si erreur → ROLLBACK
-    onError: (err, variables, context?: { previousWorkouts?: Workout[] }) => {
+    onError: (err, variables, context?: { previousWorkouts?: Workout[], previousWorkout?: Workout }) => {
       queryClient.setQueryData(key, context?.previousWorkouts);
+      queryClient.setQueryData(["workout", variables.id], context?.previousWorkout)
     },
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       toast.success("Votre entraînement a été modifié avec succès.");
       queryClient.invalidateQueries({ queryKey: key });
+      queryClient.invalidateQueries({ queryKey: ["workout", variables.id] });
       queryClient.invalidateQueries({ queryKey: calendarKey });
       queryClient.invalidateQueries({ queryKey: dashboardKey });
     },

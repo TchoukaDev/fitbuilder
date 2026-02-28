@@ -1,7 +1,6 @@
 // API Route pour la gestion des plans d'entraînement (création et récupération)
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/libs/mongodb";
-import { ObjectId } from "mongodb";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { ApiError, ApiSuccess } from "@/libs/apiResponse";
 import { requireAuth } from "@/libs/authMiddleware";
@@ -9,10 +8,12 @@ import {
   workoutSchema,
   workoutExercisesSchema,
 } from "@/Features/Workouts/utils/workoutSchema";
-import { getWorkouts } from "@/Features/Workouts/utils";
+import { WorkoutRepository } from "@/repositories/WorkoutRepository";
+import { WorkoutService } from "@/services/WorkoutService";
+import { DuplicateError } from "@/libs/ServicesErrors";
 
 // POST - Créer un nouveau plan d'entraînement
-export async function POST(req) {
+export async function POST(req: NextRequest) {
   // Vérification de l'authentification
   const auth = await requireAuth(req);
   if (auth instanceof NextResponse) return auth;
@@ -51,46 +52,13 @@ export async function POST(req) {
     );
   }
 
-  const db = await connectDB();
 
   try {
-    // Vérifier l'unicité du nom
-    const user = await db
-      .collection("users")
-      .findOne({ _id: new ObjectId(userId) });
+    const db = await connectDB();
+    const workoutRepository = new WorkoutRepository(db)
+    const workoutService = new WorkoutService(workoutRepository)
 
-    const nameExists = user?.workouts?.some(
-      (w) => w.name.toLowerCase() === name.toLowerCase(),
-    );
-
-    if (nameExists) {
-      return NextResponse.json(ApiError.DUPLICATE("Un plan avec ce nom"), {
-        status: 409,
-      });
-    }
-
-    // Création du plan
-    const workoutId = new ObjectId();
-    await db.collection("users").updateOne(
-      { _id: new ObjectId(userId) },
-      {
-        $push: {
-          workouts: {
-            _id: workoutId,
-            name,
-            description,
-            category,
-            estimatedDuration,
-            exercises,
-            timesUsed: 0,
-            lastUsedAt: null,
-            createdAt: new Date(),
-            updateAt: new Date(),
-          },
-        },
-      },
-      { upsert: true },
-    );
+    const workout = await workoutService.create(userId, { name, description, category, estimatedDuration, exercises })
 
     revalidatePath("/workouts");
     revalidatePath("/dashboard");
@@ -99,18 +67,18 @@ export async function POST(req) {
     return NextResponse.json(
       {
         ...ApiSuccess.CREATED("Plan d'entraînement"),
-        workoutId: workoutId.toString(),
+        workoutId: workout.id,
       },
       { status: 201 },
     );
   } catch (error) {
-    console.error("Erreur création workout:", error);
+    if (error instanceof DuplicateError) return NextResponse.json(ApiError.DUPLICATE("Nom de workout"), { status: 409 })
     return NextResponse.json(ApiError.SERVER_ERROR, { status: 500 });
   }
 }
 
 // GET - Récupérer tous les plans d'entraînement de l'utilisateur
-export async function GET(req) {
+export async function GET(req: NextRequest) {
   // Vérification de l'authentification
   const auth = await requireAuth(req);
   if (auth instanceof NextResponse) return auth;
@@ -118,8 +86,11 @@ export async function GET(req) {
   const { userId } = auth;
 
   try {
-    // ✅ Utilise le helper qui retourne Workout[] avec id (pas _id)
-    const workouts = await getWorkouts(userId);
+    const db = await connectDB()
+    const workoutRepository = new WorkoutRepository(db)
+    const workoutService = new WorkoutService(workoutRepository)
+
+    const workouts = await workoutService.getAll(userId)
     return NextResponse.json(workouts, { status: 200 });
   } catch (error) {
     console.error("Erreur récupération workouts:", error);

@@ -5,7 +5,7 @@ import { Button, DeleteConfirmModal } from "@/Global/components";
 import { WorkoutDeleteButton, StartWorkoutButton } from "..";
 import Link from "next/link";
 import { Calendar, Clock, Dumbbell, Edit, ArrowLeft } from "lucide-react";
-import { useDeleteWorkout } from "../../hooks";
+import { useDeleteWorkout, useWorkoutById } from "../../hooks";
 import { useModals } from "@/Providers/Modals";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
@@ -15,20 +15,20 @@ import { Workout } from "@/types/workout";
 
 type WorkoutDetailPageClientProps = {
   userId: string;
-  workout: Workout;
+  initialWorkout: Workout;
   workoutId: string;
 }
 
 export default function WorkoutDetailPageClient({
   userId,
-  workout,
+  initialWorkout,
   workoutId,
 }: WorkoutDetailPageClientProps) {
+  const { data: workout } = useWorkoutById(userId, workoutId, initialWorkout)
   const { mutate: deleteWorkout, isPending: isDeleting } =
     useDeleteWorkout(userId);
   const { isOpen, closeModal } = useModals();
   const router = useRouter();
-  console.log(workout);
   const handleDelete = async () => {
     deleteWorkout(workoutId, {
       onSuccess: () => {

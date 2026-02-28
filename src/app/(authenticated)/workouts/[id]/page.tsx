@@ -26,7 +26,7 @@ export default async function WorkoutDetailPage({ params }: { params: Promise<{ 
   return (
     <>
       <WorkoutDetailPageClient
-        workout={serializedWorkout}
+        initialWorkout={serializedWorkout}
         workoutId={workoutId}
         userId={userId}
       />
