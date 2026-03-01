@@ -6,6 +6,8 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import "moment/locale/fr";
 import "./calendar.css";
 import { Button, DeleteConfirmModal } from "@/Global/components";
+import { useModals } from "@/Providers/Modals";
+import { useCancelPlannedSession } from "@/Features/Sessions/hooks/useQuerySessions";
 import {
   useCalendarStates,
   useCalendarHandlers,
@@ -76,6 +78,9 @@ export default function CalendarComponent({ userId, initialEvents }: CalendarCom
     isOpen,
   } = useCalendarHandlers({ userId, setCurrentDate });
 
+  const { closeModal } = useModals();
+  const cancelInProgress = useCancelPlannedSession(userId);
+
   return (
     <>
       {" "}
@@ -124,6 +129,26 @@ export default function CalendarComponent({ userId, initialEvents }: CalendarCom
             isLoading={isDeleting}
             message={message}
             title={title}
+          />
+        )}
+        {/* Modale de confirmation d'annulation d'une séance en cours */}
+        {isOpen("cancelInProgressSession") && (
+          <DeleteConfirmModal
+            title="Annuler la séance en cours"
+            message="Les données de la séance (exercices effectués, séries) seront réinitialisées. La séance repassera au statut Planifiée."
+            confirmMessage="Annuler la séance"
+            cancelMessage="Continuer"
+            modalToClose="cancelInProgressSession"
+            onConfirm={() => {
+              const { sessionId } = getModalData<{ sessionId: string }>("cancelInProgressSession")!;
+              cancelInProgress.mutate(sessionId, {
+                onSuccess: () => {
+                  closeModal("cancelInProgressSession");
+                  closeModal("eventDetails");
+                },
+              });
+            }}
+            isLoading={cancelInProgress.isPending}
           />
         )}
         <div className="calendar-wrapper" onMouseEnter={prefetchWorkouts}>

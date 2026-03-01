@@ -195,7 +195,7 @@ export class StatsService {
         const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
         const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
         const sessionsThisMonth = sessions.filter((s) => {
-            const date = new Date((s.completedDate ?? s.scheduledDate) as Date);
+            const date = new Date(s.completedDate ?? s.scheduledDate);
             return date >= startOfMonth && date <= endOfMonth;
         });
 
@@ -219,8 +219,8 @@ export class StatsService {
         };
 
         return {
-            nextSessions: nextSessions.map((s) => this.transformSession(s as WorkoutSessionDB)),
-            todaySessions: todaySessions.map((s) => this.transformSession(s as WorkoutSessionDB)),
+            nextSessions: nextSessions.map((s) => this.transformSession(s as unknown as WorkoutSessionDB)),
+            todaySessions: todaySessions.map((s) => this.transformSession(s as unknown as WorkoutSessionDB)),
             counts,
             favoriteWorkout: favoriteWorkout ? this.transformWorkout(favoriteWorkout) : null,
             totalDuration,

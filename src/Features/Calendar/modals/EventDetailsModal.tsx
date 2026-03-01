@@ -6,7 +6,7 @@ import { Button, ModalLayout } from "@/Global/components";
 import { useStartPlannedSession } from "@/Features/Sessions/hooks/useQuerySessions";
 import { createPortal } from "react-dom";
 import StatusBadge from "../components/StatusBadge";
-import { Play, Edit, Trash2 } from "lucide-react";
+import { Play, Edit, Trash2, X } from "lucide-react";
 import { CalendarEvent } from "@/types/calendarEvent";
 
 interface EventDetailsModalProps {
@@ -24,7 +24,7 @@ export default function EventDetailsModal({ event, userId, handleDeleteEvent, ha
     month: "long",
     day: "numeric",
   });
-  const { closeModal } = useModals();
+  const { closeModal, openModal } = useModals();
   const router = useRouter();
 
   const startSession = useStartPlannedSession(userId);
@@ -84,15 +84,24 @@ export default function EventDetailsModal({ event, userId, handleDeleteEvent, ha
           </div>
         )}
 
-        {/* IN-PROGRESS : Reprendre */}
+        {/* IN-PROGRESS : Reprendre + Annuler */}
         {session.status === "in-progress" && (
-          <Button
-            onClick={() => router.push(`/sessions/${session.id}`)}
-            className="btn-primary"
-          >
-            <Play size={20} />
-            Reprendre
-          </Button>
+          <div className="flex flex-col items-center gap-3">
+            <Button
+              onClick={() => router.push(`/sessions/${session.id}`)}
+              className="btn-primary"
+            >
+              <Play size={20} />
+              Reprendre
+            </Button>
+            <Button
+              close
+              onClick={() => openModal("cancelInProgressSession", { sessionId: session.id })}
+            >
+              <X size={20} />
+              Annuler la séance
+            </Button>
+          </div>
         )}
 
         {/* COMPLETED : Voir détails */}
