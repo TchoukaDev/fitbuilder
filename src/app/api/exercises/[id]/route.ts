@@ -1,32 +1,25 @@
 // API Route pour les opérations sur un exercice spécifique (modification et suppression)
 import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/libs/mongodb";
-import { ObjectId } from "mongodb";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { ApiError, ApiSuccess } from "@/libs/apiResponse";
 import { requireAuth } from "@/libs/authMiddleware";
 import { exerciseSchema } from "@/Features/Exercises/utils/ExerciseSchema";
-import { ExerciseDB } from "@/types/exercise";
-import { UserDocument } from "@/types/user";
+import { ExerciseRepository } from "@/repositories/ExerciseRepository";
+import { ExerciseService } from "@/services/ExerciseService";
+import { DuplicateError, ForbiddenError, NotFoundError } from "@/libs/ServicesErrors";
 
 // PATCH - Modifier un exercice (public si admin, privé si utilisateur)
-export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  // Vérification de l'authentification
-  const auth = await requireAuth(request);
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const auth = await requireAuth(req);
   if (auth instanceof NextResponse) return auth;
 
   const { userId, userRole } = auth;
-  const resolvedParams = await params;
-  const { id } = resolvedParams;
-  const { name, muscle, equipment, description } = await request.json();
+  const isAdmin = userRole === "ADMIN";
+  const { id: exerciseId } = await params;
 
-  // Validation des champs obligatoires
-  const result = exerciseSchema.safeParse({
-    name,
-    muscle,
-    equipment,
-    description,
-  });
+  const body = await req.json();
+  const result = exerciseSchema.safeParse(body);
   if (!result.success) {
     return NextResponse.json(
       ApiError.MISSING_FIELDS(["nom", "muscle", "matériel nécessaire"]),
@@ -34,132 +27,61 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     );
   }
 
+  const { name, muscle, equipment, description } = result.data;
+
   try {
     const db = await connectDB();
+    const service = new ExerciseService(new ExerciseRepository(db));
 
-    // Vérifier si c'est un exercice public
-    const publicExercise = await db
-      .collection<ExerciseDB>("exercises")
-      .findOne({ _id: new ObjectId(id) });
+    const exercise = await service.update(userId, exerciseId, isAdmin, {
+      name,
+      muscle,
+      equipment,
+      description: description ?? null,
+    });
 
-    if (publicExercise) {
-      // C'est un exercice public → Admin seulement
-      if (userRole !== "ADMIN") {
-        return NextResponse.json(
-          { error: "Seul l'admin peut modifier les exercices publics" },
-          { status: 403 },
-        );
-      }
-
-      await db
-        .collection<ExerciseDB>("exercises")
-        .updateOne(
-          { _id: new ObjectId(id) },
-          { $set: { name, muscle, equipment, description } },
-        );
-
-      revalidatePath("/exercices");
-      revalidatePath(`/exercises/${id}`);
-      revalidateTag("exercises");
-      return NextResponse.json(ApiSuccess.UPDATED("Exercice public"));
-    }
-
-    // Exercice privé: modifier dans le tableau de l'utilisateur
-    const result = await db.collection<UserDocument>("users").updateOne(
-      {
-        _id: new ObjectId(userId),
-        "exercises._id": new ObjectId(id),
-      },
-      {
-        $set: {
-          "exercises.$.name": name,
-          "exercises.$.muscle": muscle,
-          "exercises.$.equipment": equipment,
-          "exercises.$.description": description,
-        },
-      },
-    );
-
-    if (result.matchedCount === 0) {
-      return NextResponse.json(
-        { error: "Exercice non trouvé ou non autorisé" },
-        { status: 404 },
-      );
-    }
-
-    revalidatePath("/exercices");
-    revalidatePath(`/exercises/${id}`);
+    revalidatePath("/exercises");
+    revalidatePath(`/exercises/${exerciseId}`);
+    revalidatePath("/admin");
     revalidateTag("exercises");
-    return NextResponse.json(ApiSuccess.UPDATED("Exercice privé"));
+
+    return NextResponse.json(
+      { ...ApiSuccess.UPDATED("Exercice"), exercise },
+      { status: 200 },
+    );
   } catch (error) {
-    console.error("Erreur modification exercice:", error);
+    if (error instanceof ForbiddenError) return NextResponse.json(ApiError.FORBIDDEN, { status: 403 });
+    if (error instanceof NotFoundError) return NextResponse.json(ApiError.NOT_FOUND("Exercice"), { status: 404 });
+    if (error instanceof DuplicateError) return NextResponse.json(ApiError.DUPLICATE("Ce nom d'exercice"), { status: 409 });
     return NextResponse.json(ApiError.SERVER_ERROR, { status: 500 });
   }
 }
 
 // DELETE - Supprimer un exercice (public si admin, privé si utilisateur)
-export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  // Vérification de l'authentification
-  const auth = await requireAuth(request);
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const auth = await requireAuth(req);
   if (auth instanceof NextResponse) return auth;
 
   const { userId, userRole } = auth;
-
-  const resolvedParams = await params;
-  const { id } = resolvedParams;
+  const isAdmin = userRole === "ADMIN";
+  const { id: exerciseId } = await params;
 
   try {
     const db = await connectDB();
+    const service = new ExerciseService(new ExerciseRepository(db));
 
-    // Vérifier si c'est un exercice public
-    const publicExercise = await db
-      .collection<ExerciseDB>("exercises")
-      .findOne({ _id: new ObjectId(id) });
+    await service.delete(userId, exerciseId, isAdmin);
 
-    if (publicExercise) {
-      // C'est un exercice public → Admin seulement
-      if (userRole !== "ADMIN") {
-        return NextResponse.json(
-          { error: "Seul l'admin peut supprimer les exercices publics" },
-          { status: 403 },
-        );
-      }
-
-      await db.collection<ExerciseDB>("exercises").deleteOne({ _id: new ObjectId(id) });
-
-      revalidatePath("/exercices");
-      revalidatePath("/dashboard");
-      revalidatePath("/workouts/create");
-      revalidateTag("exercises");
-
-      return NextResponse.json(ApiSuccess.DELETED("Exercice public"));
-    }
-
-    // Exercice privé: retirer du tableau de l'utilisateur
-    const result = await db
-      .collection<UserDocument>("users")
-      .updateOne(
-        { _id: new ObjectId(userId) },
-        { $pull: { exercises: { _id: new ObjectId(id) } } },
-      );
-
-    if (result.matchedCount === 0) {
-      return NextResponse.json(
-        { error: "Exercice non trouvé" },
-        { status: 404 },
-      );
-    }
-    revalidatePath("/exercices");
-    revalidatePath("/admin");
+    revalidatePath("/exercises");
     revalidatePath("/dashboard");
+    revalidatePath("/admin");
     revalidatePath("/workouts/create");
     revalidateTag("exercises");
 
-    return NextResponse.json(ApiSuccess.DELETED("Exercice privé"), {
-      status: 200,
-    });
+    return NextResponse.json(ApiSuccess.DELETED("Exercice"), { status: 200 });
   } catch (error) {
-    console.error("Erreur suppression exercice:", error);
+    if (error instanceof ForbiddenError) return NextResponse.json(ApiError.FORBIDDEN, { status: 403 });
+    if (error instanceof NotFoundError) return NextResponse.json(ApiError.NOT_FOUND("Exercice"), { status: 404 });
     return NextResponse.json(ApiError.SERVER_ERROR, { status: 500 });
   }
 }

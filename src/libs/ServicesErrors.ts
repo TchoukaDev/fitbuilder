@@ -39,7 +39,14 @@ export class ValidationError extends Error {
     constructor(message: string = "Données invalides") {
         super(message)
         this.name = "ValidationError"
-
     }
+}
 
+// Erreur lancée quand une action est refusée pour manque de permissions (ex: user qui tente de modifier un exercice public)
+// → la route renvoie un status 403 Forbidden
+export class ForbiddenError extends Error {
+    constructor(message: string = "Action non autorisée") {
+        super(message)
+        this.name = "ForbiddenError"
+    }
 }
