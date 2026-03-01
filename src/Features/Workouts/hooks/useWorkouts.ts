@@ -11,7 +11,7 @@ import { useCallback } from "react";
 import { WorkoutExercisesSchemaType, WorkoutSchemaType } from "../utils/workoutSchema";
 import { Workout } from "@/types/workout";
 import { ApiErrorType } from "@/libs/apiResponse";
-import { init } from "@sentry/nextjs";
+
 
 /**
  * Récupère la liste des workouts pour un utilisateur via React Query.

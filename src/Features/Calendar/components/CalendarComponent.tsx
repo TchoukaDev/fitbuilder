@@ -137,7 +137,7 @@ export default function CalendarComponent({ userId, initialEvents }: CalendarCom
             title="Annuler la séance en cours"
             message="Les données de la séance (exercices effectués, séries) seront réinitialisées. La séance repassera au statut Planifiée."
             confirmMessage="Annuler la séance"
-            cancelMessage="Continuer"
+            cancelMessage="Retour"
             modalToClose="cancelInProgressSession"
             onConfirm={() => {
               const { sessionId } = getModalData<{ sessionId: string }>("cancelInProgressSession")!;
