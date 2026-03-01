@@ -32,7 +32,6 @@ export default function DashboardClient({ userId }: { userId: string }) {
     monthStats,
     totalSets,
     totalReps,
-    completionRate,
     nextSessions,
     todaySessions,
     favoriteWorkout,
@@ -81,8 +80,8 @@ export default function DashboardClient({ userId }: { userId: string }) {
             monthStats?.total > 1 ? "s" : ""
           }`}
           icon="📅"
-          trend={completionRate || 0}
-          trendLabel={`${completionRate || 0}% complétées`}
+          trend={monthStats?.completionRate ?? null}
+          trendLabel={monthStats ? `${monthStats.completionRate}% complétées` : null}
         />{" "}
         <StatCard
           title={`Exercice${counts.exercises > 1 ? "s" : ""}`}

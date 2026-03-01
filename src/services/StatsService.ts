@@ -27,7 +27,6 @@ export type StatsData = {
         completionRate: number;
     };
     totalSets: number;
-    completionRate: number;
 };
 
 export class StatsService {
@@ -229,7 +228,6 @@ export class StatsService {
             streak,
             monthStats,
             totalSets,
-            completionRate,
         };
     }
 }

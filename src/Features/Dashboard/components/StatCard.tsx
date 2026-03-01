@@ -33,7 +33,7 @@ export default function StatCard({
         {subtitle && (
           <p className="text-sm text-center text-gray-500">{subtitle}</p>
         )}
-        {trend && trendLabel && (
+        {trend !== null && trendLabel !== null && (
           <p
             className={`text-xs text-center font-semibold px-2 py-1 rounded ${
               trend >= 70
