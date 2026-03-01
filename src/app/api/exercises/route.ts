@@ -5,7 +5,6 @@ import { revalidatePath, revalidateTag } from "next/cache";
 import { ApiError, ApiSuccess } from "@/libs/apiResponse";
 import { requireAuth } from "@/libs/authMiddleware";
 import { exerciseSchema, ExerciseFormData } from "@/Features/Exercises/utils/ExerciseSchema";
-import { getPublicExercises, getPrivateExercises, getAllExercises } from "@/Features/Exercises/utils";
 import { ExerciseRepository } from "@/repositories/ExerciseRepository";
 import { ExerciseService } from "@/services/ExerciseService";
 import { DuplicateError, ForbiddenError } from "@/libs/ServicesErrors";
@@ -70,17 +69,20 @@ export async function GET(req: NextRequest) {
   const type = searchParams.get("type");
 
   try {
+    const db = await connectDB();
+    const service = new ExerciseService(new ExerciseRepository(db));
+
     if (type === "private") {
-      const exercises = await getPrivateExercises(userId);
+      const exercises = await service.getAllPrivate(userId);
       return NextResponse.json(exercises, { status: 200 });
     }
 
     if (type === "public") {
-      const exercises = await getPublicExercises();
+      const exercises = await service.getAllPublic();
       return NextResponse.json(exercises, { status: 200 });
     }
 
-    const exercises = await getAllExercises(userId);
+    const exercises = await service.getAll(userId);
     return NextResponse.json(exercises, { status: 200 });
   } catch {
     return NextResponse.json(ApiError.SERVER_ERROR, { status: 500 });

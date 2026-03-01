@@ -4,7 +4,6 @@ import connectDB from "@/libs/mongodb";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { ApiError, ApiSuccess } from "@/libs/apiResponse";
 import { requireAuth } from "@/libs/authMiddleware";
-import { getFavoritesExercises } from "@/Features/Exercises/utils";
 import { ExerciseRepository } from "@/repositories/ExerciseRepository";
 import { ExerciseService } from "@/services/ExerciseService";
 import { NotFoundError } from "@/libs/ServicesErrors";
@@ -50,7 +49,9 @@ export async function GET(req: NextRequest) {
   const { userId } = auth;
 
   try {
-    const favoritesExercises = await getFavoritesExercises(userId);
+    const db = await connectDB();
+    const service = new ExerciseService(new ExerciseRepository(db));
+    const favoritesExercises = await service.getFavorites(userId);
     return NextResponse.json({ favoritesExercises }, { status: 200 });
   } catch {
     return NextResponse.json(ApiError.SERVER_ERROR, { status: 500 });

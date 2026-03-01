@@ -7,7 +7,7 @@ export class ExerciseRepository {
 
 
     async findAllPublic(): Promise<Exercise[] | null> {
-        const exercises = await this.db.collection("exercises").find({ isPublic: true }).toArray()
+        const exercises = await this.db.collection("exercises").find({ isPublic: true }).sort({ muscle: 1, name: 1 }).toArray()
         if (!exercises) return null
         return exercises.map(({ _id, ...e }) => ({ ...e, exerciseId: _id.toString() })) as Exercise[] ?? []
     }
@@ -15,7 +15,10 @@ export class ExerciseRepository {
     async findAllPrivate(userId: string): Promise<Exercise[] | null> {
         const user = await this.db.collection("users").findOne({ _id: new ObjectId(userId) })
         if (!user) return null
-        return (user.exercises ?? []).map(({ _id, ...e }: ExerciseDB) => ({ ...e, exerciseId: _id.toString() })) ?? []
+        const sorted = (user.exercises ?? []).sort((a: ExerciseDB, b: ExerciseDB) =>
+            a.muscle.localeCompare(b.muscle) || a.name.localeCompare(b.name)
+        )
+        return sorted.map(({ _id, ...e }: ExerciseDB) => ({ ...e, exerciseId: _id.toString() }))
     }
 
     async findPublicById(exerciseId: string): Promise<Exercise | null> {
