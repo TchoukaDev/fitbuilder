@@ -104,6 +104,7 @@ export function useFinishSession({ userId, sessionId }: UseFinishSessionType) {
       onSettled: () => {
         // ✅ Invalider tous les caches après la mutation
         queryClient.invalidateQueries({ queryKey: ["sessions", userId] });
+        queryClient.invalidateQueries({ queryKey: ["workouts", userId] });
         queryClient.invalidateQueries({ queryKey: calendarKey });
         queryClient.invalidateQueries({ queryKey: dashboardKey });
       },

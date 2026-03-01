@@ -95,6 +95,7 @@ export function useStartNewSession(userId: string) {
     onSuccess: () => {
       toast.success("L'entraînement a démarré, bon courage! 💪");
       queryClient.invalidateQueries({ queryKey: ["sessions", userId] });
+      queryClient.invalidateQueries({ queryKey: ["workouts", userId] });
       queryClient.invalidateQueries({ queryKey: calendarKey });
       queryClient.invalidateQueries({ queryKey: dashboardKey });
     },

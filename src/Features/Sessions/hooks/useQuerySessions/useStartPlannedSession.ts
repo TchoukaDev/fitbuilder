@@ -91,6 +91,7 @@ export function useStartPlannedSession(userId: string) {
     onSuccess: () => {
       toast.success("Séance démarrée !");
       queryClient.invalidateQueries({ queryKey: ["sessions", userId] });
+      queryClient.invalidateQueries({ queryKey: ["workouts", userId] });
       queryClient.invalidateQueries({ queryKey: calendarKey });
       queryClient.invalidateQueries({ queryKey: dashboardKey });
     },

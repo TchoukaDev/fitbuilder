@@ -81,6 +81,7 @@ export function useDeleteSession({ userId }: UseDeleteSessionProps) {
 
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["sessions", userId] });
+      queryClient.invalidateQueries({ queryKey: ["workouts", userId] });
       queryClient.invalidateQueries({ queryKey: calendarKey });
       queryClient.invalidateQueries({ queryKey: dashboardKey });
     },

@@ -97,6 +97,7 @@ export function useCancelPlannedSession(userId: string) {
     onSuccess: () => {
       toast.success("Séance annulée avec succès");
       queryClient.invalidateQueries({ queryKey: ["sessions", userId] });
+      queryClient.invalidateQueries({ queryKey: ["workouts", userId] });
       queryClient.invalidateQueries({ queryKey: calendarKey });
       queryClient.invalidateQueries({ queryKey: dashboardKey });
     },
