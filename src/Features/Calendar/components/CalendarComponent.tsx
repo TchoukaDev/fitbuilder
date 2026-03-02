@@ -7,6 +7,7 @@ import "moment/locale/fr";
 import "./calendar.css";
 import { Button, DeleteConfirmModal } from "@/Global/components";
 import { useModals } from "@/Providers/Modals";
+import MobileCalendar from "./MobileCalendar";
 import { useCancelPlannedSession } from "@/Features/Sessions/hooks/useQuerySessions";
 import {
   useCalendarStates,
@@ -87,14 +88,16 @@ export default function CalendarComponent({ userId, initialEvents }: CalendarCom
       <div className="calendar-container">
         {" "}
         <div className="mb-3 flex flex-col sm:flex-row items-center gap-8 justify-between">
-          <Button
-            onClick={() => openModal("newEvent", { userId })}
-            onMouseEnter={prefetchWorkouts}
-            title="Ajouter un événement"
-            aria-label="Ajouter un événement"
-          >
-            + Ajouter un événement
-          </Button>{" "}
+          {!isMobile && (
+            <Button
+              onClick={() => openModal("newEvent", { userId })}
+              onMouseEnter={prefetchWorkouts}
+              title="Ajouter un événement"
+              aria-label="Ajouter un événement"
+            >
+              + Ajouter un événement
+            </Button>
+          )}
           <StatusFilter selected={statusFilter} onChange={setStatusFilter} />
         </div>
         {/* Modale de création d'événement */}
@@ -157,27 +160,35 @@ export default function CalendarComponent({ userId, initialEvents }: CalendarCom
               <ClipLoader size={60} color="#7557ff" />
               <span className="text-2xl">Chargement du calendrier...</span>
             </div>
+          ) : isMobile ? (
+            <MobileCalendar
+              events={filteredEvents}
+              currentDate={currentDate}
+              onNavigate={handleDateChange}
+              onSelectEvent={handleSelectEvent}
+              onSelectSlot={handleSelectSlot}
+            />
           ) : (
             <Calendar
-              date={currentDate} // Date par défaut affichée au chargement (aujourd'hui)
-              localizer={localizer} // Système de localisation (gestion des dates avec moment)
-              events={filteredEvents} // Événements à afficher dans le calendrier
+              date={currentDate}
+              localizer={localizer}
+              events={filteredEvents}
               selectable={true}
               onNavigate={handleDateChange}
               onSelectSlot={handleSelectSlot}
               onSelectEvent={handleSelectEvent}
-              startAccessor="start" // Clé pour accéder à la date de début dans les objets événements
-              endAccessor="end" // Clé pour accéder à la date de fin dans les objets événements
-              view={currentView} // Vue actuellement affichée (contrôlée par l'état)
-              onView={setCurrentView} // Callback appelé quand l'utilisateur change de vue (met à jour l'état)
+              startAccessor="start"
+              endAccessor="end"
+              view={currentView}
+              onView={setCurrentView}
               views={views}
-              formats={formats} // Objet de formats personnalisés défini plus haut
+              formats={formats}
               style={{ height: "100%" }}
               messages={messages}
               eventPropGetter={eventPropGetter}
               min={new Date(2024, 0, 1, 7, 0, 0)}
-              max={new Date(2024, 0, 1, 21, 0, 0)} // 20h
-              length={30} // Nombre de jours affichés dans la vue Agenda (30 jours à partir d'aujourd'hui)
+              max={new Date(2024, 0, 1, 21, 0, 0)}
+              length={30}
             />
           )}
         </div>
