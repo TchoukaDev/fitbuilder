@@ -57,115 +57,101 @@ export default function RestTimerModal({
       {/* ─────────────────────────────────────────────────── */}
 
 
-      <div className="space-y-6">
-        {/* ⏰ Grand affichage du temps */}
-        <div className="text-center">
+      <div className="space-y-4">
+        {/* ⏰ Affichage du temps */}
+        <div className="text-center py-2">
           <div
-            className={`text-7xl font-bold transition-colors ${remainingTime <= 10 && remainingTime > 0
-              ? "text-red-600 animate-pulse" // ⚠️ Alerte si moins de 10s
-              : remainingTime === 0
-                ? "text-green-600" // ✅ Vert si terminé
+            className={`text-7xl font-bold tabular-nums tracking-tight transition-colors ${
+              remainingTime <= 10 && remainingTime > 0
+                ? "text-red-600 animate-pulse"
+                : remainingTime === 0
+                ? "text-green-600"
                 : "text-primary-900"
-              }`}
+            }`}
           >
             {formatTime(remainingTime)}
           </div>
-          <p className="text-sm text-gray-600 mt-2">
+          <p className="text-sm text-gray-500 mt-2">
             {remainingTime === 0
               ? "✅ Repos terminé !"
               : isRunning
-                ? "⏳ En cours..."
-                : "⏸️ En pause"}
+              ? "⏳ En cours..."
+              : "⏸️ En pause"}
           </p>
         </div>
 
-        {/* 📊 Barre de progression */}
-        <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+        {/* Barre de progression */}
+        <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
           <div
             className="bg-primary-600 h-full transition-all duration-1000 ease-linear"
             style={{ width: `${percentage}%` }}
           />
         </div>
 
-        {/* ─────────────────────────────────────────────────── */}
-        {/* CONTRÔLES PRINCIPAUX */}
-        {/* ─────────────────────────────────────────────────── */}
-        <div className="flex justify-center gap-4">
-          {/* Bouton Play/Pause */}
+        {/* Contrôles principaux — grille 2 colonnes */}
+        <div className="grid grid-cols-2 gap-3">
           {!isRunning ? (
-            <Button onClick={handleStart} className="flex items-center gap-2">
+            <Button full onClick={handleStart}>
               <Play size={20} />
               {remainingTime === customTime ? "Démarrer" : "Reprendre"}
             </Button>
           ) : (
-            <Button onClick={handlePause} className="flex items-center gap-2">
+            <Button full onClick={handlePause}>
               <Pause size={20} />
               Pause
             </Button>
           )}
-
-          {/* Bouton Skip */}
           <Button
+            full
             variant="close"
             onClick={handleSkip}
-            className="flex items-center gap-2 bg-gray-600 hover:bg-gray-700"
+            className="bg-gray-600 hover:bg-gray-700"
           >
             <SkipForward size={20} />
             Passer
           </Button>
         </div>
 
-        {/* ─────────────────────────────────────────────────── */}
-        {/* MODIFICATION DU TEMPS */}
-        {/* ─────────────────────────────────────────────────── */}
+        {/* Préréglages + réinitialiser */}
         <div className="border-t pt-4">
-          <p className="text-sm text-gray-600 mb-2">
-            Modifier le temps de repos (secondes) :
-          </p>
-          <div className="flex gap-2">
-            <input
-              type="number"
-              onKeyDown={handleKeyDown}
-              min={10}
-              value={customTime || ""}
-              onChange={(e) => setCustomTime(parseInt(e.target.value) || 0)}
-              className="input flex-1 p-2"
-            />
-            <Button onClick={() => handleApplyCustomTime(customTime)}>Appliquer</Button>
-          </div>
-
-          {/* Boutons rapides */}
-          <div className="flex justify-center gap-2 mt-2">
-            <button
-              onClick={() => {
-                handleApplyCustomTime(60);
-              }}
-              className="text-sm px-3 py-2 bg-gray-200 hover:bg-gray-300 rounded"
-            >
-              1 min
-            </button>
-            <button
-              onClick={() => {
-                handleApplyCustomTime(90);
-              }}
-              className="text-sm px-3 py-2 bg-gray-200 hover:bg-gray-300 rounded"
-            >
-              1:30
-            </button>
-            <button
-              onClick={() => {
-                handleApplyCustomTime(120);
-              }}
-              className="text-sm px-3 py-2 bg-gray-200 hover:bg-gray-300 rounded"
-            >
-              2 min
-            </button>
+          <p className="text-xs text-gray-400 text-center mb-3">Changer la durée</p>
+          <div className="grid grid-cols-4 gap-2">
+            {[
+              { label: "1 min", value: 60 },
+              { label: "1:30", value: 90 },
+              { label: "2 min", value: 120 },
+            ].map(({ label, value }) => (
+              <button
+                key={value}
+                onClick={() => handleApplyCustomTime(value)}
+                className="py-3 rounded-lg bg-gray-100 hover:bg-gray-200 text-sm font-medium transition-colors"
+              >
+                {label}
+              </button>
+            ))}
             <button
               onClick={handleReset}
-              className="text-sm px-3 py-2 bg-gray-200 hover:bg-gray-300 rounded"
+              className="py-3 rounded-lg bg-gray-100 hover:bg-gray-200 text-sm font-medium transition-colors"
             >
-              Réinitialiser
+              ↺
             </button>
+          </div>
+
+          {/* Durée personnalisée */}
+          <div className="flex gap-2 mt-3">
+            <input
+              type="number"
+              inputMode="numeric"
+              onKeyDown={handleKeyDown}
+              min={10}
+              placeholder="Secondes"
+              value={customTime || ""}
+              onChange={(e) => setCustomTime(parseInt(e.target.value) || 0)}
+              className="input flex-1 p-2 pt-2"
+            />
+            <Button width="w-auto" onClick={() => handleApplyCustomTime(customTime)}>
+              Appliquer
+            </Button>
           </div>
         </div>
       </div>
