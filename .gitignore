@@ -45,6 +45,7 @@ next-env.d.ts
 
 # other
 todo.txt
+docs/mobile-first.md
 .mkv
 .docx
 # Sentry Config File
