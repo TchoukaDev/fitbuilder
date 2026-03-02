@@ -66,7 +66,7 @@ export default function ExercisePageList({
 
 
   return (
-    <div className="overflow-hidden">
+    <div className="overflow-hidden px-1">
       {/* Onglets de navigation */}
       <ExerciseTabs
         activeTab={activeTab}

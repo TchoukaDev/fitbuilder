@@ -27,7 +27,7 @@ export default function ExerciseCard({
 
   return (
     <div className="border border-gray-300 p-4 md:p-6 rounded-lg bg-white shadow-sm hover:shadow-md transition">
-      <div className="flex flex-col md:flex-row justify-between items-center gap-6 md:gap-3">
+      <div className="flex flex-col md:flex-row justify-between items-center gap-4 md:gap-3">
         <div className="flex justify-between gap-2 flex-1 items-center">
           {/* Informations de l'exercice */}
           <div className="flex-1">

@@ -15,11 +15,11 @@ export default function ExerciseMuscleFilters({
   }
 
   return (
-    <div className="flex gap-2.5 mb-5 flex-wrap">
+    <div className="flex gap-2.5 mb-5 overflow-x-auto px-1">
       {/* Bouton "Tous" */}
       <button
         onClick={() => onMuscleChange("all")}
-        className={`py-2 px-4 border-none rounded-md cursor-pointer ${
+        className={`py-3 px-4 border-none rounded-md cursor-pointer shrink-0 ${
           selectedMuscle === "all"
             ? "bg-primary-500 text-white"
             : "bg-primary-50 text-primary-800"
@@ -33,7 +33,7 @@ export default function ExerciseMuscleFilters({
         <button
           key={muscle}
           onClick={() => onMuscleChange(muscle)}
-          className={`py-2 px-4 border-none rounded-md cursor-pointer ${
+          className={`py-3 px-4 border-none rounded-md cursor-pointer shrink-0 ${
             selectedMuscle === muscle
               ? "bg-primary-500 text-white"
               : "bg-primary-50 text-primary-800"
