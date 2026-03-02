@@ -31,7 +31,7 @@ export default function WorkoutFormActions({
           {/* Bouton Annuler */}
           <Button
             type="button"
-            close
+            variant="close"
             onClick={() => openModal("confirmRouterBack")}
             aria-label="Annuler"
           >

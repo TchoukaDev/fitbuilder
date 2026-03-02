@@ -56,7 +56,7 @@ export default function ExerciseDetailCard({ exercise }: { exercise: SessionExer
           <h3 className="text-lg font-bold text-primary-900">
             {exercise.exerciseName}
           </h3>
-          <div className="flex gap-3 text-sm text-gray-600 mt-1">
+          <div className="flex flex-wrap gap-x-3 gap-y-1 text-sm text-gray-600 mt-1">
             <span className="flex items-center gap-1">
               <TrendingUp size={14} />
               {exercise.actualSets?.length || 0} séries
@@ -111,7 +111,7 @@ export default function ExerciseDetailCard({ exercise }: { exercise: SessionExer
       </div>
 
       {/* Tableau des séries */}
-      <div className="overflow-x-auto md:p-4">
+      <div className="overflow-x-auto p-2 md:p-4">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-gray-200">

@@ -70,29 +70,37 @@ export default function WorkoutCard({ workout, userId }: WorkoutCardProps) {
       </div>
 
       {/* Actions */}
-      <div className="flex gap-2 pt-3 border-t flex-wrap justify-center md:justify-start  border-gray-200">
-        <div className="md:flex-1">
-          <Button
-            asChild
-            title="Voir les détails"
-            aria-label="Voir les détails de l'entraînement"
-            width="w-12 md:w-fit"
-          >
-            <Link href={`/workouts/${workout.id}`}>
-              <Search />
-              <span className="hidden md:inline">Voir les détails</span>
+      <div className="pt-3 border-t border-gray-200">
+        {/* Mobile */}
+        <div className="md:hidden space-y-2">
+          <StartWorkoutButton userId={userId} workout={workout} full />
+          <div className="flex gap-2 justify-around">
+            <Button asChild variant="outline" title="Voir les détails" aria-label="Voir les détails de l'entraînement" width="w-12">
+              <Link href={`/workouts/${workout.id}`}><Search /></Link>
+            </Button>
+            <Button width="w-12" asChild variant="edit">
+              <Link href={`/workouts/${workout.id}/edit`}><Edit size={18} /></Link>
+            </Button>
+            <WorkoutDeleteButton workoutId={workout.id} sm />
+          </div>
+        </div>
+        {/* Desktop */}
+        <div className="hidden md:flex gap-2 flex-wrap items-center justify-start">
+          <StartWorkoutButton userId={userId} workout={workout} />
+          <div className="flex-1">
+            <Button asChild variant="outline" title="Voir les détails" aria-label="Voir les détails de l'entraînement" width="w-fit">
+              <Link href={`/workouts/${workout.id}`}>
+                <Search /><span>Voir les détails</span>
+              </Link>
+            </Button>
+          </div>
+          <Button width="w-auto" asChild variant="edit">
+            <Link href={`/workouts/${workout.id}/edit`}>
+              <Edit size={18} /><span>Modifier</span>
             </Link>
           </Button>
+          <WorkoutDeleteButton workoutId={workout.id} sm />
         </div>
-        <StartWorkoutButton userId={userId} workout={workout} />
-        <Button width="w-12 md:w-auto" asChild edit>
-          <Link href={`/workouts/${workout.id}/edit`}>
-            <Edit size={18} />
-            <span className="hidden md:inline">Modifier</span>
-          </Link>
-        </Button>
-
-        <WorkoutDeleteButton workoutId={workout.id} sm />
       </div>
     </div>
   );

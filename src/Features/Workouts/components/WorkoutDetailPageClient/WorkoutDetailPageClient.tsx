@@ -109,7 +109,7 @@ export default function WorkoutDetailPageClient({
 
             {/* Modifier */}
 
-            <Button asChild width="w-12 md:w-auto" edit>
+            <Button asChild width="w-12 md:w-auto" variant="edit">
               <Link href={`/workouts/${workout.id}/edit`}>
                 <Edit size={18} />
                 <span className="hidden md:inline">Modifier</span>

@@ -169,7 +169,7 @@ export default function WorkoutExerciseForm({ exercise, onSubmit, onClose, onClo
       <div className="modalFooter">
         <Button
           type="button"
-          close
+          variant="close"
           onClick={onClose}
         >
           {onCloseLabel}

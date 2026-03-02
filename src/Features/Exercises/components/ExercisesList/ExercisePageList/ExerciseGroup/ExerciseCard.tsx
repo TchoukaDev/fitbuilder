@@ -63,7 +63,7 @@ export default function ExerciseCard({
         {activeTab === "favorites" && (
           <div className="flex">
             <LoaderButton
-              close
+              variant="close"
               isLoading={isToggling}
               loadingText="Retrait en cours"
               type="button"
@@ -82,7 +82,7 @@ export default function ExerciseCard({
         {activeTab === "mine" && (
           <div className="flex gap-2">
             <Button onClick={onEdit}>Modifier</Button>
-            <Button onClick={onDelete} close>
+            <Button onClick={onDelete} variant="close">
               Supprimer
             </Button>
           </div>

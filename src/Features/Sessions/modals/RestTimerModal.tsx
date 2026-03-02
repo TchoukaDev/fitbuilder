@@ -118,7 +118,7 @@ export default function RestTimerModal({
 
           {/* Bouton Skip */}
           <Button
-            close
+            variant="close"
             onClick={handleSkip}
             className="flex items-center gap-2 bg-gray-600 hover:bg-gray-700"
           >

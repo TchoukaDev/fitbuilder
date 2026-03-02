@@ -101,7 +101,7 @@ export default function SessionDetailClient({ session, userId }: SessionDetailCl
       {/* ─────────────────────────────────────────────────── */}
       {/* HEADER */}
       {/* ─────────────────────────────────────────────────── */}
-      <div className="mb-6">
+      <div className="mb-6 px-1">
         {/* Bouton retour */}
         <Link
           href="/sessions"
@@ -111,7 +111,7 @@ export default function SessionDetailClient({ session, userId }: SessionDetailCl
           <span>Retour aux séances</span>
         </Link>
 
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div className="bg-white rounded-lg shadow-md p-4 lg:p-6 mb-6">
           <div className="flex flex-col md:flex-row justify-between items-center mb-4 md:-mb-4">
             <h1>{session.workoutName}</h1>
             {/* Badge terminé */}
@@ -138,14 +138,12 @@ export default function SessionDetailClient({ session, userId }: SessionDetailCl
             {/* Actions */}
             <div className="flex gap-2 self-center">
               <Button
-                width="w-12 md:w-auto"
                 onClick={() => openModal("deleteConfirm")}
-                close
-                title="Supprimer"
+                variant="close"
                 aria-label="Supprimer la séance"
               >
-                <Trash2 size={20} />{" "}
-                <span className="hidden md:block">Supprimer la séance</span>
+                <Trash2 size={20} />
+                Supprimer la séance
               </Button>
             </div>
           </div>

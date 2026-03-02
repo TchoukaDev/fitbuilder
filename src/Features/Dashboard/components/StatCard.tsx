@@ -18,7 +18,7 @@ export default function StatCard({
   return (
     <div
       className={`
-      bg-white rounded-lg shadow-md p-6 border-2 transition-all hover:shadow-lg border-gray-200 hover:border-gray-300`}
+      bg-white rounded-lg shadow-md p-4 lg:p-6 border-2 transition-all hover:shadow-lg border-gray-200 hover:border-gray-300`}
     >
       {/* Header avec icône */}
       <div className="flex flex-col items-center justify-evenly gap-2 h-full">

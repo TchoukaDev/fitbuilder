@@ -76,7 +76,7 @@ export default function IncompleteExerciseModal({
 
       {/* Boutons */}
       <div className="modalFooter flex-col">
-        <Button close onClick={onCancel}>
+        <Button variant="close" onClick={onCancel}>
           Retour (compléter les infos)
         </Button>
         <Button onClick={onConfirm}>Terminer quand même</Button>

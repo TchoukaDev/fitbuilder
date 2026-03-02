@@ -17,7 +17,7 @@ export default function WorkoutDeleteButton({ workoutId, sm }: WorkoutDeleteButt
     <>
       <Button
         width={sm ? "w-12 md:w-auto" : null}
-        close
+        variant="close"
         onClick={() => openModal("deleteConfirm", { id: workoutId })}
         title="Supprimer"
         aria-label="Supprimer l'entraînement"

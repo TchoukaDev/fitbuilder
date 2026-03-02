@@ -16,7 +16,7 @@ export default function RestTimerFallback() {
                 <p className="text-gray-600">
                     Le timer a rencontré un problème.
                 </p>
-                <Button close className="mt-4" onClick={() => closeModal("restTimer")}>
+                <Button variant="close" className="mt-4" onClick={() => closeModal("restTimer")}>
                     Fermer
                 </Button>
             </div>

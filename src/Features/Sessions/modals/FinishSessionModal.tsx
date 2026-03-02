@@ -76,7 +76,7 @@ export default function FinishSessionModal({
         <Button
           onClick={() => closeModal("finishSession")}
           disabled={isLoading}
-          close
+          variant="close"
         >
           Annuler
         </Button>

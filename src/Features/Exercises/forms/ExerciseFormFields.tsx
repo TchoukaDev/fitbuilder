@@ -123,7 +123,7 @@ export default function ExerciseFormFields({
       <div className="space-y-2">
         <div className="modalFooter">
           <Button
-            close
+            variant="close"
             onClick={onClose}
             type="button"
             disabled={isPending || isSubmitting}

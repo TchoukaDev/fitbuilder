@@ -116,7 +116,7 @@ export default function SessionsList({
           </p>
           <button
             onClick={handleResetFilters}
-            className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition"
+            className="px-4 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition"
           >
             Réinitialiser les filtres
           </button>

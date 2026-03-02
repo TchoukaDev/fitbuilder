@@ -39,7 +39,7 @@ export default function WorkoutFormExercisesList({
             Ajouter un exercice
           </Button>
           {exercisesStore.length > 0 && (
-            <Button type="button" onClick={() => { openModal("clearExercises") }} close>
+            <Button type="button" onClick={() => { openModal("clearExercises") }} variant="close">
               <Trash size={20} />
               Vider la liste
             </Button>

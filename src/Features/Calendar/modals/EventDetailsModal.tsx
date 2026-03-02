@@ -69,11 +69,11 @@ export default function EventDetailsModal({ event, userId, handleDeleteEvent, ha
         {/* PLANNED : Démarrer, Modifier, Supprimer */}
         {session.status === "planned" && (
           <div className="flex flex-col items-center gap-3">
-            <Button edit onClick={() => handleEditEvent(event)}>
+            <Button variant="edit" onClick={() => handleEditEvent(event)}>
               <Edit size={20} />
               Modifier
             </Button>
-            <Button close onClick={() => handleDeleteEvent(event)}>
+            <Button variant="close" onClick={() => handleDeleteEvent(event)}>
               <Trash2 size={20} />
               Supprimer
             </Button>
@@ -95,7 +95,7 @@ export default function EventDetailsModal({ event, userId, handleDeleteEvent, ha
               Reprendre
             </Button>
             <Button
-              close
+              variant="close"
               onClick={() => openModal("cancelInProgressSession", { sessionId: session.id })}
             >
               <X size={20} />
@@ -113,7 +113,7 @@ export default function EventDetailsModal({ event, userId, handleDeleteEvent, ha
       </div>
       <div className="modalFooter">
         {/* Fermer la modale */}
-        <Button close onClick={() => closeModal("eventDetails")}>
+        <Button variant="close" onClick={() => closeModal("eventDetails")}>
           Fermer
         </Button>
       </div>

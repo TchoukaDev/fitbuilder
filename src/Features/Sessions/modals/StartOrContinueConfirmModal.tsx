@@ -104,7 +104,7 @@ export default function StartOrContinueConfirmModal({
 
           {/* Bouton de suppression ou d'annulation */}
           <LoaderButton
-            close
+            variant="close"
             isLoading={action === "start" ? isDeleting : isCancelling}
             loadingText={`${action === "start" ? "Suppression" : "Annulation"
               } en cours`}
@@ -127,7 +127,7 @@ export default function StartOrContinueConfirmModal({
         </div>
       </div>
       <div className="modalFooter">
-        <Button close onClick={() => closeModal("startOrContinueSession")}>
+        <Button variant="close" onClick={() => closeModal("startOrContinueSession")}>
           Fermer
         </Button>
       </div>

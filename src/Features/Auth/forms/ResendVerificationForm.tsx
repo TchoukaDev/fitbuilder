@@ -124,7 +124,7 @@ export default function ResendVerificationForm() {
           Le lien sera actif pendant 24 heures
         </p>
 
-        <Button asChild close>
+        <Button asChild variant="close">
           <Link href="/">Retour à la connexion</Link>
         </Button>
       </form>

@@ -6,11 +6,9 @@ import { ButtonProps } from "./Button";
 export type LoaderButtonProps = ButtonProps & {
   isLoading: boolean;
   loadingText: string;
-
 };
 
 export default function LoaderButton({
-  close,
   isLoading,
   loadingText = "Chargement...",
   children,
@@ -18,7 +16,7 @@ export default function LoaderButton({
   ...props
 }: LoaderButtonProps) {
   return (
-    <Button {...props} disabled={disabled} close={close}>
+    <Button {...props} disabled={disabled}>
       {isLoading ? (
         <span className="flex items-center justify-center gap-2">
           <ClipLoader size={15} color="#fff" />

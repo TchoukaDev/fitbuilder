@@ -11,8 +11,9 @@ import { Workout } from "@/types/workout";
 type StartWorkoutButtonProps = {
   userId: string;
   workout: Workout;
+  full?: boolean;
 }
-export default function StartWorkoutButton({ userId, workout }: StartWorkoutButtonProps) {
+export default function StartWorkoutButton({ userId, workout, full }: StartWorkoutButtonProps) {
   const { mutate: startSession, isPending: isStarting } =
     useStartNewSession(userId);
   const router = useRouter();
@@ -41,11 +42,10 @@ export default function StartWorkoutButton({ userId, workout }: StartWorkoutButt
       onClick={handleStart}
       title="Démarrer la séance"
       aria-label="Démarrer la séance"
-      width="w-12 md:w-auto"
+      full={full}
     >
-      {" "}
       <Play size={20} />
-      <span className="hidden md:inline">Démarrer la séance</span>
+      Démarrer la séance
     </LoaderButton>
   );
 }

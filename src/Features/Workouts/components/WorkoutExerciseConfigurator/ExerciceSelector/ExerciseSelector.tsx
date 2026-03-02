@@ -125,7 +125,7 @@ export default function ExerciseSelector({
       <div className="modalFooter">
         <Button
           type="button"
-          close
+          variant="close"
           onClick={() => {
             closeModal("workoutSelectExercise");
           }}

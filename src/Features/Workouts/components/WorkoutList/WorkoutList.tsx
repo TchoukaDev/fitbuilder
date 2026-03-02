@@ -41,7 +41,7 @@ export default function WorkoutList({ initialWorkouts, userId }: WorkoutListProp
     <>
       {/* Titre h1 dans composant client pour compteur géré par useQuery */}
       <h1>📋 Mes plans d'entraînement ({count})</h1>
-      <div className="p-6 space-y-4">
+      <div className="p-4 lg:p-6 space-y-4">
         <div className="mb-10 flex justify-center md:justify-start">
           <Button width="w-fit" asChild>
             <Link href="/workouts/create">+ Créer un nouvel entraînement</Link>

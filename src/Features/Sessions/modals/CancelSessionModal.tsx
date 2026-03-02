@@ -52,7 +52,7 @@ export default function CancelSessionModal({
           disabled={isLoading}
           onClick={onConfirm}
           aria-label="Annuler la séance"
-          close
+          variant="close"
         >
           Annuler la séance
         </LoaderButton>

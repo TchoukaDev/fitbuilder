@@ -118,7 +118,7 @@ export default function VerifyEmailClient({ token }: { token: string | undefined
         {/* Boutons */}
         <div className="flex gap-4 mt-4">
           {config.showBackButton && (
-            <Button asChild close>
+            <Button asChild variant="close">
               <Link href="/">Retour à la connexion</Link>
             </Button>
           )}

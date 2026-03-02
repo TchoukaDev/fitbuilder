@@ -5,7 +5,7 @@ import { WorkoutSession } from "@/types/workoutSession";
 export default function NextSessionCard({ sessions }: {sessions: WorkoutSession[]}) {
   if (!sessions || sessions.length === 0) {
     return (
-      <div className="bg-white rounded-lg shadow-md p-6 border-2 border-gray-200">
+      <div className="bg-white rounded-lg shadow-md p-4 lg:p-6 border-2 border-gray-200">
         <h2 className="text-xl font-bold text-gray-900 mb-4">
           📆 Prochaines séances
         </h2>
@@ -22,7 +22,7 @@ export default function NextSessionCard({ sessions }: {sessions: WorkoutSession[
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 border-2 border-gray-200">
+    <div className="bg-white rounded-lg shadow-md p-4 lg:p-6 border-2 border-gray-200">
       <div className="flex flex-col md:flex-row items-center justify-between mb-4">
         <h2 className="text-xl font-bold text-gray-900">
           📆 Prochaines séances

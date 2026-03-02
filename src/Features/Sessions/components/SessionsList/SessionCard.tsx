@@ -112,7 +112,7 @@ export default function SessionCard({ session }: SessionCardProps) {
       </div>
 
       {/* Stats */}
-      <div className="flex gap-4 text-sm">
+      <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
         {/* Exercices complétés */}
         <div className="flex items-center gap-2">
           <Dumbbell size={16} className="text-primary-600" />

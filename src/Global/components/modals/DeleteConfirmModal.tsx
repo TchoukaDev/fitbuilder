@@ -34,7 +34,7 @@ export default function DeleteConfirmModal({
       {/* Boutons */}
       <div className="modalFooter">
         <Button
-          close
+          variant="close"
           onClick={() => closeModal(modalToClose)}
           disabled={isLoading}
         >

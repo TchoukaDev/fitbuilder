@@ -69,7 +69,7 @@ export default function NewEventForm({ userId, selectedDate }) {
 
       {/* Boutons */}
       <div className="modalFooter">
-        <Button type="button" close onClick={() => closeModal("newEvent")}>
+        <Button type="button" variant="close" onClick={() => closeModal("newEvent")}>
           Annuler
         </Button>
         <LoaderButton

@@ -76,7 +76,7 @@ export default function UpdateEventForm({ userId, event }) {
 
       {/* Boutons */}
       <div className="modalFooter">
-        <Button type="button" close onClick={() => closeModal("editEvent")}>
+        <Button type="button" variant="close" onClick={() => closeModal("editEvent")}>
           Annuler
         </Button>
         <LoaderButton

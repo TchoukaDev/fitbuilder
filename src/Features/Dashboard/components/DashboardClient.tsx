@@ -43,7 +43,7 @@ export default function DashboardClient({ userId }: { userId: string }) {
   const formattedDuration = `${parseInt(hours)}h ${parseInt(minutes)}m`;
 
   return (
-    <div className="p-6 space-y-8">
+    <div className="p-4 space-y-6 lg:p-6 lg:space-y-8">
       {/* Header */}
     
           <p className="text-lg font-medium text-center" >Suivez vos progrès et planifiez vos entraînements</p>

@@ -32,7 +32,7 @@ export default function SessionsPagination({
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1 || isFetching}
-          className="flex items-center gap-1 px-4 py-2 rounded-lg shadow cursor-pointer font-medium transition bg-primary-500 hover:bg-primary-600 disabled:bg-primary-300 disabled:cursor-not-allowed text-primary-50"
+          className="flex items-center gap-1 px-4 py-3 rounded-lg shadow cursor-pointer font-medium transition bg-primary-500 hover:bg-primary-600 disabled:bg-primary-300 disabled:cursor-not-allowed text-primary-50"
         >
           <ChevronLeft size={18} />
           <span className=" hidden md:block">Précédent</span>
@@ -47,7 +47,7 @@ export default function SessionsPagination({
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages || isFetching}
-          className="flex items-center gap-1 px-4 py-2 rounded-lg shadow cursor-pointer font-medium transition bg-primary-500 hover:bg-primary-600 disabled:bg-primary-300 disabled:cursor-not-allowed text-primary-50"
+          className="flex items-center gap-1 px-4 py-3 rounded-lg shadow cursor-pointer font-medium transition bg-primary-500 hover:bg-primary-600 disabled:bg-primary-300 disabled:cursor-not-allowed text-primary-50"
         >
           <span className=" hidden md:block">Suivant</span>
           <ChevronRight size={18} />
