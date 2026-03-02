@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export default function Footer() {
   return (
-    <div className="p-5 py-10 md:p-10 shadow-[0_-2px_2px_rgba(0,0,0,0.1)] flex flex-col md:flex-row justify-center items-center  md:gap-10 ">
+    <div className="p-5 pt-10 pb-24 md:p-10 lg:pb-10 shadow-[0_-2px_2px_rgba(0,0,0,0.1)] flex flex-col md:flex-row justify-center items-center  md:gap-10 ">
       <p className="text-center ">
         ©{new Date().getFullYear()} FitBuilder. Tous droits réservés.
       </p>{" "}

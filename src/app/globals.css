@@ -34,12 +34,10 @@
   --color-accent-900: #662a00;
 
   /* Dégradés personnalisés */
-  --gradient-light: linear-gradient(
-    135deg,
-    #f9fafb 0%,
-    #e5e7eb 50%,
-    #d1d5db 100%
-  );
+  --gradient-light: linear-gradient(135deg,
+      #f9fafb 0%,
+      #e5e7eb 50%,
+      #d1d5db 100%);
   --gradient-primary: linear-gradient(135deg, #260d87 0%, #5c31e0 100%);
   --gradient-accent: linear-gradient(135deg, #ff6600 0%, #ffaa66 100%);
 }
@@ -59,15 +57,18 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50  min-w-0;
+    @apply border-border outline-ring/50 min-w-0;
   }
+
   body {
-    @apply bg-background text-foreground  overflow-x-hidden;
+    @apply bg-background text-foreground overflow-x-hidden;
   }
 }
+
 main {
-  @apply w-full md:w-9/10 mx-auto px-5 py-10 grow;
+  @apply w-full md:w-9/10 mx-auto pt-10 pb-20 lg:pb-10 grow;
 }
+
 /* Eviter les débordements des titres et des paragraphes */
 h1,
 h2,
@@ -82,9 +83,11 @@ h6 {
 h1 {
   @apply font-display font-bold text-2xl md:text-3xl mt-5 mb-10;
 }
+
 h2 {
   @apply text-center font-display font-semibold mb-5 text-2xl;
 }
+
 p {
   @apply line-clamp-3 md:line-clamp-none wrap-break-word;
 }
@@ -98,8 +101,9 @@ a {
   .input {
     @apply w-[250px] md:w-[300px] border text-primary-500 border-primary-300 rounded font-semibold px-4 pt-7 pb-2 text-sm placeholder-transparent outline-none focus:border-2 focus:border-accent-500;
   }
+
   .link {
-    @apply hover:text-primary-300 hover:underline  transition duration-200;
+    @apply hover:text-primary-300 hover:underline transition duration-200;
   }
 
   .formError {
@@ -114,16 +118,20 @@ a {
   .slider::-moz-range-track {
     @apply bg-gray-300 h-2 rounded-lg;
   }
+
   /* --- THUMB (curseur Chrome / Edge / Safari) --- */
   .slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     @apply w-4 h-4 bg-primary-500 rounded-full cursor-pointer transition;
-    margin-top: -4px; /* ✅ recentre le curseur sur la barre */
+    margin-top: -4px;
+    /* ✅ recentre le curseur sur la barre */
   }
+
   /* Curseur Hover */
   .slider::-webkit-slider-thumb:hover {
     @apply bg-primary-800;
   }
+
   /* Curseur (Firefox) */
   .slider::-moz-range-thumb {
     @apply w-4 h-4 bg-primary-500 rounded-full cursor-pointer;
@@ -135,6 +143,7 @@ input:-webkit-autofill,
 input:-webkit-autofill:focus {
   transition: background-color 600000s 0s, color 600000s 0s;
 }
+
 input[data-autocompleted] {
   background-color: transparent !important;
 }
@@ -147,10 +156,12 @@ input[data-autocompleted] {
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
-  opacity: 0.1; /* ← ajuste ici */
+  opacity: 0.1;
+  /* ← ajuste ici */
   z-index: 1;
 }
-.heroBg > * {
+
+.heroBg>* {
   z-index: 1;
 }
 
@@ -164,6 +175,7 @@ input[data-autocompleted] {
 .animatedRotation {
   transition: all 0.2s;
 }
+
 .group:hover .animatedRotation,
 :hover.animatedRotation {
   animation: animatedRotation 0.3s ease-in-out infinite alternate;
@@ -174,6 +186,7 @@ input[data-autocompleted] {
   from {
     transform: rotate(-10deg);
   }
+
   to {
     transform: rotate(10deg);
   }

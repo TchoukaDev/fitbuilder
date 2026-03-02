@@ -10,7 +10,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ a
   const callbackUrl = resolvedSearchParams?.callbackUrl;
   return (
     <WelcomeLayout>
-      <div className="flex flex-col justify-center items-center pt-0 p-5 md:p-10 flex-2/3">
+      <div className="flex flex-col justify-center items-center pt-0  p-5 md:p-10 flex-2/3">
         <h1>Bienvenue sur FitBuilder</h1>
         <p className="text-lg my-5 max-w-2xl mx-auto">
           FitBuilder est l'appli qui vous permet de créer vos propres programmes

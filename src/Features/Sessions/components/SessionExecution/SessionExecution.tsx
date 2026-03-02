@@ -209,7 +209,7 @@ export default function SessionExecution({ sessionData, sessionId, userId }: Ses
       </div>
 
       {/* FOOTER */}
-      <div className="sticky bottom-0 left-0 right-0 bg-primary-100 border-t border-primary-800 p-4 shadow-lg">
+      <div className="sticky bottom-16 lg:bottom-0 left-0 right-0 bg-primary-100 border-t border-primary-800 p-4 shadow-lg">
         <div className="container mx-auto max-w-4xl flex justify-center gap-3">
           <LoaderButton
             isLoading={isSaving}
