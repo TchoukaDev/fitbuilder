@@ -105,7 +105,6 @@ export default function RestTimerModal({
             full
             variant="close"
             onClick={handleSkip}
-            className="bg-gray-600 hover:bg-gray-700"
           >
             <SkipForward size={20} />
             Passer
