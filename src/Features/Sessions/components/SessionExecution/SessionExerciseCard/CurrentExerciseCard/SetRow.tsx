@@ -46,7 +46,7 @@ export default function SetRow({
               return;
             }
 
-            const num = parseFloat(value);
+            const num = parseFloat(value.replace(",", "."));
 
             if (!isNaN(num) && num >= 0) {
               onSetChange("weight", num);
@@ -54,6 +54,7 @@ export default function SetRow({
               onSetChange("weight", null);
             }
           }}
+          inputMode="decimal"
           className="input p-1 md:p-3 w-14 md:w-20 disabled:opacity-50 disabled:cursor-not-allowed"
         />
         <span>kg</span>
@@ -86,6 +87,7 @@ export default function SetRow({
               onSetChange("reps", null);
             }
           }}
+          inputMode="numeric"
           className="input p-1 md:p-3 w-14 md:w-20 disabled:opacity-50 disabled:cursor-not-allowed"
         />
         <span>reps</span>
@@ -102,7 +104,7 @@ export default function SetRow({
           disabled={!isActive}
           checked={setData?.completed || false}
           onChange={() => onSetComplete()}
-          className="w-3 md:w-5 h-3 md:h-5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-5 md:w-6 h-5 md:h-6 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
         />
       </div>
     </motion.div>

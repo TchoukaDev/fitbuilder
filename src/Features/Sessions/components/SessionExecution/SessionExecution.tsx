@@ -159,7 +159,7 @@ export default function SessionExecution({ sessionData, sessionId, userId }: Ses
   // ═══════════════════════════════════════════════════════
   if (!sessionData.exercises || sessionData.exercises.length === 0) {
     return (
-      <div className="container mx-auto p-6 max-w-4xl">
+      <div className="container mx-auto p-4 lg:p-6 max-w-4xl">
         <div className="bg-accent-100 border border-accent-400 text-accent-700 px-4 py-3 rounded">
           <p className="font-bold">Attention</p>
           <p>Cette session ne contient aucun exercice.</p>
@@ -176,7 +176,7 @@ export default function SessionExecution({ sessionData, sessionId, userId }: Ses
   // ═══════════════════════════════════════════════════════
   return (
     <>
-      <div className="container mx-auto p-6 max-w-4xl">
+      <div className="container mx-auto p-4 lg:p-6 max-w-4xl">
         {/* HEADER */}
         <SessionHeader
           sessionName={sessionData.workoutName}

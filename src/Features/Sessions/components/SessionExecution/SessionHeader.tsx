@@ -30,9 +30,9 @@ export default function SessionHeader({
   const progressPercentage = (completedCount / totalExercises) * 100;
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+    <div className="bg-white rounded-lg shadow-md p-4 lg:p-6 mb-4">
       {/* Titre */}
-      <h1 className="text-3xl font-bold text-primary-900 mb-2">
+      <h1 className="text-xl lg:text-3xl font-bold text-primary-900 mb-2">
         {sessionName}
       </h1>
 
@@ -53,7 +53,7 @@ export default function SessionHeader({
       {/* Bouton d'abandon */}
       <button
         onClick={onCancel}
-        className="bg-accent-500 hover:bg-accent-600 text-accent-50 disabled:bg-accent-300 rounded p-2 text-xs my-1 cursor-pointer"
+        className="bg-accent-500 hover:bg-accent-600 text-accent-50 disabled:bg-accent-300 rounded py-2 px-4 text-xs my-1 cursor-pointer"
       >
         Abandonner
       </button>

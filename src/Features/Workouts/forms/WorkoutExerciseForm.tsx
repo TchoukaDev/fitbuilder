@@ -33,7 +33,7 @@ export default function WorkoutExerciseForm({ exercise, onSubmit, onClose, onClo
 
     const sets = parseInt(formData.sets);
     const reps = parseInt(formData.reps);
-    const targetWeight = parseFloat(formData.targetWeight);
+    const targetWeight = parseFloat(formData.targetWeight.replace(",", "."));
     const restTime = parseInt(formData.restTime);
     const notes = formData.notes.trim();
 
@@ -109,6 +109,7 @@ export default function WorkoutExerciseForm({ exercise, onSubmit, onClose, onClo
       <div className="relative">
         <input
           type="number"
+          inputMode="decimal"
           min="0"
           step="0.5"
           onKeyDown={handleKeyDown}

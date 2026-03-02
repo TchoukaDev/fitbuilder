@@ -93,6 +93,7 @@ export default function CurrentExerciseCard({
           <input
             id={`effort-${index}`}
             type="number"
+            inputMode="numeric"
             onKeyDown={handleKeyDown}
             min="1"
             max="10"
