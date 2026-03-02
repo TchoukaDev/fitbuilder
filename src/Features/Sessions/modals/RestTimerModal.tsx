@@ -57,19 +57,7 @@ export default function RestTimerModal({
       {/* ─────────────────────────────────────────────────── */}
 
 
-      <button
-        onClick={() => {
-          if (navigator.vibrate) {
-            navigator.vibrate([200, 100, 200]);
-            alert("Vibration déclenchée !");
-          } else {
-            alert("Vibration non supportée");
-          }
-        }}
-      >
-        🧪 Test Vibration
-      </button>
-      <div className="p-8 space-y-6">
+      <div className="space-y-6">
         {/* ⏰ Grand affichage du temps */}
         <div className="text-center">
           <div
@@ -152,7 +140,7 @@ export default function RestTimerModal({
               onClick={() => {
                 handleApplyCustomTime(60);
               }}
-              className="text-sm px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded"
+              className="text-sm px-3 py-2 bg-gray-200 hover:bg-gray-300 rounded"
             >
               1 min
             </button>
@@ -160,7 +148,7 @@ export default function RestTimerModal({
               onClick={() => {
                 handleApplyCustomTime(90);
               }}
-              className="text-sm px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded"
+              className="text-sm px-3 py-2 bg-gray-200 hover:bg-gray-300 rounded"
             >
               1:30
             </button>
@@ -168,13 +156,13 @@ export default function RestTimerModal({
               onClick={() => {
                 handleApplyCustomTime(120);
               }}
-              className="text-sm px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded"
+              className="text-sm px-3 py-2 bg-gray-200 hover:bg-gray-300 rounded"
             >
               2 min
             </button>
             <button
               onClick={handleReset}
-              className="text-sm px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded"
+              className="text-sm px-3 py-2 bg-gray-200 hover:bg-gray-300 rounded"
             >
               Réinitialiser
             </button>

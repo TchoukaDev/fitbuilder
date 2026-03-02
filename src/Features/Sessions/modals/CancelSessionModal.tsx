@@ -24,7 +24,7 @@ export default function CancelSessionModal({
   return createPortal(
     <ModalLayout title="Annuler la séance" modalToClose="cancelSession">
       {/* Body */}
-      <div className="p-6 space-y-4">
+      <div className="space-y-4">
         <div className="flex items-center justify-center gap-3 bg-orange-50 p-4 rounded-lg">
           <AlertTriangle className="text-orange-600 shrink-0" size={24} />
           <p>Vous n'avez réalisé aucun exercice.</p>

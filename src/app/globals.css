@@ -99,7 +99,7 @@ a {
 /* Composants personnalisés */
 @layer components {
   .input {
-    @apply w-[250px] md:w-[300px] border text-primary-500 border-primary-300 rounded font-semibold px-4 pt-7 pb-2 text-sm placeholder-transparent outline-none focus:border-2 focus:border-accent-500;
+    @apply w-full border text-primary-500 border-primary-300 rounded font-semibold px-4 pt-7 pb-2 text-sm placeholder-transparent outline-none focus:border-2 focus:border-accent-500;
   }
 
   .link {
@@ -111,7 +111,7 @@ a {
   }
 
   .modalFooter {
-    @apply flex justify-center gap-3 pt-6 border-t bg-gray-50 mt-3;
+    @apply flex flex-col sm:flex-row justify-center gap-3 pt-6 border-t bg-gray-50 mt-3;
   }
 
   /* --- BARRE non remplie (après le curseur, Firefox uniquement) --- */

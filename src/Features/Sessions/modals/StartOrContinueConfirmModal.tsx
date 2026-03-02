@@ -83,7 +83,7 @@ export default function StartOrContinueConfirmModal({
       title={action === "start" ? "Démarrer la séance" : "Reprendre la séance"}
       modalToClose="startOrContinueSession"
     >
-      <div className="p-6 space-y-4">
+      <div className="space-y-4">
         <p className="text-center text-gray-600 mb-10">
           Que souhaitez-vous faire ?
         </p>

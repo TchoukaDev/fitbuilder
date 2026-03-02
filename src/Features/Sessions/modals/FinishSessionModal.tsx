@@ -30,7 +30,7 @@ export default function FinishSessionModal({
   return createPortal(
     <ModalLayout title="🏁 Terminer la séance" modalToClose="finishSession">
       {/* Body - Résumé */}
-      <div className="p-6 space-y-4">
+      <div className="space-y-4">
         <div className="bg-linear-to-br from-primary-50 to-primary-100 p-5 rounded-lg">
           <h3 className="font-bold text-xl text-primary-900 mb-4">
             {sessionName}

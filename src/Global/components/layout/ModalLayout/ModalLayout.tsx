@@ -20,7 +20,7 @@ export default function ModalLayout({ children, title, modalToClose, option }: M
       <div className="relative bg-white rounded-lg max-w-md w-full shadow-xl p-6 max-h-full overflow-y-auto">
         {/* Fermeture */}
         <button
-          className="absolute right-4 top-4 cursor-pointer hover:text-accent-600"
+          className="absolute right-2 top-2 p-2 rounded-full cursor-pointer hover:text-accent-600 hover:bg-gray-100"
           onClick={() => {
             closeModal(modalToClose);
             option && option();

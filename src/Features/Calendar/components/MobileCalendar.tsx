@@ -119,13 +119,12 @@ export default function MobileCalendar({
             <button
               key={day}
               onClick={() => setSelectedDate(cellDate)}
-              className={`flex flex-col items-center py-1.5 rounded-lg transition-colors ${
-                isSelected
-                  ? "bg-primary-500 text-white"
-                  : isToday
+              className={`flex flex-col items-center py-1.5 rounded-lg transition-colors ${isSelected
+                ? "bg-primary-500 text-white"
+                : isToday
                   ? "bg-primary-50 text-primary-700 font-bold"
                   : "hover:bg-gray-50 text-gray-700"
-              }`}
+                }`}
             >
               <span className="text-sm leading-none">{day}</span>
               {/* Dots events */}
