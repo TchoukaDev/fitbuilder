@@ -51,7 +51,7 @@ interface WorkoutStore {
 // C'est ta logique actuelle, mais dans une FONCTION.
 // Chaque appel à createWorkoutStore() crée un store INDÉPENDANT.
 //
-const createWorkoutStore = () =>
+export const createWorkoutStore = () =>
   create<WorkoutStore>((set, get) => ({
     // ============================================================
     // 📦 ÉTAT - State Management
