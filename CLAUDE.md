@@ -171,32 +171,33 @@ src/
 
 ---
 
-## 🔜 Étape 2 — Tests (À FAIRE)
+## ✅ Étape 2 — Tests (TERMINÉE)
 
-### Objectif
+### Ce qui a été fait
 
-Couvrir la logique métier des services avec des tests automatisés.
+- **Vitest** configuré (`vitest.config.ts`, alias `@/*`, environment node)
+- **Husky** pre-commit : bloque les `console.log` + lance les tests
+- **80 tests** tous verts au pre-commit
 
-### Stack recommandée
+### Fichiers de tests
 
-- **Vitest** (compatible Next.js 15 + Turbopack, plus rapide que Jest)
-- **`@testing-library/react`** pour les composants
-- **`mongodb-memory-server`** pour les tests d'intégration des repositories
+```
+src/services/__tests__/
+  StatsService.test.ts     — 15 tests (streak, durée, volume, guards)
+  WorkoutService.test.ts   —  9 tests (create, update, delete)
+  SessionService.test.ts   — 12 tests (buildSessionExercises, cancel, guards)
+  ExerciseService.test.ts  — 20 tests (admin/non-admin, favorites)
 
-### Plan
+src/Features/Sessions/store/__tests__/
+  sessionStore.test.ts     — 13 tests (completeExercise, reopen, toggle, update)
 
-1. Configurer Vitest dans le projet (`vitest.config.ts`)
-2. **Tests unitaires des Services** — logique pure, mocker le repository
-   - `WorkoutService` : règle d'unicité du nom, mise à jour `timesUsed`
-   - `SessionService` : `buildSessionExercises`, `computeWorkoutStatsAfterRemoval`
-   - `StatsService` : `computeStreak` (cas limites DST, streak = 0, streak > 1), `computeVolume`, `computeTotalDuration`
-3. **Tests d'intégration des Repositories** — avec `mongodb-memory-server`
-   - `WorkoutRepository.findAll`, `create`, `update`, `delete`
-   - `SessionRepository.start`, `cancel`, `complete`
+src/Features/Workouts/store/__tests__/
+  workoutStore.test.ts     — 11 tests (add, remove, update, move)
+```
 
-### Priorité haute
+### Reste à faire (optionnel)
 
-`StatsService.computeStreak` — algorithme complexe, plusieurs cas limites documentés dans `src/services/StatsService.md`.
+- Tests d'intégration des Repositories avec `mongodb-memory-server` — à faire après l'étape 3 (refonte MongoDB)
 
 ---
 
