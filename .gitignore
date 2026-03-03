@@ -45,6 +45,7 @@ next-env.d.ts
 
 # other
 todo.txt
+.claude/settings.local.json
 docs/mobile-first.md
 .mkv
 .docx
