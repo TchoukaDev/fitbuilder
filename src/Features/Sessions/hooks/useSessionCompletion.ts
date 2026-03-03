@@ -121,18 +121,20 @@ export function useSessionCompletion(
   /**
    * Annule la session (suppression côté serveur + nettoyage backup).
    */
+  const handleCancelSuccess = (redirectTo: string) => {
+    closeAllModals();
+    clearBackup();
+    setTimeout(() => resetSession(sessionId), 1000);
+    router.push(redirectTo);
+    router.refresh();
+  };
+
   const cancelSession = () => {
     setIsSaving(true);
 
     if (isPlanned) {
       cancelPlannedSession(sessionId, {
-        onSuccess: () => {
-          closeAllModals();
-          clearBackup();
-          setTimeout(() => resetSession(sessionId), 1000);
-          router.push("/sessions");
-          router.refresh();
-        },
+        onSuccess: () => handleCancelSuccess("/sessions"),
         onError: () => {
           toast.error("Erreur lors de l'annulation de la session");
           setIsSaving(false);
@@ -142,11 +144,7 @@ export function useSessionCompletion(
       deleteSession(sessionId, {
         onSuccess: () => {
           toast.success("Session d'entraînement annulée");
-          closeAllModals();
-          clearBackup();
-          setTimeout(() => resetSession(sessionId), 1000);
-          router.push("/workouts");
-          router.refresh();
+          handleCancelSuccess("/workouts");
         },
         onError: () => {
           toast.error("Erreur lors de l'annulation de la session");
