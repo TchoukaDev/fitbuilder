@@ -2,7 +2,6 @@ import { DbError, DuplicateError, NotFoundError, UnauthorizedError, ValidationEr
 import { WorkoutRepository } from "@/repositories/WorkoutRepository";
 import { Workout } from "@/types/workout";
 import { WorkoutExercise } from "@/types/workoutExercise";
-import { toLowerCase } from "zod";
 
 export class WorkoutService {
     constructor(private readonly workoutRepository: WorkoutRepository) { }

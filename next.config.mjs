@@ -1,6 +1,14 @@
 import { withSentryConfig } from '@sentry/nextjs';
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+const nextConfig = {
+  compiler: {
+    // Supprime tous les console.* en production (log, warn, debug...)
+    // console.error est conservé pour les erreurs critiques
+    removeConsole: process.env.NODE_ENV === "production"
+      ? { exclude: ["error"] }
+      : false,
+  },
+};
 
 export default withSentryConfig(nextConfig, {
   // For all available options, see:

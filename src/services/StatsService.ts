@@ -107,9 +107,11 @@ export class StatsService {
         for (const session of completedSessions) {
             for (const exercise of session.exercises ?? []) {
                 for (const set of exercise.actualSets ?? []) {
-                    if (set.completed) totalSets++;
-                    totalReps += set.reps ?? 0;
-                    totalWeight += set.weight ?? 0;
+                    if (set.completed) {
+                        totalSets++;
+                        totalReps += set.reps ?? 0;
+                        totalWeight += set.weight ?? 0;
+                    }
                 }
             }
         }

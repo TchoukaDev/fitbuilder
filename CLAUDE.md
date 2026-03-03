@@ -15,7 +15,7 @@ npm run build
 npm run start
 ```
 
-There is no test suite configured in this project.
+Tests unitaires configurés avec **Vitest** (`npm test` / `npm run test:run`). Fichiers dans `src/services/__tests__/`.
 
 ## Architecture Overview
 
@@ -232,31 +232,73 @@ Collections séparées :
 
 ---
 
-## 🔜 Étape 4 — Refonte Mobile-First (À FAIRE)
+## 🔄 Étape 4 — Refonte Mobile-First (EN COURS)
 
-### Problème actuel
+### ✅ Réalisé
 
-- Navigation desktop-first (header horizontal)
-- Zones de tap trop petites (< 44px)
-- Pas de bottom navigation bar (standard apps fitness)
-- Formulaires non optimisés pour le clavier mobile
+**Layout global**
+- `Header.tsx` — version mobile simplifiée (titre centré) + desktop conservé
+- `NavbarClient.tsx` — bottom navigation bar fixe sur mobile (`fixed bottom-0 z-50 h-16`)
+- `authenticated/layout.tsx` — `pb-20 lg:pb-0` pour laisser place à la bottom nav
+- `LogoutButton.tsx` — variante mobile dans la bottom nav
 
-### Cible
+**Composants UI**
+- `Button` — migré vers `cva` variants typés (`variant="close"` remplace le prop booléen `close`)
+- `LoaderButton` — `disabled={disabled || isLoading}` (auto-disable pendant le chargement)
+- `.input` (globals.css) — `w-full` au lieu de largeur fixe
+- `.modalFooter` (globals.css) — `flex-col sm:flex-row` (boutons empilés sur mobile)
 
-- **Bottom navigation bar** sur mobile (Dashboard, Workouts, Sessions, Exercises)
-- **Header simplifié** mobile (titre + actions contextuelles)
-- **Cards touch-friendly** (zones ≥ 44px, swipe actions)
-- **Formulaires mobiles** (clavier numérique pour poids/reps, scroll naturel)
+**Modales**
+- `ModalLayout` — z-index `z-[60]` (au-dessus de la bottom nav `z-50`), `p-4` mobile, close button avec zone de tap `p-2`
+- `ModalHeader` — `pr-10` pour éviter le chevauchement avec le bouton de fermeture
+- Toutes les modales Sessions — suppression du double-padding intérieur
+- `RestTimerModal` — redesign mobile : grid 2-cols boutons principaux, grid 4-cols préréglages, `tabular-nums`, `inputMode="numeric"`
 
-### Fichiers clés à modifier
+**Formulaires & inputs**
+- `inputMode="decimal"` sur les inputs de poids (clavier décimal mobile)
+- `inputMode="numeric"` sur les inputs entiers (reps, séries, RPE, timer)
+- `parseFloat(value.replace(",", "."))` sur tous les inputs décimaux (fix locale FR)
+- `SetRow` — checkbox `w-5 h-5` (touch target suffisant)
 
-- `src/Global/components/layout/Header.tsx` — refonte responsive
-- `src/Global/components/layout/Navbar.tsx` — bottom nav mobile
-- `src/app/(authenticated)/layout.tsx` — layout principal
-- Composants Sessions (use case principal sur mobile)
+**SessionExecution**
+- Padding `p-4 lg:p-6`, titre `text-xl lg:text-3xl`
+- Bouton Abandonner avec `py-2 px-4`
+- Footer sticky `bottom-16 lg:bottom-0` (au-dessus de la bottom nav)
 
-### Ordre recommandé
+**Exercises**
+- `ExerciseTabs` + `ExerciseMuscleFilters` — `overflow-x-auto` + `shrink-0` (scroll horizontal au lieu de wrap)
+- Touch targets `py-3` sur les filtres/tabs
 
-1. Audit : identifier les écrans les plus utilisés sur mobile
-2. Layout global (bottom nav)
-3. Feature par feature : commencer par l'exécution de session
+**Calendar**
+- `MobileCalendar.tsx` — composant custom remplaçant React Big Calendar sur mobile
+  - Grille mensuelle avec navigation mois précédent/suivant
+  - Sélection d'un jour → liste des événements du jour
+  - Même système d'events/callbacks/modales que le desktop
+  - Détection `isMobile` via `window.innerWidth < 768` dans `useCalendarStates`
+
+### 🔜 Reste à faire
+
+- **Footer** — ajouter `pb-24 lg:pb-10` pour éviter le chevauchement avec la bottom nav
+- **Dashboard** — vérifier padding mobile et touch targets des StatCards
+- **Sessions list** — vérifier filtres, pagination et chevauchement bottom nav
+- **Workouts list** — vérifier touch targets et padding mobile
+
+---
+
+## 🔜 Étape 5 — Refactorisation du système de validation des exercices en séance (À FAIRE)
+
+### Problème identifié
+
+Le système de validation des exercices pendant une séance (`src/Features/Sessions/`) est jugé trop complexe et peu lisible :
+- Fonctions avec trop de responsabilités
+- Logique difficile à suivre et fragile
+- Difficulté à maintenir et faire évoluer
+
+### Objectif
+
+Simplifier et clarifier la logique de validation sans en changer le comportement :
+- Identifier toutes les fonctions impliquées (`completeExercise`, store, hooks associés)
+- Réduire la complexité, améliorer la lisibilité
+- S'assurer que le reset des séries non complétées (`weight: 0`, `reps: 0`) est bien isolé et explicite
+
+> ⚠️ Faire **après** l'étape 2 (tests) pour avoir un filet de sécurité avant de refactoriser.

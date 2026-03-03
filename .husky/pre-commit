@@ -1,0 +1,7 @@
+npm run test:run
+
+# Bloquer les console.log dans les fichiers stagés
+if git diff --cached --name-only | grep -E "\.(ts|tsx|js|jsx)$" | xargs grep -l "console\.log" 2>/dev/null; then
+  echo "❌ console.log détecté dans les fichiers stagés. Retire-les avant de committer."
+  exit 1
+fi
