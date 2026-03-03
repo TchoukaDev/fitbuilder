@@ -27,7 +27,7 @@ export default async function SessionDetailPage({ params }: { params: Promise<{ 
   if (sessionData.status !== "completed") {
     redirect(`/sessions/${sessionId}`);
   }
-  console.log(sessionData)
+
   const serializedSession = JSON.parse(JSON.stringify(sessionData));
 
   return (
