@@ -15,7 +15,6 @@ import {
 } from "../../hooks";
 import {
   validateExercise,
-  completeExercise as completeExerciseAction,
 } from "../../utils";
 import { useModals } from "@/Providers/Modals";
 import { useSessionStore } from "../../store";
@@ -77,6 +76,9 @@ export default function SessionExecution({ sessionData, sessionId, userId }: Ses
       .padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
   }, [sessionData?.startedAt]);
 
+  // Compléter l'exercice
+  const completeExerciseAction = useSessionStore((state) => state.completeExercise)
+
   // LocalStorage Backup
   const { clearBackup } = useSessionBackup(sessionId, sessionData);
 
@@ -101,7 +103,8 @@ export default function SessionExecution({ sessionData, sessionId, userId }: Ses
   const handleModalConfirm = () => {
     const exerciseIndex = getModalData<{ exerciseIndex: number }>("incompleteExercise")?.exerciseIndex ?? 0;
     // ✅ Compléter directement l'exercice
-    completeExerciseAction({ exerciseIndex, handleSaveProgress });
+    completeExerciseAction(exerciseIndex);
+    handleSaveProgress()
     closeModal("incompleteExercise");
   };
 
@@ -148,7 +151,8 @@ export default function SessionExecution({ sessionData, sessionId, userId }: Ses
         openModal("incompleteExercise", { validation, exerciseIndex });
       } else {
         // ✅ Validation réussie - compléter l'exercice
-        completeExerciseAction({ exerciseIndex, handleSaveProgress });
+        completeExerciseAction(exerciseIndex);
+        handleSaveProgress();
       }
     },
     [exercises, openModal, handleSaveProgress],

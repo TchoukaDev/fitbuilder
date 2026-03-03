@@ -16,6 +16,7 @@ interface SessionStore {
   updateExerciseNotes: (exerciseIndex: number, value: string) => void;
   updateExerciseEffort: (exerciseIndex: number, value: number | null) => void;
   toggleExerciseSetComplete: (exerciseIndex: number, setIndex: number) => void;
+  completeExercise: (exerciseIndex: number) => void;
   reopenExercise: (exerciseIndex: number) => void;
   saveToLocalStorage: (sessionId: string) => void;
   loadFromLocalStorage: (sessionId: string) => void;
@@ -98,6 +99,28 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
       }
 
       return { exercises: newExercises };
+    });
+  },
+
+  completeExercise: (exerciseIndex) => {
+    set((state) => {
+      const newExercises = [...state.exercises];
+
+      // Séries non complétées → reset weight et reps à 0
+      if (newExercises[exerciseIndex].actualSets) {
+        newExercises[exerciseIndex].actualSets = newExercises[exerciseIndex].actualSets.map((s) =>
+          s.completed ? s : { ...s, weight: 0, reps: 0, completed: false }
+        );
+      }
+
+      newExercises[exerciseIndex].completed = true;
+
+      // Passer à l'exercice suivant si possible
+      const nextIndex = exerciseIndex + 1;
+      const currentExerciseIndex =
+        nextIndex < newExercises.length ? nextIndex : state.currentExerciseIndex;
+
+      return { exercises: newExercises, currentExerciseIndex };
     });
   },
 
