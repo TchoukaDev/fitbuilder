@@ -11,7 +11,7 @@ interface UseAutoSaveProps {
   delay?: number;
 }
 
-export function useAutoSave({exercises, handleSaveProgress, delay = 30000}: UseAutoSaveProps) {
+export function useAutoSave({ exercises, handleSaveProgress, delay = 30000 }: UseAutoSaveProps) {
   useEffect(() => {
     if (!exercises || exercises.length === 0) return;
 

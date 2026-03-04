@@ -1,4 +1,5 @@
-import { UserDocument } from "@/types/user";
+import { SessionDocument } from "@/models/SessionDocument";
+import { WorkoutDocument } from "@/models/WorkoutDocument";
 import { WorkoutDB } from "@/types/workout";
 import { WorkoutSessionDB } from "@/types/workoutSession";
 import { Db, ObjectId } from "mongodb";
@@ -13,16 +14,18 @@ export class StatsRepository {
     constructor(private readonly db: Db) { }
 
     async findUserStats(userId: string): Promise<UserStatsData | null> {
-        const user = await this.db.collection<UserDocument>("users").findOne(
-            { _id: new ObjectId(userId) },
-            { projection: { sessions: 1, workouts: 1, exercises: 1 } }
-        );
-        if (!user) return null;
+        const userObjectId = new ObjectId(userId);
+
+        const [sessions, workouts, exercisesCount] = await Promise.all([
+            this.db.collection<SessionDocument>("sessions").find({ userId: userObjectId }).toArray(),
+            this.db.collection<WorkoutDocument>("workouts").find({ userId: userObjectId }).toArray(),
+            this.db.collection("exercises").countDocuments({ userId: userObjectId }),
+        ]);
 
         return {
-            sessions: user.sessions ?? [],
-            workouts: user.workouts ?? [],
-            exercisesCount: (user.exercises ?? []).length,
+            sessions: sessions as unknown as WorkoutSessionDB[],
+            workouts: workouts as unknown as WorkoutDB[],
+            exercisesCount,
         };
     }
 }

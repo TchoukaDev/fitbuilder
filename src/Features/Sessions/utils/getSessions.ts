@@ -1,13 +1,11 @@
 "use server";
 import connectDB from "@/libs/mongodb";
+import { SessionDocument } from "@/models/SessionDocument";
 import { ObjectId } from "mongodb";
-import { WorkoutSession, WorkoutSessionDB } from "@/types/workoutSession";
+import { WorkoutSession } from "@/types/workoutSession";
 import { CompletedSessionType } from "@/types/workoutSession";
 import { DEFAULT_SESSION_FILTERS, SessionFiltersType } from "./sessionFilters";
 import { unstable_cache } from "next/cache";
-
-// Récupère toutes les sessions d'un utilisateur avec filtres (statut, date, workout) et pagination.
-// Retourne { sessions: [], pagination: {}, stats: {} }.
 
 interface GetAllSessionsResponse {
   sessions: WorkoutSession[];
@@ -27,118 +25,84 @@ interface GetAllSessionsResponse {
   } | {};
 }
 
+function toSession({ _id, userId, workoutId, ...rest }: SessionDocument): WorkoutSession {
+  return {
+    ...rest,
+    id: _id.toString(),
+    userId: userId.toString(),
+    workoutId: workoutId.toString(),
+  };
+}
+
 async function _getAllSessions(userId: string, filters: SessionFiltersType): Promise<GetAllSessionsResponse> {
   if (!userId) return { sessions: [], pagination: {}, stats: {} };
 
-  const {
-    status,
-    dateFilter,
-    workoutFilter,
-    page,
-    limit,
-  } = { ...DEFAULT_SESSION_FILTERS, ...filters };
-
+  const { status, dateFilter, workoutFilter, page, limit } = { ...DEFAULT_SESSION_FILTERS, ...filters };
 
   try {
     const db = await connectDB();
-    const user = await db
-      .collection("users")
-      .findOne({ _id: new ObjectId(userId) });
+    const allDocs = await db
+      .collection<SessionDocument>("sessions")
+      .find({ userId: new ObjectId(userId) })
+      .toArray();
 
-    if (!user) {
-      return { sessions: [], pagination: {}, stats: {} };
-    }
+    let sessions = allDocs.map(toSession);
 
-    let sessions = user?.sessions || [];
+    // ── Filtres ───────────────────────────────────────────────────────────────
 
-    // ═══════════════════════════════════════════════════════
-    // 🔍 FILTRE PAR STATUT
-    // ═══════════════════════════════════════════════════════
     if (status && status !== "all") {
-      sessions = sessions.filter((s: WorkoutSessionDB) => s.status === status);
+      sessions = sessions.filter((s) => s.status === status);
     }
 
     if (workoutFilter && workoutFilter !== "all") {
-      sessions = sessions.filter((s: WorkoutSessionDB) => s.workoutName === workoutFilter);
+      sessions = sessions.filter((s) => s.workoutName === workoutFilter);
     }
 
-    // ═══════════════════════════════════════════════════════
-    // 🔍 FILTRE PAR DATE
-    // ═══════════════════════════════════════════════════════
     if (dateFilter && dateFilter !== "all") {
       const now = new Date();
-      let startDate;
+      let startDate: Date | undefined;
 
       switch (dateFilter) {
-        case "week":
-          startDate = new Date();
-          startDate.setDate(now.getDate() - 7);
-          break;
-        case "month":
-          startDate = new Date();
-          startDate.setDate(now.getDate() - 30);
-          break;
-        case "quarter":
-          startDate = new Date();
-          startDate.setMonth(now.getMonth() - 3);
-          break;
-        case "year":
-          startDate = new Date();
-          startDate.setFullYear(now.getFullYear() - 1);
-          break;
+        case "week":    startDate = new Date(now); startDate.setDate(now.getDate() - 7); break;
+        case "month":   startDate = new Date(now); startDate.setDate(now.getDate() - 30); break;
+        case "quarter": startDate = new Date(now); startDate.setMonth(now.getMonth() - 3); break;
+        case "year":    startDate = new Date(now); startDate.setFullYear(now.getFullYear() - 1); break;
       }
 
       if (startDate) {
-        sessions = sessions.filter((s: WorkoutSessionDB) => {
-          const sessionDate = new Date(
-            s.completedDate || s.startedAt || s.scheduledDate || s.createdAt,
-          );
-          return sessionDate >= startDate;
+        sessions = sessions.filter((s) => {
+          const sessionDate = new Date(s.completedDate || s.startedAt || s.scheduledDate || s.createdAt);
+          return sessionDate >= startDate!;
         });
       }
     }
 
-    // ═══════════════════════════════════════════════════════
-    // 📊 TRIER
-    // ═══════════════════════════════════════════════════════
-    sessions.sort((a: WorkoutSessionDB, b: WorkoutSessionDB) => {
+    // ── Tri ───────────────────────────────────────────────────────────────────
+
+    sessions.sort((a, b) => {
       const dateA = new Date(a.completedDate || a.scheduledDate || a.startedAt || a.createdAt);
       const dateB = new Date(b.completedDate || b.scheduledDate || b.startedAt || b.createdAt);
       return dateB.getTime() - dateA.getTime();
     });
 
-    // ═══════════════════════════════════════════════════════
-    // 📄 PAGINATION
-    // ═══════════════════════════════════════════════════════
+    // ── Pagination ────────────────────────────────────────────────────────────
+
     const totalSessions = sessions.length;
     const startIndex = (page - 1) * limit;
-    const endIndex = startIndex + limit;
-    const sessionsForThisPage = sessions.slice(startIndex, endIndex);
     const totalPages = Math.ceil(totalSessions / limit);
 
-    // ═══════════════════════════════════════════════════════
-    // 📈 STATS (toutes les sessions user)
-    // ═══════════════════════════════════════════════════════
-    const allUserSessions = user?.sessions || [];
+    // ── Stats (toutes les sessions, sans filtre) ──────────────────────────────
+
+    const allSessions = allDocs.map(toSession);
     const stats = {
-      total: allUserSessions.length,
-      completed: allUserSessions.filter((s: WorkoutSessionDB) => s.status === "completed").length,
-      inProgress: allUserSessions.filter((s: WorkoutSessionDB) => s.status === "in-progress")
-        .length,
-      planned: allUserSessions.filter((s: WorkoutSessionDB) => s.status === "planned").length,
+      total: allSessions.length,
+      completed: allSessions.filter((s) => s.status === "completed").length,
+      inProgress: allSessions.filter((s) => s.status === "in-progress").length,
+      planned: allSessions.filter((s) => s.status === "planned").length,
     };
 
-    // Convertir _id en id pour l'application
-    const formattedSessions = sessionsForThisPage.map(({ _id, userId, workoutId, ...session }: WorkoutSessionDB) => ({
-      ...session,
-      id: _id.toString(),
-      userId: userId.toString(),
-      workoutId: workoutId?.toString(),
-    }));
-
-
     return {
-      sessions: formattedSessions,
+      sessions: sessions.slice(startIndex, startIndex + limit),
       pagination: {
         page,
         limit,
@@ -151,117 +115,56 @@ async function _getAllSessions(userId: string, filters: SessionFiltersType): Pro
     };
   } catch (error) {
     console.error("Erreur getAllSessions:", error);
-    return { sessions: [], pagination: { page: 0, limit: 0, totalSessions: 0, totalPages: 0, hasNextPage: false, hasPreviousPage: false }, stats: { total: 0, completed: 0, inProgress: 0, planned: 0 } };
+    return {
+      sessions: [],
+      pagination: { page: 0, limit: 0, totalSessions: 0, totalPages: 0, hasNextPage: false, hasPreviousPage: false },
+      stats: { total: 0, completed: 0, inProgress: 0, planned: 0 },
+    };
   }
 }
 export const getAllSessions = unstable_cache(_getAllSessions, ["allSessions"], { revalidate: 300, tags: ["sessions"] });
-// Récupère une session spécifique par son ID pour un utilisateur donné.
-// Retourne la session avec les ObjectId convertis en strings ou null si non trouvée.
-
-
 
 async function _getSessionbyId(userId: string, sessionId: string): Promise<WorkoutSession | CompletedSessionType | null> {
   try {
     const db = await connectDB();
-    const user = await db
-      .collection("users")
-      .findOne({ _id: new ObjectId(userId) });
-
-    if (!user) {
-      console.error("❌ Utilisateur non trouvé:", userId);
-      return null;
-    }
-
-    if (!user.sessions || user.sessions.length === 0) {
-      console.error("❌ Aucune session pour cet utilisateur");
-      return null;
-    }
-
-    // ✅ Trouver la bonne session
-    const data: WorkoutSessionDB | undefined = user.sessions.find(
-      (session: WorkoutSessionDB) => session._id.toString() === sessionId,
-    );
-
-    if (!data) {
-      console.error("❌ Session non trouvée:", sessionId);
-
-      return null;
-    }
-
-    // ✅ Convertir les ObjectId en strings et _id en id
-
-    const { _id, ...sessionData }: WorkoutSessionDB = data;
-    return {
-      ...sessionData,
-      id: _id.toString(),
-      userId: data.userId.toString(),
-      workoutId: data.workoutId.toString(),
-    };
+    const doc = await db
+      .collection<SessionDocument>("sessions")
+      .findOne({ _id: new ObjectId(sessionId), userId: new ObjectId(userId) });
+    if (!doc) return null;
+    return toSession(doc);
   } catch (error) {
     console.error("❌ Erreur getSessionbyId:", error);
     return null;
   }
 }
-
 export const getSessionbyId = unstable_cache(_getSessionbyId, ["sessionById"], { revalidate: 300, tags: ["sessions"] });
 
-// Récupère toutes les sessions planifiées
 async function _getPlannedSessions(userId: string): Promise<WorkoutSession[]> {
   if (!userId) return [];
   try {
     const db = await connectDB();
-    const user = await db
-      .collection("users")
-      .findOne({ _id: new ObjectId(userId) });
-    if (!user) {
-      console.error("❌ Utilisateur non trouvé:", userId);
-      return [];
-    }
-    const sessions = user.sessions.filter((s: WorkoutSessionDB) => s.status === "planned");
-    // Convertir _id en id pour l'application
-
-
-    return sessions.map(({ _id, userId, workoutId, ...session }: WorkoutSessionDB) => ({
-      ...session,
-      id: _id.toString(),
-      userId: userId.toString(),
-      workoutId: workoutId.toString(),
-    }));
+    const docs = await db
+      .collection<SessionDocument>("sessions")
+      .find({ userId: new ObjectId(userId), status: "planned" })
+      .toArray();
+    return docs.map(toSession);
   } catch (error) {
-    console.error("❌ Erreur de récupération des sessions planifiées:", error);
+    console.error("❌ Erreur getPlannedSessions:", error);
     return [];
   }
 }
 export const getPlannedSessions = unstable_cache(_getPlannedSessions, ["plannedSessions"], { revalidate: 300, tags: ["sessions"] });
-// Récupère les sessions pour le calendrier (toutes ou filtrées par statut)
+
 async function _getCalendarSessions(userId: string, statusFilter: string | null): Promise<WorkoutSession[]> {
   if (!userId) return [];
-
   try {
     const db = await connectDB();
-    const user = await db
-      .collection("users")
-      .findOne({ _id: new ObjectId(userId) });
-
-    if (!user) {
-      console.error("❌ Utilisateur non trouvé:", userId);
-      return [];
-    }
-
-    let sessions = user?.sessions || [];
-
-    // Filtrer par statut si fourni
+    const query: Record<string, unknown> = { userId: new ObjectId(userId) };
     if (statusFilter && statusFilter !== "all") {
-      sessions = sessions.filter((s: WorkoutSessionDB) => s.status === statusFilter);
+      query.status = statusFilter;
     }
-
-    // Convertir _id en id pour l'application
-    return sessions.map(({ _id, userId, workoutId, ...session }: WorkoutSessionDB) => ({
-      ...session,
-      id: _id.toString(),
-      userId: userId.toString(),
-      workoutId: workoutId.toString(),
-    }));
+    const docs = await db.collection<SessionDocument>("sessions").find(query).toArray();
+    return docs.map(toSession);
   } catch (error) {
     console.error("❌ Erreur getCalendarSessions:", error);
     return [];

@@ -63,11 +63,11 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
         };
       }
 
-       const currentSet = newExercises[exerciseIndex].actualSets[setIndex];
-    
-    if (field === "reps") currentSet.reps = value as number | undefined;
-    if (field === "weight") currentSet.weight = value as number | undefined;
-    if (field === "completed") currentSet.completed = value as boolean | undefined;
+      const currentSet = newExercises[exerciseIndex].actualSets[setIndex];
+
+      if (field === "reps") currentSet.reps = value as number | undefined;
+      if (field === "weight") currentSet.weight = value as number | undefined;
+      if (field === "completed") currentSet.completed = value as boolean | undefined;
 
       return { exercises: newExercises };
     });

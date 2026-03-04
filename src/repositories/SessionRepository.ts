@@ -1,6 +1,7 @@
+import { SessionDocument } from "@/models/SessionDocument";
+import { WorkoutDocument } from "@/models/WorkoutDocument";
 import { SessionExercise } from "@/types/SessionExercise";
-import { UserDocument } from "@/types/user";
-import { WorkoutSession, WorkoutSessionDB } from "@/types/workoutSession";
+import { WorkoutSession } from "@/types/workoutSession";
 import { Db, ObjectId } from "mongodb";
 
 // Données nécessaires pour créer une nouvelle session
@@ -27,10 +28,7 @@ export type PlannedSessionUpdate = {
 export class SessionRepository {
     constructor(private readonly db: Db) { }
 
-    // Transforme un document DB (avec ObjectId) en type applicatif (avec string)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    private toSession(raw: any): WorkoutSession {
-        const { _id, userId, workoutId, ...rest } = raw;
+    private toSession({ _id, userId, workoutId, ...rest }: SessionDocument): WorkoutSession {
         return {
             ...rest,
             id: _id.toString(),
@@ -42,25 +40,19 @@ export class SessionRepository {
     // ─── READ ────────────────────────────────────────────────────────────────────
 
     async findById(userId: string, sessionId: string): Promise<WorkoutSession | null> {
-        const user = await this.db.collection("users").findOne(
-            { _id: new ObjectId(userId) },
-            { projection: { sessions: 1 } }
-        );
-        if (!user) return null;
-        const session = user.sessions?.find(
-            (s: WorkoutSessionDB) => s._id.toString() === sessionId
-        );
-        if (!session) return null;
-        return this.toSession(session);
+        const doc = await this.db
+            .collection<SessionDocument>("sessions")
+            .findOne({ _id: new ObjectId(sessionId), userId: new ObjectId(userId) });
+        if (!doc) return null;
+        return this.toSession(doc);
     }
 
     async findAll(userId: string): Promise<WorkoutSession[]> {
-        const user = await this.db.collection("users").findOne(
-            { _id: new ObjectId(userId) },
-            { projection: { sessions: 1 } }
-        );
-        if (!user) return [];
-        return (user.sessions ?? []).map((s: WorkoutSessionDB) => this.toSession(s));
+        const docs = await this.db
+            .collection<SessionDocument>("sessions")
+            .find({ userId: new ObjectId(userId) })
+            .toArray();
+        return docs.map((d) => this.toSession(d));
     }
 
     // ─── CREATE ─────────────────────────────────────────────────────────────────
@@ -68,97 +60,81 @@ export class SessionRepository {
     async create(userId: string, data: NewSessionData, isPlanning: boolean): Promise<string> {
         const sessionId = new ObjectId();
 
-        const newSession = {
+        const doc: SessionDocument = {
             _id: sessionId,
             userId: new ObjectId(userId),
             workoutId: new ObjectId(data.workoutId),
             workoutName: data.workoutName,
-            scheduledDate: data.scheduledDate,
+            scheduledDate: data.scheduledDate as unknown as string,
             status: data.status,
             isPlanned: data.isPlanned,
-            startedAt: data.startedAt,
+            startedAt: data.startedAt as unknown as string,
             completedDate: null,
             estimatedDuration: data.estimatedDuration,
+            duration: "0",
+            notes: null,
+            effort: null,
             exercises: data.exercises,
-            createdAt: new Date(),
-            updatedAt: new Date(),
+            createdAt: new Date() as unknown as string,
+            updatedAt: new Date() as unknown as string,
         };
 
-        // Si planification : juste $push la session
-        // Si démarrage immédiat : $push + incrémenter timesUsed + lastUsedAt du workout
-        const updateQuery = isPlanning
-            ? { $push: { sessions: newSession } }
-            : {
-                $inc: { "workouts.$[workout].timesUsed": 1 },
-                $set: { "workouts.$[workout].lastUsedAt": new Date() },
-                $push: { sessions: newSession },
-            };
+        await this.db.collection<SessionDocument>("sessions").insertOne(doc);
 
-        const options = isPlanning
-            ? {}
-            : { arrayFilters: [{ "workout._id": new ObjectId(data.workoutId) }] };
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        await this.db.collection<UserDocument>("users").updateOne(
-            { _id: new ObjectId(userId) },
-            updateQuery as any,
-            options
-        );
+        // Si démarrage immédiat : incrémenter timesUsed + lastUsedAt du workout
+        if (!isPlanning) {
+            await this.db.collection<WorkoutDocument>("workouts").updateOne(
+                { _id: new ObjectId(data.workoutId), userId: new ObjectId(userId) },
+                { $inc: { timesUsed: 1 }, $set: { lastUsedAt: new Date() } }
+            );
+        }
 
         return sessionId.toString();
     }
 
     // ─── PATCH ACTIONS ───────────────────────────────────────────────────────────
 
-    // Démarrer une session planifiée : reset les exercices + incrémenter timesUsed
     async start(
         userId: string,
         sessionId: string,
         workoutId: string,
         resetedExercises: SessionExercise[]
     ): Promise<void> {
-        await this.db.collection("users").updateOne(
-            { _id: new ObjectId(userId) },
+        await this.db.collection<SessionDocument>("sessions").updateOne(
+            { _id: new ObjectId(sessionId), userId: new ObjectId(userId) },
             {
                 $set: {
-                    "sessions.$[session].startedAt": new Date(),
-                    "sessions.$[session].exercises": resetedExercises,
-                    "sessions.$[session].status": "in-progress",
-                    "sessions.$[session].updatedAt": new Date(),
-                    "workouts.$[workout].lastUsedAt": new Date(),
+                    startedAt: new Date() as unknown as string,
+                    exercises: resetedExercises,
+                    status: "in-progress",
+                    updatedAt: new Date() as unknown as string,
                 },
-                $inc: { "workouts.$[workout].timesUsed": 1 },
-            },
-            {
-                arrayFilters: [
-                    { "session._id": new ObjectId(sessionId) },
-                    { "workout._id": new ObjectId(workoutId) },
-                ],
             }
+        );
+        await this.db.collection<WorkoutDocument>("workouts").updateOne(
+            { _id: new ObjectId(workoutId), userId: new ObjectId(userId) },
+            { $inc: { timesUsed: 1 }, $set: { lastUsedAt: new Date() } }
         );
     }
 
-    // Sauvegarder la progression d'une session en cours
     async save(
         userId: string,
         sessionId: string,
         exercises: SessionExercise[],
         duration: number
     ): Promise<void> {
-        await this.db.collection("users").updateOne(
-            { _id: new ObjectId(userId), "sessions._id": new ObjectId(sessionId) },
+        await this.db.collection<SessionDocument>("sessions").updateOne(
+            { _id: new ObjectId(sessionId), userId: new ObjectId(userId) },
             {
                 $set: {
-                    "sessions.$.exercises": exercises,
-                    "sessions.$.duration": duration,
-                    "sessions.$.updatedAt": new Date(),
+                    exercises,
+                    duration: duration as unknown as string,
+                    updatedAt: new Date() as unknown as string,
                 },
             }
         );
     }
 
-    // Annuler une session en cours : reset la session + décrémente les stats du workout
-    // newTimesUsed et newLastUsedAt sont calculés par le service
     async cancel(
         userId: string,
         sessionId: string,
@@ -166,48 +142,43 @@ export class SessionRepository {
         newTimesUsed: number,
         newLastUsedAt: Date | null
     ): Promise<void> {
-        await this.db.collection("users").updateOne(
-            { _id: new ObjectId(userId) },
+        await this.db.collection<SessionDocument>("sessions").updateOne(
+            { _id: new ObjectId(sessionId), userId: new ObjectId(userId) },
             {
                 $set: {
-                    "workouts.$[workout].lastUsedAt": newLastUsedAt,
-                    "workouts.$[workout].timesUsed": newTimesUsed,
-                    "sessions.$[session].startedAt": null,
-                    "sessions.$[session].completedDate": null,
-                    "sessions.$[session].duration": null,
-                    "sessions.$[session].updatedAt": new Date(),
-                    "sessions.$[session].exercises.$[].actualSets": [],
-                    "sessions.$[session].exercises.$[].completed": false,
-                    "sessions.$[session].exercises.$[].effort": null,
-                    "sessions.$[session].exercises.$[].notes": "",
-                    "sessions.$[session].status": "planned",
+                    startedAt: null,
+                    completedDate: null,
+                    duration: "0",
+                    status: "planned",
+                    updatedAt: new Date() as unknown as string,
+                    "exercises.$[].actualSets": [],
+                    "exercises.$[].completed": false,
+                    "exercises.$[].effort": null,
+                    "exercises.$[].notes": "",
                 },
-            },
-            {
-                arrayFilters: [
-                    { "workout._id": new ObjectId(workoutId) },
-                    { "session._id": new ObjectId(sessionId) },
-                ],
             }
+        );
+        await this.db.collection<WorkoutDocument>("workouts").updateOne(
+            { _id: new ObjectId(workoutId), userId: new ObjectId(userId) },
+            { $set: { timesUsed: newTimesUsed, lastUsedAt: newLastUsedAt } }
         );
     }
 
-    // Modifier une session planifiée (workout, date, exercices...)
     async updatePlanned(
         userId: string,
         sessionId: string,
         data: PlannedSessionUpdate
     ): Promise<void> {
-        await this.db.collection("users").updateOne(
-            { _id: new ObjectId(userId), "sessions._id": new ObjectId(sessionId) },
+        await this.db.collection<SessionDocument>("sessions").updateOne(
+            { _id: new ObjectId(sessionId), userId: new ObjectId(userId) },
             {
                 $set: {
-                    "sessions.$.workoutId": new ObjectId(data.workoutId),
-                    "sessions.$.workoutName": data.workoutName,
-                    "sessions.$.exercises": data.exercises,
-                    "sessions.$.scheduledDate": data.scheduledDate,
-                    "sessions.$.estimatedDuration": data.estimatedDuration,
-                    "sessions.$.updatedAt": new Date(),
+                    workoutId: new ObjectId(data.workoutId),
+                    workoutName: data.workoutName,
+                    exercises: data.exercises,
+                    scheduledDate: data.scheduledDate as unknown as string,
+                    estimatedDuration: data.estimatedDuration,
+                    updatedAt: new Date() as unknown as string,
                 },
             }
         );
@@ -215,22 +186,21 @@ export class SessionRepository {
 
     // ─── PUT ────────────────────────────────────────────────────────────────────
 
-    // Finaliser une session (status → "completed")
     async complete(
         userId: string,
         sessionId: string,
         exercises: SessionExercise[],
         duration: number
     ): Promise<void> {
-        await this.db.collection("users").updateOne(
-            { _id: new ObjectId(userId), "sessions._id": new ObjectId(sessionId) },
+        await this.db.collection<SessionDocument>("sessions").updateOne(
+            { _id: new ObjectId(sessionId), userId: new ObjectId(userId) },
             {
                 $set: {
-                    "sessions.$.exercises": exercises,
-                    "sessions.$.status": "completed",
-                    "sessions.$.completedDate": new Date(),
-                    "sessions.$.duration": duration,
-                    "sessions.$.updatedAt": new Date(),
+                    exercises,
+                    status: "completed",
+                    completedDate: new Date() as unknown as string,
+                    duration: duration as unknown as string,
+                    updatedAt: new Date() as unknown as string,
                 },
             }
         );
@@ -239,28 +209,21 @@ export class SessionRepository {
     // ─── DELETE ─────────────────────────────────────────────────────────────────
 
     async delete(userId: string, sessionId: string): Promise<void> {
-        await this.db.collection<UserDocument>("users").updateOne(
-            { _id: new ObjectId(userId) },
-            { $pull: { sessions: { _id: new ObjectId(sessionId) } } }
-        );
+        await this.db.collection<SessionDocument>("sessions").deleteOne({
+            _id: new ObjectId(sessionId),
+            userId: new ObjectId(userId),
+        });
     }
 
-    // Mettre à jour les stats d'un workout après cancel ou delete
-    // (timesUsed décrémenté, lastUsedAt recalculé)
     async updateWorkoutStats(
         userId: string,
         workoutId: string,
         timesUsed: number,
         lastUsedAt: Date | null
     ): Promise<void> {
-        await this.db.collection("users").updateOne(
-            { _id: new ObjectId(userId), "workouts._id": new ObjectId(workoutId) },
-            {
-                $set: {
-                    "workouts.$.timesUsed": timesUsed,
-                    "workouts.$.lastUsedAt": lastUsedAt,
-                },
-            }
+        await this.db.collection<WorkoutDocument>("workouts").updateOne(
+            { _id: new ObjectId(workoutId), userId: new ObjectId(userId) },
+            { $set: { timesUsed, lastUsedAt } }
         );
     }
 }
