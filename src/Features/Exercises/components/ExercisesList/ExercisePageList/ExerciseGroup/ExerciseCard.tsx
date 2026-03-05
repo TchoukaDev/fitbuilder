@@ -35,6 +35,20 @@ export default function ExerciseCard({
               {exercise.name} {exercise.isPublic === false && "🗒️"}
             </h3>
             <p className="text-gray-600 text-sm ml-3"> {exercise.equipment}</p>
+            {/* Badges muscles */}
+            <div className="flex flex-wrap gap-1 mt-1.5 ml-3">
+              <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-700 border border-primary-200">
+                {exercise.muscle}
+              </span>
+              {(exercise.muscles || []).map((m) => (
+                <span
+                  key={m}
+                  className="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200"
+                >
+                  {m}
+                </span>
+              ))}
+            </div>
             <p className="text-sm mt-2 line-clamp-3 md:line-clamp-none">
               {exercise.description}
             </p>

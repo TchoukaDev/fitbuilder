@@ -4,6 +4,7 @@ import { ObjectId } from "mongodb";
 type ExerciseBase = {
     name: string;
     muscle: string;
+    muscles: string[];
     equipment: string;
     description: string | null;
     isPublic: boolean;

@@ -13,6 +13,7 @@ export interface ExerciseDocument {
     userId: ObjectId | null;
     name: string;
     muscle: string;
+    muscles: string[];
     equipment: string;
     description: string | null;
     isPublic: boolean;

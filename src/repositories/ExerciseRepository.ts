@@ -48,12 +48,13 @@ export class ExerciseRepository {
 
     // ─── CREATE ──────────────────────────────────────────────────────────────────
 
-    async createPublic(data: { name: string; muscle: string; description: string | null; equipment: string }): Promise<Exercise> {
+    async createPublic(data: { name: string; muscle: string; muscles: string[]; description: string | null; equipment: string }): Promise<Exercise> {
         const doc: ExerciseDocument = {
             _id: new ObjectId(),
             userId: null,
             name: data.name,
             muscle: data.muscle,
+            muscles: data.muscles,
             description: data.description,
             equipment: data.equipment,
             isPublic: true,
@@ -63,12 +64,13 @@ export class ExerciseRepository {
         return this.toExercise(doc);
     }
 
-    async createPrivate(userId: string, data: { name: string; muscle: string; description: string | null; equipment: string }): Promise<Exercise> {
+    async createPrivate(userId: string, data: { name: string; muscle: string; muscles: string[]; description: string | null; equipment: string }): Promise<Exercise> {
         const doc: ExerciseDocument = {
             _id: new ObjectId(),
             userId: new ObjectId(userId),
             name: data.name,
             muscle: data.muscle,
+            muscles: data.muscles,
             description: data.description,
             equipment: data.equipment,
             isPublic: false,
@@ -80,18 +82,18 @@ export class ExerciseRepository {
 
     // ─── UPDATE ──────────────────────────────────────────────────────────────────
 
-    async updatePublic(exerciseId: string, data: { name: string; muscle: string; description: string | null; equipment: string }): Promise<Exercise | null> {
+    async updatePublic(exerciseId: string, data: { name: string; muscle: string; muscles: string[]; description: string | null; equipment: string }): Promise<Exercise | null> {
         await this.db.collection<ExerciseDocument>("exercises").updateOne(
             { _id: new ObjectId(exerciseId), userId: null },
-            { $set: { name: data.name, muscle: data.muscle, description: data.description, equipment: data.equipment } }
+            { $set: { name: data.name, muscle: data.muscle, muscles: data.muscles, description: data.description, equipment: data.equipment } }
         );
         return this.findPublicById(exerciseId);
     }
 
-    async updatePrivate(userId: string, exerciseId: string, data: { name: string; muscle: string; description: string | null; equipment: string }): Promise<Exercise | null> {
+    async updatePrivate(userId: string, exerciseId: string, data: { name: string; muscle: string; muscles: string[]; description: string | null; equipment: string }): Promise<Exercise | null> {
         await this.db.collection<ExerciseDocument>("exercises").updateOne(
             { _id: new ObjectId(exerciseId), userId: new ObjectId(userId) },
-            { $set: { name: data.name, muscle: data.muscle, description: data.description, equipment: data.equipment } }
+            { $set: { name: data.name, muscle: data.muscle, muscles: data.muscles, description: data.description, equipment: data.equipment } }
         );
         return this.findPrivateById(userId, exerciseId);
     }

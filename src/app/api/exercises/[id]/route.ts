@@ -27,7 +27,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     );
   }
 
-  const { name, muscle, equipment, description } = result.data;
+  const { name, muscle, muscles, equipment, description } = result.data;
 
   try {
     const db = await connectDB();
@@ -36,6 +36,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     const exercise = await service.update(userId, exerciseId, isAdmin, {
       name,
       muscle,
+      muscles,
       equipment,
       description: description ?? null,
     });

@@ -24,6 +24,7 @@ export default function UpdateExerciseForm({ exerciseToUpdate }: { exerciseToUpd
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<ExerciseFormData>({
     resolver: zodResolver(exerciseSchema),
@@ -32,6 +33,7 @@ export default function UpdateExerciseForm({ exerciseToUpdate }: { exerciseToUpd
       description: exerciseToUpdate.description || "",
       equipment: exerciseToUpdate.equipment || "",
       muscle: exerciseToUpdate.muscle || "",
+      muscles: exerciseToUpdate.muscles || [],
     },
     mode: "onSubmit",
     reValidateMode: "onChange",
@@ -80,6 +82,7 @@ export default function UpdateExerciseForm({ exerciseToUpdate }: { exerciseToUpd
       loadingLabel="Mise à jour..."
       nameRegister={nameRegister}
       nameRef={nameRef}
+      setValue={setValue}
     />
   );
 }

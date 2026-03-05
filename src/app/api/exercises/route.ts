@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { name, muscle, equipment, description } = result.data;
+  const { name, muscle, muscles, equipment, description } = result.data;
 
   try {
     const db = await connectDB();
@@ -35,6 +35,7 @@ export async function POST(req: NextRequest) {
     const exercise = await service.create(userId, isAdmin, {
       name,
       muscle,
+      muscles,
       equipment,
       description: description ?? null,
     });

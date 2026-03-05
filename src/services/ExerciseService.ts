@@ -11,6 +11,7 @@ import {
 type ExerciseData = {
     name: string;
     muscle: string;
+    muscles: string[];
     equipment: string;
     description: string | null;
 };
