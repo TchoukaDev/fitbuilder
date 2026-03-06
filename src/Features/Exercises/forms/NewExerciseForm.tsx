@@ -22,7 +22,7 @@ export default function NewExerciseForm() {
     handleSubmit,
     watch,
     setValue,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isSubmitted },
   } = useForm<ExerciseFormData>({
     resolver: zodResolver(exerciseSchema),
     defaultValues: { muscles: [] as string[] },
@@ -67,6 +67,7 @@ export default function NewExerciseForm() {
       submitLabel="Valider"
       loadingLabel="Validation en cours..."
       watchedFields={watchedFields}
+      isSubmitted={isSubmitted}
       nameRegister={nameRegister}
       nameRef={nameRef}
       setValue={setValue}

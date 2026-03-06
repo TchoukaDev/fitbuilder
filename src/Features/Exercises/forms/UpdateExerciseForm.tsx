@@ -35,8 +35,7 @@ export default function UpdateExerciseForm({ exerciseToUpdate }: { exerciseToUpd
       muscle: exerciseToUpdate.muscle || "",
       muscles: exerciseToUpdate.muscles || [],
     },
-    mode: "onSubmit",
-    reValidateMode: "onChange",
+    mode: "onChange",
   });
 
   const nameRegister = register("name");
@@ -75,6 +74,7 @@ export default function UpdateExerciseForm({ exerciseToUpdate }: { exerciseToUpd
       errors={errors}
       isPending={isUpdating}
       isSubmitting={isSubmitting}
+      isSubmitted={true}
       onSubmit={handleSubmit(onSubmit)}
       watchedFields={watchedFields}
       onClose={() => closeModal("updateExercise")}

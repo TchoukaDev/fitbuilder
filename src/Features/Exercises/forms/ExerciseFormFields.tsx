@@ -20,6 +20,7 @@ type ExerciseFormFieldsProps = {
   errors: FieldErrors<ExerciseFormData>;
   isPending: boolean;
   isSubmitting: boolean;
+  isSubmitted: boolean;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
   onClose: () => void;
   submitLabel: string;
@@ -35,6 +36,7 @@ export default function ExerciseFormFields({
   errors,
   isPending,
   isSubmitting,
+  isSubmitted,
   onSubmit,
   onClose,
   submitLabel = "Valider",
@@ -51,17 +53,17 @@ export default function ExerciseFormFields({
     if (primaryMuscle === muscleName) {
       // Désélection du muscle primaire → le premier secondaire prend sa place
       if (secondaryMuscles.length > 0) {
-        setValue("muscle", secondaryMuscles[0], { shouldValidate: true });
+        setValue("muscle", secondaryMuscles[0], { shouldValidate: isSubmitted });
         setValue("muscles", secondaryMuscles.slice(1));
       } else {
-        setValue("muscle", "", { shouldValidate: true });
+        setValue("muscle", "", { shouldValidate: isSubmitted });
       }
     } else if (secondaryMuscles.includes(muscleName)) {
       // Désélection d'un muscle secondaire
       setValue("muscles", secondaryMuscles.filter((m) => m !== muscleName));
     } else if (!primaryMuscle) {
       // Aucun primaire → devient le primaire
-      setValue("muscle", muscleName, { shouldValidate: true });
+      setValue("muscle", muscleName, { shouldValidate: isSubmitted });
     } else {
       // Ajout en secondaire
       setValue("muscles", [...secondaryMuscles, muscleName]);
