@@ -56,41 +56,6 @@ export default function WorkoutFormFields({
           )}
         </div>
 
-        {/* Description */}
-        <div className="relative">
-          <textarea
-            className="input peer"
-            placeholder=""
-            rows={3}
-            {...register("description")}
-          />
-          <Label htmlFor="description" value={watchedFields.description}>
-            Description
-          </Label>
-        </div>
-
-        {/* Durée estimée */}
-        <div className="relative">
-          <input
-            type="number"
-            onKeyDown={handleKeyDown}
-            className="input peer"
-            placeholder=""
-            {...register("estimatedDuration", { valueAsNumber: true })}
-          />
-          <Label
-            htmlFor="estimatedDuration"
-            value={watchedFields.estimatedDuration}
-          >
-            Durée estimée (minutes) <span className="text-accent-500">*</span>
-          </Label>
-          {errors?.estimatedDuration && (
-            <p className="formError mt-1">
-              {errors?.estimatedDuration?.message}
-            </p>
-          )}
-        </div>
-
         {/* Catégorie */}
 
         <div className="flex flex-col gap-3">
@@ -118,6 +83,45 @@ export default function WorkoutFormFields({
             <p className="formError mt-1">{errors?.category?.message}</p>
           )}
         </div>
+
+
+        {/* Durée estimée */}
+        <div className="relative">
+          <input
+            type="number"
+            onKeyDown={handleKeyDown}
+            className="input peer"
+            placeholder=""
+            {...register("estimatedDuration", { valueAsNumber: true })}
+          />
+          <Label
+            htmlFor="estimatedDuration"
+            value={watchedFields.estimatedDuration}
+          >
+            Durée estimée (minutes) <span className="text-accent-500">*</span>
+          </Label>
+          {errors?.estimatedDuration && (
+            <p className="formError mt-1">
+              {errors?.estimatedDuration?.message}
+            </p>
+          )}
+        </div>
+
+
+        {/* Description */}
+        <div className="relative w-full">
+          <textarea
+            className="input peer"
+            placeholder=""
+            rows={3}
+            {...register("description")}
+          />
+          <Label htmlFor="description" value={watchedFields.description}>
+            Description
+          </Label>
+        </div>
+
+
       </div>
     </div>
   );

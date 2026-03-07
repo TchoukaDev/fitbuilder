@@ -2,6 +2,7 @@
 
 // Page de liste des exercices avec onglets, filtres, modals et actions
 import { Button, DeleteConfirmModal } from "@/Global/components";
+import { MuscleSelectGroup } from "@/Features/Exercises/hooks/useExerciseFilters";
 import { ExerciseGroup } from ".";
 import {
   NewExerciseModal,
@@ -21,6 +22,9 @@ type ExercisePageListProps = {
   allExerciseMuscles: string[];
   selectedMuscle: string;
   setSelectedMuscle: (muscle: string) => void;
+  selectedSecondaryMuscle: string;
+  setSelectedSecondaryMuscle: (muscle: string) => void;
+  muscleSelectGroups: MuscleSelectGroup[];
   myExerciseMuscles: string[];
   favoriteExerciseMuscles: string[];
   grouped: Record<string, Exercise[]>;
@@ -36,6 +40,9 @@ export default function ExercisePageList({
   allExerciseMuscles,
   selectedMuscle,
   setSelectedMuscle,
+  selectedSecondaryMuscle,
+  setSelectedSecondaryMuscle,
+  muscleSelectGroups,
   myExerciseMuscles,
   favoriteExerciseMuscles,
   grouped,
@@ -121,6 +128,27 @@ export default function ExercisePageList({
           selectedMuscle={selectedMuscle}
           onMuscleChange={setSelectedMuscle}
         />
+      )}
+
+      {/* Filtre par muscle principal granulaire */}
+      {muscleSelectGroups.length > 0 && (
+        <div className="mb-5">
+          <select
+            className="input py-2 peer"
+            value={selectedSecondaryMuscle}
+            onChange={(e) => setSelectedSecondaryMuscle(e.target.value)}
+            aria-label="Filtrer par muscle principal"
+          >
+            <option value="all">-- Tous les muscles --</option>
+            {muscleSelectGroups.map((group) => (
+              <optgroup key={group.label} label={group.label}>
+                {group.muscles.map(({ name, count }) => (
+                  <option key={name} value={name}>{name} ({count})</option>
+                ))}
+              </optgroup>
+            ))}
+          </select>
+        </div>
       )}
 
       {/* Liste des exercices groupés par muscle */}

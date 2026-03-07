@@ -7,6 +7,8 @@ export default function WorkoutExerciseGroupSelect({ grouped }: { grouped: Recor
     (state) => state.setSelectedExerciseId,
   );
 
+  const totalCount = Object.values(grouped).reduce((sum, exs) => sum + exs.length, 0);
+
   return (
     <div className="flex flex-col gap-2 mt-3">
       <label
@@ -23,11 +25,8 @@ export default function WorkoutExerciseGroupSelect({ grouped }: { grouped: Recor
         }}
       >
         <option value="" className="font-semibold">
-          --- Sélectionner un exercices
+          {totalCount === 0 ? "Aucun exercice trouvé" : `--- Sélectionner un exercice (${totalCount})`}
         </option>
-        {Object.entries(grouped).length === 0 && (
-          <option value="">Aucun exercice trouvé</option>
-        )}
         {/* Options */}
         {Object.entries(grouped).map(([_, exs]) =>
           exs.map((ex) => (

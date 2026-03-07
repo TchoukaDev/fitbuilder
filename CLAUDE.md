@@ -201,7 +201,7 @@ src/Features/Workouts/store/__tests__/
 
 ---
 
-## 🔜 Étape 3 — Restructuration MongoDB (À FAIRE)
+## ✅ Étape 3 — Restructuration MongoDB (TERMINÉE)
 
 ### Problème actuel
 
@@ -233,7 +233,7 @@ Collections séparées :
 
 ---
 
-## 🔄 Étape 4 — Refonte Mobile-First (EN COURS)
+## ✅ Étape 4 — Refonte Mobile-First (TERMINÉE)
 
 ### ✅ Réalisé
 
@@ -286,7 +286,7 @@ Collections séparées :
 
 ---
 
-## 🔜 Étape 5 — Refactorisation du système de validation des exercices en séance (À FAIRE)
+## ✅ Étape 5 — Refactorisation du système de validation des exercices en séance (TERMINÉE)
 
 ### Problème identifié
 
@@ -303,3 +303,27 @@ Simplifier et clarifier la logique de validation sans en changer le comportement
 - S'assurer que le reset des séries non complétées (`weight: 0`, `reps: 0`) est bien isolé et explicite
 
 > ⚠️ Faire **après** l'étape 2 (tests) pour avoir un filet de sécurité avant de refactoriser.
+
+---
+
+## ✅ Étape 6 — Filtre muscles secondaires + Combobox + flag Cardio (TERMINÉE)
+
+### Ce qui a été fait
+
+- **`muscleCategory.ts`** — ajout de `"Cardio": "Autre"` dans le mapping
+- **`ExerciseFormFields.tsx`** — ajout de "Cardio" dans le groupe "Autre" du formulaire
+- **`useExerciseFilters.ts`** — ajout de `selectedSecondaryMuscle`, `availableSecondaryMuscles`, `muscleSelectGroups`, reset automatique quand le primaire change
+- **`ExercisesList.tsx` + `ExercisePageList.tsx`** — `<select>` natif affiché après les filtres primaires
+- **`ExerciseSelector.tsx`** (workout) — même logique
+
+### Comportement du `<select>` natif
+
+- **Filtre "Tous"** : options groupées par catégorie (`<optgroup>`) — filtre sur le muscle primaire granulaire
+- **Filtre catégorie** : liste plate des muscles secondaires disponibles pour cette catégorie
+- Changer de catégorie primaire → le filtre granulaire se remet à "Tous"
+
+### Documentation
+
+- `docs/Exercises.md` — documentation complète du flux Exercices (muscles, filtres, formulaires, API, Combobox)
+- `docs/FEATURES.md` — section Exercices mise à jour
+- `docs/README.md` — fonctionnalités mises à jour + lien vers Exercises.md

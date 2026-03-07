@@ -167,6 +167,8 @@ Quand une séance est créée basée sur un workout :
 
 La bibliothèque d'exercices est le cœur du système. Elle contient tous les exercices disponibles : exercices globaux (tous les utilisateurs) et exercices personnels (créés par l'utilisateur).
 
+> Voir la documentation détaillée : **[Exercises.md](./Exercises.md)**
+
 ### Types d'exercices
 
 #### 1. **Exercices globaux**
@@ -179,47 +181,49 @@ La bibliothèque d'exercices est le cœur du système. Elle contient tous les ex
 - Créés par chaque utilisateur
 - Visibles uniquement pour cet utilisateur
 - Modifiables et supprimables par leur créateur
-- Exemples : "Bench Press avec dumbbells", "Squat variation"
 
 ### Création d'un exercice
 
 **Informations requises** :
 - **Nom** : Identifiant clair de l'exercice
-- **Catégorie musculaire** : Groupe de muscles ciblés
-  - Poitrine, Dos, Bras, Jambes, Épaules, Abdos, Cardio
-- **Type d'exercice** : Classification
-  - Force, Hypertrophie, Endurance, Plyométrie, Mobilité
+- **Muscle primaire** : Premier muscle ciblé (badge bleu dans le formulaire)
+- **Muscles secondaires** : Muscles additionnels recrutés (badges gris)
+- **Équipement** : Poids du corps, Haltères, Barre, Machine, Élastique
 - **Description** (optionnel) : Instructions d'exécution
-- **Image/Vidéo** (optionnel) : Ressource visuelle
+
+### Système de muscles
+
+Les muscles sont stockés à deux niveaux :
+- **Granulaire** : ex. "Pectoraux supérieurs", "Triceps", "Deltoïde antérieur"
+- **Catégorie** : ex. "Poitrine", "Bras", "Épaules" (calculée automatiquement)
+
+**Catégories disponibles** : Poitrine, Dos, Épaules, Bras, Jambes, Fessiers, Core, Autre
+
+**Muscles de la catégorie "Autre"** : Corps entier, Cardio
 
 ### Filtrage et recherche
 
 **Filtres disponibles** :
-- Par catégorie musculaire
-- Par type d'exercice
-- Favoris uniquement
-- Exercices personnels vs globaux
+- Par onglet : Tous / Mes exercices / Favoris
+- Par catégorie musculaire primaire (boutons)
+- Par muscle secondaire (Combobox, apparaît quand une catégorie primaire est sélectionnée)
+- Recherche texte en temps réel par nom
 
-**Recherche** :
-- Recherche texte en temps réel
-- Par nom d'exercice
+**Comportement du filtre granulaire (`<select>` natif)** :
+- Toujours visible dès qu'il y a des exercices à filtrer
+- **Quand "Tous" est sélectionné** : options groupées par catégorie (`<optgroup>`) — filtre sur le muscle primaire granulaire
+- **Quand une catégorie est sélectionnée** : liste plate des muscles secondaires disponibles
+- Se réinitialise automatiquement au changement de catégorie primaire
+- Disponible aussi dans le sélecteur d'exercices du formulaire Workout
 
 ### Système de favoris
 
 Les exercices peuvent être marqués comme favoris :
 - Accès rapide lors de la création de workouts
-- Réduisent le temps de sélection
-- Section "Favoris" séparé
-
-### État de l'exercice
-
-Un exercice peut être :
-- **Actif** : Disponible pour sélection dans les workouts
-- **Archivé** : Non supprimé mais pas disponible (soft delete)
+- Section "Favoris" séparée dans la bibliothèque
 
 ### Notes importantes
 
-- Un exercice ne peut être supprimé que s'il n'est utilisé dans aucun workout
 - Les exercices globaux sont gérés par les administrateurs
 - Chaque utilisateur a sa propre liste d'exercices personnels
 

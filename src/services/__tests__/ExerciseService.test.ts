@@ -5,10 +5,10 @@ import { DuplicateError, ForbiddenError, NotFoundError, UnauthorizedError } from
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function makeExercise(name: string, exerciseId = "ex-1") {
-    return { exerciseId, name, muscle: "Pectoraux", equipment: "Barre", description: null }
+    return { exerciseId, name, primary_muscle: "Pectoraux moyens", secondary_muscles: [], equipment: "Barre", description: null }
 }
 
-const exerciseData = { name: "Développé couché", muscle: "Pectoraux", equipment: "Barre", description: null }
+const exerciseData = { name: "Développé couché", primary_muscle: "Pectoraux moyens", secondary_muscles: [], equipment: "Barre", description: null }
 
 // ─── Mock ────────────────────────────────────────────────────────────────────
 

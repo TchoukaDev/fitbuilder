@@ -34,6 +34,9 @@ export default function ExercisesList({
     setActiveTab,
     selectedMuscle,
     setSelectedMuscle,
+    selectedSecondaryMuscle,
+    setSelectedSecondaryMuscle,
+    muscleSelectGroups,
     grouped,
     counts,
     allExerciseMuscles,
@@ -53,6 +56,9 @@ export default function ExercisesList({
       allExerciseMuscles={allExerciseMuscles}
       selectedMuscle={selectedMuscle}
       setSelectedMuscle={setSelectedMuscle}
+      selectedSecondaryMuscle={selectedSecondaryMuscle}
+      setSelectedSecondaryMuscle={setSelectedSecondaryMuscle}
+      muscleSelectGroups={muscleSelectGroups}
       myExerciseMuscles={myExerciseMuscles}
       favoriteExerciseMuscles={favoriteExerciseMuscles}
       grouped={grouped}

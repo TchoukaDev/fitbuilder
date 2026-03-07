@@ -143,12 +143,12 @@ export default function WorkoutExerciseForm({ exercise, onSubmit, onClose, onClo
           }
         />
         <Label htmlFor="restTime" value={formData.restTime}>
-          Temps de repos (secondes) <span className="text-accent-500">*</span>
+          Repos (secondes) <span className="text-accent-500">*</span>
         </Label>
       </div>
 
       {/* Notes */}
-      <div className="relative">
+      <div className="relative w-full">
         <textarea
           className="input peer"
           placeholder=""
