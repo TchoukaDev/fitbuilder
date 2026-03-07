@@ -5,7 +5,6 @@ import { useEffect } from "react";
 import { Button } from "@/Global/components";
 import { useModals } from "@/Providers/Modals";
 import WorkoutExerciseTabs from "./WorkoutExerciseTab";
-import WorkoutMuscleFilters from "./WorkoutMuscleFilters";
 import WorkoutExerciseGroupSelect from "./WorkoutExerciseGroupSelect";
 import SearchExercise from "./SearchExercise";
 import { useWorkoutStore } from "@/Features/Workouts/store";
@@ -41,13 +40,11 @@ export default function ExerciseSelector({
   const {
     grouped,
     counts,
-    fixedMuscleCounts: muscleCounts,
-    allExerciseMuscles,
-    myExerciseMuscles,
-    favoriteExerciseMuscles,
     activeTab,
     setActiveTab,
-    setSelectedMuscle,
+    selectedSecondaryMuscle,
+    setSelectedSecondaryMuscle,
+    muscleSelectGroups,
     search,
     setSearch,
   } = useExerciseFilters({
@@ -91,27 +88,31 @@ export default function ExerciseSelector({
         onTabChange={setActiveTab}
       />
 
-      {/* Filtres par muscle*/}
-      {activeTab === "all" && (
-        <WorkoutMuscleFilters
-          onMuscleChange={setSelectedMuscle}
-          muscles={allExerciseMuscles}
-          muscleCounts={muscleCounts}
-        />
-      )}
-      {activeTab === "mine" && (
-        <WorkoutMuscleFilters
-          onMuscleChange={setSelectedMuscle}
-          muscles={myExerciseMuscles}
-          muscleCounts={muscleCounts}
-        />
-      )}
-      {activeTab === "favorites" && (
-        <WorkoutMuscleFilters
-          onMuscleChange={setSelectedMuscle}
-          muscles={favoriteExerciseMuscles}
-          muscleCounts={muscleCounts}
-        />
+      {/* Filtre muscle granulaire groupé par catégorie */}
+      {muscleSelectGroups.length > 0 && (
+        <div className="flex flex-col gap-2 mt-3">
+          <label
+            htmlFor="secondaryMuscle"
+            className="text-sm text-primary-500 font-semibold"
+          >
+            Filtrer par muscle: <span className="text-accent-500">*</span>
+          </label>
+          <select
+            className="input py-2 peer"
+            value={selectedSecondaryMuscle}
+            onChange={(e) => setSelectedSecondaryMuscle(e.target.value)}
+            aria-label="Filtrer par muscle"
+          >
+            <option value="all">-- Tous les muscles --</option>
+            {muscleSelectGroups.map((group) => (
+              <optgroup key={group.label} label={group.label}>
+                {group.muscles.map(({ name, count }) => (
+                  <option key={name} value={name}>{name} ({count})</option>
+                ))}
+              </optgroup>
+            ))}
+          </select>
+        </div>
       )}
 
       {/*  sélecteur d'exercices par muscle */}

@@ -1,5 +1,6 @@
 "use client";
 import { Exercise } from "@/types/exercise";
+import { getMuscleCategory } from "../utils/muscleCategory";
 import { useMemo, useState } from "react";
 
 /**
@@ -12,6 +13,9 @@ type ExercisesByMuscle = Record<string, Exercise[]>;
 
 /** Un dictionnaire muscle => nombre d'exercices */
 type MuscleCounters = Record<string, number>;
+
+/** Groupe de muscles pour le <select> avec <optgroup> */
+export type MuscleSelectGroup = { label: string; muscles: { name: string; count: number }[] };
 
 type UseExerciseFiltersProps = {
   exercises: Exercise[];
@@ -26,7 +30,13 @@ export function useExerciseFilters({
 
   const [activeTab, setActiveTab] = useState<string>("all");
   const [selectedMuscle, setSelectedMuscle] = useState<string>("all");
+  const [selectedSecondaryMuscle, setSelectedSecondaryMuscle] = useState<string>("all");
   const [search, setSearch] = useState<string>("");
+
+  const handleSetSelectedMuscle = (muscle: string) => {
+    setSelectedMuscle(muscle);
+    setSelectedSecondaryMuscle("all");
+  };
 
 
   // ----------------------------
@@ -60,15 +70,15 @@ export function useExerciseFilters({
   // ✅ Liste unique des muscles dans tous les exercices selon l'onglet actif
   // Ex: ["poitrine", "dos", "jambes", "épaules"]
   const allExerciseMuscles = useMemo(
-    () => [...new Set(searched.map((ex) => ex.muscle))].sort(),
+    () => [...new Set(searched.map((ex) => getMuscleCategory(ex.primary_muscle)))].sort(),
     [searched],
   );
   const myExerciseMuscles = useMemo(
-    () => [...new Set(myExercises.map((ex) => ex.muscle))].sort(),
+    () => [...new Set(myExercises.map((ex) => getMuscleCategory(ex.primary_muscle)))].sort(),
     [myExercises],
   );
   const favoriteExerciseMuscles = useMemo(
-    () => [...new Set(favoriteExercises.map((ex) => ex.muscle))].sort(),
+    () => [...new Set(favoriteExercises.map((ex) => getMuscleCategory(ex.primary_muscle)))].sort(),
     [favoriteExercises],
   );
 
@@ -91,8 +101,9 @@ export function useExerciseFilters({
   const unfilteredGrouped = useMemo(
     () =>
       displayedWithoutMuscleFilters.reduce<ExercisesByMuscle>((acc, ex) => {
-        if (!acc[ex.muscle]) acc[ex.muscle] = [];
-        acc[ex.muscle].push(ex);
+        const cat = getMuscleCategory(ex.primary_muscle);
+        if (!acc[cat]) acc[cat] = [];
+        acc[cat].push(ex);
         return acc;
       }, {}),
     [displayedWithoutMuscleFilters],
@@ -109,9 +120,52 @@ export function useExerciseFilters({
     [unfilteredGrouped],
   );
 
-  // Ensuite filtrer par muscle sélectionné
-  if (selectedMuscle !== "all") {
-    displayed = displayed.filter((ex) => ex.muscle === selectedMuscle);
+  // Filtre par catégorie primaire
+  const displayedAfterPrimary = useMemo(
+    () =>
+      selectedMuscle === "all"
+        ? displayed
+        : displayed.filter((ex) => getMuscleCategory(ex.primary_muscle) === selectedMuscle),
+    [displayed, selectedMuscle],
+  );
+
+  // Muscles secondaires disponibles avec compteurs selon le filtre primaire
+  const availableSecondaryMuscles = useMemo((): { name: string; count: number }[] => {
+    if (selectedMuscle === "all") return [];
+    const countMap = new Map<string, number>();
+    displayedAfterPrimary.forEach((ex) => {
+      (ex.secondary_muscles ?? []).forEach((m) => {
+        countMap.set(m, (countMap.get(m) ?? 0) + 1);
+      });
+    });
+    return [...countMap.entries()]
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([name, count]) => ({ name, count }));
+  }, [displayedAfterPrimary, selectedMuscle]);
+
+  // Options du <select> groupées par catégorie avec compteurs (filtre sur primary_muscle granulaire)
+  const muscleSelectGroups = useMemo((): MuscleSelectGroup[] => {
+    const byCategory: Record<string, Map<string, number>> = {};
+    displayedAfterPrimary.forEach((ex) => {
+      const cat = getMuscleCategory(ex.primary_muscle);
+      if (!byCategory[cat]) byCategory[cat] = new Map();
+      byCategory[cat].set(ex.primary_muscle, (byCategory[cat].get(ex.primary_muscle) ?? 0) + 1);
+    });
+    return Object.entries(byCategory)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([label, muscleMap]) => ({
+        label,
+        muscles: [...muscleMap.entries()]
+          .sort(([a], [b]) => a.localeCompare(b))
+          .map(([name, count]) => ({ name, count })),
+      }));
+  }, [displayedAfterPrimary]);
+
+  // Filtre final : muscle primaire granulaire (applicable avec ou sans filtre catégorie)
+  if (selectedSecondaryMuscle !== "all") {
+    displayed = displayedAfterPrimary.filter((ex) => ex.primary_muscle === selectedSecondaryMuscle);
+  } else {
+    displayed = displayedAfterPrimary;
   }
 
   // ----------------------------
@@ -122,8 +176,9 @@ export function useExerciseFilters({
   const grouped = useMemo(
     () =>
       displayed.reduce<ExercisesByMuscle>((acc, ex) => {
-        if (!acc[ex.muscle]) acc[ex.muscle] = [];
-        acc[ex.muscle].push(ex);
+        const cat = getMuscleCategory(ex.primary_muscle);
+        if (!acc[cat]) acc[cat] = [];
+        acc[cat].push(ex);
         return acc;
       }, {}),
     [displayed],
@@ -156,7 +211,11 @@ export function useExerciseFilters({
     activeTab,
     setActiveTab,
     selectedMuscle,
-    setSelectedMuscle,
+    setSelectedMuscle: handleSetSelectedMuscle,
+    selectedSecondaryMuscle,
+    setSelectedSecondaryMuscle,
+    availableSecondaryMuscles,
+    muscleSelectGroups,
     search,
     setSearch,
     grouped,

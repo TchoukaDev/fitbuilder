@@ -4,6 +4,7 @@ import { Exercise } from "@/types/exercise";
 import { unstable_cache } from "next/cache";
 import { ExerciseRepository } from "@/repositories/ExerciseRepository";
 import { ExerciseService } from "@/services/ExerciseService";
+import { getMuscleCategory } from "./muscleCategory";
 
 async function _getPublicExercises(): Promise<Exercise[]> {
   const db = await connectDB();
@@ -23,7 +24,10 @@ async function _getAllExercises(userId: string): Promise<Exercise[]> {
   const db = await connectDB();
   const service = new ExerciseService(new ExerciseRepository(db));
   const all = await service.getAll(userId);
-  return all.sort((a, b) => a.muscle.localeCompare(b.muscle) || a.name.localeCompare(b.name));
+  return all.sort((a, b) =>
+    getMuscleCategory(a.primary_muscle).localeCompare(getMuscleCategory(b.primary_muscle)) ||
+    a.name.localeCompare(b.name)
+  );
 }
 export const getAllExercises = unstable_cache(_getAllExercises, ["allExercises"], { revalidate: 300, tags: ["exercises"] });
 

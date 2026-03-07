@@ -12,7 +12,7 @@ const MUSCLE_GROUPS: { label: string; muscles: string[] }[] = [
   { label: "Jambes", muscles: ["Quadriceps", "Ischio-jambiers", "Adducteurs", "Mollets"] },
   { label: "Fessiers", muscles: ["Grand fessier", "Moyen fessier"] },
   { label: "Core", muscles: ["Abdominaux", "Obliques", "Core profond"] },
-  { label: "Autre", muscles: ["Corps entier"] },
+  { label: "Autre", muscles: ["Corps entier", "Cardio"] },
 ];
 
 type ExerciseFormFieldsProps = {
@@ -46,27 +46,27 @@ export default function ExerciseFormFields({
   nameRef,
   setValue,
 }: ExerciseFormFieldsProps) {
-  const primaryMuscle = watchedFields.muscle || "";
-  const secondaryMuscles = watchedFields.muscles || [];
+  const primaryMuscle = watchedFields.primary_muscle || "";
+  const secondaryMuscles = watchedFields.secondary_muscles || [];
 
   const handleMuscleToggle = (muscleName: string) => {
     if (primaryMuscle === muscleName) {
       // Désélection du muscle primaire → le premier secondaire prend sa place
       if (secondaryMuscles.length > 0) {
-        setValue("muscle", secondaryMuscles[0], { shouldValidate: isSubmitted });
-        setValue("muscles", secondaryMuscles.slice(1));
+        setValue("primary_muscle", secondaryMuscles[0], { shouldValidate: isSubmitted });
+        setValue("secondary_muscles", secondaryMuscles.slice(1));
       } else {
-        setValue("muscle", "", { shouldValidate: isSubmitted });
+        setValue("primary_muscle", "", { shouldValidate: isSubmitted });
       }
     } else if (secondaryMuscles.includes(muscleName)) {
       // Désélection d'un muscle secondaire
-      setValue("muscles", secondaryMuscles.filter((m) => m !== muscleName));
+      setValue("secondary_muscles", secondaryMuscles.filter((m) => m !== muscleName));
     } else if (!primaryMuscle) {
       // Aucun primaire → devient le primaire
-      setValue("muscle", muscleName, { shouldValidate: isSubmitted });
+      setValue("primary_muscle", muscleName, { shouldValidate: isSubmitted });
     } else {
       // Ajout en secondaire
-      setValue("muscles", [...secondaryMuscles, muscleName]);
+      setValue("secondary_muscles", [...secondaryMuscles, muscleName]);
     }
   };
 
@@ -109,7 +109,7 @@ export default function ExerciseFormFields({
           Muscles ciblés <span className="text-accent-500">*</span>
         </p>
         {/* Champ caché pour la validation RHF */}
-        <input type="hidden" {...register("muscle")} />
+        <input type="hidden" {...register("primary_muscle")} />
         {/* Légende */}
         <div className="flex gap-3 justify-center text-xs text-gray-500 mb-1">
           {primaryMuscle && (
@@ -159,8 +159,8 @@ export default function ExerciseFormFields({
             </div>
           ))}
         </div>
-        {errors.muscle && (
-          <p className="text-xs text-red-500 text-center">{errors.muscle.message}</p>
+        {errors.primary_muscle && (
+          <p className="text-xs text-red-500 text-center">{errors.primary_muscle.message}</p>
         )}
       </div>
 

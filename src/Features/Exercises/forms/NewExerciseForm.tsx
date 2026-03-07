@@ -25,7 +25,7 @@ export default function NewExerciseForm() {
     formState: { errors, isSubmitting, isSubmitted },
   } = useForm<ExerciseFormData>({
     resolver: zodResolver(exerciseSchema),
-    defaultValues: { muscles: [] as string[] },
+    defaultValues: { secondary_muscles: [] as string[] },
     mode: "onSubmit",
     reValidateMode: "onChange",
   });

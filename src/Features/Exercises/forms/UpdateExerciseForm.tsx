@@ -32,8 +32,8 @@ export default function UpdateExerciseForm({ exerciseToUpdate }: { exerciseToUpd
       name: exerciseToUpdate.name,
       description: exerciseToUpdate.description || "",
       equipment: exerciseToUpdate.equipment || "",
-      muscle: exerciseToUpdate.muscle || "",
-      muscles: exerciseToUpdate.muscles || [],
+      primary_muscle: exerciseToUpdate.primary_muscle || "",
+      secondary_muscles: exerciseToUpdate.secondary_muscles || [],
     },
     mode: "onChange",
   });

@@ -3,8 +3,8 @@ import { ObjectId } from "mongodb";
 // Type de base partagé (DRY)
 type ExerciseBase = {
     name: string;
-    muscle: string;
-    muscles: string[];
+    primary_muscle: string;
+    secondary_muscles: string[];
     equipment: string;
     description: string | null;
     isPublic: boolean;

@@ -46,10 +46,12 @@ L'application propose une expérience utilisateur fluide avec un système d'auth
 ### 3. **Exercices**
 
 - Bibliothèque complète d'exercices (globaux et personnels)
-- Créer des exercices personnalisés
-- Filtrer et rechercher des exercices
+- Créer des exercices personnalisés avec **muscle primaire** et **muscles secondaires** granulaires
+- Filtrer par catégorie musculaire primaire + filtre secondaire (Combobox cascadée)
+- Recherche texte en temps réel
 - Marquer les exercices comme favoris
 - Gestion des exercices par rôle (admin/utilisateur)
+- Catégorie "Autre" incluant Corps entier et Cardio
 
 ### 4. **Calendrier & Planification**
 
@@ -442,6 +444,7 @@ Middleware dans `src/middleware.js` et `src/libs/authMiddleware.js` :
 Pour plus de détails sur l'implémentation, consultez :
 
 - **[FEATURES.md](./FEATURES.md)** - Description détaillée de chaque feature
+- **[Exercises.md](./Exercises.md)** - Flux complet de la feature Exercices (muscles, filtres, formulaires, API)
 
 ## 🤝 Contribution
 
