@@ -25,8 +25,8 @@ async function _getAllExercises(userId: string): Promise<Exercise[]> {
   const service = new ExerciseService(new ExerciseRepository(db));
   const all = await service.getAll(userId);
   return all.sort((a, b) =>
-    getMuscleCategory(a.primary_muscle).localeCompare(getMuscleCategory(b.primary_muscle)) ||
-    a.name.localeCompare(b.name)
+    getMuscleCategory(a.primary_muscle ?? "").localeCompare(getMuscleCategory(b.primary_muscle ?? "")) ||
+    (a.name ?? "").localeCompare(b.name ?? "")
   );
 }
 export const getAllExercises = unstable_cache(_getAllExercises, ["allExercises"], { revalidate: 300, tags: ["exercises"] });
