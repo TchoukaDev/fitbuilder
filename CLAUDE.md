@@ -115,6 +115,7 @@ NEXTAUTH_URL
 GOOGLE_CLIENT_ID
 GOOGLE_CLIENT_SECRET
 ADMIN_EMAIL
+ANTHROPIC_API_KEY   # Requis pour le chatbot FitBot
 ```
 
 ---
@@ -327,3 +328,43 @@ Simplifier et clarifier la logique de validation sans en changer le comportement
 - `docs/Exercises.md` — documentation complète du flux Exercices (muscles, filtres, formulaires, API, Combobox)
 - `docs/FEATURES.md` — section Exercices mise à jour
 - `docs/README.md` — fonctionnalités mises à jour + lien vers Exercises.md
+
+---
+
+## 🔧 Étape 7 — Chatbot IA FitBot (EN COURS — branche `feature/chatbot`)
+
+### Architecture
+
+```
+src/Features/Chat/
+  components/
+    ChatFAB.tsx       # Bouton flottant (FAB) avec badge non lus
+    ChatInput.tsx     # Input + bouton envoi
+    ChatMessage.tsx   # Bulle de message (user / assistant)
+    ChatPanel.tsx     # Panel principal du chat (liste + input)
+  store/
+    chatStore.ts      # Zustand persist — messages, isOpen, isLoading, unreadCount
+  utils/
+    systemPrompt.ts   # Prompt système FitBot (rôle, fonctionnalités, règles)
+  index.ts
+
+src/app/api/chat/
+  route.ts            # POST — streaming SSE via Anthropic SDK
+```
+
+### Fonctionnement
+
+- **API** : `POST /api/chat` — reçoit `messages[]`, stream SSE (`text/event-stream`)
+- **Modèle** : `claude-haiku-4-5` (rapide, économique)
+- **Auth** : `requireAuth` — accessible aux utilisateurs connectés uniquement
+- **Store** : historique persisté dans `localStorage` (`chat_history`), `unreadCount` pour le badge FAB
+
+### Variables d'environnement
+
+```
+ANTHROPIC_API_KEY   # Clé API Anthropic (requis)
+```
+
+### Intégration layout
+
+Le FAB et le panel sont intégrés dans `src/app/(authenticated)/layout.tsx` (au-dessus de la bottom nav sur mobile).
