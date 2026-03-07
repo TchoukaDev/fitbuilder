@@ -1,5 +1,5 @@
 import { Header } from "@/Global/components";
-// import { ChatFAB } from "@/Features/Chat";
+import { ChatFAB } from "@/Features/Chat";
 
 export default function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
     return (
@@ -8,7 +8,7 @@ export default function AuthenticatedLayout({ children }: { children: React.Reac
             <main>
                 {children}
             </main>
-            {/* <ChatFAB /> */}
+            <ChatFAB />
         </div>
     )
 }
