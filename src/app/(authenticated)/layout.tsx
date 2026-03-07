@@ -8,7 +8,7 @@ export default function AuthenticatedLayout({ children }: { children: React.Reac
             <main>
                 {children}
             </main>
-            <ChatFAB />
+            {/* <ChatFAB /> */}
         </div>
     )
 }
