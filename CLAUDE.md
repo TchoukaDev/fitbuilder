@@ -331,7 +331,7 @@ Simplifier et clarifier la logique de validation sans en changer le comportement
 
 ---
 
-## 🔧 Étape 7 — Chatbot IA FitBot (EN COURS — branche `feature/chatbot`)
+## ✅ Étape 7 — Chatbot IA FitBot (TERMINÉE — branche `feature/chatbot`)
 
 ### Architecture
 
@@ -339,9 +339,9 @@ Simplifier et clarifier la logique de validation sans en changer le comportement
 src/Features/Chat/
   components/
     ChatFAB.tsx       # Bouton flottant (FAB) avec badge non lus
-    ChatInput.tsx     # Input + bouton envoi
-    ChatMessage.tsx   # Bulle de message (user / assistant)
-    ChatPanel.tsx     # Panel principal du chat (liste + input)
+    ChatInput.tsx     # Input + bouton envoi (Entrée = envoyer, Shift+Entrée = saut de ligne)
+    ChatMessage.tsx   # Bulle de message (user = bleue droite / assistant = grise gauche)
+    ChatPanel.tsx     # Panel principal : cycle envoi → stream SSE → mise à jour store
   store/
     chatStore.ts      # Zustand persist — messages, isOpen, isLoading, unreadCount
   utils/
@@ -354,10 +354,30 @@ src/app/api/chat/
 
 ### Fonctionnement
 
-- **API** : `POST /api/chat` — reçoit `messages[]`, stream SSE (`text/event-stream`)
+- **API** : `POST /api/chat` — reçoit `messages[]` (historique complet), stream SSE (`text/event-stream`)
 - **Modèle** : `claude-haiku-4-5` (rapide, économique)
 - **Auth** : `requireAuth` — accessible aux utilisateurs connectés uniquement
-- **Store** : historique persisté dans `localStorage` (`chat_history`), `unreadCount` pour le badge FAB
+- **Store** : historique persisté dans `localStorage` (`chat_history`), états temporaires (`isOpen`, `isLoading`, `unreadCount`) non persistés
+
+### Cycle d'envoi d'un message (`ChatPanel.handleSend`)
+
+1. `addMessage({ role: "user" })` → message utilisateur affiché immédiatement
+2. `addMessage({ role: "assistant", content: "" })` → placeholder vide (indicateur `...`)
+3. `fetch POST /api/chat` avec l'historique (hors placeholder)
+4. Lecture du stream SSE chunk par chunk → `updateLastAssistantMessage(accumulated)`
+5. `finally` : `setIsLoading(false)` + `incrementUnread()` si le panel est fermé
+
+### Badge non-lus (`unreadCount`)
+
+- Incrémenté **une seule fois** à la fin du stream (`finally` dans `ChatPanel`), uniquement si `!isOpen`
+- Remis à 0 quand l'utilisateur ouvre le panel (`setIsOpen(true)`)
+- ⚠️ `setIsOpen(false)` ne doit PAS passer `unreadCount: undefined` — Zustand écrirait `undefined` en dur et le badge ne s'afficherait plus jamais
+
+### Scroll automatique
+
+- `scrollContainerRef` sur le div scrollable des messages
+- `useEffect([messages, isLoading, isOpen])` : `el.scrollTop = el.scrollHeight`
+- `isOpen` dans les dépendances est indispensable : sans lui, la réouverture du panel (remount) ne déclencherait pas le scroll
 
 ### Variables d'environnement
 
@@ -368,3 +388,9 @@ ANTHROPIC_API_KEY   # Clé API Anthropic (requis)
 ### Intégration layout
 
 Le FAB et le panel sont intégrés dans `src/app/(authenticated)/layout.tsx` (au-dessus de la bottom nav sur mobile).
+
+### Z-index
+
+- Bottom nav : `z-50`
+- Modales : `z-[60]`
+- ChatFAB + ChatPanel : `z-[70]` (toujours au-dessus)
